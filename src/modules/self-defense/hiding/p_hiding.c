@@ -31,7 +31,7 @@ void p_hide_itself(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_hide_itself>\n");
 
-   if (!p_lkrg_global_ctrl.p_unhide_module) {
+   if (p_lkrg_global_ctrl.p_hide_module) {
       p_print_log(P_LKRG_WARN,
              "Module is already hidden!\n");
       goto p_hide_itself_out;
@@ -47,7 +47,7 @@ void p_hide_itself(void) {
    P_HIDE_FROM_KOBJ(p_find_me);
    P_HIDE_FROM_DDEBUG(p_find_me);
 
-   p_lkrg_global_ctrl.p_unhide_module = 0x0;
+   p_lkrg_global_ctrl.p_hide_module = 0x1;
 
 p_hide_itself_out:
 
@@ -70,7 +70,7 @@ void p_unhide_itself(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_unhide_itself>\n");
 
-   if (p_lkrg_global_ctrl.p_unhide_module) {
+   if (!p_lkrg_global_ctrl.p_hide_module) {
       p_print_log(P_LKRG_WARN,
              "Module is already unhidden (visible)!\n");
       goto p_unhide_itself_out;
@@ -82,7 +82,7 @@ void p_unhide_itself(void) {
 //   P_UNHIDE_FROM_KOBJ(p_find_me,p_find_kobj_parent,
 //                      p_find_sect_attrs,p_find_notes_attrs);
 
-   p_lkrg_global_ctrl.p_unhide_module = 0x1;
+   p_lkrg_global_ctrl.p_hide_module = 0x0;
 
 p_unhide_itself_out:
 

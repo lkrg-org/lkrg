@@ -33,20 +33,20 @@ static int p_force_run_min = 0x0;
 static int p_force_run_max = 0x1;
 
 #ifdef P_LKRG_UNHIDE
-static int p_unhide_module_min = 0x0;
-static int p_unhide_module_max = 0x1;
+static int p_hide_module_min = 0x0;
+static int p_hide_module_max = 0x1;
 #endif
 
 static int p_sysctl_force_run(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #ifdef P_LKRG_UNHIDE
-static int p_sysctl_unhide(struct ctl_table *p_table, int p_write,
+static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
                            void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #endif
 
 struct ctl_table p_lkrg_sysctl_base[] = {
    {
-      .procname    = "LKRG",
+      .procname    = "lkrg",
       .mode        = 0600,
       .child       = p_lkrg_sysctl_table,
    },
@@ -92,13 +92,13 @@ struct ctl_table p_lkrg_sysctl_table[] = {
    },
 #ifdef P_LKRG_UNHIDE
    {
-      .procname       = "unhide",
-      .data           = &p_lkrg_global_ctrl.p_unhide_module,
+      .procname       = "hide",
+      .data           = &p_lkrg_global_ctrl.p_hide_module,
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
-      .proc_handler   = p_sysctl_unhide,
-      .extra1         = &p_unhide_module_min,
-      .extra2         = &p_unhide_module_max,
+      .proc_handler   = p_sysctl_hide,
+      .extra1         = &p_hide_module_min,
+      .extra2         = &p_hide_module_max,
    },
 #endif
    { }
@@ -129,30 +129,30 @@ static int p_sysctl_force_run(struct ctl_table *p_table, int p_write,
 }
 
 #ifdef P_LKRG_UNHIDE
-static int p_sysctl_unhide(struct ctl_table *p_table, int p_write,
-                           void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
+                         void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
    unsigned int p_tmp;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_unhide>\n");
+          "Entering function <p_sysctl_hide>\n");
 
-   p_tmp = p_lkrg_global_ctrl.p_unhide_module;
+   p_tmp = p_lkrg_global_ctrl.p_hide_module;
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (p_lkrg_global_ctrl.p_unhide_module) {
-         p_lkrg_global_ctrl.p_unhide_module = p_tmp; // Restore previous state - for sync
-         p_unhide_itself(); // Unhide module!
+      if (p_lkrg_global_ctrl.p_hide_module) {
+         p_lkrg_global_ctrl.p_hide_module = p_tmp; // Restore previous state - for sync
+         p_hide_itself(); // hide module!
       } else {
-         p_lkrg_global_ctrl.p_unhide_module = p_tmp; // Restore previous state - for sync
-         p_hide_itself(); // Hide module!
+         p_lkrg_global_ctrl.p_hide_module = p_tmp; // Restore previous state - for sync
+         p_unhide_itself(); // Unide module!
       }
    }
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_unhide>\n");
+          "Leaving function <p_sysctl_hide>\n");
 
    return p_ret;
 }

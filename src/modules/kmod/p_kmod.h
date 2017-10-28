@@ -60,7 +60,7 @@ typedef struct _p_lkrg_global_ctrl_structure {
    unsigned int p_log_level;
    unsigned int p_force_run;
    unsigned int p_block_modules;
-   unsigned int p_unhide_module;
+   unsigned int p_hide_module;
 
 } p_lkrg_global_ctrl_struct;
 
