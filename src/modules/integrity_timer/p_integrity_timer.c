@@ -1289,7 +1289,7 @@ void p_check_integrity(struct work_struct *p_work) {
       }
    }
 
-
+   p_iterate_processes(p_validate_task_f);
 
    if (p_hack_check) {
       p_print_log(P_LKRG_CRIT,
