@@ -81,6 +81,9 @@
  */
 #include "modules/exploit_detection/p_exploit_detection.h"
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 13, 0)
+ #define __GFP_REPEAT   ((__force gfp_t)___GFP_RETRY_MAYFAIL)
+#endif
 
 extern unsigned int p_init_log_level;
 
