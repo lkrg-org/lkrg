@@ -64,5 +64,5 @@ get_kallsyms_address_out:
    p_debug_log(P_LKRG_STRONG_DBG,
           "Leaving function <get_kallsyms_address> (p_ret => %d)\n",p_ret);
 
-   return P_LKRG_SUCCESS;
+   return p_ret;
 }
