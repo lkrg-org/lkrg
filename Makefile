@@ -42,6 +42,7 @@ p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
                src/modules/exploit_detection/syscalls/p_sys_delete_module/p_sys_delete_module.o \
                src/modules/exploit_detection/syscalls/p_may_open/p_may_open.o \
                src/modules/exploit_detection/syscalls/p_sel_write_enforce/p_sel_write_enforce.o \
+               src/modules/exploit_detection/syscalls/p_seccomp/p_seccomp.o \
                src/modules/exploit_detection/p_exploit_detection.o \
                src/p_lkrg_main.o
 
