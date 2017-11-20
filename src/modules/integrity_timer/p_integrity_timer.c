@@ -1289,8 +1289,6 @@ void p_check_integrity(struct work_struct *p_work) {
       }
    }
 
-   p_ed_enforce_validation();
-
    if (p_hack_check) {
       p_print_log(P_LKRG_CRIT,
              "ALERT !!! SYSTEM HAS BEEN COMPROMISED - DETECTED DIFFERENT %u CHECKSUMS !!!\n",p_hack_check);
@@ -1298,9 +1296,10 @@ void p_check_integrity(struct work_struct *p_work) {
       p_print_log(P_LKRG_ALIVE,"System is clean!\n");
    }
 
-
    /* God mode off ;) */
    spin_unlock_irqrestore(&p_db_lock,p_db_flags);
+
+   p_ed_enforce_validation();
 
    if (p_tmp_cpus)
       kzfree(p_tmp_cpus);

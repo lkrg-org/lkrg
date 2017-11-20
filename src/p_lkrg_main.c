@@ -136,11 +136,11 @@ p_main_error:
    cpuhp_remove_state_nocalls(p_hot_cpus);
 #endif
 
+   p_exploit_detection_exit();
    p_deregister_module_notifier();
    if (p_db.p_IDT_MSR_CRx_array)
       kzfree(p_db.p_IDT_MSR_CRx_array);
    p_offload_cache_delete();
-   p_exploit_detection_exit();
 
    return p_ret;
 }
