@@ -138,9 +138,9 @@ p_main_error:
 
    p_exploit_detection_exit();
    p_deregister_module_notifier();
+   p_offload_cache_delete();
    if (p_db.p_IDT_MSR_CRx_array)
       kzfree(p_db.p_IDT_MSR_CRx_array);
-   p_offload_cache_delete();
 
    return p_ret;
 }
@@ -171,12 +171,11 @@ static void __exit p_lkrg_deregister(void) {
    cpuhp_remove_state_nocalls(p_hot_cpus);
 #endif
 
+   p_exploit_detection_exit();
    p_deregister_module_notifier();
 
-   kzfree(p_db.p_IDT_MSR_CRx_array);
    p_offload_cache_delete();
-   p_exploit_detection_exit();
-
+   kzfree(p_db.p_IDT_MSR_CRx_array);
 }
 
 

@@ -79,6 +79,7 @@ void p_offload_cache_delete(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_offload_cache_delete>\n");
 
+   flush_workqueue(system_unbound_wq);
    if (p_offload_cache) {
       kmem_cache_destroy(p_offload_cache);
       p_offload_cache = NULL;
