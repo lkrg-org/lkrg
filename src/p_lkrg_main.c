@@ -29,7 +29,6 @@ static int __init p_lkrg_register(void) {
 
    int p_ret = P_LKRG_SUCCESS;
 
-
    memset(&p_lkrg_global_ctrl,0x0,sizeof(p_lkrg_global_ctrl_struct));
    p_lkrg_global_ctrl.p_timestamp = 15;        // seconds
    if (p_init_log_level >= P_LOG_LEVEL_MAX)
