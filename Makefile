@@ -43,6 +43,10 @@ p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
                src/modules/exploit_detection/syscalls/p_may_open/p_may_open.o \
                src/modules/exploit_detection/syscalls/p_sel_write_enforce/p_sel_write_enforce.o \
                src/modules/exploit_detection/syscalls/p_seccomp/p_seccomp.o \
+               src/modules/exploit_detection/syscalls/p_sys_unshare/p_sys_unshare.o \
+               src/modules/exploit_detection/syscalls/p_userns_install/p_userns_install.o \
+               src/modules/exploit_detection/syscalls/caps/p_sys_capset/p_sys_capset.o \
+               src/modules/exploit_detection/syscalls/caps/p_cap_task_prctl/p_cap_task_prctl.o \
                src/modules/exploit_detection/p_exploit_detection.o \
                src/p_lkrg_main.o
 
