@@ -39,6 +39,7 @@ p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
                src/modules/exploit_detection/syscalls/p_sys_setfsgid/p_sys_setfsgid.o \
                src/modules/exploit_detection/syscalls/p_sys_setgroups/p_sys_setgroups.o \
                src/modules/exploit_detection/syscalls/p_do_init_module/p_do_init_module.o \
+               src/modules/exploit_detection/syscalls/p_sys_finit_module/p_sys_finit_module.o \
                src/modules/exploit_detection/syscalls/p_sys_delete_module/p_sys_delete_module.o \
                src/modules/exploit_detection/syscalls/p_may_open/p_may_open.o \
                src/modules/exploit_detection/syscalls/p_sel_write_enforce/p_sel_write_enforce.o \
@@ -47,6 +48,8 @@ p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
                src/modules/exploit_detection/syscalls/p_userns_install/p_userns_install.o \
                src/modules/exploit_detection/syscalls/caps/p_sys_capset/p_sys_capset.o \
                src/modules/exploit_detection/syscalls/caps/p_cap_task_prctl/p_cap_task_prctl.o \
+               src/modules/exploit_detection/syscalls/keyring/p_lookup_user_key/p_lookup_user_key.o \
+               src/modules/exploit_detection/syscalls/keyring/p_key_change_session_keyring/p_key_change_session_keyring.o \
                src/modules/exploit_detection/p_exploit_detection.o \
                src/p_lkrg_main.o
 
