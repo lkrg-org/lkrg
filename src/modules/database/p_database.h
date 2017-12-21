@@ -25,7 +25,7 @@ typedef struct p_hash_mem_block {
 
    long *p_addr;
    unsigned long p_size;
-   uint32_t p_hash;
+   uint64_t p_hash;
 
 } p_hash_mem_block;
 
@@ -105,7 +105,7 @@ typedef struct p_hash_database {
    /*
     * Hash from the all 'p_IDT_MSR_CRx_hash_mem' structures
     */
-   uint32_t p_IDT_MSR_CRx_hashes;
+   uint64_t p_IDT_MSR_CRx_hashes;
 
 
    /*
@@ -118,9 +118,9 @@ typedef struct p_hash_database {
     * Linux Kernel Modules integrity
     */
    p_module_list_mem *p_module_list_array;
-   uint32_t p_module_list_hash;
+   uint64_t p_module_list_hash;
    p_module_kobj_mem *p_module_kobj_array;
-   uint32_t p_module_kobj_hash;
+   uint64_t p_module_kobj_hash;
 
 
    p_hash_mem_block kernel_stext;         // .text
@@ -149,6 +149,6 @@ int p_cpu_callback(struct notifier_block *p_block, unsigned long p_action, void 
 #endif
 int p_cpu_online_action(unsigned int p_cpu);
 int p_cpu_dead_action(unsigned int p_cpu);
-uint32_t hash_from_CPU_data(p_IDT_MSR_CRx_hash_mem *p_arg);
+uint64_t hash_from_CPU_data(p_IDT_MSR_CRx_hash_mem *p_arg);
 
 #endif

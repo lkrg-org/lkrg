@@ -34,7 +34,7 @@ typedef struct p_module_list_mem {
    void *p_module_core;
    unsigned int p_core_text_size;
 
-   uint32_t p_mod_core_text_hash;
+   uint64_t p_mod_core_text_hash;
 
 } p_module_list_mem;
 
@@ -49,7 +49,7 @@ typedef struct p_module_kobj_mem {
    void *p_module_core;
    unsigned int p_core_text_size;
 
-   uint32_t p_mod_core_text_hash;
+   uint64_t p_mod_core_text_hash;
 
 } p_module_kobj_mem;
 

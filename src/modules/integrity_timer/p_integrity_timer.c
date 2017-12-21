@@ -136,7 +136,7 @@ void p_offload_work(unsigned long p_timer) {
 void p_check_integrity(struct work_struct *p_work) {
 
    /* temporary hash variable */
-   uint32_t p_tmp_hash;
+   uint64_t p_tmp_hash;
    /* per CPU temporary data */
    p_IDT_MSR_CRx_hash_mem *p_tmp_cpus;
    p_cpu_info p_tmp_cpu_info;
@@ -271,44 +271,44 @@ void p_check_integrity(struct work_struct *p_work) {
    if (p_db.p_IDT_MSR_CRx_hashes != p_tmp_hash) {
       /* I'm hacked! ;( */
       p_print_log(P_LKRG_CRIT,
-             "ALERT !!! HASHES FROM CPUs METADATA IS DIFFERENT- it is [0x%x] and should be [0x%x] !!!\n",
+             "ALERT !!! HASHES FROM CPUs METADATA IS DIFFERENT- it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                p_tmp_hash,p_db.p_IDT_MSR_CRx_hashes);
       p_hack_check++;
    }
 
-   p_print_log(P_LKRG_INFO,"Hash from CPUs metadata => [0x%x]\n",p_tmp_hash);
+   p_print_log(P_LKRG_INFO,"Hash from CPUs metadata => [0x%llx]\n",p_tmp_hash);
 
    /*
     * Checking memory block:
     * "___ex_table"
     */
    if (p_db.kernel_ex_table.p_addr && p_db.kernel_ex_table.p_hash) {
-      p_tmp_hash = p_super_fast_hash((unsigned char *)p_db.kernel_ex_table.p_addr,
-                                     (unsigned int)p_db.kernel_ex_table.p_size);
+      p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_ex_table.p_addr,
+                                    (unsigned int)p_db.kernel_ex_table.p_size);
 
       if (p_db.kernel_ex_table.p_hash != p_tmp_hash) {
          /* I'm hacked! ;( */
          p_print_log(P_LKRG_CRIT,
-                "ALERT !!! EXCEPTION TABLE HASH IS DIFFERENT - it is [0x%x] and should be [0x%x] !!!\n",
+                "ALERT !!! EXCEPTION TABLE HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                   p_tmp_hash,p_db.kernel_ex_table.p_hash);
          p_hack_check++;
       }
 
-      p_print_log(P_LKRG_INFO,"Hash from kernel exception table => [0x%x]\n",p_tmp_hash);
+      p_print_log(P_LKRG_INFO,"Hash from kernel exception table => [0x%llx]\n",p_tmp_hash);
    }
 
    /*
     * Before checking "_stext" we need to verify copy of "_stext".
     * It is critical for us since we rely on the copy to whitelist self-modifications.
     */
-   p_tmp_hash = p_super_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
-                                  (unsigned int)p_db.kernel_stext_copy.p_size);
+   p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
+                                 (unsigned int)p_db.kernel_stext_copy.p_size);
 
    if (p_db.kernel_stext_copy.p_hash != p_tmp_hash) {
       /* I'm hacked! ;( */
       p_print_log(P_LKRG_CRIT,
-             "ALERT !!! COPY OF _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%x]"
-             " and should be [0x%x] !!!\n",
+             "ALERT !!! COPY OF _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx]"
+             " and should be [0x%llx] !!!\n",
              p_tmp_hash,p_db.kernel_stext_copy.p_hash);
       p_print_log(P_LKRG_CRIT,
              "!!! KERNEL CORE INTEGRITY VERIFICATION CAN\'T BE TRUSTED !!!\n");
@@ -319,8 +319,8 @@ void p_check_integrity(struct work_struct *p_work) {
     * Checking memory block:
     * "_stext"
     */
-   p_tmp_hash = p_super_fast_hash((unsigned char *)p_db.kernel_stext.p_addr,
-                                  (unsigned int)p_db.kernel_stext.p_size);
+   p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext.p_addr,
+                                 (unsigned int)p_db.kernel_stext.p_size);
 
    if (p_db.kernel_stext.p_hash != p_tmp_hash) {
 
@@ -331,7 +331,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
          /* I'm hacked! ;( */
          p_print_log(P_LKRG_CRIT,
-                "ALERT !!! _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%x] and should be [0x%x] !!!\n",
+                "ALERT !!! _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                p_tmp_hash,p_db.kernel_stext.p_hash);
          p_hack_check++;
       } else {
@@ -341,30 +341,30 @@ void p_check_integrity(struct work_struct *p_work) {
              "Recalculating internal kernel core .text section hash...\n");
 #endif
          p_db.kernel_stext.p_hash = p_tmp_hash;
-         p_db.kernel_stext_copy.p_hash = p_super_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
-                                                           (unsigned int)p_db.kernel_stext_copy.p_size);
+         p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
+                                                          (unsigned int)p_db.kernel_stext_copy.p_size);
       }
    }
 
-   p_print_log(P_LKRG_INFO,"Hash from _stext memory block => [0x%x]\n",p_tmp_hash);
+   p_print_log(P_LKRG_INFO,"Hash from _stext memory block => [0x%llx]\n",p_tmp_hash);
 
    /*
     * Checking memory block:
     * "_rodata"
     */
    if (p_db.kernel_rodata.p_addr && p_db.kernel_rodata.p_hash) {
-      p_tmp_hash = p_super_fast_hash((unsigned char *)p_db.kernel_rodata.p_addr,
-                                     (unsigned int)p_db.kernel_rodata.p_size);
+      p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_rodata.p_addr,
+                                    (unsigned int)p_db.kernel_rodata.p_size);
 
       if (p_db.kernel_rodata.p_hash != p_tmp_hash) {
          /* I'm hacked! ;( */
          p_print_log(P_LKRG_CRIT,
-                "ALERT !!! _RODATA MEMORY BLOCK HASH IS DIFFERENT - it is [0x%x] and should be [0x%x] !!!\n",
+                "ALERT !!! _RODATA MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                   p_tmp_hash,p_db.kernel_rodata.p_hash);
          p_hack_check++;
       }
 
-      p_print_log(P_LKRG_INFO,"Hash from _rodata memory block => [0x%x]\n",p_tmp_hash);
+      p_print_log(P_LKRG_INFO,"Hash from _rodata memory block => [0x%llx]\n",p_tmp_hash);
    }
 
    /*
@@ -373,8 +373,8 @@ void p_check_integrity(struct work_struct *p_work) {
     */
    if (p_db.kernel_iommu_table.p_addr && p_db.kernel_iommu_table.p_hash) {
 #ifdef P_LKRG_IOMMU_HASH_ENABLED
-      p_tmp_hash = p_super_fast_hash((unsigned char *)p_db.kernel_iommu_table.p_addr,
-                                     (unsigned int)p_db.kernel_iommu_table.p_size);
+      p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_iommu_table.p_addr,
+                                    (unsigned int)p_db.kernel_iommu_table.p_size);
 #else
       p_tmp_hash = 0xFFFFFFFF;
 #endif
@@ -382,12 +382,12 @@ void p_check_integrity(struct work_struct *p_work) {
       if (p_db.kernel_iommu_table.p_hash != p_tmp_hash) {
          /* I'm hacked! ;( */
          p_print_log(P_LKRG_CRIT,
-                "ALERT !!! IOMMU TABLE HASH IS DIFFERENT - it is [0x%x] and should be [0x%x] !!!\n",
+                "ALERT !!! IOMMU TABLE HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                   p_tmp_hash,p_db.kernel_iommu_table.p_hash);
          p_hack_check++;
       }
 
-      p_print_log(P_LKRG_INFO,"Hash from IOMMU table => [0x%x]\n",p_tmp_hash);
+      p_print_log(P_LKRG_INFO,"Hash from IOMMU table => [0x%llx]\n",p_tmp_hash);
    }
 
 /*
@@ -460,7 +460,7 @@ void p_check_integrity(struct work_struct *p_work) {
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
-                  "HIDDEN MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%x]\n",
+                  "HIDDEN MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%llx]\n",
                   p_module_kobj_tmp[p_tmp_hash].p_name,
                   p_module_kobj_tmp[p_tmp_hash].p_mod,
                   p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -574,7 +574,7 @@ void p_check_integrity(struct work_struct *p_work) {
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
-                  "HIDDEN MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%x]\n",
+                  "HIDDEN MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%llx]\n",
                   p_module_list_tmp[p_tmp_hash].p_name,
                   p_module_list_tmp[p_tmp_hash].p_mod,
                   p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -720,7 +720,7 @@ void p_check_integrity(struct work_struct *p_work) {
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
-                  "LOST MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%x]\n",
+                  "LOST MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%llx]\n",
                   p_db.p_module_list_array[p_tmp_hash].p_name,
                   p_db.p_module_list_array[p_tmp_hash].p_mod,
                   p_db.p_module_list_array[p_tmp_hash].p_module_core,
@@ -840,7 +840,7 @@ void p_check_integrity(struct work_struct *p_work) {
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
-                  "EXTRA MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%x]\n",
+                  "EXTRA MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%llx]\n",
                   p_module_list_tmp[p_tmp_hash].p_name,
                   p_module_list_tmp[p_tmp_hash].p_mod,
                   p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -981,7 +981,7 @@ void p_check_integrity(struct work_struct *p_work) {
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
-                  "LOST MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%x]\n",
+                  "LOST MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%llx]\n",
                   p_db.p_module_kobj_array[p_tmp_hash].p_name,
                   p_db.p_module_kobj_array[p_tmp_hash].p_mod,
                   p_db.p_module_kobj_array[p_tmp_hash].p_module_core,
@@ -1099,7 +1099,7 @@ void p_check_integrity(struct work_struct *p_work) {
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
-                  "EXTRA MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%x]\n",
+                  "EXTRA MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%llx]\n",
                   p_module_kobj_tmp[p_tmp_hash].p_name,
                   p_module_kobj_tmp[p_tmp_hash].p_mod,
                   p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -1204,10 +1204,10 @@ void p_check_integrity(struct work_struct *p_work) {
    }
 */
 
-   p_tmp_hash = p_super_fast_hash((unsigned char *)p_module_list_tmp,
-                                  (unsigned int)p_module_list_nr_tmp * sizeof(p_module_list_mem));
+   p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_module_list_tmp,
+                                 (unsigned int)p_module_list_nr_tmp * sizeof(p_module_list_mem));
 
-   p_print_log(P_LKRG_INFO,"Hash from 'module list' => [0x%x]\n",p_tmp_hash);
+   p_print_log(P_LKRG_INFO,"Hash from 'module list' => [0x%llx]\n",p_tmp_hash);
 
    if (p_tmp_hash != p_db.p_module_list_hash) {
 
@@ -1217,7 +1217,7 @@ void p_check_integrity(struct work_struct *p_work) {
        */
       if (!p_mod_bad_nr) {
          p_print_log(P_LKRG_CRIT,
-                "ALERT !!! MODULE LIST HASH IS DIFFERENT !!! - it is [0x%x] and should be [0x%x] !!!\n",
+                "ALERT !!! MODULE LIST HASH IS DIFFERENT !!! - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                           p_tmp_hash,p_db.p_module_list_hash);
 
          /* Maybe we have sleeping module activity event ? */
@@ -1238,7 +1238,7 @@ void p_check_integrity(struct work_struct *p_work) {
             if (p_db.p_module_list_array[p_tmp_hash].p_mod == p_module_list_tmp[p_tmp_cnt].p_mod)
                if (p_db.p_module_list_array[p_tmp_hash].p_mod_core_text_hash != p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash) {
                   p_print_log(P_LKRG_CRIT,
-                         "ALERT !!! MODULE\'S <%s> HASH IS DIFFERENT it is [0x%x] and should be [0x%x] !!!\n",
+                         "ALERT !!! MODULE\'S <%s> HASH IS DIFFERENT it is [0x%llx] and should be [0x%llx] !!!\n",
                           p_module_list_tmp[p_tmp_hash].p_name,
                           p_module_list_tmp[p_tmp_hash].p_mod_core_text_hash,
                           p_db.p_module_list_array[p_tmp_cnt].p_mod_core_text_hash);
@@ -1248,10 +1248,10 @@ void p_check_integrity(struct work_struct *p_work) {
       }
    }
 
-   p_tmp_hash = p_super_fast_hash((unsigned char *)p_module_kobj_tmp,
-                                  (unsigned int)p_module_kobj_nr_tmp * sizeof(p_module_kobj_mem));
+   p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_module_kobj_tmp,
+                                 (unsigned int)p_module_kobj_nr_tmp * sizeof(p_module_kobj_mem));
 
-   p_print_log(P_LKRG_INFO,"Hash from 'module kobj(s)' => [0x%x]\n",p_tmp_hash);
+   p_print_log(P_LKRG_INFO,"Hash from 'module kobj(s)' => [0x%llx]\n",p_tmp_hash);
 
    if (p_tmp_hash != p_db.p_module_kobj_hash) {
 
@@ -1261,7 +1261,7 @@ void p_check_integrity(struct work_struct *p_work) {
        */
       if (!p_mod_bad_nr) {
          p_print_log(P_LKRG_CRIT,
-                "ALERT !!! MODULE KOBJ HASH IS DIFFERENT !!! - it is [0x%x] and should be [0x%x] !!!\n",
+                "ALERT !!! MODULE KOBJ HASH IS DIFFERENT !!! - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                           p_tmp_hash,p_db.p_module_kobj_hash);
          /* Maybe we have sleeping module activity event ? */
          if (mutex_is_locked(&p_module_activity)) {
@@ -1280,7 +1280,7 @@ void p_check_integrity(struct work_struct *p_work) {
             if (p_db.p_module_kobj_array[p_tmp_hash].p_mod == p_module_kobj_tmp[p_tmp_cnt].p_mod)
                if (p_db.p_module_kobj_array[p_tmp_hash].p_mod_core_text_hash != p_module_kobj_tmp[p_tmp_cnt].p_mod_core_text_hash) {
                   p_print_log(P_LKRG_CRIT,
-                         "ALERT !!! MODULE\'S <%s> HASH IS DIFFERENT it is [0x%x] and should be [0x%x] !!!\n",
+                         "ALERT !!! MODULE\'S <%s> HASH IS DIFFERENT it is [0x%llx] and should be [0x%llx] !!!\n",
                           p_module_kobj_tmp[p_tmp_hash].p_name,
                           p_module_kobj_tmp[p_tmp_hash].p_mod_core_text_hash,
                           p_db.p_module_kobj_array[p_tmp_cnt].p_mod_core_text_hash);

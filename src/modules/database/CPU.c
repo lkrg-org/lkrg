@@ -221,13 +221,13 @@ int p_cpu_online_action(unsigned int p_cpu) {
                         &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array) != P_LKRG_SUCCESS);
 
       /* Update global module list/kobj hash */
-      p_db.p_module_list_hash = p_super_fast_hash((unsigned char *)p_db.p_module_list_array,
+      p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
                                              (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
-      p_db.p_module_kobj_hash = p_super_fast_hash((unsigned char *)p_db.p_module_kobj_array,
+      p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                              (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
 
-      p_print_log(P_LKRG_INFO,"Hash from 'module list' => [0x%x]\n",p_db.p_module_list_hash);
-      p_print_log(P_LKRG_INFO,"Hash from 'module kobj(s)' => [0x%x]\n",p_db.p_module_kobj_hash);
+      p_print_log(P_LKRG_INFO,"Hash from 'module list' => [0x%llx]\n",p_db.p_module_list_hash);
+      p_print_log(P_LKRG_INFO,"Hash from 'module kobj(s)' => [0x%llx]\n",p_db.p_module_kobj_hash);
 
       /* We should be fine now! */
    }
@@ -318,13 +318,13 @@ int p_cpu_dead_action(unsigned int p_cpu) {
                         &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array) != P_LKRG_SUCCESS);
 
       /* Update global module list/kobj hash */
-      p_db.p_module_list_hash = p_super_fast_hash((unsigned char *)p_db.p_module_list_array,
+      p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
                                              (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
-      p_db.p_module_kobj_hash = p_super_fast_hash((unsigned char *)p_db.p_module_kobj_array,
+      p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                              (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
 
-      p_print_log(P_LKRG_INFO,"Hash from 'module list' => [0x%x]\n",p_db.p_module_list_hash);
-      p_print_log(P_LKRG_INFO,"Hash from 'module kobj(s)' => [0x%x]\n",p_db.p_module_kobj_hash);
+      p_print_log(P_LKRG_INFO,"Hash from 'module list' => [0x%llx]\n",p_db.p_module_list_hash);
+      p_print_log(P_LKRG_INFO,"Hash from 'module kobj(s)' => [0x%llx]\n",p_db.p_module_kobj_hash);
 
       /* We should be fine now! */
    }

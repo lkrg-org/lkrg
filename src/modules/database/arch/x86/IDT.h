@@ -67,7 +67,7 @@ typedef struct p_IDT_MSR_CRx_hash_mem {
     */
    long       p_base;            // IDT base from IDTR
    short      p_size;            // IDT size from IDTR
-   uint32_t   p_hash;            // hash from entire IDT table:
+   uint64_t   p_hash;            // hash from entire IDT table:
                                  //   p_base * P_X86_MAX_IDT
 
    /*

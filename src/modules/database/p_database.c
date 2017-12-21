@@ -39,13 +39,13 @@ int hash_from_ex_table(void) {
 
    p_db.kernel_ex_table.p_size = (unsigned long)(p_tmp - (unsigned long)p_db.kernel_ex_table.p_addr);
 
-   p_db.kernel_ex_table.p_hash = p_super_fast_hash((unsigned char *)p_db.kernel_ex_table.p_addr,
-                                                   (unsigned int)p_db.kernel_ex_table.p_size);
+   p_db.kernel_ex_table.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_ex_table.p_addr,
+                                                  (unsigned int)p_db.kernel_ex_table.p_size);
 
    p_debug_log(P_LKRG_DBG,
-          "hash [0x%x] ___ex_table start [0x%lx] size [0x%lx]\n",(int)p_db.kernel_ex_table.p_hash,
-                                                                 (long)p_db.kernel_ex_table.p_addr,
-                                                                 (long)p_db.kernel_ex_table.p_size);
+          "hash [0x%llx] ___ex_table start [0x%lx] size [0x%lx]\n",p_db.kernel_ex_table.p_hash,
+                                                                   (long)p_db.kernel_ex_table.p_addr,
+                                                                   (long)p_db.kernel_ex_table.p_size);
 
 hash_from_ex_table_out:
 
@@ -75,8 +75,8 @@ int hash_from_kernel_stext(void) {
 
    p_db.kernel_stext.p_size = (unsigned long)(p_tmp - (unsigned long)p_db.kernel_stext.p_addr);
 
-   p_db.kernel_stext.p_hash = p_super_fast_hash((unsigned char *)p_db.kernel_stext.p_addr,
-                                                (unsigned int)p_db.kernel_stext.p_size);
+   p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext.p_addr,
+                                               (unsigned int)p_db.kernel_stext.p_size);
 
 /* It is NOT only for debugging... *_JMP_LABEL sux! */
    if ( (p_db.kernel_stext_copy.p_addr = vmalloc(p_db.kernel_stext.p_size+1)) == NULL) {
@@ -95,13 +95,13 @@ int hash_from_kernel_stext(void) {
    memcpy(p_db.kernel_stext_copy.p_addr,p_db.kernel_stext.p_addr,p_db.kernel_stext.p_size);
    p_db.kernel_stext_copy.p_size = p_db.kernel_stext.p_size;
 
-   p_db.kernel_stext_copy.p_hash = p_super_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
-                                                     (unsigned int)p_db.kernel_stext_copy.p_size);
+   p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
+                                                    (unsigned int)p_db.kernel_stext_copy.p_size);
 
    p_debug_log(P_LKRG_DBG,
-          "hash [0x%x] _stext start [0x%lx] size [0x%lx]\n",(int)p_db.kernel_stext.p_hash,
-                                                            (long)p_db.kernel_stext.p_addr,
-                                                            (long)p_db.kernel_stext.p_size);
+          "hash [0x%llx] _stext start [0x%lx] size [0x%lx]\n",p_db.kernel_stext.p_hash,
+                                                              (long)p_db.kernel_stext.p_addr,
+                                                              (long)p_db.kernel_stext.p_size);
 
 hash_from_kernel_stext_out:
 
@@ -131,13 +131,13 @@ int hash_from_kernel_rodata(void) {
 
    p_db.kernel_rodata.p_size = (unsigned long)(p_tmp - (unsigned long)p_db.kernel_rodata.p_addr);
 
-   p_db.kernel_rodata.p_hash = p_super_fast_hash((unsigned char *)p_db.kernel_rodata.p_addr,
-                                                 (unsigned int)p_db.kernel_rodata.p_size);
+   p_db.kernel_rodata.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_rodata.p_addr,
+                                                (unsigned int)p_db.kernel_rodata.p_size);
 
    p_debug_log(P_LKRG_DBG,
-          "hash [0x%x] _rodata start [0x%lx] size [0x%lx]\n",(int)p_db.kernel_rodata.p_hash,
-                                                             (long)p_db.kernel_rodata.p_addr,
-                                                             (long)p_db.kernel_rodata.p_size);
+          "hash [0x%llx] _rodata start [0x%lx] size [0x%lx]\n",p_db.kernel_rodata.p_hash,
+                                                               (long)p_db.kernel_rodata.p_addr,
+                                                               (long)p_db.kernel_rodata.p_size);
 
 hash_from_kernel_rodata_out:
 
@@ -169,17 +169,17 @@ int hash_from_iommu_table(void) {
 
 
 #ifdef P_LKRG_IOMMU_HASH_ENABLED
-   p_db.kernel_iommu_table.p_hash = p_super_fast_hash((unsigned char *)p_db.kernel_iommu_table.p_addr,
-                                                      (unsigned int)p_db.kernel_iommu_table.p_size);
+   p_db.kernel_iommu_table.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_iommu_table.p_addr,
+                                                     (unsigned int)p_db.kernel_iommu_table.p_size);
 #else
 // Static value - might change in normal system...
    p_db.kernel_iommu_table.p_hash = 0xFFFFFFFF;
 #endif
 
    p_debug_log(P_LKRG_DBG,
-          "hash [0x%x] __iommu_table start [0x%lx] size [0x%lx]\n",(int)p_db.kernel_iommu_table.p_hash,
-                                                                   (long)p_db.kernel_iommu_table.p_addr,
-                                                                   (long)p_db.kernel_iommu_table.p_size);
+          "hash [0x%llx] __iommu_table start [0x%lx] size [0x%lx]\n",p_db.kernel_iommu_table.p_hash,
+                                                                     (long)p_db.kernel_iommu_table.p_addr,
+                                                                     (long)p_db.kernel_iommu_table.p_size);
 
 hash_from_iommu_table_out:
 
@@ -190,10 +190,10 @@ hash_from_iommu_table_out:
    return p_ret;
 }
 
-uint32_t hash_from_CPU_data(p_IDT_MSR_CRx_hash_mem *p_arg) {
+uint64_t hash_from_CPU_data(p_IDT_MSR_CRx_hash_mem *p_arg) {
 
    int p_tmp = 0x0;
-   uint32_t p_hash = 0x0;
+   uint64_t p_hash = 0x0;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
@@ -202,10 +202,10 @@ uint32_t hash_from_CPU_data(p_IDT_MSR_CRx_hash_mem *p_arg) {
    for_each_present_cpu(p_tmp) {
       if (p_arg[p_tmp].p_cpu_online == P_CPU_ONLINE) {
          if (cpu_online(p_tmp)) {
-            p_hash ^= p_super_fast_hash((unsigned char *)&p_arg[p_tmp],
-                                        (unsigned int)sizeof(p_IDT_MSR_CRx_hash_mem));
+            p_hash ^= p_lkrg_fast_hash((unsigned char *)&p_arg[p_tmp],
+                                       (unsigned int)sizeof(p_IDT_MSR_CRx_hash_mem));
             p_debug_log(P_LKRG_DBG,
-                   "<hash_from_CPU_data> Hash for cpu id %i total_hash[0x%x]\n",p_tmp,p_hash);
+                   "<hash_from_CPU_data> Hash for cpu id %i total_hash[0x%llx]\n",p_tmp,p_hash);
          } else {
           // WTF?! I should never be here
             p_print_log(P_LKRG_CRIT,
@@ -214,7 +214,7 @@ uint32_t hash_from_CPU_data(p_IDT_MSR_CRx_hash_mem *p_arg) {
       } else {
       // Skip offline CPUs
          p_debug_log(P_LKRG_DBG,
-                "<hash_from_CPU_data> Offline cpu id %i total_hash[0x%x]\n",p_tmp,p_hash);
+                "<hash_from_CPU_data> Offline cpu id %i total_hash[0x%llx]\n",p_tmp,p_hash);
       }
    }
 
@@ -354,13 +354,13 @@ int p_create_database(void) {
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
 
-   p_db.p_module_list_hash = p_super_fast_hash((unsigned char *)p_db.p_module_list_array,
+   p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
                                           (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
-   p_db.p_module_kobj_hash = p_super_fast_hash((unsigned char *)p_db.p_module_kobj_array,
+   p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
 
    p_debug_log(P_LKRG_DBG,
-          "p_module_list_hash => [0x%x]\np_module_kobj_hash => [0x%x]\n",
+          "p_module_list_hash => [0x%llx]\np_module_kobj_hash => [0x%llx]\n",
           p_db.p_module_list_hash,p_db.p_module_kobj_hash);
 
 p_create_database_out:

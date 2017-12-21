@@ -131,13 +131,13 @@ void p_dump_IDT_MSR_CRx(void *_p_arg) {
                              :"%eax");
 #endif
 
-   p_arg[p_curr_cpu].p_hash = p_super_fast_hash((unsigned char *)p_arg[p_curr_cpu].p_base,
-                                                (unsigned int)sizeof(p_idt_descriptor) * P_X86_MAX_IDT);
+   p_arg[p_curr_cpu].p_hash = p_lkrg_fast_hash((unsigned char *)p_arg[p_curr_cpu].p_base,
+                                               (unsigned int)sizeof(p_idt_descriptor) * P_X86_MAX_IDT);
 
 // DEBUG
 #ifdef P_LKRG_DEBUG
    p_debug_log(P_LKRG_DBG,
-          "<p_dump_IDT_MSR> CPU:[%d] IDT => base[0x%lx] size[0x%x] hash[0x%x]\n",
+          "<p_dump_IDT_MSR> CPU:[%d] IDT => base[0x%lx] size[0x%x] hash[0x%llx]\n",
           p_arg[p_curr_cpu].p_cpu_id,p_arg[p_curr_cpu].p_base,p_arg[p_curr_cpu].p_size,p_arg[p_curr_cpu].p_hash);
 
    do {

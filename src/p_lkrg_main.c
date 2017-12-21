@@ -29,6 +29,12 @@ static int __init p_lkrg_register(void) {
 
    int p_ret = P_LKRG_SUCCESS;
 
+   /*
+    * Generate random SipHash key
+    */
+   p_global_siphash_key.p_low  = (uint64_t)get_random_long();
+   p_global_siphash_key.p_high = (uint64_t)get_random_long();
+
    memset(&p_lkrg_global_ctrl,0x0,sizeof(p_lkrg_global_ctrl_struct));
    p_lkrg_global_ctrl.p_timestamp = 15;        // seconds
    if (p_init_log_level >= P_LOG_LEVEL_MAX)

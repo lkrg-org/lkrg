@@ -188,12 +188,12 @@ int p_list_from_module_list(p_module_list_mem *p_arg) {
       /* Size of the module core text section */
       p_arg[p_cnt].p_core_text_size = p_core_text_size(p_mod);
       /* Calculate hash from the module core text section ;) */
-      p_arg[p_cnt].p_mod_core_text_hash = p_super_fast_hash((unsigned char *)p_arg[p_cnt].p_module_core,
-                                                            (unsigned int)p_arg[p_cnt].p_core_text_size);
+      p_arg[p_cnt].p_mod_core_text_hash = p_lkrg_fast_hash((unsigned char *)p_arg[p_cnt].p_module_core,
+                                                           (unsigned int)p_arg[p_cnt].p_core_text_size);
 
 // STRONG_DEBUG
       p_debug_log(P_LKRG_STRONG_DBG,
-             "[%s | %p] module_core[%p | 0x%x] hash[0x%x]\n",
+             "[%s | %p] module_core[%p | 0x%x] hash[0x%llx]\n",
              p_arg[p_cnt].p_name,p_arg[p_cnt].p_mod,p_arg[p_cnt].p_module_core,
              p_arg[p_cnt].p_core_text_size,p_arg[p_cnt].p_mod_core_text_hash);
 
@@ -348,12 +348,12 @@ int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
       /* Size of the module core text section */
       p_arg[p_cnt].p_core_text_size = p_core_text_size(p_mod);
       /* Calculate hash from the module core text section ;) */
-      p_arg[p_cnt].p_mod_core_text_hash = p_super_fast_hash((unsigned char *)p_arg[p_cnt].p_module_core,
-                                                            (unsigned int)p_arg[p_cnt].p_core_text_size);
+      p_arg[p_cnt].p_mod_core_text_hash = p_lkrg_fast_hash((unsigned char *)p_arg[p_cnt].p_module_core,
+                                                           (unsigned int)p_arg[p_cnt].p_core_text_size);
 
 // STRONG_DEBUG
       p_debug_log(P_LKRG_STRONG_DBG,
-             "[%s | %p] module_core[%p | 0x%x] hash[0x%x]\n"
+             "[%s | %p] module_core[%p | 0x%x] hash[0x%llx]\n"
              "module_kobject[%p] KOBJ: name[%s] parent[%p] kset[%p] ktype[%p] sd[%p] refcount[0x%x|%d]\n",
              p_arg[p_cnt].p_name,p_arg[p_cnt].p_mod,p_arg[p_cnt].p_module_core,
              p_arg[p_cnt].p_core_text_size,p_arg[p_cnt].p_mod_core_text_hash,

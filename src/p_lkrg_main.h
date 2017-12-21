@@ -66,8 +66,7 @@
  * p_lkrg modules
  */
 #include "modules/print_log/p_lkrg_print_log.h"               // printing, error and debug module
-#include "modules/hashing/p_super_fast_hash.h"                // Hashing module
-#include "modules/hashing/p_crypto_sha1.h"                    // SHA1 module
+#include "modules/hashing/p_lkrg_fast_hash.h"                 // Hashing module
 #include "modules/ksyms/p_resolve_ksym.h"                     // Resolver module
 #include "modules/database/p_database.h"                      // Database module
 #include "modules/integrity_timer/p_integrity_timer.h"        // Integrity timer module
