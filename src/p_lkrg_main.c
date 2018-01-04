@@ -28,6 +28,7 @@ static enum cpuhp_state p_hot_cpus;
 static int __init p_lkrg_register(void) {
 
    int p_ret = P_LKRG_SUCCESS;
+   char p_cpu = 0x0;
 
    /*
     * Generate random SipHash key
@@ -108,6 +109,7 @@ static int __init p_lkrg_register(void) {
       goto p_main_error;
    }
 #endif
+   p_cpu = 0x1;
 
    if (p_register_comm_channel()) {
       p_print_log(P_LKRG_CRIT,
@@ -131,14 +133,18 @@ p_main_error:
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
-   unregister_hotcpu_notifier(&p_cpu_notifier);
+   if (p_cpu)
+      unregister_hotcpu_notifier(&p_cpu_notifier);
 #else
-   cpu_notifier_register_begin();
-   __unregister_hotcpu_notifier(&p_cpu_notifier);
-   cpu_notifier_register_done();
+   if (p_cpu) {
+      cpu_notifier_register_begin();
+      __unregister_hotcpu_notifier(&p_cpu_notifier);
+      cpu_notifier_register_done();
+   }
 #endif
 #else
-   cpuhp_remove_state_nocalls(p_hot_cpus);
+   if (p_cpu)
+      cpuhp_remove_state_nocalls(p_hot_cpus);
 #endif
 
    p_exploit_detection_exit();
