@@ -46,6 +46,7 @@ static int __init p_lkrg_register(void) {
       p_lkrg_global_ctrl.p_log_level = p_init_log_level;
    p_lkrg_global_ctrl.p_block_modules = 0x0;   // Do NOT block loading new modules
    p_lkrg_global_ctrl.p_hide_module   = 0x0;   // We are initially not hidden
+   p_lkrg_global_ctrl.p_clean_message = 0x1;   // By default print "System is clean!" message
 
    if (get_kallsyms_address() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,

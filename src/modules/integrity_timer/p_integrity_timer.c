@@ -1293,7 +1293,7 @@ void p_check_integrity(struct work_struct *p_work) {
    if (p_hack_check) {
       p_print_log(P_LKRG_CRIT,
              "ALERT !!! SYSTEM HAS BEEN COMPROMISED - DETECTED DIFFERENT %u CHECKSUMS !!!\n",p_hack_check);
-   } else {
+   } else if (p_lkrg_global_ctrl.p_clean_message) {
       p_print_log(P_LKRG_ALIVE,"System is clean!\n");
    }
 

@@ -37,12 +37,17 @@ static int p_hide_module_min = 0x0;
 static int p_hide_module_max = 0x1;
 #endif
 
+static int p_clean_message_min = 0x0;
+static int p_clean_message_max = 0x1;
+
 static int p_sysctl_force_run(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #ifdef P_LKRG_UNHIDE
 static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
                            void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #endif
+static int p_sysctl_clean_message(struct ctl_table *p_table, int p_write,
+                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 
 struct ctl_table p_lkrg_sysctl_base[] = {
    {
@@ -101,6 +106,15 @@ struct ctl_table p_lkrg_sysctl_table[] = {
       .extra2         = &p_hide_module_max,
    },
 #endif
+   {
+      .procname       = "clean_message",
+      .data           = &p_lkrg_global_ctrl.p_clean_message,
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_clean_message,
+      .extra1         = &p_clean_message_min,
+      .extra2         = &p_clean_message_max,
+   },
    { }
 };
 
@@ -157,6 +171,34 @@ static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 #endif
+
+static int p_sysctl_clean_message(struct ctl_table *p_table, int p_write,
+                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   unsigned int p_tmp;
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Entering function <p_sysctl_clean_message>\n");
+
+   p_tmp = p_lkrg_global_ctrl.p_clean_message;
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      if (p_lkrg_global_ctrl.p_clean_message && !p_tmp) {
+         p_print_log(P_LKRG_CRIT,
+                     "Enabling \"clean\" message\n");
+      } else if (p_tmp && !p_lkrg_global_ctrl.p_clean_message) {
+         p_print_log(P_LKRG_CRIT,
+                     "Disabling \"clean\" message\n");
+      }
+   }
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Leaving function <p_sysctl_clean_message>\n");
+
+   return p_ret;
+}
 
 int p_register_comm_channel(void) {
 
