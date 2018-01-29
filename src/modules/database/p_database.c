@@ -297,7 +297,7 @@ int p_create_database(void) {
              *
              * ... more technical details about it can be found here:
              *  *) http://blog.pi3.com.pl/?p=549
-             *  *) http://lkml.iu.edu/hypermail/linux/kernel/1609.2/03265.html
+             *  *) http://lists.openwall.net/linux-kernel/2016/09/21/68
              */
             smp_call_function_single(p_tmp,p_dump_IDT_MSR_CRx,p_db.p_IDT_MSR_CRx_array,true);
 //         }

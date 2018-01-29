@@ -249,7 +249,7 @@ void p_check_integrity(struct work_struct *p_work) {
    *
    * ... more technical details about it can be found here:
    *  *) http://blog.pi3.com.pl/?p=549
-   *  *) http://lkml.iu.edu/hypermail/linux/kernel/1609.2/03265.html
+   *  *) http://lists.openwall.net/linux-kernel/2016/09/21/68
    *
    * on_each_cpu() might mitigate this problem a bit becuase has extra
    * self-balancing code for performance reasons.

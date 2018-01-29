@@ -145,6 +145,8 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
                }
             }
             p_flag = (p_flag) ? 0x0 : 0x1;
+         } else if ( (p_old[p_tmp] & 0xFF) == 0xcc) { // NOP -> 0xcc ?
+            p_flag = 0x1;
          } else if ( (p_new[p_tmp] & 0xFF) == (p_white_nop[0x0] & 0xFF) ) { // JMP/0xcc -> NOP ?
             for (p_cnt = 0x1; p_cnt < JUMP_LABEL_NOP_SIZE; p_cnt++) {
                if ( (p_new[p_tmp+p_cnt] & 0xFF) != (p_white_nop[p_cnt] & 0xFF) ) {
@@ -153,6 +155,8 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
                }
             }
             p_flag = (p_flag) ? 0x0 : 0x2;
+         } else if ( (p_new[p_tmp] & 0xFF) == 0xcc) { // 0xcc -> NOP ?
+            p_flag = 0x2;
          }
 
          if (!p_flag) { // it could be other type of NOP...
