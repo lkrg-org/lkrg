@@ -404,7 +404,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
           "[p_kmod_hash] %s => Found %d modules in module list and %d modules in sysfs.\n",
-          (*p_module_list_cnt_arg != *p_module_kobj_cnt_arg) ? "DOESN\'T MATCH" : "MATCH",
+          (*p_module_list_cnt_arg != *p_module_kobj_cnt_arg) ? "DOESN'T MATCH" : "MATCH",
           *p_module_list_cnt_arg,*p_module_kobj_cnt_arg);
 
    /*

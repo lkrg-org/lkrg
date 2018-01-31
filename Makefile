@@ -48,12 +48,15 @@ p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
                src/modules/exploit_detection/syscalls/p_userns_install/p_userns_install.o \
                src/modules/exploit_detection/syscalls/caps/p_sys_capset/p_sys_capset.o \
                src/modules/exploit_detection/syscalls/caps/p_cap_task_prctl/p_cap_task_prctl.o \
-               src/modules/exploit_detection/syscalls/keyring/p_lookup_user_key/p_lookup_user_key.o \
                src/modules/exploit_detection/syscalls/keyring/p_key_change_session_keyring/p_key_change_session_keyring.o \
+               src/modules/exploit_detection/syscalls/keyring/p_sys_add_key/p_sys_add_key.o \
+               src/modules/exploit_detection/syscalls/keyring/p_sys_request_key/p_sys_request_key.o \
                src/modules/exploit_detection/syscalls/keyring/p_sys_keyctl/p_sys_keyctl.o \
+               src/modules/exploit_detection/syscalls/p_sys_ptrace/p_sys_ptrace.o \
                src/modules/exploit_detection/syscalls/compat/p_compat_sys_execve/p_compat_sys_execve.o \
                src/modules/exploit_detection/syscalls/compat/p_compat_sys_execveat/p_compat_sys_execveat.o \
                src/modules/exploit_detection/syscalls/compat/p_compat_sys_keyctl/p_compat_sys_keyctl.o \
+               src/modules/exploit_detection/syscalls/compat/p_compat_sys_ptrace/p_compat_sys_ptrace.o \
                src/modules/exploit_detection/p_exploit_detection.o \
                src/p_lkrg_main.o
 

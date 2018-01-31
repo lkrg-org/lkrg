@@ -316,7 +316,7 @@ int p_create_database(void) {
 
    if (hash_from_ex_table() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
-         "CREATING DATABASE ERROR: EXCEPTION TABLE CAN\'T BE FOUND (skipping it)!\n");
+         "CREATING DATABASE ERROR: EXCEPTION TABLE CAN'T BE FOUND (skipping it)!\n");
       p_db.kernel_ex_table.p_hash = p_db.kernel_ex_table.p_size = 0x0;
       p_db.kernel_ex_table.p_addr = NULL;
    }
@@ -330,14 +330,14 @@ int p_create_database(void) {
 
    if (hash_from_kernel_rodata() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
-         "CREATING DATABASE ERROR: _RODATA CAN\'T BE FOUND (skipping it)!\n");
+         "CREATING DATABASE ERROR: _RODATA CAN'T BE FOUND (skipping it)!\n");
       p_db.kernel_rodata.p_hash = p_db.kernel_rodata.p_size = 0x0;
       p_db.kernel_rodata.p_addr = NULL;
    }
 
    if (hash_from_iommu_table() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
-         "CREATING DATABASE ERROR: IOMMU TABLE CAN\'T BE FOUND (skipping it)!\n");
+         "CREATING DATABASE ERROR: IOMMU TABLE CAN'T BE FOUND (skipping it)!\n");
       p_db.kernel_iommu_table.p_hash = p_db.kernel_iommu_table.p_size = 0x0;
       p_db.kernel_iommu_table.p_addr = NULL;
    }

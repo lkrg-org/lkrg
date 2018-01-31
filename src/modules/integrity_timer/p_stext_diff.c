@@ -110,21 +110,21 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
 
          // STRONG_DEBUG
 //         p_debug_log(P_LKRG_STRONG_DBG,
-         p_print_log(P_LKRG_CRIT,
+         p_print_log(P_LKRG_WARN,
                                         "Offset[0x%lx] old[0x%x] new[0x%x]\n",
                                         p_tmp,
                                         (unsigned int)(p_old[p_tmp] & 0xFF),
                                         (unsigned int)(p_new[p_tmp] & 0xFF));
          // STRONG_DEBUG
 //         p_debug_log(P_LKRG_STRONG_DBG,
-         p_print_log(P_LKRG_CRIT,
+         p_print_log(P_LKRG_WARN,
                                   "old[0x%x] old+1[0x%x] old+2[0x%x] old+3[0x%x] old+4[0x%x]\n",
                                   p_old[p_tmp] & 0xFF,p_old[p_tmp+1] & 0xFF,p_old[p_tmp+2] & 0xFF,
                                   p_old[p_tmp+3] & 0xFF, p_old[p_tmp+4] & 0xFF);
 
          // STRONG_DEBUG
 //         p_debug_log(P_LKRG_STRONG_DBG,
-         p_print_log(P_LKRG_CRIT,
+         p_print_log(P_LKRG_WARN,
                                   "new[0x%x] new+1[0x%x] new+2[0x%x] new+3[0x%x] new+4[0x%x]\n",
                                   p_new[p_tmp] & 0xFF, p_new[p_tmp+1] & 0xFF, p_new[p_tmp+2] & 0xFF,
                                   p_new[p_tmp+3] & 0xFF, p_new[p_tmp+4] & 0xFF);

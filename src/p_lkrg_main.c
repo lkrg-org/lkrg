@@ -71,7 +71,7 @@ static int __init p_lkrg_register(void) {
 
    if (p_offload_cache_init()) {
       p_print_log(P_LKRG_CRIT,
-             "Can\'t initialize offloading cache :(\n");
+             "Can't initialize offloading cache :(\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -116,7 +116,7 @@ static int __init p_lkrg_register(void) {
 
    if (p_register_comm_channel()) {
       p_print_log(P_LKRG_CRIT,
-             "Can\'t initialize communication channel (sysctl) :(\n");
+             "Can't initialize communication channel (sysctl) :(\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }

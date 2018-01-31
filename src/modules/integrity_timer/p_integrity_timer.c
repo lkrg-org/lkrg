@@ -311,7 +311,7 @@ void p_check_integrity(struct work_struct *p_work) {
              " and should be [0x%llx] !!!\n",
              p_tmp_hash,p_db.kernel_stext_copy.p_hash);
       p_print_log(P_LKRG_CRIT,
-             "!!! KERNEL CORE INTEGRITY VERIFICATION CAN\'T BE TRUSTED !!!\n");
+             "!!! KERNEL CORE INTEGRITY VERIFICATION CAN'T BE TRUSTED !!!\n");
       p_hack_check++;
    }
 
@@ -324,7 +324,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
    if (p_db.kernel_stext.p_hash != p_tmp_hash) {
 
-      /* "wiltelisted" self-modifications? tracepoints? DO_ONCE()? */
+      /* "whitelisted" self-modifications? tracepoints? DO_ONCE()? */
       if ( (p_cmp_bytes((char *)p_db.kernel_stext.p_addr,
                         (char *)p_db.kernel_stext_copy.p_addr,
                         (unsigned long)p_db.kernel_stext.p_size)) == -1) {
@@ -1238,7 +1238,7 @@ void p_check_integrity(struct work_struct *p_work) {
             if (p_db.p_module_list_array[p_tmp_hash].p_mod == p_module_list_tmp[p_tmp_cnt].p_mod)
                if (p_db.p_module_list_array[p_tmp_hash].p_mod_core_text_hash != p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash) {
                   p_print_log(P_LKRG_CRIT,
-                         "ALERT !!! MODULE\'S <%s> HASH IS DIFFERENT it is [0x%llx] and should be [0x%llx] !!!\n",
+                         "ALERT !!! MODULE'S <%s> HASH IS DIFFERENT it is [0x%llx] and should be [0x%llx] !!!\n",
                           p_module_list_tmp[p_tmp_hash].p_name,
                           p_module_list_tmp[p_tmp_hash].p_mod_core_text_hash,
                           p_db.p_module_list_array[p_tmp_cnt].p_mod_core_text_hash);
@@ -1280,7 +1280,7 @@ void p_check_integrity(struct work_struct *p_work) {
             if (p_db.p_module_kobj_array[p_tmp_hash].p_mod == p_module_kobj_tmp[p_tmp_cnt].p_mod)
                if (p_db.p_module_kobj_array[p_tmp_hash].p_mod_core_text_hash != p_module_kobj_tmp[p_tmp_cnt].p_mod_core_text_hash) {
                   p_print_log(P_LKRG_CRIT,
-                         "ALERT !!! MODULE\'S <%s> HASH IS DIFFERENT it is [0x%llx] and should be [0x%llx] !!!\n",
+                         "ALERT !!! MODULE'S <%s> HASH IS DIFFERENT it is [0x%llx] and should be [0x%llx] !!!\n",
                           p_module_kobj_tmp[p_tmp_hash].p_name,
                           p_module_kobj_tmp[p_tmp_hash].p_mod_core_text_hash,
                           p_db.p_module_kobj_array[p_tmp_cnt].p_mod_core_text_hash);
