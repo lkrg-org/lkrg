@@ -97,10 +97,15 @@ void p_integrity_timer(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_integrity_timer>\n");
 
-   init_timer(&p_timer);
    p_timer.expires    = jiffies + p_lkrg_global_ctrl.p_timestamp*HZ;
-   p_timer.function   = p_offload_work;
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0)
    p_timer.data       = 0x1;
+   p_timer.function   = p_offload_work;
+   init_timer(&p_timer);
+#else
+   timer_setup(&p_timer, p_offload_work, 0);
+#endif
    add_timer(&p_timer);
 
 // STRONG_DEBUG
@@ -109,7 +114,12 @@ void p_integrity_timer(void) {
 
 }
 
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0)
 void p_offload_work(unsigned long p_timer) {
+#else
+void p_offload_work(struct timer_list *p_timer) {
+#endif
 
    struct work_struct *p_worker;
 
@@ -117,7 +127,11 @@ void p_offload_work(unsigned long p_timer) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_offload_work>\n");
    p_debug_log(P_LKRG_STRONG_DBG,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0)
           "p_timer => %ld\n",p_timer);
+#else
+          "p_timer => %p\n",p_timer);
+#endif
 
    while ( (p_worker = p_alloc_offload()) == NULL); // Should never be NULL
    INIT_WORK(p_worker, p_check_integrity);

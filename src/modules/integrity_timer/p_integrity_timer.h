@@ -23,7 +23,11 @@
 
 void p_check_integrity(struct work_struct *p_work);
 void p_integrity_timer(void);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0)
 void p_offload_work(unsigned long p_timer);
+#else
+void p_offload_work(struct timer_list *p_timer);
+#endif
 
 int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size);
 
