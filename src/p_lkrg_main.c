@@ -208,4 +208,4 @@ MODULE_PARM_DESC(p_init_log_level, "Logging level init value [1 (alive) is defau
 
 MODULE_AUTHOR("Adam 'pi3' Zabrocki (http://pi3.com.pl)");
 MODULE_DESCRIPTION("pi3's Linux kernel Runtime Guard");
-MODULE_LICENSE("GPL"); // Don't think so...
+MODULE_LICENSE("GPL v2");

@@ -1,13 +1,17 @@
+
 BUILDING / INSTALLING LKRG:
 ---------------------------
 
-Before LKRG can be installed, first it needs to be gathered and built (compiled). The following document describes build process which should work on any Linux distribution.
+Before LKRG can be installed, first it needs to be gathered and built
+(compiled). The following document describes build process which should work
+on any Linux distribution.
 
 
 GETTING THE SOURCES:
 --------------------
 
-LKRG is being hosted on the bitbucket git repository, which can be cloned to the local directory via following command:
+LKRG is being hosted on the bitbucket git repository, which can be cloned to
+the local directory via following command:
 
     $ git clone https://bitbucket.org/Adam_pi3/lkrg-main.git
 
@@ -15,7 +19,8 @@ or if you want to try experimental branch:
 
     $ git clone https://bitbucket.org/Adam_pi3/lkrg-experimental.git
 
-If you do not want to use Git, you can also obtain tarballs from the Openwall website and verify the signature of the packages:
+If you do not want to use Git, you can also obtain tarballs from the Openwall
+website and verify the signature of the packages:
 
     $ wget http://www.openwall.com/signatures/openwall-offline-signatures.asc
     $ gpg --import openwall-offline-signatures.asc
@@ -27,11 +32,16 @@ If you do not want to use Git, you can also obtain tarballs from the Openwall we
 BUILD REQUIREMENTS:
 -------------------
 
-To be able to compile any Linux kernel module you will need the following software:
+To be able to compile any Linux kernel module you will need the following
+software:
 
 - GNU make
-- A C compiler (the best will be the same which was used to compile kernel itself)
-- A kernel build directory corresponding to the Linux kernel image the module is to run on. Under Debian and Ubuntu, for example, each linux-image package containing a kernel binary has a corresponding linux-headers package with the required build infrastructure. E.g.
+- A C compiler (the best will be the same which was used to compile kernel
+  itself)
+- A kernel build directory corresponding to the Linux kernel image the module
+  is to run on. Under Debian and Ubuntu, for example, each linux-image package
+  containing a kernel binary has a corresponding linux-headers package with the
+  required build infrastructure. E.g.
   -> RedHat-based distribution requires linux-devel package:
         $ sudo yum install kernel-devel
   -> Ubuntu-based distribution requires linux-headers package:
@@ -41,7 +51,9 @@ To be able to compile any Linux kernel module you will need the following softwa
 COMPILING:
 ----------
 
-If you have correctly set-up kernel build directory then you can easily compile LKRG via running 'make' command. It can be done from the normal user (non-root) account:
+If you have correctly set-up kernel build directory then you can easily compile
+LKRG via running 'make' command. It can be done from the normal user (non-root)
+account:
 
     $ make
 
@@ -49,7 +61,10 @@ If you have correctly set-up kernel build directory then you can easily compile 
 INSTALLATION:
 -------------
 
-Installation of LKRG is exactly the same as loading normal kernel module. As soon as system is installed it starts the work. If default logging level is used, LKRG produces one short sentence saying that system is clean unless corruptions are detected.
+Installation of LKRG is exactly the same as loading normal kernel module. As
+soon as system is installed it starts the work. If default logging level is
+used, LKRG produces one short sentence saying that system is clean unless
+corruptions are detected.
 
     pi3@pi3-VM:~/lkrg-main$ modinfo output/p_lkrg.ko
     filename:       /home/pi3/lkrg-main/output/p_lkrg.ko
@@ -75,7 +90,9 @@ Installation of LKRG is exactly the same as loading normal kernel module. As soo
 COMMUNICATION CHANNEL:
 ----------------------
 
-The project has built in a sysctl interface which enables the interaction between the administrator and LKRG. By default 5 different options are available:
+The project has built in a sysctl interface which enables the interaction
+between the administrator and LKRG. By default 5 different options are
+available:
 
     root@pi3-ubuntu:~/p_lkrg-main# sysctl -a|grep lkrg
     lkrg.block_modules = 0
@@ -84,12 +101,25 @@ The project has built in a sysctl interface which enables the interaction betwee
     lkrg.log_level = 1
     lkrg.timestamp = 15
 
- -> Blocking module functionality (lkrg.block_modules) - only two options are available:
+ -> Blocking module functionality (lkrg.block_modules) - only two options are
+    available:
         0 - do NOT lock the kernel and allow to load kernel module
         1 - lock the kernel and do NOT allow to load kernel module
- -> Printing "System is clean!" message (lkrg.clean_message) - only two options are available:
-        0 - do NOT print "System is clean!" message regardless of log_level value
+ -> Printing "System is clean!" message (lkrg.clean_message) - only two options
+    are available:
+        0 - do NOT print "System is clean!" message regardless of log_level
+            value
         1 - if log_level value allows it, print "System is clean!" message
- -> Force (lkrg.force_run) - forces LKRG to run integrity function right now. It is always visible as 0 number. Nevertheless, if you set it to 1, the integrity checking function will be immediately fired and value restored to 0 again
- -> log level (lkrg.log_level) - it might be a number between 0-4 or 0-6 (if debugging compilation was used). A strong debug provides very useful data to identify where could be a specific problem with LKRG (if it ever appears). Unfortunately, it produces tons of logs per execution and must be used only for debugging purpose, not as a normal run.
- -> timestamp (lkrg.timestamp) - changes how often kernel timer will be launched (kernel timer periodically calls integrity function). It can't be less than 5 seconds (not to eat too much system resources) and not more than 1800 seconds (half an hour) - not to be silent for too long
+ -> Force (lkrg.force_run) - forces LKRG to run integrity function right now.
+    It is always visible as 0 number. Nevertheless, if you set it to 1, the
+    integrity checking function will be immediately fired and value restored to
+    0 again
+ -> log level (lkrg.log_level) - it might be a number between 0-4 or 0-6 (if
+    debugging compilation was used). A strong debug provides very useful data
+    to identify where could be a specific problem with LKRG (if it ever
+    appears). Unfortunately, it produces tons of logs per execution and must be
+    used only for debugging purpose, not as a normal run.
+ -> timestamp (lkrg.timestamp) - changes how often kernel timer will be
+    launched (kernel timer periodically calls integrity function). It can't be
+    less than 5 seconds (not to eat too much system resources) and not more
+    than 1800 seconds (half an hour) - not to be silent for too long
