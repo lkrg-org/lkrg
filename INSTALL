@@ -42,9 +42,9 @@ software:
   is to run on. Under Debian and Ubuntu, for example, each linux-image package
   containing a kernel binary has a corresponding linux-headers package with the
   required build infrastructure. E.g.
-  -> RedHat-based distribution requires linux-devel package:
+  -> Red Hat'ish (e.g. RHEL, CentOS, Fedora) distribution requires linux-devel package:
         $ sudo yum install kernel-devel
-  -> Ubuntu-based distribution requires linux-headers package:
+  -> Debian-based (e.g. Ubuntu) distribution requires linux-headers package:
         $ sudo apt-get install linux-headers-$(uname -r)
 
 
@@ -55,7 +55,7 @@ If you have correctly set-up kernel build directory then you can easily compile
 LKRG via running 'make' command. It can be done from the normal user (non-root)
 account:
 
-    $ make
+     pi3@pi3-VM:~/lkrg-main$ make -j8
 
 
 INSTALLATION:
