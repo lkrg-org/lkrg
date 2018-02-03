@@ -42,7 +42,8 @@ software:
   is to run on. Under Debian and Ubuntu, for example, each linux-image package
   containing a kernel binary has a corresponding linux-headers package with the
   required build infrastructure. E.g.
-  -> Red Hat'ish (e.g. RHEL, CentOS, Fedora) distribution requires linux-devel package:
+  -> Red Hat'ish (e.g. RHEL, CentOS, Fedora) distribution requires linux-devel
+     package:
         $ sudo yum install kernel-devel
   -> Debian-based (e.g. Ubuntu) distribution requires linux-headers package:
         $ sudo apt-get install linux-headers-$(uname -r)
