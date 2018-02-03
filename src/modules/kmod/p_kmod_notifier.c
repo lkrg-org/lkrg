@@ -113,6 +113,12 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
       mutex_lock(p_kernfs_mutex);
 #endif
 
+      spin_lock(&p_db_lock);
+      get_online_cpus();
+      on_each_cpu(p_dump_IDT_MSR_CRx,p_db.p_IDT_MSR_CRx_array,true);
+      put_online_cpus();
+      p_db.p_IDT_MSR_CRx_hashes = hash_from_CPU_data(p_db.p_IDT_MSR_CRx_array);
+      local_irq_save(p_db_flags);
       /*
        * First, synchronize possible database changes with other LKRG components...
        * We want to be as fast as possible to get this lock! :)
@@ -131,7 +137,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
        */
 
       /* Let's play... God mode on ;) */
-      spin_lock_irqsave(&p_db_lock,p_db_flags);
+//      spin_lock_irqsave(&p_db_lock,p_db_flags);
 
 
       /* First free currently used memory! */
@@ -182,6 +188,13 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
          mutex_lock(p_kernfs_mutex);
 #endif
 
+         spin_lock(&p_db_lock);
+         get_online_cpus();
+         on_each_cpu(p_dump_IDT_MSR_CRx,p_db.p_IDT_MSR_CRx_array,true);
+         put_online_cpus();
+         p_db.p_IDT_MSR_CRx_hashes = hash_from_CPU_data(p_db.p_IDT_MSR_CRx_array);
+         local_irq_save(p_db_flags);
+
          /*
           * First, synchronize possible database changes with other LKRG components...
           * We want to be as fast as possible to get this lock! :)
@@ -198,7 +211,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
           * Don't know if there is any solution for that :)
           *
           */
-         spin_lock_irqsave(&p_db_lock,p_db_flags);
+//         spin_lock_irqsave(&p_db_lock,p_db_flags);
 
          /* First free currently used memory! */
          if (p_db.p_module_list_array)
