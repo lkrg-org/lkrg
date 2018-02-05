@@ -1,5 +1,5 @@
 ##
-# Makefile for p_lkrg
+# Makefile for LKRG (main branch)
 #
 # Author:
 #  - Adam 'pi3' Zabrocki (http://pi3.com.pl)
@@ -7,10 +7,9 @@
 
 export CFLAGS="$CFLAGS"
 
-P_OUTPUT = "output"
-
-P_CLI_CMD = "p_lkrg-client"
-P_CLI_KMOD = "p_lkrg_kmod_cli.ko"
+P_OUTPUT = output
+P_PWD = $(shell pwd)
+P_KVER = $(shell uname -r)
 
 obj-m += p_lkrg.o
 p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
@@ -62,19 +61,17 @@ p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
 
 
 all:
-#	$(MAKE) -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules CONFIG_DEBUG_SECTION_MISMATCH=y
-	$(MAKE) -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+#	$(MAKE) -C /lib/modules/$(P_KVER)/build M=$(P_PWD) modules CONFIG_DEBUG_SECTION_MISMATCH=y
+	$(MAKE) -C /lib/modules/$(P_KVER)/build M=$(P_PWD) modules
 	mkdir -p $(P_OUTPUT)
-	mv $(PWD)/p_lkrg.ko $(P_OUTPUT)
+	cp $(P_PWD)/p_lkrg.ko $(P_OUTPUT)
 
 install:
-	mkdir -p /lib/modules/`uname -r`/kernel/arch/x86/kernel/
-	cp p_krd.ko /lib/modules/`uname -r`/kernel/arch/x86/kernel/p_krd.ko
-	depmod /lib/modules/`uname -r`/kernel/arch/x86/kernel/p_krd.ko
+	$(MAKE) -C /lib/modules/$(P_KVER)/build M=$(P_PWD) modules_install
 
 clean:
-	$(MAKE) -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+	$(MAKE) -C /lib/modules/$(P_KVER)/build M=$(P_PWD) clean
 	$(RM) Module.markers modules.order
-	$(RM) $(PWD)/src/modules/kmod/client/kmod/Module.markers
-	$(RM) $(PWD)/src/modules/kmod/client/kmod/modules.order
+	$(RM) $(P_PWD)/src/modules/kmod/client/kmod/Module.markers
+	$(RM) $(P_PWD)/src/modules/kmod/client/kmod/modules.order
 	$(RM) -rf $(P_OUTPUT)
