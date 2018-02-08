@@ -63,6 +63,13 @@
 #include <linux/cryptohash.h>
 
 /*
+ * RHEL support
+ */
+#ifndef RHEL_RELEASE_VERSION
+#define RHEL_RELEASE_VERSION(a, b) (((a) << 8) + (b))
+#endif
+
+/*
  * p_lkrg modules
  */
 #include "modules/print_log/p_lkrg_print_log.h"               // printing, error and debug module
