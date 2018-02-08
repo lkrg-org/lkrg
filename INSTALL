@@ -15,9 +15,10 @@ the local directory via following command:
 
     $ git clone https://bitbucket.org/Adam_pi3/lkrg-main.git
 
-or if you want to try experimental branch:
+There is also separate version of the project kept under "experimental" branch
+and you can read about it more here:
 
-    $ git clone https://bitbucket.org/Adam_pi3/lkrg-experimental.git
+    http://openwall.info/wiki/p_lkrg/Protected_Features
 
 If you do not want to use Git, you can also obtain tarballs from the Openwall
 website and verify the signature of the packages:
