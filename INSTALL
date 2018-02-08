@@ -24,9 +24,9 @@ website and verify the signature of the packages:
 
     $ wget http://www.openwall.com/signatures/openwall-offline-signatures.asc
     $ gpg --import openwall-offline-signatures.asc
-    $ wget http://www.openwall.com/lkrg/lkrg-0.0.tar.gz.sign
-    $ wget http://www.openwall.com/lkrg/lkrg-0.0.tar.gz
-    $ gpg --verify lkrg-0.0.tar.gz.sign lkrg-0.0.tar.gz
+    $ wget http://www.openwall.com/lkrg/lkrg-0.1.tar.gz.sign
+    $ wget http://www.openwall.com/lkrg/lkrg-0.1.tar.gz
+    $ gpg --verify lkrg-0.1.tar.gz.sign lkrg-0.1.tar.gz
 
 
 BUILD REQUIREMENTS:
