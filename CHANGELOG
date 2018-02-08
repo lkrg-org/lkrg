@@ -1,0 +1,11 @@
+The following changes have been made between LKRG 0.0 and 0.1:
+
+*) Support RHEL 7.4 kernels
+*) Make new compiler happy (gcc 7.3+)
+*) Improve Makefile
+*) Improve Exploit Detection performance and hardened 'off' flag
+*) Add support for kernel 4.15
+*) Use GPLv2 LICENSE
+*) Add INSTALL, CHANGELOG and PATREONS file
+*) Move SELinux integrity check to the workqueue
+*) Fix how *_JUMP_LABEL is handled when 0xCC byte is injected
