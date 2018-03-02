@@ -219,6 +219,12 @@ void p_check_integrity(struct work_struct *p_work) {
    mutex_unlock(p_kernfs_mutex);
 #endif
 
+   p_text_section_lock();
+   /* First, we need to snapshot an entire .text */
+   *((char *)p_db.kernel_stext_snapshot + p_db.kernel_stext.p_size) = 0x0;
+   memcpy(p_db.kernel_stext_snapshot,p_db.kernel_stext.p_addr,p_db.kernel_stext.p_size);
+   p_text_section_unlock();
+
    /* Find information about current CPUs in the system */
    p_get_cpus(&p_tmp_cpu_info);
    if (p_cmp_cpus(&p_db.p_cpu,&p_tmp_cpu_info)) {
@@ -333,13 +339,14 @@ void p_check_integrity(struct work_struct *p_work) {
     * Checking memory block:
     * "_stext"
     */
-   p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext.p_addr,
+
+   p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_snapshot,
                                  (unsigned int)p_db.kernel_stext.p_size);
 
    if (p_db.kernel_stext.p_hash != p_tmp_hash) {
 
       /* "whitelisted" self-modifications? tracepoints? DO_ONCE()? */
-      if ( (p_cmp_bytes((char *)p_db.kernel_stext.p_addr,
+      if ( (p_cmp_bytes((char *)p_db.kernel_stext_snapshot,
                         (char *)p_db.kernel_stext_copy.p_addr,
                         (unsigned long)p_db.kernel_stext.p_size)) == -1) {
 
@@ -347,6 +354,8 @@ void p_check_integrity(struct work_struct *p_work) {
          p_print_log(P_LKRG_CRIT,
                 "ALERT !!! _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                p_tmp_hash,p_db.kernel_stext.p_hash);
+         p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
+                                                          (unsigned int)p_db.kernel_stext_copy.p_size);
          p_hack_check++;
       } else {
 #ifdef P_LKRG_DEBUG
@@ -354,7 +363,11 @@ void p_check_integrity(struct work_struct *p_work) {
              "Whitelisted legit self-modification detected! "
              "Recalculating internal kernel core .text section hash...\n");
 #endif
-         p_db.kernel_stext.p_hash = p_tmp_hash;
+         p_db.kernel_stext.p_hash = p_tmp_hash; //<- might be modified during whitelistening algorithm
+/*
+         p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_snapshot,
+                                                     (unsigned int)p_db.kernel_stext.p_size);
+*/
          p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
                                                           (unsigned int)p_db.kernel_stext_copy.p_size);
       }

@@ -124,8 +124,9 @@ typedef struct p_hash_database {
 
 
    p_hash_mem_block kernel_stext;         // .text
-   p_hash_mem_block kernel_stext_copy;    // copy of entire kernel's .text secgment
+   p_hash_mem_block kernel_stext_copy;    // copy of entire kernel's .text segment
                                           //  - needed to deal with *_JMP_LABEL shit ;/
+   char *kernel_stext_snapshot;           // temp memory for a .text section snapshot- used during verification
    p_hash_mem_block kernel_rodata;        // .rodata
    p_hash_mem_block kernel_iommu_table;   // IOMMU table
    p_hash_mem_block kernel_ex_table;      // Exception tale
@@ -133,13 +134,31 @@ typedef struct p_hash_database {
 
 } p_hash_database;
 
+
+
 extern p_hash_database p_db;
+extern struct mutex *p_text_mutex;
+extern struct mutex *p_jump_label_mutex;
 extern struct notifier_block p_cpu_notifier;
 
 int hash_from_ex_table(void);
-int hash_from_kernel_stext(void);
+int hash_from_kernel_stext(unsigned int p_opt);
 int hash_from_kernel_rodata(void);
 int hash_from_iommu_table(void);
+
+static inline void p_text_section_lock(void) {
+
+   //jump_label_lock();
+   mutex_lock(p_jump_label_mutex);
+   mutex_lock(p_text_mutex);
+}
+
+static inline void p_text_section_unlock(void) {
+
+   mutex_unlock(p_text_mutex);
+   mutex_unlock(p_jump_label_mutex);
+//   jump_label_unlock();
+}
 
 int p_create_database(void);
 void p_get_cpus(p_cpu_info *p_arg);

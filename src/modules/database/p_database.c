@@ -18,7 +18,8 @@
 #include "../../p_lkrg_main.h"
 
 p_hash_database p_db;
-
+struct mutex *p_text_mutex = NULL;
+struct mutex *p_jump_label_mutex = NULL;
 
 int hash_from_ex_table(void) {
 
@@ -56,7 +57,7 @@ hash_from_ex_table_out:
    return p_ret;
 }
 
-int hash_from_kernel_stext(void) {
+int hash_from_kernel_stext(unsigned int p_opt) {
 
    unsigned long p_tmp = 0x0;
    int p_ret = P_LKRG_SUCCESS;
@@ -64,6 +65,8 @@ int hash_from_kernel_stext(void) {
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <hash_from_kernel_stext>\n");
+
+   p_text_section_lock();
 
    p_db.kernel_stext.p_addr = (unsigned long *)p_kallsyms_lookup_name("_stext");
    p_tmp = (unsigned long)p_kallsyms_lookup_name("_etext");
@@ -78,16 +81,29 @@ int hash_from_kernel_stext(void) {
    p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext.p_addr,
                                                (unsigned int)p_db.kernel_stext.p_size);
 
-/* It is NOT only for debugging... *_JMP_LABEL sux! */
-   if ( (p_db.kernel_stext_copy.p_addr = vmalloc(p_db.kernel_stext.p_size+1)) == NULL) {
-      /*
-       * I should NEVER be here!
-       */
-      p_print_log(P_LKRG_CRIT,
-             "hash_from_kernel_stext(): kzalloc() error! Can't allocate memory [size %ld:0x%lx] ;[\n",
-             p_db.kernel_stext.p_size+1,p_db.kernel_stext.p_size+1);
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto hash_from_kernel_stext_out;
+   if (p_opt) {
+      if ( (p_db.kernel_stext_snapshot = vmalloc(p_db.kernel_stext.p_size+1)) == NULL) {
+         /*
+          * I should NEVER be here!
+          */
+         p_print_log(P_LKRG_CRIT,
+                "hash_from_kernel_stext(): kzalloc() error! Can't allocate memory [size %ld:0x%lx] for snapshot ;[\n",
+                p_db.kernel_stext.p_size+1,p_db.kernel_stext.p_size+1);
+         p_ret = P_LKRG_GENERAL_ERROR;
+         goto hash_from_kernel_stext_out;
+      }
+
+      /* It is NOT only for debugging... *_JMP_LABEL sux! */
+      if ( (p_db.kernel_stext_copy.p_addr = vmalloc(p_db.kernel_stext.p_size+1)) == NULL) {
+         /*
+          * I should NEVER be here!
+          */
+         p_print_log(P_LKRG_CRIT,
+                "hash_from_kernel_stext(): kzalloc() error! Can't allocate memory [size %ld:0x%lx] for _stext copy ;[\n",
+                p_db.kernel_stext.p_size+1,p_db.kernel_stext.p_size+1);
+         p_ret = P_LKRG_GENERAL_ERROR;
+         goto hash_from_kernel_stext_out;
+      }
    }
 
 //   memset(p_db.kernel_stext_copy.p_addr,0x0,p_db.kernel_stext.p_size+1);
@@ -106,6 +122,8 @@ int hash_from_kernel_stext(void) {
 hash_from_kernel_stext_out:
 
 // STRONG_DEBUG
+   p_text_section_unlock();
+
    p_debug_log(P_LKRG_STRONG_DBG,
           "Leaving function <hash_from_kernel_stext> (p_ret => %d)\n",p_ret);
 
@@ -225,7 +243,6 @@ uint64_t hash_from_CPU_data(p_IDT_MSR_CRx_hash_mem *p_arg) {
    return p_hash;
 }
 
-
 int p_create_database(void) {
 
    int p_tmp;
@@ -237,6 +254,18 @@ int p_create_database(void) {
           "Entering function <p_create_database>\n");
 
    memset(&p_db,0x0,sizeof(p_hash_database));
+
+   if ( (p_text_mutex = (struct mutex *)p_kallsyms_lookup_name("text_mutex")) == NULL) {
+      p_print_log(P_LKRG_ERR,
+             "CREATING DATABASE: error! Can't find 'text_mutex' variable :( Exiting...\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+   }
+
+   if ( (p_jump_label_mutex = (struct mutex *)p_kallsyms_lookup_name("jump_label_mutex")) == NULL) {
+      p_print_log(P_LKRG_ERR,
+             "CREATING DATABASE: error! Can't find 'jump_label_mutex' variable :( Exiting...\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+   }
 
    /*
     * First gather information about CPUs in the system - CRITICAL !!!
@@ -321,7 +350,7 @@ int p_create_database(void) {
       p_db.kernel_ex_table.p_addr = NULL;
    }
 
-   if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
+   if (hash_from_kernel_stext(1) != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
          "CREATING DATABASE ERROR: HASH FROM _STEXT!\n");
       p_ret = P_LKRG_GENERAL_ERROR;

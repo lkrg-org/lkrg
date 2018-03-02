@@ -197,7 +197,7 @@ int p_cpu_online_action(unsigned int p_cpu) {
          p_print_log(P_LKRG_CRIT,
             "CPU ONLINE ERROR: CANNOT GET HASH FROM EXCEPTION TABLE!\n");
       }
-      if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
+      if (hash_from_kernel_stext(0) != P_LKRG_SUCCESS) {
          p_print_log(P_LKRG_CRIT,
             "CPU ONLINE ERROR: CANNOT GET HASH FROM _STEXT!\n");
       }
@@ -294,7 +294,7 @@ int p_cpu_dead_action(unsigned int p_cpu) {
          p_print_log(P_LKRG_CRIT,
             "CPU OFFLINE ERROR: CANNOT GET HASH FROM EXCEPTION TABLE!\n");
       }
-      if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
+      if (hash_from_kernel_stext(0) != P_LKRG_SUCCESS) {
          p_print_log(P_LKRG_CRIT,
             "CPU OFFLINE ERROR: CANNOT GET HASH FROM _STEXT!\n");
       }

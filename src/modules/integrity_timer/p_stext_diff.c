@@ -79,6 +79,8 @@
  #define P_ASM_NOP5_ATOMIC GENERIC_NOP5_ATOMIC
 #endif
 
+#define P_STEXT_REREAD 0x2
+
 char p_white_nop[JUMP_LABEL_NOP_SIZE] = { STATIC_KEY_INIT_NOP };
 char p_white_nop2[JUMP_LABEL_NOP_SIZE] = { P_ASM_NOP5_ATOMIC };
 
@@ -88,7 +90,14 @@ char p_white_nop2[JUMP_LABEL_NOP_SIZE] = { P_ASM_NOP5_ATOMIC };
 #define VAR_NAME_VALUE(var) #var "="  VALUE(var)
 
 #pragma message(VAR_NAME_VALUE( __stringify(P_ASM_NOP5_ATOMIC)))
+#pragma message(VAR_NAME_VALUE( __stringify(STATIC_KEY_INIT_NOP)))
 */
+
+inline unsigned long P_REBASE_STEXT(unsigned long p_old, unsigned long p_new, unsigned long p_addr) {
+
+   return p_addr-p_new+p_old;
+
+}
 
 int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
 
@@ -108,36 +117,24 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
    for (p_tmp = 0x0; p_tmp < p_size-JUMP_LABEL_NOP_SIZE; p_tmp++) {
       if (p_new[p_tmp] != p_old[p_tmp]) {
 
-         // STRONG_DEBUG
-//         p_debug_log(P_LKRG_STRONG_DBG,
          p_print_log(P_LKRG_WARN,
-                                        "Offset[0x%lx] old[0x%x] new[0x%x]\n",
-                                        p_tmp,
-                                        (unsigned int)(p_old[p_tmp] & 0xFF),
-                                        (unsigned int)(p_new[p_tmp] & 0xFF));
-         // STRONG_DEBUG
-//         p_debug_log(P_LKRG_STRONG_DBG,
+                     "Offset[0x%lx] old[0x%x] new[0x%x]\n",
+                     p_tmp,
+                     (unsigned int)(p_old[p_tmp] & 0xFF),
+                     (unsigned int)(p_new[p_tmp] & 0xFF));
          p_print_log(P_LKRG_WARN,
-                                  "old[0x%x] old+1[0x%x] old+2[0x%x] old+3[0x%x] old+4[0x%x]\n",
-                                  p_old[p_tmp] & 0xFF,p_old[p_tmp+1] & 0xFF,p_old[p_tmp+2] & 0xFF,
-                                  p_old[p_tmp+3] & 0xFF, p_old[p_tmp+4] & 0xFF);
-
-         // STRONG_DEBUG
-//         p_debug_log(P_LKRG_STRONG_DBG,
+                     "old[0x%x] old+1[0x%x] old+2[0x%x] old+3[0x%x] old+4[0x%x]\n",
+                     p_old[p_tmp] & 0xFF,p_old[p_tmp+1] & 0xFF,p_old[p_tmp+2] & 0xFF,
+                     p_old[p_tmp+3] & 0xFF, p_old[p_tmp+4] & 0xFF);
          p_print_log(P_LKRG_WARN,
-                                  "new[0x%x] new+1[0x%x] new+2[0x%x] new+3[0x%x] new+4[0x%x]\n",
-                                  p_new[p_tmp] & 0xFF, p_new[p_tmp+1] & 0xFF, p_new[p_tmp+2] & 0xFF,
-                                  p_new[p_tmp+3] & 0xFF, p_new[p_tmp+4] & 0xFF);
+                     "new[0x%x] new+1[0x%x] new+2[0x%x] new+3[0x%x] new+4[0x%x]\n",
+                     p_new[p_tmp] & 0xFF, p_new[p_tmp+1] & 0xFF, p_new[p_tmp+2] & 0xFF,
+                     p_new[p_tmp+3] & 0xFF, p_new[p_tmp+4] & 0xFF);
 
          /* OK, we have found difference, let's check if this is "whitelist" modifications */
-/*
-         if ((p_old[p_tmp] & 0xFF) == 0x0f && (p_old[p_tmp+1] & 0xFF) == 0x1f &&    // Is long NOP
-             (p_old[p_tmp+2] & 0xFF) == 0x44 && (p_old[p_tmp+3] & 0xFF) == 0x00 &&  // was overwritten?
-             (p_old[p_tmp+4] & 0xFF) == 0x00) {
-*/
 
          p_flag = 0x0;
-         if ( (p_old[p_tmp] & 0xFF) == (p_white_nop[0x0] & 0xFF) ) { // NOP -> JMP/0xcc ?
+         if ( (p_old[p_tmp] & 0xFF) == (p_white_nop[0x0] & 0xFF) ) { // NOP -> JMP ?
             for (p_cnt = 0x1; p_cnt < JUMP_LABEL_NOP_SIZE; p_cnt++) {
                if ( (p_old[p_tmp+p_cnt] & 0xFF) != (p_white_nop[p_cnt] & 0xFF) ) {
                   p_flag = 0x1;
@@ -145,9 +142,7 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
                }
             }
             p_flag = (p_flag) ? 0x0 : 0x1;
-         } else if ( (p_new[p_tmp] & 0xFF) == 0xcc) { // NOP -> 0xcc ?
-            p_flag = 0x1;
-         } else if ( (p_new[p_tmp] & 0xFF) == (p_white_nop[0x0] & 0xFF) ) { // JMP/0xcc -> NOP ?
+         } else if ( (p_new[p_tmp] & 0xFF) == (p_white_nop[0x0] & 0xFF) ) { // JMP -> NOP ?
             for (p_cnt = 0x1; p_cnt < JUMP_LABEL_NOP_SIZE; p_cnt++) {
                if ( (p_new[p_tmp+p_cnt] & 0xFF) != (p_white_nop[p_cnt] & 0xFF) ) {
                   p_flag = 0x1;
@@ -155,12 +150,10 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
                }
             }
             p_flag = (p_flag) ? 0x0 : 0x2;
-         } else if ( (p_old[p_tmp] & 0xFF) == 0xcc) { // 0xcc -> NOP ?
-            p_flag = 0x2;
          }
 
          if (!p_flag) { // it could be other type of NOP...
-            if ( (p_old[p_tmp] & 0xFF) == (p_white_nop2[0x0] & 0xFF) ) { // NOP -> JMP/0xcc ?
+            if ( (p_old[p_tmp] & 0xFF) == (p_white_nop2[0x0] & 0xFF) ) { // NOP -> JMP ?
                for (p_cnt = 0x1; p_cnt < JUMP_LABEL_NOP_SIZE; p_cnt++) {
                   if ( (p_old[p_tmp+p_cnt] & 0xFF) != (p_white_nop2[p_cnt] & 0xFF) ) {
                      p_flag = 0x1;
@@ -168,7 +161,7 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
                   }
                }
                p_flag = (p_flag) ? 0x0 : 0x1;
-            } else if ( (p_new[p_tmp] & 0xFF) == (p_white_nop2[0x0] & 0xFF) ) { // JMP/0xcc -> NOP ?
+            } else if ( (p_new[p_tmp] & 0xFF) == (p_white_nop2[0x0] & 0xFF) ) { // JMP -> NOP ?
                for (p_cnt = 0x1; p_cnt < JUMP_LABEL_NOP_SIZE; p_cnt++) {
                   if ( (p_new[p_tmp+p_cnt] & 0xFF) != (p_white_nop2[p_cnt] & 0xFF) ) {
                      p_flag = 0x1;
@@ -179,7 +172,7 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
             }
          }
 
-         if (p_flag == 0x1) { // NOP -> JMP/0xcc
+         if (p_flag == 0x1) { // NOP -> JMP
             /*
              * OK, so we know long NOP was overwritten... we only allow modification
              * to relative jmp pointing to exactly the same function... Let's check
@@ -187,23 +180,24 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
             if ( (p_new[p_tmp] & 0xFF) == 0xe9) { // Is it 'jmp' ?
                p_val = (unsigned int *)&p_new[p_tmp+0x1]; // 'jmp' arg
                p_VA1 = (unsigned long) &p_new[p_tmp]; // original VA
+               p_VA1 = P_REBASE_STEXT((unsigned long)p_db.kernel_stext.p_addr, (unsigned long)p_new, p_VA1);
                p_VA2 = (unsigned long) p_VA1 + 5 + *p_val; // destination VA
+
                sprint_symbol_no_offset(p_sym1,p_VA1); // symbol name for original VA
                sprint_symbol_no_offset(p_sym2,p_VA2); // symbol name for destination VA
 
-               // DEBUG
-               p_debug_log(P_LKRG_DBG,
+               p_print_log(P_LKRG_INFO,
                            "[NOP->JMP] p_val[0x%x] p_VA1[0x%lx] p_VA2[0x%lx] p_sym1[%s] p_sym2[%s]\n",
                            *p_val,p_VA1,p_VA2,p_sym1,p_sym2);
 
                p_len = strlen(p_sym1);
                if (p_len != strlen(p_sym2))
-                  return -1; // Lenght is different so for sure this is not the same symbol!
+                  goto p_whitelist_end; // Lenght is different so for sure this is not the same symbol!
 
                if (strncmp(p_sym1,p_sym2,p_len))
-                  return -1; // This is not the same symbol even length is the same...
+                  goto p_whitelist_end; // This is not the same symbol even length is the same...
 
-               // Shout be P_LKRG_WARN?
+               // Should it be P_LKRG_WARN?
                p_print_log(P_LKRG_INFO, "Detected legit self-modification in core linux .text "
                                         "section in VA[0x%lx] function [%s] - tracepoints?\n",
                                         p_VA1,p_sym1);
@@ -227,49 +221,13 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
                p_tmp += 4; // Let's continue our checks... first, do increase indexer!
                continue;
 
-            } else if ( ((p_new[p_tmp] & 0xFF) == 0xcc) && // Is it int3 ?
-//                        ((p_new[p_tmp+1] & 0xFF) == 0xad) && // rest of the bytes can't be random...
-                        ( ((p_new[p_tmp+2] & 0xFF) == 0x00) ||
-                          ((p_new[p_tmp+2] & 0xFF) == (p_white_nop[0x2] & 0xFF)) ||
-                          ((p_new[p_tmp+2] & 0xFF) == (p_white_nop2[0x2] & 0xFF))) && // rest of the bytes can't be random...
-                        ( ((p_new[p_tmp+3] & 0xFF) == 0x00) ||
-                          ((p_new[p_tmp+3] & 0xFF) == (p_white_nop[0x3] & 0xFF)) ||
-                          ((p_new[p_tmp+3] & 0xFF) == (p_white_nop2[0x3] & 0xFF))) && // rest of the bytes can't be random...
-                        ( ((p_new[p_tmp+4] & 0xFF) == 0x00) ||
-                          ((p_new[p_tmp+4] & 0xFF) == (p_white_nop[0x4] & 0xFF)) ||
-                          ((p_new[p_tmp+4] & 0xFF) == (p_white_nop2[0x4] & 0xFF)))) { // rest of the bytes can't be random...
-
-               // DEBUG
-               p_debug_log(P_LKRG_DBG,
-                           "[NOP->0xCC] p_old[0x%lx]{0x%x} -> p_new[0x%lx] => 0x%x\n",
-                                                          p_tmp,p_old[p_tmp],p_tmp,p_new[p_tmp]);
-
-               /*
-                * Let's modify dynamicaly copy of the vmlinux image. We know that current modification
-                * is "whitelisted" and if it returns to the original values we need to be able
-                * to detect that. If we dynamically updating copy of vmlinux image it is possible
-                * to have 'half-baked cake'. If further modifications are NOT "whitelisted" but previous
-                * one was, we return immediately with not fully modified copy of vmlinux. But that's
-                * OK. If further modifications are NOT valid it means system was fully compromised
-                * and non of the data should be trusted. We should PANIC the kernel... or not if
-                * administrator of the system decided otherwise...
-                */
-               p_old[p_tmp] = p_new[p_tmp];
-               p_old[p_tmp+1] = p_new[p_tmp+1];
-               p_old[p_tmp+2] = p_new[p_tmp+2];
-               p_old[p_tmp+3] = p_new[p_tmp+3];
-               p_old[p_tmp+4] = p_new[p_tmp+4];
-
-               p_tmp += 4; // Let's continue our checks... first, do increase indexer!
-               continue;
-
             } else { // We do not allow any other modifications...
-               return -1; // We do not need to check further modifications because
-                          // this one is malicious so entire system might compromised
-                          // anyway - regardless if further modifications are "whitelisted"
-                          // or not
+               goto p_whitelist_end; // We do not need to check further modifications because
+                                     // this one is malicious so entire system might compromised
+                                     // anyway - regardless if further modifications are "whitelisted"
+                                     // or not
             }
-         } else if (p_flag == 0x2) { // JMP/0xcc -> NOP
+         } else if (p_flag == 0x2) { // JMP -> NOP
 
             /*
              * Let's check if original 'jmp' was in the range of the same symbol name
@@ -279,12 +237,12 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
             if ((p_old[p_tmp] & 0xFF) == 0xe9) {
                p_val = (unsigned int *)&p_old[p_tmp+0x1]; // 'jmp' arg
                p_VA1 = (unsigned long) &p_new[p_tmp]; // original VA
+               p_VA1 = P_REBASE_STEXT((unsigned long)p_db.kernel_stext.p_addr, (unsigned long)p_new, p_VA1);
                p_VA2 = (unsigned long) p_VA1 + 5 + *p_val; // destination VA
                sprint_symbol_no_offset(p_sym1,p_VA1); // symbol name for original VA
                sprint_symbol_no_offset(p_sym2,p_VA2); // symbol name for destination VA
 
-               // DEBUG
-               p_debug_log(P_LKRG_DBG,
+               p_print_log(P_LKRG_INFO,
                            "[JMP->NOP] p_val[0x%x] p_VA1[0x%lx] p_VA2[0x%lx] p_sym1[%s] p_sym2[%s]\n",
                            *p_val,p_VA1,p_VA2,p_sym1,p_sym2);
 
@@ -327,55 +285,20 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
                p_tmp += 4; // Let's continue our checks... first, do increase indexer!
                continue;
 
-            } else if ( ((p_old[p_tmp] & 0xFF) == 0xcc) && // Is it int3 ?
-//                        ((p_old[p_tmp+1] & 0xFF) == 0xad) && // rest of the bytes can't be random...
-                        ( ((p_old[p_tmp+2] & 0xFF) == 0x00) ||
-                          ((p_old[p_tmp+2] & 0xFF) == (p_white_nop[0x2] & 0xFF)) ||
-                          ((p_old[p_tmp+2] & 0xFF) == (p_white_nop2[0x2] & 0xFF))) && // rest of the bytes can't be random...
-                        ( ((p_old[p_tmp+3] & 0xFF) == 0x00) ||
-                          ((p_old[p_tmp+3] & 0xFF) == (p_white_nop[0x3] & 0xFF)) ||
-                          ((p_old[p_tmp+3] & 0xFF) == (p_white_nop2[0x3] & 0xFF))) && // rest of the bytes can't be random...
-                        ( ((p_old[p_tmp+4] & 0xFF) == 0x00) ||
-                          ((p_old[p_tmp+4] & 0xFF) == (p_white_nop[0x4] & 0xFF)) ||
-                          ((p_old[p_tmp+4] & 0xFF) == (p_white_nop2[0x4] & 0xFF)))) { // rest of the bytes can't be random...
-
-
-               // DEBUG
-               p_debug_log(P_LKRG_DBG,
-                           "[0xCC->NOP] p_old[0x%lx]{0x%x} -> p_new[0x%lx] => 0x%x\n",
-                                                          p_tmp,p_old[p_tmp],p_tmp,p_new[p_tmp]);
-
-               /*
-                * Let's modify dynamicaly copy of the vmlinux image. We know that current modification
-                * is "whitelisted" and if it returns to the original values we need to be able
-                * to detect that. If we dynamically updating copy of vmlinux image it is possible
-                * to have 'half-baked cake'. If further modifications are NOT "whitelisted" but previous
-                * one was, we return immediately with not fully modified copy of vmlinux. But that's
-                * OK. If further modifications are NOT valid it means system was fully compromised
-                * and non of the data should be trusted. We should PANIC the kernel... or not if
-                * administrator of the system decided otherwise...
-                */
-               p_old[p_tmp] = p_new[p_tmp];
-               p_old[p_tmp+1] = p_new[p_tmp+1];
-               p_old[p_tmp+2] = p_new[p_tmp+2];
-               p_old[p_tmp+3] = p_new[p_tmp+3];
-               p_old[p_tmp+4] = p_new[p_tmp+4];
-
-               p_tmp += 4; // Let's continue our checks... first, do increase indexer!
-               continue;
-
             } else { // We do not allow any other modifications...
-               return -1; // We do not need to check further modifications because
-                          // this one is malicious so entire system might compromised
-                          // anyway - regardless if further modifications are "whitelisted"
-                          // or not
+               goto p_whitelist_end; // We do not need to check further modifications because
+                                     // this one is malicious so entire system might compromised
+                                     // anyway - regardless if further modifications are "whitelisted"
+                                     // or not
             }
          } else {
-            return -1; // We do not need to check further modifications because
-                       // this one is malicious so entire system might compromised
-                       // anyway - regardless if further modifications are "whitelisted"
-                       // or not
+            goto p_whitelist_end; // We do not need to check further modifications because
+                                  // this one is malicious so entire system might compromised
+                                  // anyway - regardless if further modifications are "whitelisted"
+                                  // or not
          }
+p_whitelist_end:
+         return -1;
       }
    }
 

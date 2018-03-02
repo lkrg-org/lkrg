@@ -158,6 +158,10 @@ p_main_error:
    p_offload_cache_delete();
    if (p_db.p_IDT_MSR_CRx_array)
       kzfree(p_db.p_IDT_MSR_CRx_array);
+   if (p_db.kernel_stext_copy.p_addr)
+      vfree(p_db.kernel_stext_copy.p_addr);
+   if (p_db.kernel_stext_snapshot)
+      vfree(p_db.kernel_stext_snapshot);
 
    return p_ret;
 }
@@ -194,7 +198,12 @@ static void __exit p_lkrg_deregister(void) {
    p_deregister_module_notifier();
 
    p_offload_cache_delete();
-   kzfree(p_db.p_IDT_MSR_CRx_array);
+   if (p_db.p_IDT_MSR_CRx_array)
+      kzfree(p_db.p_IDT_MSR_CRx_array);
+   if (p_db.kernel_stext_copy.p_addr)
+      vfree(p_db.kernel_stext_copy.p_addr);
+   if (p_db.kernel_stext_snapshot)
+      vfree(p_db.kernel_stext_snapshot);
 
    p_print_log(P_LKRG_CRIT, "LKRG unloaded!\n");
 }
