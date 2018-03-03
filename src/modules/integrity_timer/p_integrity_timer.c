@@ -358,11 +358,10 @@ void p_check_integrity(struct work_struct *p_work) {
                                                           (unsigned int)p_db.kernel_stext_copy.p_size);
          p_hack_check++;
       } else {
-#ifdef P_LKRG_DEBUG
          p_print_log(P_LKRG_WARN,
              "Whitelisted legit self-modification detected! "
-             "Recalculating internal kernel core .text section hash...\n");
-#endif
+             "Recalculating internal kernel core .text section hash\n");
+
          p_db.kernel_stext.p_hash = p_tmp_hash; //<- might be modified during whitelistening algorithm
 /*
          p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_snapshot,

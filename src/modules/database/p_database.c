@@ -66,8 +66,6 @@ int hash_from_kernel_stext(unsigned int p_opt) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <hash_from_kernel_stext>\n");
 
-   p_text_section_lock();
-
    p_db.kernel_stext.p_addr = (unsigned long *)p_kallsyms_lookup_name("_stext");
    p_tmp = (unsigned long)p_kallsyms_lookup_name("_etext");
 
@@ -122,8 +120,6 @@ int hash_from_kernel_stext(unsigned int p_opt) {
 hash_from_kernel_stext_out:
 
 // STRONG_DEBUG
-   p_text_section_unlock();
-
    p_debug_log(P_LKRG_STRONG_DBG,
           "Leaving function <hash_from_kernel_stext> (p_ret => %d)\n",p_ret);
 
@@ -350,12 +346,14 @@ int p_create_database(void) {
       p_db.kernel_ex_table.p_addr = NULL;
    }
 
+   p_text_section_lock();
    if (hash_from_kernel_stext(1) != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
          "CREATING DATABASE ERROR: HASH FROM _STEXT!\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_create_database_out;
    }
+   p_text_section_unlock();
 
    if (hash_from_kernel_rodata() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
