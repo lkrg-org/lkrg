@@ -123,6 +123,7 @@ static int __init p_lkrg_register(void) {
 
    p_integrity_timer();
    p_register_notifiers();
+   p_lkrg_global_ctrl.p_random_events = 0x1;
 
    mutex_lock(&module_mutex);
    if (p_lkrg_global_ctrl.p_hide_module) {
