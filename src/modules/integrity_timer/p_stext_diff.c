@@ -71,7 +71,7 @@
 
 #if defined(CONFIG_MK7)
  #define P_ASM_NOP5_ATOMIC K7_NOP5_ATOMIC
-#elif defined(CONFIG_X86_P6_NOP)
+#elif defined(CONFIG_X86_P6_NOP) && !defined(CONFIG_MWESTMERE)
  #define P_ASM_NOP5_ATOMIC P6_NOP5_ATOMIC
 #elif defined(CONFIG_X86_64)
  #define P_ASM_NOP5_ATOMIC K8_NOP5_ATOMIC
