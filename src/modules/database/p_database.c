@@ -380,13 +380,17 @@ int p_create_database(void) {
    while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
                      &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array) != P_LKRG_SUCCESS);
 
-   /* Release the 'module_mutex' */
-   mutex_unlock(&module_mutex);
-
+   /* Hash */
    p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
                                           (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
    p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
+   /* Register module notification routine */
+   p_register_module_notifier();
+
+   /* Release the 'module_mutex' */
+   mutex_unlock(&module_mutex);
+
 
    p_debug_log(P_LKRG_DBG,
           "p_module_list_hash => [0x%llx]\np_module_kobj_hash => [0x%llx]\n",

@@ -94,8 +94,6 @@ int p_kmod_init(void) {
       goto p_kmod_init_out;
    }
 
-   /* Register module notification routine */
-   p_register_module_notifier();
 
 p_kmod_init_out:
 
