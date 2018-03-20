@@ -276,7 +276,6 @@ void p_check_integrity(struct work_struct *p_work) {
    */
    on_each_cpu(p_dump_IDT_MSR_CRx,p_tmp_cpus,true);
 
-   put_online_cpus();
 
    /*
     * OK, so now get the same information for currently locked core!
@@ -284,9 +283,11 @@ void p_check_integrity(struct work_struct *p_work) {
 //   p_dump_IDT_MSR_CRx(p_tmp_cpus); // no return value
 
    /* Now we are safe to disable IRQs on current core */
-   spin_lock_irqsave(&p_db_lock,p_db_flags);
 
    p_tmp_hash = hash_from_CPU_data(p_tmp_cpus);
+   put_online_cpus();
+
+   spin_lock_irqsave(&p_db_lock,p_db_flags);
 
    if (p_db.p_IDT_MSR_CRx_hashes != p_tmp_hash) {
       /* I'm hacked! ;( */
