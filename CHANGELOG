@@ -1,3 +1,19 @@
+The following changes have been made between LKRG 0.1 and 0.2:
+
+*) Add support for being loaded at early boot stage (e.g. from initramfs)
+*) [CI] Add a new sysctl to control whether LKRG performs code integrity checks
+   on random events (or only at regular intervals)
+*) Reduce performance impact, e.g. in our specific test case:
+   -> Average cost of running a fully enabled LKRG => 2.5%
+   -> Average cost of running LKRG without the code integrity checks on
+      random events (disabled with the new sysctl) => 0.7%
+*) [CI] Fix a potential deadlock bug caused by get_online_cpus() function,
+   which might sleep if CONFIG_PREEMPT_VOLUNTARY=y
+*) [CI] Fix dynamic NOPs injected by *_JUMP_LABEL for MWESTMERE
+*) [CI] Remove false positives caused by *_JUMP_LABEL in corner case scenarios
+*) [ED] Remove false positives when kernel executes usermode helper binaries
+
+
 The following changes have been made between LKRG 0.0 and 0.1:
 
 *) Support RHEL 7.4 kernels
@@ -9,3 +25,8 @@ The following changes have been made between LKRG 0.0 and 0.1:
 *) Add INSTALL, CHANGELOG and PATREONS file
 *) Move SELinux integrity check to the workqueue
 *) Fix how *_JUMP_LABEL is handled when 0xCC byte is injected
+
+
+Legend:
+[CI] - Code Integrity
+[ED] - Exploit Detection
