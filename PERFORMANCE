@@ -1,0 +1,71 @@
+============================================
+Project:         john-1.8.0-jumbo-1
+Configuration:   ./configure CFLAGS='-O0'
+Testing:         make clean; time make -j 8
+============================================
+
+######################################################### Test cases #########################################################
+
+log_level=0, NO_EVENTS_CI         log_level=0, without_CI           log_level=0, without_ED                 Without LKRG
+-----------------------           -----------------------           -----------------------           -----------------------
+real    0m22.310s                 real    0m22.299s                 real    0m22.695s                 real    0m22.117s
+user    1m12.828s                 user    1m12.612s                 user    1m12.469s                 user    1m12.534s
+sys     0m11.247s                 sys     0m11.480s                 sys     0m10.827s                 sys     0m10.653s
+
+real    0m22.322s                 real    0m22.243s                 real    0m22.590s                 real    0m22.210s
+user    1m12.637s                 user    1m12.507s                 user    1m12.299s                 user    1m12.855s
+sys     0m11.419s                 sys     0m11.412s                 sys     0m10.660s                 sys     0m10.558s
+
+real    0m22.280s                 real    0m22.255s                 real    0m22.394s                 real    0m22.179s
+user    1m12.757s                 user    1m12.495s                 user    1m12.581s                 user    1m12.819s
+sys     0m11.309s                 sys     0m11.439s                 sys     0m10.553s                 sys     0m10.641s
+
+real    0m22.352s                 real    0m22.280s                 real    0m22.681s                 real    0m22.234s
+user    1m12.724s                 user    1m12.613s                 user    1m12.373s                 user    1m12.936s
+sys     0m11.352s                 sys     0m11.347s                 sys     0m10.638s                 sys     0m10.522s
+
+real    0m22.299s                 real    0m22.322s                 real    0m22.536s                 real    0m22.172s
+user    1m12.729s                 user    1m12.926s                 user    1m12.628s                 user    1m12.781s
+sys     0m11.290s                 sys     0m11.418s                 sys     0m10.516s                 sys     0m10.637s
+
+real    0m22.204s                 real    0m22.294s                 real    0m22.527s                 real    0m22.141s
+user    1m12.685s                 user    1m12.736s                 user    1m12.900s                 user    1m12.755s
+sys     0m11.207s                 sys     0m11.531s                 sys     0m10.387s                 sys     0m10.387s
+
+real    0m22.325s                 real    0m22.266s                 real    0m22.303s                 real    0m22.122s
+user    1m12.617s                 user    1m12.264s                 user    1m12.242s                 user    1m12.588s
+sys     0m11.305s                 sys     0m11.474s                 sys     0m10.638s                 sys     0m10.641s
+
+real    0m22.297s                 real    0m22.269s                 real    0m22.451s                 real    0m22.116s
+user    1m12.590s                 user    1m12.593s                 user    1m12.456s                 user    1m12.640s
+sys     0m11.470s                 sys     0m11.422s                 sys     0m10.747s                 sys     0m10.575s
+
+real    0m22.301s                 real    0m22.286s                 real    0m22.474s                 real    0m22.130s
+user    1m12.637s                 user    1m12.687s                 user    1m12.768s                 user    1m12.998s
+sys     0m11.373s                 sys     0m11.429s                 sys     0m10.467s                 sys     0m10.403s
+
+real    0m22.344s                 real    0m22.257s                 real    0m22.490s                 real    0m22.129s
+user    1m12.842s                 user    1m12.790s                 user    1m12.641s                 user    1m12.639s
+sys     0m11.334s                 sys     0m11.294s                 sys     0m10.672s                 sys     0m10.686s
+---- Avarage ----                 ---- Avarage ----                 ---- Avarage ----                 ---- Avarage ----
+real    0m22.303s                 real    0m22.277s                 real    0m22.514s                 real    0m22.155s
+user    1m12.705s                 user    1m12.622s                 user    1m12.536s                 user    1m12.755s
+sys     0m11.331s                 sys     0m11.425s                 sys     0m10.611s                 sys     0m10.570s
+
+
+======================================================= RESULTS ==========================================================
+
+log_level=0, NO_EVENTS_CI         log_level=0, without_CI           log_level=0, without_ED
+-----------------------           -----------------------           -----------------------
+real    0m22.303s                 real    0m22.277s                 real    0m22.514s
+user    1m12.705s                 user    1m12.622s                 user    1m12.536s
+sys     0m11.331s                 sys     0m11.425s                 sys     0m10.611s
+~~~~ vs None ~~~~                 ~~~~ vs None ~~~~                 ~~~~ vs None ~~~~
+real    0m22.155s                 real    0m22.155s                 real    0m22.155s
+user    1m12.755s                 user    1m12.755s                 user    1m12.755s
+sys     0m10.570s                 sys     0m10.570s                 sys     0m10.570s
+=================                 =================                 ==================
+real    +00.668%                  real    +00.551%                  real    +01.620%
+user    -00.069%                  user    -00.183%                  user    -00.301%
+sys     +07.200%                  sys     +08.089%                  sys     +00.388%
+
