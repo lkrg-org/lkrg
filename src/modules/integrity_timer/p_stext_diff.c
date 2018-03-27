@@ -223,7 +223,7 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
 
             } else { // We do not allow any other modifications...
                goto p_whitelist_end; // We do not need to check further modifications because
-                                     // this one is malicious so entire system might compromised
+                                     // this one is malicious so entire system might be compromised
                                      // anyway - regardless if further modifications are "whitelisted"
                                      // or not
             }
@@ -287,13 +287,13 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
 
             } else { // We do not allow any other modifications...
                goto p_whitelist_end; // We do not need to check further modifications because
-                                     // this one is malicious so entire system might compromised
+                                     // this one is malicious so entire system might be compromised
                                      // anyway - regardless if further modifications are "whitelisted"
                                      // or not
             }
          } else {
             goto p_whitelist_end; // We do not need to check further modifications because
-                                  // this one is malicious so entire system might compromised
+                                  // this one is malicious so entire system might be compromised
                                   // anyway - regardless if further modifications are "whitelisted"
                                   // or not
          }

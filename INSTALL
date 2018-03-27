@@ -25,9 +25,9 @@ website and verify the signature of the packages:
 
     $ wget http://www.openwall.com/signatures/openwall-offline-signatures.asc
     $ gpg --import openwall-offline-signatures.asc
-    $ wget http://www.openwall.com/lkrg/lkrg-0.1.tar.gz.sign
-    $ wget http://www.openwall.com/lkrg/lkrg-0.1.tar.gz
-    $ gpg --verify lkrg-0.1.tar.gz.sign lkrg-0.1.tar.gz
+    $ wget http://www.openwall.com/lkrg/lkrg-0.2.tar.gz.sign
+    $ wget http://www.openwall.com/lkrg/lkrg-0.2.tar.gz
+    $ gpg --verify lkrg-0.2.tar.gz.sign lkrg-0.2.tar.gz
 
 
 BUILD REQUIREMENTS:
@@ -92,15 +92,15 @@ corruptions are detected.
 COMMUNICATION CHANNEL:
 ----------------------
 
-The project has built in a sysctl interface which enables the interaction
-between the administrator and LKRG. By default 5 different options are
-available:
+The project has a built-in sysctl interface, which enables the interaction
+between the administrator and LKRG. The following options are available:
 
     root@pi3-ubuntu:~/p_lkrg-main# sysctl -a|grep lkrg
     lkrg.block_modules = 0
     lkrg.clean_message = 1
     lkrg.force_run = 0
     lkrg.log_level = 1
+    lkrg.random_events = 1
     lkrg.timestamp = 15
 
  -> Blocking module functionality (lkrg.block_modules) - only two options are
@@ -121,6 +121,11 @@ available:
     to identify where could be a specific problem with LKRG (if it ever
     appears). Unfortunately, it produces tons of logs per execution and must be
     used only for debugging purpose, not as a normal run.
+ -> Random events (lkrg.random_events) - only two options are available:
+        0 - do NOT perform integrity checking on the random events (perform it
+            only at regular intervals configured by lkrg.timestamp)
+        1 - perform integrity checking on the random events (as well as at the
+            regular intervals)
  -> timestamp (lkrg.timestamp) - changes how often kernel timer will be
     launched (kernel timer periodically calls integrity function). It can't be
     less than 5 seconds (not to eat too much system resources) and not more

@@ -363,7 +363,7 @@ void p_check_integrity(struct work_struct *p_work) {
              "Whitelisted legit self-modification detected! "
              "Recalculating internal kernel core .text section hash\n");
 
-         p_db.kernel_stext.p_hash = p_tmp_hash; //<- might be modified during whitelistening algorithm
+         p_db.kernel_stext.p_hash = p_tmp_hash; //<- might be modified during whitelisting algorithm
 /*
          p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_snapshot,
                                                      (unsigned int)p_db.kernel_stext.p_size);
