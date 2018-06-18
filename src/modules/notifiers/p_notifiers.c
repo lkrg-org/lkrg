@@ -218,8 +218,8 @@ static int p_inet6addr_notifier(struct notifier_block *p_nb, unsigned long p_val
    p_debug_notifier_log(
           "Entering function <p_inet6addr_notifier>\n");
 
-   /* 50% */
-   P_TRY_OFFLOAD_NOTIFIER(P_SUPER_RARE_RATE, "<p_inet6addr_notifier> Offloading integrity check\n");
+   /* 100% */
+   P_TRY_OFFLOAD_NOTIFIER_ALWAYS("<p_inet6addr_notifier> Offloading integrity check\n");
 
 // STRONG_DEBUG
    p_debug_notifier_log(
@@ -235,8 +235,8 @@ static int p_inetaddr_notifier(struct notifier_block *p_nb, unsigned long p_val,
    p_debug_notifier_log(
           "Entering function <p_inetaddr_notifier>\n");
 
-   /* 50% */
-   P_TRY_OFFLOAD_NOTIFIER(P_SUPER_RARE_RATE, "<p_inetaddr_notifier> Offloading integrity check\n");
+   /* 100% */
+   P_TRY_OFFLOAD_NOTIFIER_ALWAYS("<p_inetaddr_notifier> Offloading integrity check\n");
 
 // STRONG_DEBUG
    p_debug_notifier_log(
@@ -299,8 +299,8 @@ static int p_usb_notifier(struct notifier_block *p_nb, unsigned long p_val, void
    p_debug_notifier_log(
           "Entering function <p_usb_notifier>\n");
 
-   /* 50% */
-   P_TRY_OFFLOAD_NOTIFIER(P_SUPER_RARE_RATE, "<p_usb_notifier> Offloading integrity check\n");
+   /* 100% */
+   P_TRY_OFFLOAD_NOTIFIER_ALWAYS("<p_usb_notifier> Offloading integrity check\n");
 
 // STRONG_DEBUG
    p_debug_notifier_log(
@@ -315,8 +315,8 @@ static int p_acpi_notifier(struct notifier_block *p_nb, unsigned long p_val, voi
    p_debug_notifier_log(
           "Entering function <p_acpi_notifier>\n");
 
-   /* 50% */
-   P_TRY_OFFLOAD_NOTIFIER(P_SUPER_RARE_RATE, "<p_acpi_notifier> Offloading integrity check\n");
+   /* 100% */
+   P_TRY_OFFLOAD_NOTIFIER_ALWAYS("<p_acpi_notifier> Offloading integrity check\n");
 
 // STRONG_DEBUG
    p_debug_notifier_log(

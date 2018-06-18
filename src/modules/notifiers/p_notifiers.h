@@ -54,6 +54,18 @@ do {                                                  \
 } while(0)
 #endif
 
+#ifdef P_LKRG_DEBUG
+#define P_TRY_OFFLOAD_NOTIFIER_ALWAYS(p_arg1)         \
+do {                                                  \
+   p_print_log(P_LKRG_DBG, "%s", p_arg1);             \
+   p_offload_work(0);                                 \
+} while(0)
+#else
+#define P_TRY_OFFLOAD_NOTIFIER_ALWAYS(p_arg1)         \
+do {                                                  \
+   p_offload_work(0);                                 \
+} while(0)
+#endif
 
 void p_register_notifiers(void);
 void p_deregister_notifiers(void);
