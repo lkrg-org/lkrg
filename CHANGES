@@ -1,8 +1,10 @@
-The following changes have been made between LKRG 0.2 and 0.3
+The following changes have been made between LKRG 0.2 and 0.3:
 
- *) [ED] Fix false possitive caused via potential race condition when child process might be faster than mother returning from the fork().
- *) [ED] Change the logic and loglevel for message printed when racy situation at fork() appears.
- *) [CI] Change assigned probabilities when integrity routine will be fired
+*) [ED] Fix false positive caused via potential race condition when child
+   process might be faster than mother returning from the fork()
+*) [ED] Change the logic and loglevel for message printed when racy situation
+   at fork() appears
+*) [CI] Change assigned probabilities when integrity routine will be fired
 
 
 The following changes have been made between LKRG 0.1 and 0.2:
