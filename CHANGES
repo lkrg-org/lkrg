@@ -1,3 +1,14 @@
+The following changes have been made between LKRG 0.3 and 0.4:
+
+*) [ED] Fix a potential kretprobe glitch that could happen in a very rare
+corner case on heavily loaded SMP machines (resulting in a false positive)
+*) [ED] Change some of the printed messages for log_level=4
+*) [ED] Add support for 4.17+ kernels. This is a pretty big change addressing:
+      a) New logic of how syscall stubs are created; CONFIG_X32_X86 and
+CONFIG_COMPAT now have separate stubs
+      b) SELinux variables are now accumulated in one structure
+
+
 The following changes have been made between LKRG 0.2 and 0.3:
 
 *) [ED] Fix false positive caused via potential race condition when child
