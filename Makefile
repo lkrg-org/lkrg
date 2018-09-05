@@ -10,6 +10,7 @@ export CFLAGS="$CFLAGS"
 P_OUTPUT = output
 P_PWD = $(shell pwd)
 P_KVER = $(shell uname -r)
+P_KERNEL := /lib/modules/$(P_KVER)/build
 
 obj-m += p_lkrg.o
 p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
@@ -72,16 +73,16 @@ p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
 
 
 all:
-#	$(MAKE) -C /lib/modules/$(P_KVER)/build M=$(P_PWD) modules CONFIG_DEBUG_SECTION_MISMATCH=y
-	$(MAKE) -C /lib/modules/$(P_KVER)/build M=$(P_PWD) modules
+#	$(MAKE) -C $(P_KERNEL) M=$(P_PWD) modules CONFIG_DEBUG_SECTION_MISMATCH=y
+	$(MAKE) -C $(P_KERNEL) M=$(P_PWD) modules
 	mkdir -p $(P_OUTPUT)
 	cp $(P_PWD)/p_lkrg.ko $(P_OUTPUT)
 
 install:
-	$(MAKE) -C /lib/modules/$(P_KVER)/build M=$(P_PWD) modules_install
+	$(MAKE) -C $(P_KERNEL) M=$(P_PWD) modules_install
 
 clean:
-	$(MAKE) -C /lib/modules/$(P_KVER)/build M=$(P_PWD) clean
+	$(MAKE) -C $(P_KERNEL) M=$(P_PWD) clean
 	$(RM) Module.markers modules.order
 	$(RM) $(P_PWD)/src/modules/kmod/client/kmod/Module.markers
 	$(RM) $(P_PWD)/src/modules/kmod/client/kmod/modules.order

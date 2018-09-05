@@ -1443,7 +1443,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         */
                         if (p_tmp_cnt2_flag) {
                            p_print_log(P_LKRG_WARN,
-                                  "Because we whitelisted module's .text section hash we need to update KOBJs as well.\n"
+                                  "Because we whitelisted module's .text section hash we need to update KOBJs as well. "
                                   "Module[%s] was [0x%llx] and should be [0x%llx]\n",
                                   p_db.p_module_list_array[p_tmp].p_name,
                                   p_db.p_module_kobj_array[p_tmp_cnt2].p_mod_core_text_hash,

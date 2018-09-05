@@ -43,6 +43,7 @@
 #include <linux/inetdevice.h>
 #include <linux/usb.h>
 #include <linux/acpi.h>
+#include <linux/profile.h>
 
 #include <linux/kprobes.h>
 #include <linux/namei.h>

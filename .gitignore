@@ -1,0 +1,19 @@
+# build files
+.tmp_versions
+Module.symvers
+modules.order
+*.cmd
+*.ko
+*.mod.c
+*.o.d
+*.o
+.cache.mk
+
+# kcov
+*.gcno
+*.gcda
+
+# GNU Global
+GPATH
+GRTAGS
+GTAGS
