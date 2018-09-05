@@ -164,12 +164,14 @@ int p_cpu_callback(struct notifier_block *p_block, unsigned long p_action, void 
 int p_cpu_online_action(unsigned int p_cpu) {
 
    int tmp_online_CPUs = p_db.p_cpu.online_CPUs;
+   unsigned int p_tmp = 0x0;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
 //   p_print_log(P_LKRG_CRIT,
           "Entering function <p_cpu_online_action>\n");
 
+   p_text_section_lock();
    /* We are heavly consuming module list here - take 'module_mutex' */
    mutex_lock(&module_mutex);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
@@ -177,7 +179,6 @@ int p_cpu_online_action(unsigned int p_cpu) {
    mutex_lock(p_kernfs_mutex);
 #endif
 
-   p_text_section_lock();
    spin_lock(&p_db_lock);
 
    smp_call_function_single(p_cpu,p_dump_IDT_MSR_CRx,p_db.p_IDT_MSR_CRx_array,true);
@@ -211,19 +212,25 @@ int p_cpu_online_action(unsigned int p_cpu) {
             "CPU ONLINE ERROR: CANNOT GET HASH FROM IOMMU TABLE!\n");
       }
       /* Now recalculate modules, again some macros are different now ! */
-      /* First free currently used memory! */
-      if (p_db.p_module_list_array)
-         kzfree(p_db.p_module_list_array);
-      if (p_db.p_module_kobj_array)
-         kzfree(p_db.p_module_kobj_array);
-      /* OK, now recalculate hashes again! */
 
+      /* OK, now recalculate hashes again! */
       while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
-                        &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array) != P_LKRG_SUCCESS);
+                        &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x2) != P_LKRG_SUCCESS)
+         schedule();
 
       /* Update global module list/kobj hash */
+/*
       p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
                                              (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
+*/
+
+      p_db.p_module_stexts_copy = 0x0;
+      for (p_db.p_module_list_hash = p_tmp = 0x0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
+         p_db.p_module_list_hash ^= p_lkrg_fast_hash((unsigned char *)&p_db.p_module_list_array[p_tmp],
+                                                     (unsigned int)offsetof(p_module_list_mem, mod_core_stext_copy));
+         p_db.p_module_stexts_copy ^= p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_hash;
+      }
+
       p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                              (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
 
@@ -236,13 +243,13 @@ int p_cpu_online_action(unsigned int p_cpu) {
    /* God mode off ;) */
 //   spin_unlock_irqrestore(&p_db_lock,p_db_flags);
    spin_unlock(&p_db_lock);
-   p_text_section_unlock();
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
    /* unlock KOBJ activities */
    mutex_unlock(p_kernfs_mutex);
 #endif
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
+   p_text_section_unlock();
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
@@ -255,12 +262,14 @@ int p_cpu_online_action(unsigned int p_cpu) {
 int p_cpu_dead_action(unsigned int p_cpu) {
 
    int tmp_online_CPUs = p_db.p_cpu.online_CPUs;
+   unsigned int p_tmp = 0x0;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
 //   p_print_log(P_LKRG_CRIT,
           "Entering function <p_cpu_dead_action>\n");
 
+   p_text_section_lock();
    /* We are heavly consuming module list here - take 'module_mutex' */
    mutex_lock(&module_mutex);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
@@ -268,7 +277,6 @@ int p_cpu_dead_action(unsigned int p_cpu) {
    mutex_lock(p_kernfs_mutex);
 #endif
 
-   p_text_section_lock();
    spin_lock(&p_db_lock);
 
    p_db.p_IDT_MSR_CRx_array[p_cpu].p_cpu_online = P_CPU_OFFLINE;
@@ -310,19 +318,23 @@ int p_cpu_dead_action(unsigned int p_cpu) {
             "CPU OFFLINE ERROR: CANNOT GET HASH FROM IOMMU TABLE!\n");
       }
       /* Now recalculate modules, again some macros are different now ! */
-      /* First free currently used memory! */
-      if (p_db.p_module_list_array)
-         kzfree(p_db.p_module_list_array);
-      if (p_db.p_module_kobj_array)
-         kzfree(p_db.p_module_kobj_array);
-      /* OK, now recalculate hashes again! */
 
+      /* OK, now recalculate hashes again! */
       while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
-                        &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array) != P_LKRG_SUCCESS);
+                        &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x2) != P_LKRG_SUCCESS);
 
       /* Update global module list/kobj hash */
+/*
       p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
                                              (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
+*/
+      p_db.p_module_stexts_copy = 0x0;
+      for (p_db.p_module_list_hash = p_tmp = 0x0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
+         p_db.p_module_list_hash ^= p_lkrg_fast_hash((unsigned char *)&p_db.p_module_list_array[p_tmp],
+                                                     (unsigned int)offsetof(p_module_list_mem, mod_core_stext_copy));
+         p_db.p_module_stexts_copy ^= p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_hash;
+      }
+
       p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                              (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
 
@@ -335,13 +347,13 @@ int p_cpu_dead_action(unsigned int p_cpu) {
    /* God mode off ;) */
 //   spin_unlock_irqrestore(&p_db_lock,p_db_flags);
    spin_unlock(&p_db_lock);
-   p_text_section_unlock();
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
    /* unlock KOBJ activities */
    mutex_unlock(p_kernfs_mutex);
 #endif
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
+   p_text_section_unlock();
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,

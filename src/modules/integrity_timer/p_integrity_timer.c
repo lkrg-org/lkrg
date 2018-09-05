@@ -151,6 +151,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
    /* temporary hash variable */
    uint64_t p_tmp_hash;
+   uint64_t p_tmp_hash_stexts = 0x0;
    /* per CPU temporary data */
    p_IDT_MSR_CRx_hash_mem *p_tmp_cpus;
    p_cpu_info p_tmp_cpu_info;
@@ -162,8 +163,11 @@ void p_check_integrity(struct work_struct *p_work) {
    char p_mod_bad_nr = 0x0;
    /* Are we compromised ? */
    unsigned int p_hack_check = 0x0;
+   unsigned int p_core_stext_hacked = 0x0;
    /* Module syncing temporary pointer */
    struct module *p_tmp_mod;
+   unsigned int p_tmp = 0x0;
+   int p_ret;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
@@ -196,34 +200,6 @@ void p_check_integrity(struct work_struct *p_work) {
                                              GFP_KERNEL | GFP_NOFS | __GFP_REPEAT)) == NULL);
 
 
-   /* We are heavly consuming module list here - take 'module_mutex' */
-   mutex_lock(&module_mutex);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-   /* Hacky way of 'stopping' KOBJs activities */
-   mutex_lock(p_kernfs_mutex);
-#endif
-
-   /*
-    * Memory allocation may fail... let's loop here!
-    */
-   while(p_kmod_hash(&p_module_list_nr_tmp,&p_module_list_tmp,
-                     &p_module_kobj_nr_tmp,&p_module_kobj_tmp) != P_LKRG_SUCCESS) {
-      p_print_log(P_LKRG_CRIT,
-             "Function <p_check_integrity> - p_kmod_hash() failed! Memory problems... :(\n");
-   }
-
-   /* Release the 'module_mutex' */
-   mutex_unlock(&module_mutex);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-   /* unlock KOBJ activities */
-   mutex_unlock(p_kernfs_mutex);
-#endif
-
-   p_text_section_lock();
-   /* First, we need to snapshot an entire .text */
-   *((char *)p_db.kernel_stext_snapshot + p_db.kernel_stext.p_size) = 0x0;
-   memcpy(p_db.kernel_stext_snapshot,p_db.kernel_stext.p_addr,p_db.kernel_stext.p_size);
-   p_text_section_unlock();
 
    /* Find information about current CPUs in the system */
    p_get_cpus(&p_tmp_cpu_info);
@@ -287,7 +263,44 @@ void p_check_integrity(struct work_struct *p_work) {
    p_tmp_hash = hash_from_CPU_data(p_tmp_cpus);
    put_online_cpus();
 
+   p_text_section_lock();
+   /* First, we need to snapshot an entire .text */
+   *((char *)p_db.kernel_stext_snapshot + p_db.kernel_stext.p_size) = 0x0;
+   memcpy(p_db.kernel_stext_snapshot,p_db.kernel_stext.p_addr,p_db.kernel_stext.p_size);
+
+   /* We are heavly consuming module list here - take 'module_mutex' */
+   mutex_lock(&module_mutex);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
+   /* Hacky way of 'stopping' KOBJs activities */
+   mutex_lock(p_kernfs_mutex);
+#endif
+
+   /*
+    * Memory allocation may fail... let's loop here!
+    */
+   while( (p_ret = p_kmod_hash(&p_module_list_nr_tmp,&p_module_list_tmp,
+                               &p_module_kobj_nr_tmp,&p_module_kobj_tmp, 0x0)) != P_LKRG_SUCCESS) {
+      if (p_ret == P_LKRG_KMOD_DUMP_RACE) {
+         p_print_log(P_LKRG_ERR,
+                "Function <p_check_integrity> won race with module activity thread... We need to cancel this context! :(\n");
+         goto p_check_integrity_cancel;
+      }
+      p_print_log(P_LKRG_ERR,
+             "Function <p_check_integrity> - p_kmod_hash() failed! Memory problems... :(\n");
+      schedule();
+   }
+/*
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
+   * unlock KOBJ activities *
+   mutex_unlock(p_kernfs_mutex);
+#endif
+   * Release the 'module_mutex' *
+   mutex_unlock(&module_mutex);
+   p_text_section_unlock();
+*/
+
    spin_lock_irqsave(&p_db_lock,p_db_flags);
+//   spin_lock(&p_db_lock);
 
    if (p_db.p_IDT_MSR_CRx_hashes != p_tmp_hash) {
       /* I'm hacked! ;( */
@@ -334,6 +347,12 @@ void p_check_integrity(struct work_struct *p_work) {
       p_print_log(P_LKRG_CRIT,
              "!!! KERNEL CORE INTEGRITY VERIFICATION CAN'T BE TRUSTED !!!\n");
       p_hack_check++;
+      /*
+       * If we find kernel .text corruption we won't be able to
+       * validate *_JUMP_LABEL modifications.
+       * We should bugcheck if copy of stext and core .text is corrupted.
+       */
+      p_core_stext_hacked++;
    }
 
    /*
@@ -346,31 +365,54 @@ void p_check_integrity(struct work_struct *p_work) {
 
    if (p_db.kernel_stext.p_hash != p_tmp_hash) {
 
-      /* "whitelisted" self-modifications? tracepoints? DO_ONCE()? */
-      if ( (p_cmp_bytes((char *)p_db.kernel_stext_snapshot,
-                        (char *)p_db.kernel_stext_copy.p_addr,
-                        (unsigned long)p_db.kernel_stext.p_size)) == -1) {
+      /* We can only do whitelistening if we trust copy of stext */
+      if (!p_core_stext_hacked) {
+         /* "whitelisted" self-modifications? tracepoints? DO_ONCE()? */
+         if ( (p_cmp_bytes((char *)p_db.kernel_stext_snapshot,
+                           (char *)p_db.kernel_stext_copy.p_addr,
+                           (unsigned long)p_db.kernel_stext.p_size,
+                           0x0)) == -1) {
 
+            /* I'm hacked! ;( */
+            p_print_log(P_LKRG_CRIT,
+                   "ALERT !!! _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
+                                                                  p_tmp_hash,p_db.kernel_stext.p_hash);
+            p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
+                                                             (unsigned int)p_db.kernel_stext_copy.p_size);
+            p_hack_check++;
+         } else {
+            p_print_log(P_LKRG_WARN,
+                "Whitelisted legit self-modification detected! "
+                "Recalculating internal kernel core .text section hash\n");
+
+            p_db.kernel_stext.p_hash = p_tmp_hash; //<- might be modified during whitelisting algorithm
+/*
+            p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_snapshot,
+                                                        (unsigned int)p_db.kernel_stext.p_size);
+*/
+            p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
+                                                             (unsigned int)p_db.kernel_stext_copy.p_size);
+         }
+      /* We detected copy of stext and main stext corruption - we are hacked and can't recover */
+      } else {
          /* I'm hacked! ;( */
          p_print_log(P_LKRG_CRIT,
                 "ALERT !!! _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                p_tmp_hash,p_db.kernel_stext.p_hash);
-         p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
-                                                          (unsigned int)p_db.kernel_stext_copy.p_size);
          p_hack_check++;
-      } else {
-         p_print_log(P_LKRG_WARN,
-             "Whitelisted legit self-modification detected! "
-             "Recalculating internal kernel core .text section hash\n");
-
-         p_db.kernel_stext.p_hash = p_tmp_hash; //<- might be modified during whitelisting algorithm
-/*
-         p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_snapshot,
-                                                     (unsigned int)p_db.kernel_stext.p_size);
-*/
-         p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
-                                                          (unsigned int)p_db.kernel_stext_copy.p_size);
       }
+
+   /*
+    * Looks like copy of stext is corrupted but main stext memory is OK.
+    * Let's restore copy of stext to correct state.
+    *
+    * It is weird state because if someone can corrupt copy of stext he can also corrupt hashes.
+    * Still it is good to keep this logic, since if we developed DB guarding, this will be very useful.
+    */
+   } else if (p_core_stext_hacked) {
+      memcpy(p_db.kernel_stext_copy.p_addr, p_db.kernel_stext_snapshot, p_db.kernel_stext_copy.p_size);
+      p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
+                                                       (unsigned int)p_db.kernel_stext_copy.p_size);
    }
 
    p_print_log(P_LKRG_INFO,"Hash from _stext memory block => [0x%llx]\n",p_tmp_hash);
@@ -510,6 +552,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         p_tmp_mod = find_module(p_module_kobj_tmp[p_tmp_hash].p_name);
                         if (p_tmp_mod) {
                            if (p_tmp_mod->state != MODULE_STATE_LIVE) {
+                              p_hack_check--;
                               p_print_log(P_LKRG_CRIT,
                                     "** HIDDEN MODULE IS NOT IN THE 'LIVE' STATE BUT IN [%s] STATE **\n"
                                     "** !! MOST LIKELY SYSTEM IS STABLE !! **\n",
@@ -518,6 +561,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                                                (p_tmp_mod->state == 3) ? "COMING" : "UNKNOWN!"
                                                                );
                            } else {
+                              p_hack_check--;
                               p_print_log(P_LKRG_CRIT,
                                     "** HIDDEN MODULE HAS 'LIVE' STATE BUT _BLOCKING MODULES_ IS DISABLED **\n"
                                     "** MODULE WAS CORRECTLY IDENTIFIED THROUGH THE OFFICIAL API **\n"
@@ -538,6 +582,7 @@ void p_check_integrity(struct work_struct *p_work) {
                      p_tmp_mod = find_module(p_module_kobj_tmp[p_tmp_hash].p_name);
                      if (p_tmp_mod) {
                         if (p_tmp_mod->state != MODULE_STATE_LIVE) {
+                           p_hack_check--;
                            p_print_log(P_LKRG_CRIT,
                                     "** HIDDEN MODULE IS NOT IN THE 'LIVE' STATE BUT IN [%s] STATE **\n"
                                     "** !! MOST LIKELY SYSTEM IS STABLE !! **\n",
@@ -546,6 +591,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                                                (p_tmp_mod->state == 3) ? "COMING" : "UNKNOWN!"
                                                                );
                         } else {
+                           p_hack_check--;
                            p_print_log(P_LKRG_CRIT,
                                  "** HIDDEN MODULE HAS 'LIVE' STATE BUT _BLOCKING MODULES_ IS DISABLED **\n"
                                  "** MODULE WAS CORRECTLY IDENTIFIED THROUGH THE OFFICIAL API **\n"
@@ -563,6 +609,13 @@ void p_check_integrity(struct work_struct *p_work) {
                            // TODO: Dump module
                      }
                   }
+               } else {
+                  p_print_log(P_LKRG_CRIT,
+                         "!! MOST LIKELY SYSTEM IS HACKED - MODULE WILL BE DUMPED !! **\n");
+
+                  // Dynamic module blocking is disabled so this situation shouldn't happend
+                  // MOST LIKELY WE ARE HACKED!
+                  // TODO: Dump module
                }
             }
          }
@@ -576,7 +629,7 @@ void p_check_integrity(struct work_struct *p_work) {
         /*
          * This is strange behaviour. Most of the malicious modules don't remove them from KOBJ
          * Just from module list. If any remove themselves from the KOBJ most likely they also
-         * Removed themselves from mofule list as well. I would not make assumption system is
+         * Removed themselves from the module list as well. I would not make assumption system is
          * Somehow compromised but for sure something very strange happened! That's why we should
          * Inform about that!
          */
@@ -643,7 +696,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                   "** STRANGE BEHAVIOUR DETECTED - MODULE WAS FOUN IN MODULE LIST BUT NOT IN KOBJs - MODULE WILL BE DUMPED !! **\n");
 
                            // Did NOT find it in the system via official API...
-                           // MOST LIKELY WE ARE HACKED!
+                           // MOST LIKELY WE ARE NOT HACKED :)
                            // TODO: Dump module
                         }
                      }
@@ -672,10 +725,17 @@ void p_check_integrity(struct work_struct *p_work) {
                                   "** STRANGE BEHAVIOUR DETECTED - MODULE WAS FOUND IN MODULE LIST BUT NOT IN KOBJs - MODULE WILL BE DUMPED !! **\n");
 
                            // Did NOT find it in the system via official API...
-                           // MOST LIKELY WE ARE HACKED!
+                           // MOST LIKELY WE ARE NOT HACKED :)
                            // TODO: Dump module
                      }
                   }
+               } else {
+                  p_print_log(P_LKRG_CRIT,
+                         "** STRANGE BEHAVIOUR DETECTED - MODULE WAS FOUND IN MODULE LIST BUT NOT IN KOBJs - MODULE WILL BE DUMPED !! **\n");
+
+                  // Dynamic module blocking is disabled so this situation shouldn't happend
+                  // MOST LIKELY WE ARE NOT HACKED :)
+                  // TODO: Dump module
                }
             }
          }
@@ -718,13 +778,16 @@ void p_check_integrity(struct work_struct *p_work) {
       if (p_module_list_nr_tmp < p_db.p_module_list_nr) {
          /*
           * We "lost" module which we didn't register somehow.
-          * It shouldn't happened because notifier inform us on any
-          * Module related activities! If module is being unloaded
-          * We rebuild database and we sholdn't be here now!
+          * It might happened regardless notifier informing us on any
+          * module related activities.
           *
           * I would not make assumption system is somehow compromised
-          * but for sure something very strange happened! That's why we
-          * Should inform about that!
+          * but we should inform about that.
+          *
+          * It might happend when verification routine will win
+          * the race with module notification routine of acquiring
+          * module mutexes. In that case, notification routine will
+          * wait until this verification context unlock mutexes.
           */
 
          p_tmp_diff = p_db.p_module_list_nr - p_module_list_nr_tmp;
@@ -743,7 +806,7 @@ void p_check_integrity(struct work_struct *p_work) {
             }
             /* Did we find missing module? */
             if (!p_tmp_flag) {
-               /* OK we found which module is in KOBJ list but not in module list... */
+               /* OK we found which module is in DB module list but not in current module list... */
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
@@ -788,7 +851,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                     "** RACE CONDITION MIGHT APPEARED WHEN SYSTEM WAS REBUILDING DATABASE **\n"
                                     "!! MOST LIKELY SYSTEM IS STABLE !! **\n");
 
-                              // TODO: Dump module - not here
+                              // TODO: Dirty dump module - from the memory scratches if possible
                            }
                         } else {
                            p_print_log(P_LKRG_CRIT,
@@ -796,7 +859,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                   "** RACE CONDITION MIGHT APPEARED WHEN SYSTEM WAS REBUILDING DATABASE **\n");
 
                            // Did NOT find it in the system via official API...
-                           // TODO: Dump module - not here
+                           // TODO: Dirty dump module - from the memory scratches if possible
                         }
                      }
                   } else {
@@ -816,7 +879,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  "** MODULE WAS CORRECTLY IDENTIFIED THROUGH THE OFFICIAL API **\n"
                                  "** RACE CONDITION MIGHT APPEARED WHEN SYSTEM WAS REBUILDING DATABASE **\n"
                                  "!! MOST LIKELY SYSTEM IS STABLE !! **\n");
-                           // TODO: Dump module
+                           // TODO: Dirty dump module - from the memory scratches if possible
                         }
                      } else {
                            p_print_log(P_LKRG_CRIT,
@@ -824,7 +887,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                   "** RACE CONDITION MIGHT APPEARED WHEN SYSTEM WAS REBUILDING DATABASE **\n");
 
                            // Did NOT find it in the system via official API...
-                           // TODO: Dump module - not here
+                           // TODO: Dirty dump module - from the memory scratches if possible
                      }
                   }
                }
@@ -839,12 +902,15 @@ void p_check_integrity(struct work_struct *p_work) {
       } else if (p_db.p_module_list_nr < p_module_list_nr_tmp) {
          /*
           * This is weird situation as well. Notifier should inform us
-          * Whenever new module arrives and we rebuild database.
-          * For some reason this extra module is not being tracked!
+          * whenever new module arrives and we rebuild database.
+          *
+          * It might happend when verification routine will win
+          * the race with module notification routine of acquiring
+          * module mutexes. In that case, notification routine will
+          * wait until this verification context unlock mutexes.
           *
           * I would not make assumption system is somehow compromised
-          * but for sure something very strange happened! That's why we
-          * Should inform about that!
+          * but we should inform about that!
           */
 
          p_tmp_diff = p_module_list_nr_tmp - p_db.p_module_list_nr;
@@ -863,7 +929,7 @@ void p_check_integrity(struct work_struct *p_work) {
             }
             /* Did we find missing module? */
             if (!p_tmp_flag) {
-               /* OK we found which module is in KOBJ list but not in module list... */
+               /* OK we found which module is in current module list but not in DB module list... */
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
@@ -944,6 +1010,13 @@ void p_check_integrity(struct work_struct *p_work) {
                         // TODO: Dump module
                      }
                   }
+               } else {
+                  p_print_log(P_LKRG_CRIT,
+                         "!! MOST LIKELY SYSTEM IS HACKED - MODULE WILL BE DUMPED !! **\n");
+
+                  // Dynamic module blocking is disabled so this situation shouldn't happend
+                  // MOST LIKELY WE ARE HACKED!
+                  // TODO: Dump module
                }
             }
          }
@@ -978,14 +1051,16 @@ void p_check_integrity(struct work_struct *p_work) {
       p_mod_bad_nr++;
       if (p_module_kobj_nr_tmp < p_db.p_module_kobj_nr) {
          /*
-          * We "lost" module which we didn't register somehow.
-          * It shouldn't happened because notifier inform us on any
-          * Module related activities! If module is being unloaded
-          * We rebuild database and we sholdn't be here now!
+          * This is weird situation as well. Notifier should inform us
+          * whenever new module arrives and we rebuild database.
+          *
+          * It might happend when verification routine will win
+          * the race with module notification routine of acquiring
+          * module mutexes. In that case, notification routine will
+          * wait until this verification context unlock mutexes.
           *
           * I would not make assumption system is somehow compromised
-          * but for sure something very strange happened! That's why we
-          * Should inform about that!
+          * but we should inform about that!
           */
 
          p_tmp_diff = p_db.p_module_kobj_nr - p_module_kobj_nr_tmp;
@@ -1004,7 +1079,7 @@ void p_check_integrity(struct work_struct *p_work) {
             }
             /* Did we find missing module? */
             if (!p_tmp_flag) {
-               /* OK we found which module is in KOBJ list but not in module list... */
+               /* OK we found which module is in KOBJ DB but not in the current KOBJ list... */
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
@@ -1049,14 +1124,14 @@ void p_check_integrity(struct work_struct *p_work) {
                                     "** RACE CONDITION MIGHT APPEARED WHEN SYSTEM WAS REBUILDING DATABASE **\n"
                                     "!! MOST LIKELY SYSTEM IS STABLE !! **\n");
 
-                              // TODO: Dump module - don't think so
+                              // TODO: Dirty dump module - from the memory scratches if possible
                            }
                         } else {
                            p_print_log(P_LKRG_CRIT,
                                   "** STRANGE BEHAVIOUR DETECTED - MODULE FOUND IN DB BUT NOT IN OS !! **\n"
                                   "** RACE CONDITION MIGHT APPEARED WHEN SYSTEM WAS REBUILDING DATABASE **\n");
                            // Did NOT find it in the system via official API...
-                           // TODO: Dump module - don't think so
+                           // TODO: Dirty dump module - from the memory scratches if possible
                         }
                      }
                   } else {
@@ -1076,14 +1151,14 @@ void p_check_integrity(struct work_struct *p_work) {
                                  "** MODULE WAS CORRECTLY IDENTIFIED THROUGH THE OFFICIAL API **\n"
                                  "** RACE CONDITION MIGHT APPEARED WHEN SYSTEM WAS REBUILDING DATABASE **\n"
                                  "!! MOST LIKELY SYSTEM IS STABLE !! **\n");
-                           // TODO: Dump module - don't think so
+                           // TODO: Dirty dump module - from the memory scratches if possible
                         }
                      } else {
                         p_print_log(P_LKRG_CRIT,
                                "** STRANGE BEHAVIOUR DETECTED - MODULE FOUND IN DB BUT NOT IN OS !! **\n"
                                "** RACE CONDITION MIGHT APPEARED WHEN SYSTEM WAS REBUILDING DATABASE **\n");
                         // Did NOT find it in the system via official API...
-                        // TODO: Dump module - don't think so
+                        // TODO: Dirty dump module - from the memory scratches if possible
                      }
                   }
                }
@@ -1098,12 +1173,15 @@ void p_check_integrity(struct work_struct *p_work) {
       } else if (p_db.p_module_kobj_nr < p_module_kobj_nr_tmp) {
          /*
           * This is weird situation as well. Notifier should inform us
-          * Whenever new module arrives and we rebuild database.
-          * For some reason this extra module is not being tracked!
+          * whenever new module arrives and we rebuild database.
+          *
+          * It might happend when verification routine will win
+          * the race with module notification routine of acquiring
+          * module mutexes. In that case, notification routine will
+          * wait until this verification context unlock mutexes.
           *
           * I would not make assumption system is somehow compromised
-          * but for sure something very strange happened! That's why we
-          * Should inform about that!
+          * but we should inform about that!
           */
 
          p_tmp_diff = p_module_kobj_nr_tmp - p_db.p_module_kobj_nr;
@@ -1122,7 +1200,7 @@ void p_check_integrity(struct work_struct *p_work) {
             }
             /* Did we find missing module? */
             if (!p_tmp_flag) {
-               /* OK we found which module is in KOBJ list but not in module list... */
+               /* OK we found which module is in the current KOBJ list but not in KOBJ DB... */
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
@@ -1170,7 +1248,7 @@ void p_check_integrity(struct work_struct *p_work) {
                            p_print_log(P_LKRG_CRIT,
                                   "** STRANGE BEHAVIOUR DETECTED - MODULE WAS FOUND IN DB KOBJs BUT NOT IN OS - MODULE WILL BE DUMPED !! **\n");
                            // Did NOT find it in the system via official API...
-                           // MOST LIKELY WE ARE HACKED!
+                           // MOST LIKELY WE ARE NOT HACKED :)
                            // TODO: Dump module
                         }
                      }
@@ -1198,7 +1276,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                "** STRANGE BEHAVIOUR DETECTED - MODULE WAS FOUND IN DB KOBJs BUT NOT IN OS - MODULE WILL BE DUMPED !! **\n");
 
                         // Did NOT find it in the system via official API...
-                        // MOST LIKELY WE ARE HACKED!
+                        // MOST LIKELY WE ARE NOT HACKED :)
                         // TODO: Dump module
                      }
                   }
@@ -1231,48 +1309,215 @@ void p_check_integrity(struct work_struct *p_work) {
    }
 */
 
+/*
    p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_module_list_tmp,
                                  (unsigned int)p_module_list_nr_tmp * sizeof(p_module_list_mem));
+*/
+
+   p_core_stext_hacked = 0x0;
+   for (p_tmp_hash = p_tmp = 0x0; p_tmp < p_module_list_nr_tmp; p_tmp++) {
+      p_tmp_hash ^= p_lkrg_fast_hash((unsigned char *)&p_module_list_tmp[p_tmp],
+                                     (unsigned int)offsetof(p_module_list_mem, mod_core_stext_copy));
+      p_tmp_hash_stexts ^= p_module_list_tmp[p_tmp].mod_core_stext_copy.p_hash;
+/*
+      p_print_log(P_LKRG_CRIT,
+          "p_tmp_hash_stexts => [0x%llx] p_module_list_tmp[%d].mod_core_stext_copy.p_hash[0x%llx]\n",
+           p_tmp_hash_stexts,p_tmp,p_module_list_tmp[p_tmp].mod_core_stext_copy.p_hash);
+*/
+
+      if (p_mod_bad_nr) {
+         unsigned int p_tmp_cnt;
+
+         for (p_tmp_cnt = 0x0; p_tmp_cnt < p_db.p_module_list_nr; p_tmp_cnt++) {
+            if (p_db.p_module_list_array[p_tmp_cnt].p_mod == p_module_list_tmp[p_tmp].p_mod) {
+               if (p_module_list_tmp[p_tmp].mod_core_stext_copy.p_hash != p_db.p_module_list_array[p_tmp_cnt].mod_core_stext_copy.p_hash) {
+                  p_module_list_tmp[p_tmp].dynamic_flag = 0x1;
+                  p_core_stext_hacked++;
+                  p_print_log(P_LKRG_CRIT,
+                         "!!! COPY OF _STEXT MEMORY BLOCK FOR MODULE[%s] IS CORRUPTED <%p> DB:[0x%llx] vs <%p>[0x%llx] !!!\n",
+                         p_module_list_tmp[p_tmp].p_name,
+                         p_db.p_module_list_array[p_tmp_cnt].mod_core_stext_copy.p_addr,
+                         p_db.p_module_list_array[p_tmp_cnt].mod_core_stext_copy.p_hash,
+                         p_module_list_tmp[p_tmp].mod_core_stext_copy.p_addr,
+                         p_module_list_tmp[p_tmp].mod_core_stext_copy.p_hash);
+               }
+            }
+         }
+
+      } else if (p_tmp < p_db.p_module_list_nr) {
+         if (p_module_list_tmp[p_tmp].mod_core_stext_copy.p_hash != p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_hash) {
+            p_module_list_tmp[p_tmp].dynamic_flag = 0x1;
+            p_core_stext_hacked++;
+            p_print_log(P_LKRG_CRIT,
+                   "!!! COPY OF _STEXT MEMORY BLOCK FOR MODULE[%s] IS CORRUPTED <%p> DB:[0x%llx] vs <%p>[0x%llx] !!!\n",
+                   p_module_list_tmp[p_tmp].p_name,
+                   p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_addr,
+                   p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_hash,
+                   p_module_list_tmp[p_tmp].mod_core_stext_copy.p_addr,
+                   p_module_list_tmp[p_tmp].mod_core_stext_copy.p_hash);
+         }
+      }
+   }
+
+   if (p_tmp_hash_stexts != p_db.p_module_stexts_copy) {
+      if (p_core_stext_hacked) {
+         /* I'm hacked! ;( */
+         p_print_log(P_LKRG_CRIT,
+                "ALERT !!! COPY OF THE MODULES _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx]"
+                " and should be [0x%llx] !!!\n",
+                p_tmp_hash_stexts,p_db.p_module_stexts_copy);
+         p_hack_check++;
+         /*
+          * If we find kernel .text corruption we won't be able to
+          * validate *_JUMP_LABEL modifications.
+          * We should bugcheck if copy of stext and core .text is corrupted.
+          */
+         p_core_stext_hacked++;
+      } else {
+         p_print_log(P_LKRG_WARN,
+                "Copy of the modules .text mem block is different because in DB we don't have all dumped modules.");
+      }
+   }
 
    p_print_log(P_LKRG_INFO,"Hash from 'module list' => [0x%llx]\n",p_tmp_hash);
 
    if (p_tmp_hash != p_db.p_module_list_hash) {
+      unsigned int p_tmp_cnt,p_tmp_cnt2,p_local_hack_check = 0x0;
+      char p_tmp_cnt2_flag;
+
+      for (p_tmp = 0x0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
+         for (p_tmp_cnt = 0x0; p_tmp_cnt < p_module_list_nr_tmp; p_tmp_cnt++) {
+            if (p_db.p_module_list_array[p_tmp].p_mod == p_module_list_tmp[p_tmp_cnt].p_mod) {
+               if (p_db.p_module_list_array[p_tmp].p_mod_core_text_hash != p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash) {
+                  if (!p_module_list_tmp[p_tmp_cnt].dynamic_flag &&
+                      p_db.p_module_list_array[p_tmp].kmod_stext_snapshot != P_NEW_KMOD_STEXT) {
+
+                     /*
+                      * if ( (p_cmp_bytes((char *)p_db.kernel_stext_snapshot,
+                      *     (char *)p_db.kernel_stext_copy.p_addr,
+                      *     (unsigned long)p_db.kernel_stext.p_size)) == -1) {
+                      */
+
+                     if ( (p_cmp_bytes((char *)p_db.p_module_list_array[p_tmp].kmod_stext_snapshot,
+                                       (char *)p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_addr,
+                                       (unsigned long)p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_size,
+                                       (unsigned long)p_db.p_module_list_array[p_tmp].p_module_core)) == -1) {
+
+                     /* I'm hacked! ;( */
+//                     p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
+//                                                                      (unsigned int)p_db.kernel_stext_copy.p_size);
+
+                        p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_hash =
+                                       p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_addr,
+                                                        (unsigned int)p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_size);
+
+                        p_print_log(P_LKRG_CRIT,
+                               "ALERT !!! MODULE'S <%s> HASH IS DIFFERENT it is [0x%llx] and should be [0x%llx] !!!\n",
+                                p_module_list_tmp[p_tmp_cnt].p_name,
+                                p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash,
+                                p_db.p_module_list_array[p_tmp_cnt].p_mod_core_text_hash);
+                        p_hack_check++;
+                        p_local_hack_check++;
+
+                     } else {
+                        p_print_log(P_LKRG_WARN,
+                            "Whitelisted legit self-modification detected! "
+                            "Recalculating module's .text section hash\n");
+
+                        p_db.p_module_list_array[p_tmp].p_mod_core_text_hash =  //<- might be modified during whitelisting algorithm
+                                                 p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash;
+
+                        for (p_tmp_cnt2_flag = p_tmp_cnt2 = 0x0; p_tmp_cnt2 < p_db.p_module_kobj_nr; p_tmp_cnt2++) {
+                           if (p_db.p_module_kobj_array[p_tmp_cnt2].p_mod == p_db.p_module_list_array[p_tmp].p_mod) {
+                              p_tmp_cnt2_flag = 0x1;
+                              break;
+                           }
+                        }
+
+                        /*
+                        if ( (p_db.p_module_kobj_array[p_tmp].p_mod == p_db.p_module_list_array[p_tmp].p_mod) == p_module_kobj_tmp[p_tmp_cnt].p_mod) {
+                            printk(KERN_CRIT "YES [%s] [%s] [%s]\n",p_db.p_module_kobj_array[p_tmp].p_name,p_db.p_module_list_array[p_tmp].p_name,p_module_kobj_tmp[p_tmp_cnt].p_name);
+                        } else {
+                            printk(KERN_CRIT "NO [%s] [%s] [%s]\n",p_db.p_module_kobj_array[p_tmp].p_name,p_db.p_module_list_array[p_tmp].p_name,p_module_kobj_tmp[p_tmp_cnt].p_name);
+                        }
+                        */
+                        if (p_tmp_cnt2_flag) {
+                           p_print_log(P_LKRG_WARN,
+                                  "Because we whitelisted module's .text section hash we need to update KOBJs as well.\n"
+                                  "Module[%s] was [0x%llx] and should be [0x%llx]\n",
+                                  p_db.p_module_list_array[p_tmp].p_name,
+                                  p_db.p_module_kobj_array[p_tmp_cnt2].p_mod_core_text_hash,
+                                  p_db.p_module_list_array[p_tmp].p_mod_core_text_hash);
+                           p_db.p_module_kobj_array[p_tmp_cnt2].p_mod_core_text_hash = p_db.p_module_list_array[p_tmp].p_mod_core_text_hash;
+                           p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
+                                                                      (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
+                           if (p_tmp_cnt2 < p_module_kobj_nr_tmp) {
+                              p_module_kobj_tmp[p_tmp_cnt2].p_mod_core_text_hash = p_db.p_module_kobj_array[p_tmp_cnt2].p_mod_core_text_hash;
+                           }
+                        }
+/*
+                     p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_snapshot,
+                                                                 (unsigned int)p_db.kernel_stext.p_size);
+*/
+                        p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_hash =
+                                         p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_addr,
+                                                          (unsigned int)p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_size);
+                     }
+
+                  } else {
+                     if (p_db.p_module_list_array[p_tmp].kmod_stext_snapshot == P_NEW_KMOD_STEXT) {
+                        // This shouldn't happened here...
+                        p_print_log(P_LKRG_CRIT,
+                               "?!?! p_db.p_module_list_array[p_tmp].kmod_stext_snapshot == P_NEW_KMOD_STEXT ?!?!\n");
+                     } else {
+                        p_print_log(P_LKRG_CRIT,
+                               "!!! CAN'T VERIFY STEXT FOR MODULE[%s] SINCE COPY OF STEXT IS CORRUPTED !!!\n",
+                               p_module_list_tmp[p_tmp].p_name);
+                        p_hack_check++;
+                        p_local_hack_check++;
+                     }
+                  }
+               }
+            }
+         }
+      }
+
+      if (!p_local_hack_check) {
+         p_db.p_module_list_hash = p_db.p_module_stexts_copy = 0x0;
+         for (p_tmp_cnt = 0x0; p_tmp_cnt < p_db.p_module_list_nr; p_tmp_cnt++) {
+            p_db.p_module_list_hash ^= p_lkrg_fast_hash((unsigned char *)&p_db.p_module_list_array[p_tmp_cnt],
+                                                        (unsigned int)offsetof(p_module_list_mem, mod_core_stext_copy));
+            p_db.p_module_stexts_copy ^= p_db.p_module_list_array[p_tmp_cnt].mod_core_stext_copy.p_hash;
+         }
+
+         if (p_tmp_hash != p_db.p_module_list_hash) {
+            p_local_hack_check = 0x1;
+         }
+      }
 
       /*
        * OK, we know hash will be different if there is inconsistency in the number
        * of tracked / discovered modules in module list and/or in sysfs (KOBJs)
        */
-      if (!p_mod_bad_nr) {
-         p_print_log(P_LKRG_CRIT,
-                "ALERT !!! MODULE LIST HASH IS DIFFERENT !!! - it is [0x%llx] and should be [0x%llx] !!!\n",
-                                                                          p_tmp_hash,p_db.p_module_list_hash);
+      if (p_local_hack_check) {
+         if (!p_mod_bad_nr) {
+            p_print_log(P_LKRG_CRIT,
+                   "ALERT !!! MODULE LIST HASH IS DIFFERENT !!! - it is [0x%llx] and should be [0x%llx] !!!\n",
+                                                                             p_tmp_hash,p_db.p_module_list_hash);
 
-         /* Maybe we have sleeping module activity event ? */
-         if (mutex_is_locked(&p_module_activity)) {
-               p_print_log(P_LKRG_CRIT,
-                           "** UNHANDLED ON-GOING MODULE ACTIVITY EVENTS DETECTED **\n"
-                           "** !! IT IS POSSIBLE SYSTEM IS STABLE BUT UNHANDLED !! **\n"
-                           "** !! ACTIVITY CHANGED MODULE LIST CONSISTENCY !! **\n");
-         } else {
-            p_hack_check++;
-         }
-
-      }
-
-      for (p_tmp_hash = 0x0; p_tmp_hash < p_db.p_module_list_nr; p_tmp_hash++) {
-         unsigned int p_tmp_cnt;
-         for (p_tmp_cnt = 0x0; p_tmp_cnt < p_module_list_nr_tmp; p_tmp_cnt++) {
-            if (p_db.p_module_list_array[p_tmp_hash].p_mod == p_module_list_tmp[p_tmp_cnt].p_mod)
-               if (p_db.p_module_list_array[p_tmp_hash].p_mod_core_text_hash != p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash) {
+            /* Maybe we have sleeping module activity event ? */
+            if (mutex_is_locked(&p_module_activity)) {
+                  p_hack_check--;
                   p_print_log(P_LKRG_CRIT,
-                         "ALERT !!! MODULE'S <%s> HASH IS DIFFERENT it is [0x%llx] and should be [0x%llx] !!!\n",
-                          p_module_list_tmp[p_tmp_hash].p_name,
-                          p_module_list_tmp[p_tmp_hash].p_mod_core_text_hash,
-                          p_db.p_module_list_array[p_tmp_cnt].p_mod_core_text_hash);
-                  p_hack_check++;
-               }
+                              "** UNHANDLED ON-GOING MODULE ACTIVITY EVENTS DETECTED **\n"
+                              "** !! IT IS POSSIBLE SYSTEM IS STABLE BUT UNHANDLED !! **\n"
+                              "** !! ACTIVITY CHANGED MODULE LIST CONSISTENCY !! **\n");
+            } else {
+               p_hack_check++;
+            }
          }
       }
+
    }
 
    p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_module_kobj_tmp,
@@ -1307,7 +1552,7 @@ void p_check_integrity(struct work_struct *p_work) {
             if (p_db.p_module_kobj_array[p_tmp_hash].p_mod == p_module_kobj_tmp[p_tmp_cnt].p_mod)
                if (p_db.p_module_kobj_array[p_tmp_hash].p_mod_core_text_hash != p_module_kobj_tmp[p_tmp_cnt].p_mod_core_text_hash) {
                   p_print_log(P_LKRG_CRIT,
-                         "ALERT !!! MODULE'S <%s> HASH IS DIFFERENT it is [0x%llx] and should be [0x%llx] !!!\n",
+                         "[KOBJ] ALERT !!! MODULE'S <%s> HASH IS DIFFERENT it is [0x%llx] and should be [0x%llx] !!!\n",
                           p_module_kobj_tmp[p_tmp_hash].p_name,
                           p_module_kobj_tmp[p_tmp_hash].p_mod_core_text_hash,
                           p_db.p_module_kobj_array[p_tmp_cnt].p_mod_core_text_hash);
@@ -1324,17 +1569,44 @@ void p_check_integrity(struct work_struct *p_work) {
       p_print_log(P_LKRG_ALIVE,"System is clean!\n");
    }
 
+   if (p_module_list_tmp) {
+      for (p_tmp = 0x0; p_tmp < p_module_list_nr_tmp; p_tmp++) {
+         if (P_NEW_KMOD_STEXT == p_module_list_tmp[p_tmp].kmod_stext_snapshot) {
+            if (NULL != p_module_list_tmp[p_tmp].mod_core_stext_copy.p_addr) {
+               kzfree(p_module_list_tmp[p_tmp].mod_core_stext_copy.p_addr);
+               p_module_list_tmp[p_tmp].mod_core_stext_copy.p_addr = NULL;
+            }
+         }
+      }
+      kzfree(p_module_list_tmp);
+      p_module_list_tmp = NULL;
+   }
+   if (p_module_kobj_tmp) {
+      kzfree(p_module_kobj_tmp);
+      p_module_kobj_tmp = NULL;
+   }
+
    /* God mode off ;) */
    spin_unlock_irqrestore(&p_db_lock,p_db_flags);
+//   spin_unlock(&p_db_lock);
+
+p_check_integrity_cancel:
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
+   /* unlock KOBJ activities */
+   mutex_unlock(p_kernfs_mutex);
+#endif
+   /* Release the 'module_mutex' */
+   mutex_unlock(&module_mutex);
+   p_text_section_unlock();
 
    p_ed_enforce_validation();
 
-   if (p_tmp_cpus)
+   if (p_tmp_cpus) {
       kzfree(p_tmp_cpus);
-   if (p_module_list_tmp)
-      kzfree(p_module_list_tmp);
-   if (p_module_kobj_tmp)
-      kzfree(p_module_kobj_tmp);
+      p_tmp_cpus = NULL;
+   }
+
 
    /* Free the worker struct */
    if (p_work) {

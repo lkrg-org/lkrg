@@ -26,6 +26,7 @@
 })
 
 #define P_MODULE_BUFFER_RACE 5
+#define P_NEW_KMOD_STEXT ((char*)0xdeadbabe)
 
 typedef struct p_module_list_mem {
 
@@ -35,6 +36,12 @@ typedef struct p_module_list_mem {
    unsigned int p_core_text_size;
 
    uint64_t p_mod_core_text_hash;
+
+   /* JUMP_LABEL support */
+   p_hash_mem_block mod_core_stext_copy;  // copy of entire module's .text segment
+                                          //  - needed to deal with *_JMP_LABEL shit ;/
+   char dynamic_flag;                     // Used only during verification
+   char *kmod_stext_snapshot;             // temp memory for a .text section snapshot - used during verification
 
 } p_module_list_mem;
 
@@ -85,7 +92,7 @@ int p_block_always(void);
 
 int p_kmod_init(void);
 int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_tmp,
-                unsigned int *p_module_kobj_cnt_arg, p_module_kobj_mem **p_mkm_tmp);
+                unsigned int *p_module_kobj_cnt_arg, p_module_kobj_mem **p_mkm_tmp, char p_flag);
 void p_deregister_module_notifier(void);
 void p_register_module_notifier(void);
 

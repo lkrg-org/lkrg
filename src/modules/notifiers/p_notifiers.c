@@ -153,7 +153,9 @@ static int p_freq_transition_notifier(struct notifier_block *p_nb, unsigned long
           "Entering function <p_freq_transition_notifier>\n");
 
    /* 10% */
-   P_TRY_OFFLOAD_NOTIFIER(P_RARE_RATE, "<p_freq_transition_notifier> Offloading integrity check\n");
+//   P_TRY_OFFLOAD_NOTIFIER(P_RARE_RATE, "<p_freq_transition_notifier> Offloading integrity check\n");
+   /* 1%% */
+   P_TRY_OFFLOAD_NOTIFIER(P_OFTEN_RATE, "<p_freq_transition_notifier> Offloading integrity check\n");
 
 // STRONG_DEBUG
    p_debug_notifier_log(

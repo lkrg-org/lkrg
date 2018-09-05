@@ -244,6 +244,7 @@ int p_create_database(void) {
    int p_tmp;
 //   int p_tmp_cpu;
    int p_ret = P_LKRG_SUCCESS;
+   unsigned int p_cnt;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
@@ -341,6 +342,9 @@ int p_create_database(void) {
 
    p_db.p_IDT_MSR_CRx_hashes = hash_from_CPU_data(p_db.p_IDT_MSR_CRx_array);
 
+   /* Some arch needs extra hooks */
+   p_register_arch_metadata();
+
    if (hash_from_ex_table() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
          "CREATING DATABASE ERROR: EXCEPTION TABLE CAN'T BE FOUND (skipping it)!\n");
@@ -348,14 +352,6 @@ int p_create_database(void) {
       p_db.kernel_ex_table.p_addr = NULL;
    }
 
-   p_text_section_lock();
-   if (hash_from_kernel_stext(1) != P_LKRG_SUCCESS) {
-      p_print_log(P_LKRG_CRIT,
-         "CREATING DATABASE ERROR: HASH FROM _STEXT!\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_create_database_out;
-   }
-   p_text_section_unlock();
 
    if (hash_from_kernel_rodata() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
@@ -371,6 +367,15 @@ int p_create_database(void) {
       p_db.kernel_iommu_table.p_addr = NULL;
    }
 
+   p_text_section_lock();
+   if (hash_from_kernel_stext(1) != P_LKRG_SUCCESS) {
+      p_print_log(P_LKRG_CRIT,
+         "CREATING DATABASE ERROR: HASH FROM _STEXT!\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_create_database_out;
+   }
+//   p_text_section_unlock();
+
    /* We are heavly consuming module list here - take 'module_mutex' */
    mutex_lock(&module_mutex);
 
@@ -378,19 +383,37 @@ int p_create_database(void) {
     * Memory allocation may fail... let's loop here!
     */
    while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
-                     &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array) != P_LKRG_SUCCESS);
+                     &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x1) != P_LKRG_SUCCESS)
+      schedule();
 
    /* Hash */
+/*
    p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
                                           (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
    p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
+*/
+
+   for (p_db.p_module_list_hash = p_cnt = 0x0; p_cnt < p_db.p_module_list_nr; p_cnt++) {
+      p_db.p_module_list_hash ^= p_lkrg_fast_hash((unsigned char *)&p_db.p_module_list_array[p_cnt],
+                                                  (unsigned int)offsetof(p_module_list_mem, mod_core_stext_copy));
+      p_db.p_module_stexts_copy ^= p_db.p_module_list_array[p_cnt].mod_core_stext_copy.p_hash;
+/*
+      p_print_log(P_LKRG_CRIT,
+          "p_module_stexts_copy => [0x%llx] p_db.p_module_list_array[%d].mod_core_stext_copy.p_hash[0x%llx]\n",
+           p_db.p_module_stexts_copy,p_cnt,p_db.p_module_list_array[p_cnt].mod_core_stext_copy.p_hash);
+*/
+   }
+
+   p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
+                                          (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
+
    /* Register module notification routine */
    p_register_module_notifier();
 
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
-
+   p_text_section_unlock();
 
    p_debug_log(P_LKRG_DBG,
           "p_module_list_hash => [0x%llx]\np_module_kobj_hash => [0x%llx]\n",

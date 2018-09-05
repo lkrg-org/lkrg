@@ -65,6 +65,7 @@ static void p_module_notifier_wrapper(unsigned long p_event, struct module *p_km
 static int p_module_event_notifier(struct notifier_block *p_this, unsigned long p_event, void *p_kmod) {
 
    struct module *p_tmp = p_kmod;
+   unsigned int p_cnt = 0x0;
 
 // STRONG_DEBUG
 #ifdef P_LKRG_DEBUG
@@ -111,6 +112,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
        * We must keep in track that information ;)
        */
 
+      p_text_section_lock();
       /* We are heavly consuming module list here - take 'module_mutex' */
       mutex_lock(&module_mutex);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
@@ -136,22 +138,25 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
        */
 
       /* Let's play... God mode on ;) */
-      spin_lock_irqsave(&p_db_lock,p_db_flags);
+//      spin_lock_irqsave(&p_db_lock,p_db_flags);
+      spin_lock(&p_db_lock);
 
-
-      /* First free currently used memory! */
-      if (p_db.p_module_list_array)
-         kzfree(p_db.p_module_list_array);
-      if (p_db.p_module_kobj_array)
-         kzfree(p_db.p_module_kobj_array);
       /* OK, now recalculate hashes again! */
-
       while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
-                        &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array) != P_LKRG_SUCCESS);
+                        &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x2) != P_LKRG_SUCCESS)
+         schedule();
 
       /* Update global module list/kobj hash */
-      p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
-                                             (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
+//      p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
+//                                             (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
+
+      p_db.p_module_stexts_copy = 0x0;
+      for (p_db.p_module_list_hash = p_cnt = 0x0; p_cnt < p_db.p_module_list_nr; p_cnt++) {
+         p_db.p_module_list_hash ^= p_lkrg_fast_hash((unsigned char *)&p_db.p_module_list_array[p_cnt],
+                                                     (unsigned int)offsetof(p_module_list_mem, mod_core_stext_copy));
+         p_db.p_module_stexts_copy ^= p_db.p_module_list_array[p_cnt].mod_core_stext_copy.p_hash;
+      }
+
       p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                              (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
       /* We should be fine now! */
@@ -184,6 +189,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
           * and recalculate global module hashes...
           */
 
+         p_text_section_lock();
          /* We are heavly consuming module list here - take 'module_mutex' */
          mutex_lock(&module_mutex);
 
@@ -208,21 +214,26 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
           * Don't know if there is any solution for that :)
           *
           */
-         spin_lock_irqsave(&p_db_lock,p_db_flags);
+//         spin_lock_irqsave(&p_db_lock,p_db_flags);
+         spin_lock(&p_db_lock);
 
-         /* First free currently used memory! */
-         if (p_db.p_module_list_array)
-            kzfree(p_db.p_module_list_array);
-         if (p_db.p_module_kobj_array)
-            kzfree(p_db.p_module_kobj_array);
          /* OK, now recalculate hashes again! */
-
          while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
-                        &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array) != P_LKRG_SUCCESS);
+                           &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x2) != P_LKRG_SUCCESS)
+            schedule();
 
          /* Update global module list/kobj hash */
+/*
          p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
                                              (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
+*/
+         p_db.p_module_stexts_copy = 0x0;
+         for (p_db.p_module_list_hash = p_cnt = 0x0; p_cnt < p_db.p_module_list_nr; p_cnt++) {
+            p_db.p_module_list_hash ^= p_lkrg_fast_hash((unsigned char *)&p_db.p_module_list_array[p_cnt],
+                                                        (unsigned int)offsetof(p_module_list_mem, mod_core_stext_copy));
+            p_db.p_module_stexts_copy ^= p_db.p_module_list_array[p_cnt].mod_core_stext_copy.p_hash;
+         }
+
          p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                              (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
          /* We should be fine now! */
@@ -239,13 +250,15 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
 p_module_event_notifier_unlock_out:
 
    /* God mode off ;) */
-   spin_unlock_irqrestore(&p_db_lock,p_db_flags);
+//   spin_unlock_irqrestore(&p_db_lock,p_db_flags);
+   spin_unlock(&p_db_lock);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
    /* unlock KOBJ activities */
    mutex_unlock(p_kernfs_mutex);
 #endif
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
+   p_text_section_unlock();
 
 p_module_event_notifier_activity_out:
 

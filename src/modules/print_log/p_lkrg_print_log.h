@@ -48,6 +48,9 @@
 // By default disabled
 //#define P_LKRG_IOMMU_HASH_ENABLED
 
+#define P_LKRG_KMOD_DUMP_RACE                 -200
+
+
 // Signature in logs...
 #define P_LKRG_SIGNATURE "[p_lkrg] "
 

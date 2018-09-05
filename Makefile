@@ -20,6 +20,8 @@ p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
                src/modules/kmod/p_kmod.o \
                src/modules/database/CPU.o \
                src/modules/database/arch/x86/IDT_MSR_CRx.o \
+               src/modules/database/arch/x86/p_switch_idt/p_switch_idt.o \
+               src/modules/database/arch/p_arch_metadata.o \
                src/modules/database/p_database.o \
                src/modules/notifiers/p_notifiers.o \
                src/modules/self-defense/hiding/p_hiding.o \

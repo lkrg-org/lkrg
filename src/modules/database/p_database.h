@@ -121,12 +121,13 @@ typedef struct p_hash_database {
    uint64_t p_module_list_hash;
    p_module_kobj_mem *p_module_kobj_array;
    uint64_t p_module_kobj_hash;
+   uint64_t p_module_stexts_copy;
 
 
    p_hash_mem_block kernel_stext;         // .text
    p_hash_mem_block kernel_stext_copy;    // copy of entire kernel's .text segment
                                           //  - needed to deal with *_JMP_LABEL shit ;/
-   char *kernel_stext_snapshot;           // temp memory for a .text section snapshot- used during verification
+   char *kernel_stext_snapshot;           // temp memory for a .text section snapshot - used during verification
    p_hash_mem_block kernel_rodata;        // .rodata
    p_hash_mem_block kernel_iommu_table;   // IOMMU table
    p_hash_mem_block kernel_ex_table;      // Exception tale
@@ -149,7 +150,13 @@ int hash_from_iommu_table(void);
 static inline void p_text_section_lock(void) {
 
    //jump_label_lock();
+/*
    mutex_lock(p_jump_label_mutex);
+   mutex_lock(p_text_mutex);
+*/
+
+   while (!mutex_trylock(p_jump_label_mutex))
+      schedule();
    mutex_lock(p_text_mutex);
 }
 
@@ -169,5 +176,8 @@ int p_cpu_callback(struct notifier_block *p_block, unsigned long p_action, void 
 int p_cpu_online_action(unsigned int p_cpu);
 int p_cpu_dead_action(unsigned int p_cpu);
 uint64_t hash_from_CPU_data(p_IDT_MSR_CRx_hash_mem *p_arg);
+
+
+#include "arch/p_arch_metadata.h"
 
 #endif

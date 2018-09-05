@@ -99,7 +99,7 @@ inline unsigned long P_REBASE_STEXT(unsigned long p_old, unsigned long p_new, un
 
 }
 
-int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
+int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size, unsigned long p_mod) {
 
    unsigned long p_tmp;
    unsigned int *p_val; // 'jmp' arg
@@ -110,6 +110,7 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
    unsigned int p_cnt; // counter
    char p_flag;
    size_t p_len; // length of the symbol name
+   unsigned long p_rebase_base = (p_mod) ? p_mod : (unsigned long)p_db.kernel_stext.p_addr;
 
    memset(p_sym1,0x0,KSYM_SYMBOL_LEN);
    memset(p_sym2,0x0,KSYM_SYMBOL_LEN);
@@ -180,9 +181,13 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
             if ( (p_new[p_tmp] & 0xFF) == 0xe9) { // Is it 'jmp' ?
                p_val = (unsigned int *)&p_new[p_tmp+0x1]; // 'jmp' arg
                p_VA1 = (unsigned long) &p_new[p_tmp]; // original VA
-               p_VA1 = P_REBASE_STEXT((unsigned long)p_db.kernel_stext.p_addr, (unsigned long)p_new, p_VA1);
-               p_VA2 = (unsigned long) p_VA1 + 5 + *p_val; // destination VA
-
+               p_VA1 = P_REBASE_STEXT((unsigned long)p_rebase_base, (unsigned long)p_new, p_VA1);
+#ifdef CONFIG_X86_64
+               p_VA2 = (unsigned long)(p_VA1 + 5 + *p_val) & 0xFFFFFFFF; // destination VA
+               p_VA2 |= p_VA1 & 0xFFFFFFFF00000000;
+#else
+               p_VA2 = (unsigned long)p_VA1 + 5 + *p_val; // destination VA
+#endif
                sprint_symbol_no_offset(p_sym1,p_VA1); // symbol name for original VA
                sprint_symbol_no_offset(p_sym2,p_VA2); // symbol name for destination VA
 
@@ -237,8 +242,14 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
             if ((p_old[p_tmp] & 0xFF) == 0xe9) {
                p_val = (unsigned int *)&p_old[p_tmp+0x1]; // 'jmp' arg
                p_VA1 = (unsigned long) &p_new[p_tmp]; // original VA
-               p_VA1 = P_REBASE_STEXT((unsigned long)p_db.kernel_stext.p_addr, (unsigned long)p_new, p_VA1);
-               p_VA2 = (unsigned long) p_VA1 + 5 + *p_val; // destination VA
+               p_VA1 = P_REBASE_STEXT((unsigned long)p_rebase_base, (unsigned long)p_new, p_VA1);
+//               p_VA2 = (unsigned long) p_VA1 + 5 + *p_val; // destination VA
+#ifdef CONFIG_X86_64
+               p_VA2 = (unsigned long)(p_VA1 + 5 + *p_val) & 0xFFFFFFFF; // destination VA
+               p_VA2 |= p_VA1 & 0xFFFFFFFF00000000;
+#else
+               p_VA2 = (unsigned long)p_VA1 + 5 + *p_val; // destination VA
+#endif
                sprint_symbol_no_offset(p_sym1,p_VA1); // symbol name for original VA
                sprint_symbol_no_offset(p_sym2,p_VA2); // symbol name for destination VA
 
@@ -248,14 +259,14 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size) {
 
                p_len = strlen(p_sym1);
                if (p_len != strlen(p_sym2)) {
-                  p_print_log(P_LKRG_CRIT,"[WEIRD!] Kernel overwrote JMP instruction pointing "
+                  p_print_log(P_LKRG_WARN,"[WEIRD!] Kernel overwrote JMP instruction pointing "
                                           "not in the same function via NOP - should NOT happens!\n");
                   // Weird! Lenght is different so for sure this is not the same symbol!
                   //return -1; <- let's continue checks!
                }
 
                if (strncmp(p_sym1,p_sym2,p_len)) {
-                  p_print_log(P_LKRG_CRIT,"[WEIRD!] Kernel overwrote JMP instruction pointing "
+                  p_print_log(P_LKRG_WARN,"[WEIRD!] Kernel overwrote JMP instruction pointing "
                                           "not in the same function via NOP - should NOT happens!\n");
                   // Weird! This is not the same symbol even length is the same...
                   //return -1; <- let's continue checks!
