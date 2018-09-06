@@ -27,6 +27,7 @@ int p_register_arch_metadata(void) {
           "Entering function <p_register_arch_metadata>\n");
 
 #ifdef CONFIG_X86
+#ifdef P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
 
    if (p_install_switch_idt_hook()) {
       p_print_log(P_LKRG_CRIT,
@@ -41,6 +42,7 @@ int p_register_arch_metadata(void) {
       //
    }
 
+#endif
 #endif
 
 // STRONG_DEBUG
@@ -60,7 +62,9 @@ int p_unregister_arch_metadata(void) {
           "Entering function <p_register_arch_metadata>\n");
 
 #ifdef CONFIG_X86
+#ifdef P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
    p_uninstall_switch_idt_hook();
+#endif
 #endif
 
 // STRONG_DEBUG
