@@ -99,23 +99,30 @@ inline unsigned long P_REBASE_STEXT(unsigned long p_old, unsigned long p_new, un
 
 }
 
-int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size, unsigned long p_mod) {
+int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size, p_module_list_mem *p_module) {
 
    unsigned long p_tmp;
    unsigned int *p_val; // 'jmp' arg
    char p_sym1[KSYM_SYMBOL_LEN]; // symbol name of the original VA
    char p_sym2[KSYM_SYMBOL_LEN]; // symbol name of the destination 'jmp' VA
+   char p_cold[KSYM_SYMBOL_LEN]; // symbol name for cold paths
    unsigned long p_VA1; // Original VA
    unsigned long p_VA2; // destination 'jmp' VA
    unsigned int p_cnt; // counter
    char p_flag;
-   size_t p_len; // length of the symbol name
-   unsigned long p_rebase_base = (p_mod) ? p_mod : (unsigned long)p_db.kernel_stext.p_addr;
+   char *p_cold_helper;
+   struct module *p_mod;
+   bool p_is_module_addr, p_cold_valid;
+   size_t p_len,p_len2,p_cold_len; // length of the symbol name
+   unsigned long p_rebase_base = (p_module) ? (unsigned long)p_module->p_module_core
+                                            : (unsigned long)p_db.kernel_stext.p_addr;
 
    memset(p_sym1,0x0,KSYM_SYMBOL_LEN);
    memset(p_sym2,0x0,KSYM_SYMBOL_LEN);
 
    for (p_tmp = 0x0; p_tmp < p_size-JUMP_LABEL_NOP_SIZE; p_tmp++) {
+      memset(p_cold,0x0,KSYM_SYMBOL_LEN);
+      p_cold_valid = false;
       if (p_new[p_tmp] != p_old[p_tmp]) {
 
          p_print_log(P_LKRG_WARN,
@@ -191,16 +198,50 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size, unsigned long p_
                sprint_symbol_no_offset(p_sym1,p_VA1); // symbol name for original VA
                sprint_symbol_no_offset(p_sym2,p_VA2); // symbol name for destination VA
 
+               p_len = strlen(p_sym1);
+               p_len2 = strlen(p_sym2);
+               p_mod = __module_text_address(p_VA2);
+               p_is_module_addr = p_mod != NULL;
+
                p_print_log(P_LKRG_INFO,
                            "[NOP->JMP] p_val[0x%x] p_VA1[0x%lx] p_VA2[0x%lx] p_sym1[%s] p_sym2[%s]\n",
                            *p_val,p_VA1,p_VA2,p_sym1,p_sym2);
 
-               p_len = strlen(p_sym1);
-               if (p_len != strlen(p_sym2))
-                  goto p_whitelist_end; // Lenght is different so for sure this is not the same symbol!
+               if (p_len != p_len2) {
+                  if (p_is_module_addr) {
+                     if (p_mod == p_module->p_mod) {
+                        p_cold_helper = p_sym1;
+                        while (*p_cold_helper != ' ' && *p_cold_helper)
+                           p_cold_helper++;
+                        if (*p_cold_helper && ((p_cold_helper - p_sym1) <= KSYM_SYMBOL_LEN-7)) {
+                           memcpy(p_cold,p_sym1,p_cold_helper - p_sym1);
+                           memcpy(p_cold+(p_cold_helper-p_sym1),".cold.",6);
+                           p_cold_len = strlen(p_cold);
+                           p_cold_valid = true;
+                        }
+                     }
+                  } else {
+                     if (p_len+7 <= KSYM_SYMBOL_LEN) {
+                        memcpy(p_cold,p_sym1,p_len);
+                        memcpy(p_cold+p_len,".cold.",6);
+                        p_cold_len = strlen(p_cold);
+                        p_cold_valid = true;
+                     }
+                  }
 
-               if (strncmp(p_sym1,p_sym2,p_len))
-                  goto p_whitelist_end; // This is not the same symbol even length is the same...
+                  if (!p_cold_valid)
+                     goto p_whitelist_end; // Lenght is different so for sure this is not the same symbol!
+               }
+
+               if (strncmp(p_sym1,p_sym2,p_len)) {
+                  if (p_cold_valid) {
+                     if (strncmp(p_sym2,p_cold,p_cold_len)) {
+                        goto p_whitelist_end; // This is not the coldpath version of the symbol
+                     }
+                  } else {
+                     goto p_whitelist_end; // This is not the same symbol even length is the same...
+                  }
+               }
 
                // Should it be P_LKRG_WARN?
                p_print_log(P_LKRG_INFO, "Detected legit self-modification in core linux .text "
@@ -253,23 +294,59 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size, unsigned long p_
                sprint_symbol_no_offset(p_sym1,p_VA1); // symbol name for original VA
                sprint_symbol_no_offset(p_sym2,p_VA2); // symbol name for destination VA
 
+               p_len = strlen(p_sym1);
+               p_len2 = strlen(p_sym2);
+               p_mod = __module_text_address(p_VA2);
+               p_is_module_addr = p_mod != NULL;
+
                p_print_log(P_LKRG_INFO,
                            "[JMP->NOP] p_val[0x%x] p_VA1[0x%lx] p_VA2[0x%lx] p_sym1[%s] p_sym2[%s]\n",
                            *p_val,p_VA1,p_VA2,p_sym1,p_sym2);
 
-               p_len = strlen(p_sym1);
-               if (p_len != strlen(p_sym2)) {
-                  p_print_log(P_LKRG_WARN,"[WEIRD!] Kernel overwrote JMP instruction pointing "
-                                          "not in the same function via NOP - should NOT happens!\n");
-                  // Weird! Lenght is different so for sure this is not the same symbol!
-                  //return -1; <- let's continue checks!
+               if (p_len != p_len2) {
+                  if (p_is_module_addr) {
+                     if (p_mod == p_module->p_mod) {
+                        p_cold_helper = p_sym1;
+                        while (*p_cold_helper != ' ' && *p_cold_helper)
+                           p_cold_helper++;
+                        if (*p_cold_helper && ((p_cold_helper - p_sym1) <= KSYM_SYMBOL_LEN-7)) {
+                           memcpy(p_cold,p_sym1,p_cold_helper - p_sym1);
+                           memcpy(p_cold+(p_cold_helper-p_sym1),".cold.",6);
+                           p_cold_len = strlen(p_cold);
+                           p_cold_valid = true;
+                        }
+                     }
+                  } else {
+                     if (p_len+7 <= KSYM_SYMBOL_LEN) {
+                        memcpy(p_cold,p_sym1,p_len);
+                        memcpy(p_cold+p_len,".cold.",6);
+                        p_cold_len = strlen(p_cold);
+                        p_cold_valid = true;
+                     }
+                  }
+
+                  if (!p_cold_valid) {
+                     p_print_log(P_LKRG_WARN,"[WEIRD!] Kernel overwrote JMP instruction pointing "
+                                             "not in the same function via NOP - should NOT happens!\n");
+                     // Weird! Lenght is different so for sure this is not the same symbol!
+                     goto p_whitelist_end; // Lenght is different so for sure this is not the same symbol!
+                  }
                }
 
                if (strncmp(p_sym1,p_sym2,p_len)) {
-                  p_print_log(P_LKRG_WARN,"[WEIRD!] Kernel overwrote JMP instruction pointing "
-                                          "not in the same function via NOP - should NOT happens!\n");
-                  // Weird! This is not the same symbol even length is the same...
-                  //return -1; <- let's continue checks!
+                  if (p_cold_valid) {
+                     if (strncmp(p_sym2,p_cold,p_cold_len)) {
+                        p_print_log(P_LKRG_WARN,"[WEIRD!] Kernel overwrote JMP instruction pointing "
+                                                "not in the same function via NOP - should NOT happens!\n");
+                        // Weird! This is not the same symbol even length is the same...
+                        goto p_whitelist_end; // Lenght is different so for sure this is not the same symbol!
+                     }
+                  } else {
+                     p_print_log(P_LKRG_WARN,"[WEIRD!] Kernel overwrote JMP instruction pointing "
+                                             "not in the same function via NOP - should NOT happens!\n");
+                     // Weird! This is not the same symbol even length is the same...
+                     goto p_whitelist_end; // Lenght is different so for sure this is not the same symbol!
+                  }
                }
 
                // Shout be P_LKRG_WARN?

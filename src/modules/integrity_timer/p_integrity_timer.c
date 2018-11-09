@@ -1401,7 +1401,7 @@ void p_check_integrity(struct work_struct *p_work) {
                      if ( (p_cmp_bytes((char *)p_db.p_module_list_array[p_tmp].kmod_stext_snapshot,
                                        (char *)p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_addr,
                                        (unsigned long)p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_size,
-                                       (unsigned long)p_db.p_module_list_array[p_tmp].p_module_core)) == -1) {
+                                       (p_module_list_mem *)&p_db.p_module_list_array[p_tmp])) == -1) {
 
                      /* I'm hacked! ;( */
 //                     p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
