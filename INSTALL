@@ -25,9 +25,9 @@ website and verify the signature of the packages:
 
     $ wget http://www.openwall.com/signatures/openwall-offline-signatures.asc
     $ gpg --import openwall-offline-signatures.asc
-    $ wget http://www.openwall.com/lkrg/lkrg-0.4.tar.gz.sign
-    $ wget http://www.openwall.com/lkrg/lkrg-0.4.tar.gz
-    $ gpg --verify lkrg-0.4.tar.gz.sign lkrg-0.4.tar.gz
+    $ wget http://www.openwall.com/lkrg/lkrg-0.5.tar.gz.sign
+    $ wget http://www.openwall.com/lkrg/lkrg-0.5.tar.gz
+    $ gpg --verify lkrg-0.5.tar.gz.sign lkrg-0.5.tar.gz
 
 
 BUILD REQUIREMENTS:
@@ -97,6 +97,7 @@ between the administrator and LKRG. The following options are available:
 
     root@pi3-ubuntu:~/p_lkrg-main# sysctl -a|grep lkrg
     lkrg.block_modules = 0
+    lkrg.ci_panic = 0
     lkrg.clean_message = 1
     lkrg.force_run = 0
     lkrg.log_level = 1
@@ -107,6 +108,10 @@ between the administrator and LKRG. The following options are available:
     available:
         0 - do NOT lock the kernel and allow to load kernel module
         1 - lock the kernel and do NOT allow to load kernel module
+ -> Kernel panic on CI failure (lkrg.ci_panic) - only two options are
+    available:
+        0 - do NOT crash the kernel on CI failure (default)
+        1 - crash the kernel (call panic()) on CI failure
  -> Printing "System is clean!" message (lkrg.clean_message) - only two options
     are available:
         0 - do NOT print "System is clean!" message regardless of log_level
