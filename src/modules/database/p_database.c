@@ -376,7 +376,7 @@ int p_create_database(void) {
    }
 //   p_text_section_unlock();
 
-   /* We are heavly consuming module list here - take 'module_mutex' */
+   /* We are heavily consuming module list here - take 'module_mutex' */
    mutex_lock(&module_mutex);
 
    /*

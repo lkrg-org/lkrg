@@ -113,7 +113,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
        */
 
       p_text_section_lock();
-      /* We are heavly consuming module list here - take 'module_mutex' */
+      /* We are heavily consuming module list here - take 'module_mutex' */
       mutex_lock(&module_mutex);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
       /* Hacky way of 'stopping' KOBJs activities */
@@ -190,7 +190,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
           */
 
          p_text_section_lock();
-         /* We are heavly consuming module list here - take 'module_mutex' */
+         /* We are heavily consuming module list here - take 'module_mutex' */
          mutex_lock(&module_mutex);
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)

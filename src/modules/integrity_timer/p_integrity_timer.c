@@ -268,7 +268,7 @@ void p_check_integrity(struct work_struct *p_work) {
    *((char *)p_db.kernel_stext_snapshot + p_db.kernel_stext.p_size) = 0x0;
    memcpy(p_db.kernel_stext_snapshot,p_db.kernel_stext.p_addr,p_db.kernel_stext.p_size);
 
-   /* We are heavly consuming module list here - take 'module_mutex' */
+   /* We are heavily consuming module list here - take 'module_mutex' */
    mutex_lock(&module_mutex);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
    /* Hacky way of 'stopping' KOBJs activities */
@@ -613,7 +613,7 @@ void p_check_integrity(struct work_struct *p_work) {
                   p_print_log(P_LKRG_CRIT,
                          "!! MOST LIKELY SYSTEM IS HACKED - MODULE WILL BE DUMPED !! **\n");
 
-                  // Dynamic module blocking is disabled so this situation shouldn't happend
+                  // Dynamic module blocking is disabled so this situation shouldn't happen
                   // MOST LIKELY WE ARE HACKED!
                   // TODO: Dump module
                }
@@ -733,7 +733,7 @@ void p_check_integrity(struct work_struct *p_work) {
                   p_print_log(P_LKRG_CRIT,
                          "** STRANGE BEHAVIOUR DETECTED - MODULE WAS FOUND IN MODULE LIST BUT NOT IN KOBJs - MODULE WILL BE DUMPED !! **\n");
 
-                  // Dynamic module blocking is disabled so this situation shouldn't happend
+                  // Dynamic module blocking is disabled so this situation shouldn't happen
                   // MOST LIKELY WE ARE NOT HACKED :)
                   // TODO: Dump module
                }
@@ -778,16 +778,16 @@ void p_check_integrity(struct work_struct *p_work) {
       if (p_module_list_nr_tmp < p_db.p_module_list_nr) {
          /*
           * We "lost" module which we didn't register somehow.
-          * It might happened regardless notifier informing us on any
+          * It might happen regardless of notifier informing us on any
           * module related activities.
           *
           * I would not make assumption system is somehow compromised
           * but we should inform about that.
           *
-          * It might happend when verification routine will win
+          * It might happen when verification routine wins
           * the race with module notification routine of acquiring
           * module mutexes. In that case, notification routine will
-          * wait until this verification context unlock mutexes.
+          * wait until this verification context unlocks mutexes.
           */
 
          p_tmp_diff = p_db.p_module_list_nr - p_module_list_nr_tmp;
@@ -904,10 +904,10 @@ void p_check_integrity(struct work_struct *p_work) {
           * This is weird situation as well. Notifier should inform us
           * whenever new module arrives and we rebuild database.
           *
-          * It might happend when verification routine will win
+          * It might happen when verification routine wins
           * the race with module notification routine of acquiring
           * module mutexes. In that case, notification routine will
-          * wait until this verification context unlock mutexes.
+          * wait until this verification context unlocks mutexes.
           *
           * I would not make assumption system is somehow compromised
           * but we should inform about that!
@@ -1014,7 +1014,7 @@ void p_check_integrity(struct work_struct *p_work) {
                   p_print_log(P_LKRG_CRIT,
                          "!! MOST LIKELY SYSTEM IS HACKED - MODULE WILL BE DUMPED !! **\n");
 
-                  // Dynamic module blocking is disabled so this situation shouldn't happend
+                  // Dynamic module blocking is disabled so this situation shouldn't happen
                   // MOST LIKELY WE ARE HACKED!
                   // TODO: Dump module
                }
@@ -1054,10 +1054,10 @@ void p_check_integrity(struct work_struct *p_work) {
           * This is weird situation as well. Notifier should inform us
           * whenever new module arrives and we rebuild database.
           *
-          * It might happend when verification routine will win
+          * It might happen when verification routine wins
           * the race with module notification routine of acquiring
           * module mutexes. In that case, notification routine will
-          * wait until this verification context unlock mutexes.
+          * wait until this verification context unlocks mutexes.
           *
           * I would not make assumption system is somehow compromised
           * but we should inform about that!
@@ -1175,10 +1175,10 @@ void p_check_integrity(struct work_struct *p_work) {
           * This is weird situation as well. Notifier should inform us
           * whenever new module arrives and we rebuild database.
           *
-          * It might happend when verification routine will win
+          * It might happen when verification routine wins
           * the race with module notification routine of acquiring
           * module mutexes. In that case, notification routine will
-          * wait until this verification context unlock mutexes.
+          * wait until this verification context unlocks mutexes.
           *
           * I would not make assumption system is somehow compromised
           * but we should inform about that!
@@ -1466,7 +1466,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
                   } else {
                      if (p_db.p_module_list_array[p_tmp].kmod_stext_snapshot == P_NEW_KMOD_STEXT) {
-                        // This shouldn't happened here...
+                        // This shouldn't happen here...
                         p_print_log(P_LKRG_CRIT,
                                "?!?! p_db.p_module_list_array[p_tmp].kmod_stext_snapshot == P_NEW_KMOD_STEXT ?!?!\n");
                      } else {

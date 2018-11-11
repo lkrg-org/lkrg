@@ -38,7 +38,7 @@ int p_register_arch_metadata(void) {
       // goto error path
       //
       // The reason why we do not stop initialization here (error condition)
-      // is because this can only happens in kernel < 3.10 - which is rare and acceptable.
+      // is because this can only happen in kernel < 3.10 - which is rare and acceptable.
       //
    }
 

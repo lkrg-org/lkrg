@@ -172,7 +172,7 @@ int p_cpu_online_action(unsigned int p_cpu) {
           "Entering function <p_cpu_online_action>\n");
 
    p_text_section_lock();
-   /* We are heavly consuming module list here - take 'module_mutex' */
+   /* We are heavily consuming module list here - take 'module_mutex' */
    mutex_lock(&module_mutex);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
    /* Hacky way of 'stopping' KOBJs activities */
@@ -270,7 +270,7 @@ int p_cpu_dead_action(unsigned int p_cpu) {
           "Entering function <p_cpu_dead_action>\n");
 
    p_text_section_lock();
-   /* We are heavly consuming module list here - take 'module_mutex' */
+   /* We are heavily consuming module list here - take 'module_mutex' */
    mutex_lock(&module_mutex);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
    /* Hacky way of 'stopping' KOBJs activities */

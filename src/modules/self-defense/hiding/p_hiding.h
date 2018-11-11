@@ -105,8 +105,8 @@ do {                                                                       \
                             &p_mod->mkobj.kobj, p_mod->name);              \
    }                                                                       \
    /* Created KOBJ for this module is very 'synthetic'.   */               \
-   /* During unloading module process, sysfs is heavly    */               \
-   /* Influenced. Some of the operations is dangerous if  */               \
+   /* During unloading module process, sysfs is heavily   */               \
+   /* Influenced. Some of the operations are dangerous if */               \
    /* Operated on 'syntethic' objects. To avoid crashes   */               \
    /* And limit 'sysfs interaction' let's NULL some of    */               \
    /* Critical 'information' pointers :)                  */               \

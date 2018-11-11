@@ -14,7 +14,7 @@
  *     - We keep a copy of the entire .text section made during module installation
  *     - If we detect that .text section for kernel was changed we try to find the
  *       offset where modifications was made. We use this offset to calculate the VA
- *       where modification was made. If modification happend because of the
+ *       where modification was made. If modification happened because of the
  *       *_JUMP_LABEL options, originally long NOP was injected (5 bytes long) or
  *       already resolved relative 'jmp' instruction. If NOP is modified to 'jmp'
  *       the target is still pointing inside of the same function (symbol name).
@@ -230,7 +230,7 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size, p_module_list_me
                   }
 
                   if (!p_cold_valid)
-                     goto p_whitelist_end; // Lenght is different so for sure this is not the same symbol!
+                     goto p_whitelist_end; // Length is different so for sure this is not the same symbol!
                }
 
                if (strncmp(p_sym1,p_sym2,p_len)) {
@@ -277,7 +277,7 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size, p_module_list_me
 
             /*
              * Let's check if original 'jmp' was in the range of the same symbol name
-             * If not, this is very weird situation... should never happens!
+             * If not, this is very weird situation... should never happen!
              */
 
             if ((p_old[p_tmp] & 0xFF) == 0xe9) {
@@ -327,9 +327,9 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size, p_module_list_me
 
                   if (!p_cold_valid) {
                      p_print_log(P_LKRG_WARN,"[WEIRD!] Kernel overwrote JMP instruction pointing "
-                                             "not in the same function via NOP - should NOT happens!\n");
-                     // Weird! Lenght is different so for sure this is not the same symbol!
-                     goto p_whitelist_end; // Lenght is different so for sure this is not the same symbol!
+                                             "not in the same function via NOP - should NOT happen!\n");
+                     // Weird! Length is different so for sure this is not the same symbol!
+                     goto p_whitelist_end; // Length is different so for sure this is not the same symbol!
                   }
                }
 
@@ -337,15 +337,15 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size, p_module_list_me
                   if (p_cold_valid) {
                      if (strncmp(p_sym2,p_cold,p_cold_len)) {
                         p_print_log(P_LKRG_WARN,"[WEIRD!] Kernel overwrote JMP instruction pointing "
-                                                "not in the same function via NOP - should NOT happens!\n");
+                                                "not in the same function via NOP - should NOT happen!\n");
                         // Weird! This is not the same symbol even length is the same...
-                        goto p_whitelist_end; // Lenght is different so for sure this is not the same symbol!
+                        goto p_whitelist_end; // Length is different so for sure this is not the same symbol!
                      }
                   } else {
                      p_print_log(P_LKRG_WARN,"[WEIRD!] Kernel overwrote JMP instruction pointing "
-                                             "not in the same function via NOP - should NOT happens!\n");
+                                             "not in the same function via NOP - should NOT happen!\n");
                      // Weird! This is not the same symbol even length is the same...
-                     goto p_whitelist_end; // Lenght is different so for sure this is not the same symbol!
+                     goto p_whitelist_end; // Length is different so for sure this is not the same symbol!
                   }
                }
 

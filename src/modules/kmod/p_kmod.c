@@ -194,7 +194,7 @@ int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
          /*
           * We are under time-critical pressure. We are going to use emergency pools
           * and we can't accept memory allocation fails. Because __GFP_NOFAIL is not
-          * 'safe' flag anymore, we are spinning until allocation successes.
+          * 'safe' flag anymore, we are spinning until allocation succeeds.
           */
          if ( (p_arg[p_cnt].mod_core_stext_copy.p_addr = kzalloc(p_arg[p_cnt].p_core_text_size+1,
                                                                  GFP_ATOMIC)) == NULL) {
@@ -249,7 +249,7 @@ int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
             /*
              * We are under time-critical pressure. We are going to use emergency pools
              * and we can't accept memory allocation fails. Because __GFP_NOFAIL is not
-             * 'safe' flag anymore, we are spinning until allocation successes.
+             * 'safe' flag anymore, we are spinning until allocation succeeds.
              */
             if ( (p_arg[p_cnt].mod_core_stext_copy.p_addr = kzalloc(p_arg[p_cnt].p_core_text_size+1,
                                                                     GFP_ATOMIC)) == NULL) {
@@ -618,7 +618,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
     * TODO:
     * Allocation logic should be changed! Should preallocate memory once, and if there
     * there is not enough space, reallocate it multiplying the size, and so on... At some
-    * point allocation won't happens at all since we will have enough room to always store
+    * point allocation won't happen at all since we will have enough room to always store
     * all necessary informations.
     */
 
@@ -633,7 +633,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
        *
        * We are under time-critical pressure. We are going to use emergency pools
        * and we can't accept memory allocation fails. Because __GFP_NOFAIL is not
-       * 'safe' flag anymore, we are spinning until allocation successes.
+       * 'safe' flag anymore, we are spinning until allocation succeeds.
        */
       if ( (*p_mlm_tmp = kzalloc(sizeof(p_module_list_mem) * (*p_module_list_cnt_arg+P_MODULE_BUFFER_RACE),
                                  GFP_ATOMIC)) == NULL) {
@@ -662,7 +662,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
        *
        * We are under time-critical pressure. We are going to use emergency pools
        * and we can't accept memory allocation fails. Because __GFP_NOFAIL is not
-       * 'safe' flag anymore, we are spinning until allocation successes.
+       * 'safe' flag anymore, we are spinning until allocation succeeds.
        */
       if ( (*p_mkm_tmp = kzalloc(sizeof(p_module_kobj_mem) * (*p_module_kobj_cnt_arg+P_MODULE_BUFFER_RACE),
                                  GFP_ATOMIC)) == NULL) {
@@ -711,7 +711,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
           *
           * We are under time-critical pressure. We are going to use emergency pools
           * and we can't accept memory allocation fails. Because __GFP_NOFAIL is not
-          * 'safe' flag anymore, we are spinning until allocation successes.
+          * 'safe' flag anymore, we are spinning until allocation succeeds.
           */
          if ( (*p_mlm_tmp = kzalloc(sizeof(p_module_list_mem) * (*p_module_list_cnt_arg+P_MODULE_BUFFER_RACE),
                                     GFP_ATOMIC)) == NULL) {
@@ -764,7 +764,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
           *
           * We are under time-critical pressure. We are going to use emergency pools
           * and we can't accept memory allocation fails. Because __GFP_NOFAIL is not
-          * 'safe' flag anymore, we are spinning until allocation successes.
+          * 'safe' flag anymore, we are spinning until allocation succeeds.
           */
          if ( (*p_mkm_tmp = kzalloc(sizeof(p_module_kobj_mem) * (*p_module_kobj_cnt_arg+P_MODULE_BUFFER_RACE),
                                     GFP_ATOMIC)) == NULL) {
