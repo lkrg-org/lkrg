@@ -9,7 +9,7 @@ export CFLAGS="$CFLAGS"
 
 P_OUTPUT = output
 P_PWD = $(shell pwd)
-P_KVER = $(shell uname -r)
+P_KVER ?= $(shell uname -r)
 P_KERNEL := /lib/modules/$(P_KVER)/build
 
 obj-m += p_lkrg.o
