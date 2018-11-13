@@ -204,11 +204,12 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size, p_module_list_me
                p_is_module_addr = p_mod != NULL;
 
                p_print_log(P_LKRG_INFO,
-                           "[NOP->JMP] p_val[0x%x] p_VA1[0x%lx] p_VA2[0x%lx] p_sym1[%s] p_sym2[%s]\n",
-                           *p_val,p_VA1,p_VA2,p_sym1,p_sym2);
+                           "[NOP->JMP] p_val[0x%x] p_VA1[0x%lx] p_VA2[0x%lx] p_sym1[%s] p_sym2[%s] "
+                           "p_len[%ld] p_len2[%ld] is_module[%d] p_mod[%p]\n",
+                           *p_val,p_VA1,p_VA2,p_sym1,p_sym2,p_len,p_len2,p_is_module_addr,p_mod);
 
                if (p_len != p_len2) {
-                  if (p_is_module_addr) {
+                  if (p_module && p_is_module_addr) {
                      if (p_mod == p_module->p_mod) {
                         p_cold_helper = p_sym1;
                         while (*p_cold_helper != ' ' && *p_cold_helper)
@@ -304,7 +305,7 @@ int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size, p_module_list_me
                            *p_val,p_VA1,p_VA2,p_sym1,p_sym2);
 
                if (p_len != p_len2) {
-                  if (p_is_module_addr) {
+                  if (p_module && p_is_module_addr) {
                      if (p_mod == p_module->p_mod) {
                         p_cold_helper = p_sym1;
                         while (*p_cold_helper != ' ' && *p_cold_helper)
