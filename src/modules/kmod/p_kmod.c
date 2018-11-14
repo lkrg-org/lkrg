@@ -21,9 +21,6 @@
 
 #include "../../p_lkrg_main.h"
 
-/* Submodule with 'struct module' variable accessing wrappers */
-//#include "p_kmod_wrapper.c"
-
 /* Submodule for 'kmod' module */
 #include "p_kmod_notifier.c"
 

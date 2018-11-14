@@ -7,7 +7,12 @@
  * Notes:
  *  - Wrapping some of the critical structures in the system e.g.:
  *   -> k[g/u]id_t
- *   -> accesing 'struct module' structure
+ *   -> accesing 'struct module' structure - since kernel 4.5 'struct module'
+ *      was changed. Accessing some critical variables must be more 'smart'
+ *      now. We are wrapping necessary fields here.
+ *
+ * http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/diff/include/linux/module.h?id=7523e4dc5057
+ *
  *
  * Timeline:
  *  - Created: 11.IX.2017
@@ -20,14 +25,103 @@
 #ifndef P_LKRG_WRAPPER_H
 #define P_LKRG_WRAPPER_H
 
-inline void p_set_uid(kuid_t *p_arg, unsigned int p_val);
-inline unsigned int p_get_uid(const kuid_t *p_from);
-inline void p_set_gid(kgid_t *p_arg, unsigned int p_val);
-inline unsigned int p_get_gid(const kgid_t *p_from);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
 
-inline void *p_module_core(struct module *p_mod);
-inline unsigned int p_core_size(struct module *p_mod);
-inline unsigned int p_core_text_size(struct module *p_mod);
-inline unsigned int p_init_text_size(struct module *p_mod);
+static inline void p_set_uid(kuid_t *p_arg, unsigned int p_val) {
+   p_arg->val = p_val;
+}
+
+static inline unsigned int p_get_uid(const kuid_t *p_from) {
+   return p_from->val;
+}
+
+static inline void p_set_gid(kgid_t *p_arg, unsigned int p_val) {
+   p_arg->val = p_val;
+}
+
+static inline unsigned int p_get_gid(const kgid_t *p_from) {
+   return p_from->val;
+}
+
+#else
+
+#ifdef CONFIG_UIDGID_STRICT_TYPE_CHECKS
+
+static inline void p_set_uid(kuid_t *p_arg, unsigned int p_val) {
+   p_arg->val = p_val;
+}
+
+static inline unsigned int p_get_uid(const kuid_t *p_from) {
+   return p_from->val;
+}
+
+static inline void p_set_gid(kgid_t *p_arg, unsigned int p_val) {
+   p_arg->val = p_val;
+}
+
+static inline unsigned int p_get_gid(const kgid_t *p_from) {
+   return p_from->val;
+}
+
+#else
+
+static inline void p_set_uid(kuid_t *p_arg, unsigned int p_val) {
+   *p_arg = p_val;
+}
+
+static inline unsigned int p_get_uid(const kuid_t *p_from) {
+   return *p_from;
+}
+
+static inline void p_set_gid(kgid_t *p_arg, unsigned int p_val) {
+   *p_arg = p_val;
+}
+
+static inline unsigned int p_get_gid(const kgid_t *p_from) {
+   return *p_from;
+}
+
+#endif
+
+#endif
+
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 6)
+
+static inline void *p_module_core(struct module *p_mod) {
+   return p_mod->core_layout.base;
+}
+
+static inline unsigned int p_core_size(struct module *p_mod) {
+   return p_mod->core_layout.size;
+}
+
+static inline unsigned int p_core_text_size(struct module *p_mod) {
+   return p_mod->core_layout.text_size;
+}
+
+static inline unsigned int p_init_text_size(struct module *p_mod) {
+   return p_mod->init_layout.text_size;
+}
+
+#else
+
+static inline void *p_module_core(struct module *p_mod) {
+   return p_mod->module_core;
+}
+
+static inline unsigned int p_init_text_size(struct module *p_mod) {
+   return p_mod->init_text_size;
+}
+
+static inline unsigned int p_core_text_size(struct module *p_mod) {
+   return p_mod->core_text_size;
+}
+
+static inline unsigned int p_core_size(struct module *p_mod) {
+   return p_mod->core_size;
+}
+
+#endif
 
 #endif

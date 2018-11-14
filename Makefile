@@ -16,7 +16,6 @@ obj-m += p_lkrg.o
 p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
                src/modules/hashing/p_lkrg_fast_hash.o \
                src/modules/comm_channel/p_comm_channel.o \
-               src/modules/wrap/p_struct_wrap.o \
                src/modules/integrity_timer/p_integrity_timer.o \
                src/modules/kmod/p_kmod.o \
                src/modules/database/CPU.o \
