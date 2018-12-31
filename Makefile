@@ -69,6 +69,8 @@ p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
                src/modules/exploit_detection/syscalls/__x32/p_x32_sys_ptrace/p_x32_sys_ptrace.o \
                src/modules/exploit_detection/syscalls/override/p_override_creds/p_override_creds.o \
                src/modules/exploit_detection/syscalls/override/p_revert_creds/p_revert_creds.o \
+               src/modules/exploit_detection/syscalls/pCFI/p_mark_inode_dirty/p_mark_inode_dirty.o \
+               src/modules/exploit_detection/syscalls/pCFI/p_schedule/p_schedule.o \
                src/modules/exploit_detection/p_exploit_detection.o \
                src/p_lkrg_main.o
 

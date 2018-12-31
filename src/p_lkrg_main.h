@@ -63,6 +63,10 @@
 #include <linux/timex.h>
 #include <linux/cryptohash.h>
 
+#include <linux/stacktrace.h>
+#include <asm/stacktrace.h>
+#include <asm/tlbflush.h>
+
 /*
  * RHEL support
  */
