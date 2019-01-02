@@ -556,7 +556,7 @@ int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
 int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_tmp,
                 unsigned int *p_module_kobj_cnt_arg, p_module_kobj_mem **p_mkm_tmp, char p_flag) {
 
-   int p_ret = P_LKRG_SUCCESS;
+   int p_ret = P_LKRG_GENERAL_ERROR;
    unsigned int p_module_list_cnt_arg_old = *p_module_list_cnt_arg;
    unsigned int p_module_kobj_cnt_arg_old = *p_module_kobj_cnt_arg;
    unsigned int p_cnt;
@@ -637,6 +637,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
          /*
           * I should NEVER be here!
           */
+         p_ret = P_LKRG_GENERAL_ERROR;
          p_print_log(P_LKRG_CRIT,
                 "KMOD HASH kzalloc() error! Can't allocate memory for module list ;[\n");
          goto p_kmod_hash_err;
@@ -666,6 +667,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
          /*
           * I should NEVER be here!
           */
+         p_ret = P_LKRG_GENERAL_ERROR;
          p_print_log(P_LKRG_CRIT,
                 "KMOD HASH kzalloc() error! Can't allocate memory for kobj list;[\n");
          goto p_kmod_hash_err;
@@ -715,6 +717,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
             /*
              * I should NEVER be here!
              */
+            p_ret = P_LKRG_GENERAL_ERROR;
             p_print_log(P_LKRG_CRIT,
                    "KMOD HASH kzalloc() error! Can't allocate memory for module list ;[\n");
             goto p_kmod_hash_err;
@@ -768,6 +771,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
             /*
              * I should NEVER be here!
              */
+            p_ret = P_LKRG_GENERAL_ERROR;
             p_print_log(P_LKRG_CRIT,
                    "KMOD HASH kzalloc() error! Can't allocate memory for kobj list;[\n");
             goto p_kmod_hash_err;
