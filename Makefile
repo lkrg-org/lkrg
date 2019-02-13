@@ -8,9 +8,10 @@
 export CFLAGS="$CFLAGS"
 
 P_OUTPUT = output
-P_PWD = $(shell pwd)
+P_PWD ?= $(shell pwd)
 P_KVER ?= $(shell uname -r)
 P_KERNEL := /lib/modules/$(P_KVER)/build
+P_BOOTUP_SCRIPT ?= scripts/bootup/lkrg-bootup.sh
 
 obj-m += p_lkrg.o
 p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
@@ -83,6 +84,11 @@ all:
 
 install:
 	$(MAKE) -C $(P_KERNEL) M=$(P_PWD) modules_install
+	depmod -a
+	$(P_PWD)/$(P_BOOTUP_SCRIPT) install
+
+uninstall:
+	$(P_PWD)/$(P_BOOTUP_SCRIPT) uninstall
 
 clean:
 	$(MAKE) -C $(P_KERNEL) M=$(P_PWD) clean
