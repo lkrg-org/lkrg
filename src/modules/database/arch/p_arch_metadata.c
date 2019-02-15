@@ -17,6 +17,7 @@
 
 #include "../../../p_lkrg_main.h"
 
+int (*p_core_kernel_text)(unsigned long p_addr) = 0x0;
 
 int p_register_arch_metadata(void) {
 
@@ -26,13 +27,23 @@ int p_register_arch_metadata(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_register_arch_metadata>\n");
 
+   p_core_kernel_text = (int (*)(unsigned long))p_kallsyms_lookup_name("core_kernel_text");
+
+   if (!p_core_kernel_text) {
+      p_print_log(P_LKRG_ERR,
+             "[ED] ERROR: Can't find 'core_kernel_text' function :( Exiting...\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_register_arch_metadata_out;
+   }
+
+
 #ifdef CONFIG_X86
 #ifdef P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
 
    if (p_install_switch_idt_hook()) {
       p_print_log(P_LKRG_CRIT,
              "ERROR: Can't hook 'switch_idt' function :( "
-             "It's OK, but tracelogs won't be supported - if enabled, it will generate FP!\n");
+             "It's OK, but tracelogs might be not supported - if enabled, it might generate FP! (depends on the kernel version)\n");
       //
       // p_ret = P_LKRG_GENERAL_ERROR;
       // goto error path
@@ -44,6 +55,15 @@ int p_register_arch_metadata(void) {
 
 #endif
 #endif
+
+   if (p_install_arch_jump_label_transform_hook()) {
+      p_print_log(P_LKRG_ERR,
+             "ERROR: Can't hook arch_jump_label_transform function :(\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_register_arch_metadata_out;
+   }
+
+p_register_arch_metadata_out:
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
@@ -66,6 +86,11 @@ int p_unregister_arch_metadata(void) {
    p_uninstall_switch_idt_hook();
 #endif
 #endif
+
+   /*
+    * This is not an ARCH specific hooks but it's a good place to deregister these hooks
+    */
+   p_uninstall_arch_jump_label_transform_hook();
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,

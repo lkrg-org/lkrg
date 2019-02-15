@@ -57,7 +57,7 @@ hash_from_ex_table_out:
    return p_ret;
 }
 
-int hash_from_kernel_stext(unsigned int p_opt) {
+int hash_from_kernel_stext(void) {
 
    unsigned long p_tmp = 0x0;
    int p_ret = P_LKRG_SUCCESS;
@@ -75,42 +75,8 @@ int hash_from_kernel_stext(unsigned int p_opt) {
    }
 
    p_db.kernel_stext.p_size = (unsigned long)(p_tmp - (unsigned long)p_db.kernel_stext.p_addr);
-
    p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext.p_addr,
                                                (unsigned int)p_db.kernel_stext.p_size);
-
-   if (p_opt) {
-      if ( (p_db.kernel_stext_snapshot = vmalloc(p_db.kernel_stext.p_size+1)) == NULL) {
-         /*
-          * I should NEVER be here!
-          */
-         p_print_log(P_LKRG_CRIT,
-                "hash_from_kernel_stext(): kzalloc() error! Can't allocate memory [size %ld:0x%lx] for snapshot ;[\n",
-                p_db.kernel_stext.p_size+1,p_db.kernel_stext.p_size+1);
-         p_ret = P_LKRG_GENERAL_ERROR;
-         goto hash_from_kernel_stext_out;
-      }
-
-      /* It is NOT only for debugging... *_JMP_LABEL sux! */
-      if ( (p_db.kernel_stext_copy.p_addr = vmalloc(p_db.kernel_stext.p_size+1)) == NULL) {
-         /*
-          * I should NEVER be here!
-          */
-         p_print_log(P_LKRG_CRIT,
-                "hash_from_kernel_stext(): kzalloc() error! Can't allocate memory [size %ld:0x%lx] for _stext copy ;[\n",
-                p_db.kernel_stext.p_size+1,p_db.kernel_stext.p_size+1);
-         p_ret = P_LKRG_GENERAL_ERROR;
-         goto hash_from_kernel_stext_out;
-      }
-   }
-
-//   memset(p_db.kernel_stext_copy.p_addr,0x0,p_db.kernel_stext.p_size+1);
-   *((char *)p_db.kernel_stext_copy.p_addr + p_db.kernel_stext.p_size) = 0x0;
-   memcpy(p_db.kernel_stext_copy.p_addr,p_db.kernel_stext.p_addr,p_db.kernel_stext.p_size);
-   p_db.kernel_stext_copy.p_size = p_db.kernel_stext.p_size;
-
-   p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
-                                                    (unsigned int)p_db.kernel_stext_copy.p_size);
 
    p_debug_log(P_LKRG_DBG,
           "hash [0x%llx] _stext start [0x%lx] size [0x%lx]\n",p_db.kernel_stext.p_hash,
@@ -243,8 +209,7 @@ int p_create_database(void) {
 
    int p_tmp;
 //   int p_tmp_cpu;
-   int p_ret = P_LKRG_SUCCESS;
-   unsigned int p_cnt;
+   int p_ret;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
@@ -343,7 +308,13 @@ int p_create_database(void) {
    p_db.p_IDT_MSR_CRx_hashes = hash_from_CPU_data(p_db.p_IDT_MSR_CRx_array);
 
    /* Some arch needs extra hooks */
-   p_register_arch_metadata();
+   if (p_register_arch_metadata() != P_LKRG_SUCCESS) {
+      p_print_log(P_LKRG_ERR,
+             "CREATING DATABASE: error! Can't register CPU architecture specific metadata :( Exiting...\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_create_database_out;
+   }
+
 
    if (hash_from_ex_table() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
@@ -368,7 +339,7 @@ int p_create_database(void) {
    }
 
    p_text_section_lock();
-   if (hash_from_kernel_stext(1) != P_LKRG_SUCCESS) {
+   if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
          "CREATING DATABASE ERROR: HASH FROM _STEXT!\n");
       p_ret = P_LKRG_GENERAL_ERROR;
@@ -387,27 +358,15 @@ int p_create_database(void) {
       schedule();
 
    /* Hash */
-/*
    p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
                                           (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
    p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
-*/
-
-   for (p_db.p_module_list_hash = p_cnt = 0x0; p_cnt < p_db.p_module_list_nr; p_cnt++) {
-      p_db.p_module_list_hash ^= p_lkrg_fast_hash((unsigned char *)&p_db.p_module_list_array[p_cnt],
-                                                  (unsigned int)offsetof(p_module_list_mem, mod_core_stext_copy));
-      p_db.p_module_stexts_copy ^= p_db.p_module_list_array[p_cnt].mod_core_stext_copy.p_hash;
 /*
-      p_print_log(P_LKRG_CRIT,
-          "p_module_stexts_copy => [0x%llx] p_db.p_module_list_array[%d].mod_core_stext_copy.p_hash[0x%llx]\n",
-           p_db.p_module_stexts_copy,p_cnt,p_db.p_module_list_array[p_cnt].mod_core_stext_copy.p_hash);
-*/
-   }
 
    p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
-
+*/
    /* Register module notification routine */
    p_register_module_notifier();
 
@@ -415,9 +374,27 @@ int p_create_database(void) {
    mutex_unlock(&module_mutex);
    p_text_section_unlock();
 
+/*
+   if (p_install_arch_jump_label_transform_hook()) {
+      p_print_log(P_LKRG_ERR,
+             "ERROR: Can't hook arch_jump_label_transform function :(\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_create_database_out;
+   }
+
+   if (p_install_arch_jump_label_transform_static_hook()) {
+      p_print_log(P_LKRG_ERR,
+             "ERROR: Can't hook arch_jump_label_transform_static function :(\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_create_database_out;
+   }
+*/
+
    p_debug_log(P_LKRG_DBG,
           "p_module_list_hash => [0x%llx]\np_module_kobj_hash => [0x%llx]\n",
           p_db.p_module_list_hash,p_db.p_module_kobj_hash);
+
+   p_ret = P_LKRG_SUCCESS;
 
 p_create_database_out:
 

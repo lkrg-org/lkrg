@@ -80,6 +80,30 @@ typedef struct p_cpu_info {
 #include "../kmod/p_kmod.h"
 
 /*
+ * Dynamic *_JUMP_LABEL support (arch independent)
+ */
+#include "JUMP_LABEL/p_arch_jump_label_transform/p_arch_jump_label_transform.h"
+
+enum p_jump_label_state {
+
+   P_JUMP_LABEL_NONE,
+   P_JUMP_LABEL_CORE_TEXT,
+   P_JUMP_LABEL_MODULE_TEXT,
+   P_JUMP_LABEL_WTF_STATE
+
+};
+
+/*
+ * During *_JUMP_LABEL modification, we need to store an information about its state.
+ */
+struct p_jump_label {
+
+   enum p_jump_label_state p_state;
+   struct module *p_mod;
+
+};
+
+/*
  * Main database structure conatining:
  * - memory hashes
  * - Critical addresses
@@ -121,17 +145,12 @@ typedef struct p_hash_database {
    uint64_t p_module_list_hash;
    p_module_kobj_mem *p_module_kobj_array;
    uint64_t p_module_kobj_hash;
-   uint64_t p_module_stexts_copy;
-
 
    p_hash_mem_block kernel_stext;         // .text
-   p_hash_mem_block kernel_stext_copy;    // copy of entire kernel's .text segment
-                                          //  - needed to deal with *_JMP_LABEL shit ;/
-   char *kernel_stext_snapshot;           // temp memory for a .text section snapshot - used during verification
    p_hash_mem_block kernel_rodata;        // .rodata
    p_hash_mem_block kernel_iommu_table;   // IOMMU table
    p_hash_mem_block kernel_ex_table;      // Exception tale
-
+   struct p_jump_label p_jump_label;      // *_JUMP_LABEL state during modification
 
 } p_hash_database;
 
@@ -143,7 +162,7 @@ extern struct mutex *p_jump_label_mutex;
 extern struct notifier_block p_cpu_notifier;
 
 int hash_from_ex_table(void);
-int hash_from_kernel_stext(unsigned int p_opt);
+int hash_from_kernel_stext(void);
 int hash_from_kernel_rodata(void);
 int hash_from_iommu_table(void);
 
@@ -164,6 +183,7 @@ static inline void p_text_section_unlock(void) {
 
    mutex_unlock(p_text_mutex);
    mutex_unlock(p_jump_label_mutex);
+
 //   jump_label_unlock();
 }
 

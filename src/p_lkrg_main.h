@@ -31,7 +31,6 @@
 #include <linux/fs.h>
 #include <asm/uaccess.h>
 #include <linux/version.h>
-#include <linux/vmalloc.h>
 #include <linux/cpufreq.h>
 #include <linux/cpu_pm.h>
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)

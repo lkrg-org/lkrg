@@ -164,7 +164,6 @@ int p_cpu_callback(struct notifier_block *p_block, unsigned long p_action, void 
 int p_cpu_online_action(unsigned int p_cpu) {
 
    int tmp_online_CPUs = p_db.p_cpu.online_CPUs;
-   unsigned int p_tmp = 0x0;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
@@ -199,7 +198,7 @@ int p_cpu_online_action(unsigned int p_cpu) {
          p_print_log(P_LKRG_CRIT,
             "CPU ONLINE ERROR: CANNOT GET HASH FROM EXCEPTION TABLE!\n");
       }
-      if (hash_from_kernel_stext(0) != P_LKRG_SUCCESS) {
+      if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
          p_print_log(P_LKRG_CRIT,
             "CPU ONLINE ERROR: CANNOT GET HASH FROM _STEXT!\n");
       }
@@ -219,17 +218,8 @@ int p_cpu_online_action(unsigned int p_cpu) {
          schedule();
 
       /* Update global module list/kobj hash */
-/*
       p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
                                              (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
-*/
-
-      p_db.p_module_stexts_copy = 0x0;
-      for (p_db.p_module_list_hash = p_tmp = 0x0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
-         p_db.p_module_list_hash ^= p_lkrg_fast_hash((unsigned char *)&p_db.p_module_list_array[p_tmp],
-                                                     (unsigned int)offsetof(p_module_list_mem, mod_core_stext_copy));
-         p_db.p_module_stexts_copy ^= p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_hash;
-      }
 
       p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                              (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
@@ -262,7 +252,6 @@ int p_cpu_online_action(unsigned int p_cpu) {
 int p_cpu_dead_action(unsigned int p_cpu) {
 
    int tmp_online_CPUs = p_db.p_cpu.online_CPUs;
-   unsigned int p_tmp = 0x0;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
@@ -305,7 +294,7 @@ int p_cpu_dead_action(unsigned int p_cpu) {
          p_print_log(P_LKRG_CRIT,
             "CPU OFFLINE ERROR: CANNOT GET HASH FROM EXCEPTION TABLE!\n");
       }
-      if (hash_from_kernel_stext(0) != P_LKRG_SUCCESS) {
+      if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
          p_print_log(P_LKRG_CRIT,
             "CPU OFFLINE ERROR: CANNOT GET HASH FROM _STEXT!\n");
       }
@@ -324,16 +313,8 @@ int p_cpu_dead_action(unsigned int p_cpu) {
                         &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x2) != P_LKRG_SUCCESS);
 
       /* Update global module list/kobj hash */
-/*
       p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
                                              (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
-*/
-      p_db.p_module_stexts_copy = 0x0;
-      for (p_db.p_module_list_hash = p_tmp = 0x0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
-         p_db.p_module_list_hash ^= p_lkrg_fast_hash((unsigned char *)&p_db.p_module_list_array[p_tmp],
-                                                     (unsigned int)offsetof(p_module_list_mem, mod_core_stext_copy));
-         p_db.p_module_stexts_copy ^= p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_hash;
-      }
 
       p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                              (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));

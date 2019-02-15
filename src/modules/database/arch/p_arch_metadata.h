@@ -23,4 +23,6 @@
 int p_register_arch_metadata(void);
 int p_unregister_arch_metadata(void);
 
+extern int (*p_core_kernel_text)(unsigned long p_addr);
+
 #endif

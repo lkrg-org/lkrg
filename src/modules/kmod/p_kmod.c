@@ -152,8 +152,6 @@ int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
    struct module *p_mod;
    int p_ret = P_LKRG_SUCCESS;
    unsigned int p_cnt = 0x0;
-   unsigned int p_tmp = 0x0;
-   char p_flag2 = 0x0;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
@@ -185,155 +183,9 @@ int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
       /* Size of the module core text section */
       p_arg[p_cnt].p_core_text_size = p_core_text_size(p_mod);
 
-
-      if (p_flag) {
-
-         /*
-          * We are under time-critical pressure. We are going to use emergency pools
-          * and we can't accept memory allocation fails. Because __GFP_NOFAIL is not
-          * 'safe' flag anymore, we are spinning until allocation succeeds.
-          */
-         if ( (p_arg[p_cnt].mod_core_stext_copy.p_addr = kzalloc(p_arg[p_cnt].p_core_text_size+1,
-                                                                 GFP_ATOMIC)) == NULL) {
-            /*
-             * I should NEVER be here!
-             */
-            p_ret = P_LKRG_GENERAL_ERROR;
-            p_print_log(P_LKRG_CRIT,
-                   "KMOD HASH kzalloc() error! Can't allocate memory for module list ;[\n");
-            goto p_list_from_module_list_out;
-         }
-
-         if ( (p_arg[p_cnt].kmod_stext_snapshot = kzalloc(p_arg[p_cnt].p_core_text_size+1,
-                                                          GFP_ATOMIC)) == NULL) {
-            /*
-             * I should NEVER be here!
-             */
-            p_ret = P_LKRG_GENERAL_ERROR;
-            p_print_log(P_LKRG_CRIT,
-                   "KMOD HASH kzalloc() error! Can't allocate memory for module list ;[\n");
-            goto p_list_from_module_list_out;
-         }
-
-         p_arg[p_cnt].mod_core_stext_copy.p_size = p_arg[p_cnt].p_core_text_size;
-//         *((char *)p_arg[p_cnt].mod_core_stext_copy.p_addr + p_arg[p_cnt].p_core_text_size) = 0x0;
-         memcpy(p_arg[p_cnt].mod_core_stext_copy.p_addr,
-                p_arg[p_cnt].p_module_core,
-                p_arg[p_cnt].p_core_text_size);
-
-         /* Calculate hash from the snapshot module core text section ;) */
-         p_arg[p_cnt].mod_core_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_arg[p_cnt].mod_core_stext_copy.p_addr,
-                                                                    (unsigned int)p_arg[p_cnt].mod_core_stext_copy.p_size);
-
-/*
-         p_arg[p_cnt].p_mod_core_text_hash = p_lkrg_fast_hash((unsigned char *)p_arg[p_cnt].p_module_core,
-                                                              (unsigned int)p_arg[p_cnt].p_core_text_size);
-*/
-         p_arg[p_cnt].p_mod_core_text_hash = p_arg[p_cnt].mod_core_stext_copy.p_hash;
-//         printk(KERN_CRIT "[%s] => <%p> [0x%llx]\n",p_arg[p_cnt].p_name,p_arg[p_cnt].mod_core_stext_copy.p_addr,p_arg[p_cnt].mod_core_stext_copy.p_hash);
-
-      } else {
-
-         for (p_tmp = 0x0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
-            if (p_db.p_module_list_array[p_tmp].p_mod == p_mod) {
-               p_flag2 = 0x1;
-               break;
-            }
-         }
-
-         if (!p_flag2) {
-
-            /*
-             * We are under time-critical pressure. We are going to use emergency pools
-             * and we can't accept memory allocation fails. Because __GFP_NOFAIL is not
-             * 'safe' flag anymore, we are spinning until allocation succeeds.
-             */
-            if ( (p_arg[p_cnt].mod_core_stext_copy.p_addr = kzalloc(p_arg[p_cnt].p_core_text_size+1,
-                                                                    GFP_ATOMIC)) == NULL) {
-               /*
-                * I should NEVER be here!
-                */
-               p_ret = P_LKRG_GENERAL_ERROR;
-               p_print_log(P_LKRG_CRIT,
-                      "KMOD HASH kzalloc() error! Can't allocate memory for module list ;[\n");
-               goto p_list_from_module_list_out;
-            }
-
-            p_arg[p_cnt].kmod_stext_snapshot = (char *)P_NEW_KMOD_STEXT;
-            p_arg[p_cnt].mod_core_stext_copy.p_size = p_arg[p_cnt].p_core_text_size;
-            memcpy(p_arg[p_cnt].mod_core_stext_copy.p_addr,
-                   p_arg[p_cnt].p_module_core,
-                   p_arg[p_cnt].p_core_text_size);
-
-            /* Calculate hash from the snapshot module core text section ;) */
-            p_arg[p_cnt].mod_core_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_arg[p_cnt].mod_core_stext_copy.p_addr,
-                                                                       (unsigned int)p_arg[p_cnt].mod_core_stext_copy.p_size);
-            p_arg[p_cnt].p_mod_core_text_hash = p_arg[p_cnt].mod_core_stext_copy.p_hash;
-
-            p_print_log(P_LKRG_INFO,
-                   "New module detected - can't find original module in database (that's suspicious). "
-                   "LKRG will verify it later: "
-                   "name[%s] module_addr[%p] module_core[%p] size[0x%x] hash[0x%llx]\n",
-                   p_arg[p_cnt].p_name,
-                   p_arg[p_cnt].p_mod,
-                   p_arg[p_cnt].p_module_core,
-                   p_arg[p_cnt].p_core_text_size,
-                   p_arg[p_cnt].p_mod_core_text_hash);
-         } else {
-            p_arg[p_cnt].kmod_stext_snapshot = p_db.p_module_list_array[p_tmp].kmod_stext_snapshot;
-
-            if (NULL == p_arg[p_cnt].kmod_stext_snapshot) {
-               if (p_arg[p_cnt].p_mod == p_module_activity_ptr) {
-                  p_print_log(P_LKRG_INFO,
-                         "KMOD race detected for module: mod[%p] name[%s] state[%d] p_module_activity_ptr[%p | %s]\n",
-                         p_arg[p_cnt].p_mod,
-                         p_arg[p_cnt].p_name,
-                         p_arg[p_cnt].p_mod->state,
-                         p_module_activity_ptr,
-                         p_module_activity_ptr->name);
-                  p_ret = P_LKRG_KMOD_DUMP_RACE;
-                  goto p_list_from_module_list_out;
-               } else {
-                  p_print_log(P_LKRG_CRIT,
-                         "I should NEVER be here! KMOD: snapshot ptr == NULL for: "
-                         "mod[%p] name[%s] state[%d] p_module_activity_ptr[%p | %s]\n",
-                         p_arg[p_cnt].p_mod,
-                         p_arg[p_cnt].p_name,
-                         p_arg[p_cnt].p_mod->state,
-                         p_module_activity_ptr,
-                         p_module_activity_ptr->name);
-                  // Candidate to bugcheck() here!?
-                  p_ret = P_LKRG_GENERAL_ERROR;
-                  goto p_list_from_module_list_out;
-               }
-            }
-
-            memcpy(p_arg[p_cnt].kmod_stext_snapshot,
-                   p_arg[p_cnt].p_module_core,
-                   p_arg[p_cnt].p_core_text_size);
-
-//            p_arg[p_cnt].mod_core_stext_copy.p_size = p_arg[p_cnt].p_core_text_size;
-//            p_arg[p_cnt].mod_core_stext_copy.p_addr = (long *)p_arg[p_cnt].kmod_stext_snapshot;
-            /* Calculate hash from the snapshot module core text section ;) */
-//            p_arg[p_cnt].mod_core_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_arg[p_cnt].kmod_stext_snapshot,
-//                                                                       (unsigned int)p_arg[p_cnt].p_core_text_size);
-
-/*
-            p_arg[p_cnt].p_mod_core_text_hash = p_lkrg_fast_hash((unsigned char *)p_arg[p_cnt].p_module_core,
-                                                                 (unsigned int)p_arg[p_cnt].p_core_text_size);
-*/
-//            p_arg[p_cnt].p_mod_core_text_hash = p_arg[p_cnt].mod_core_stext_copy.p_hash;
-
-            p_arg[p_cnt].mod_core_stext_copy.p_size = p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_size;
-            p_arg[p_cnt].mod_core_stext_copy.p_addr = p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_addr;
-            p_arg[p_cnt].mod_core_stext_copy.p_hash = p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_hash;
-
-            p_arg[p_cnt].p_mod_core_text_hash = p_lkrg_fast_hash((unsigned char *)p_arg[p_cnt].kmod_stext_snapshot,
-                                                                 (unsigned int)p_arg[p_cnt].p_core_text_size);
-
-         }
-      }
-
+      /* Calculate hash from the module's core text section ;) */
+      p_arg[p_cnt].p_mod_core_text_hash = p_lkrg_fast_hash((unsigned char *)p_arg[p_cnt].p_module_core,
+                                                           (unsigned int)p_arg[p_cnt].p_core_text_size);
 
 // STRONG_DEBUG
       p_debug_log(P_LKRG_STRONG_DBG,
@@ -344,34 +196,6 @@ int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
       p_cnt++;
    }
 //   mutex_unlock(&module_mutex);
-
-p_list_from_module_list_out:
-
-   if (p_ret != P_LKRG_SUCCESS) {
-      if (p_cnt+1) {
-         if (p_flag) {
-            for (p_tmp = 0x0; p_tmp < p_cnt+1; p_tmp++) {
-               if (NULL != p_arg[p_cnt].mod_core_stext_copy.p_addr) {
-                  kzfree(p_arg[p_cnt].mod_core_stext_copy.p_addr);
-                  p_arg[p_cnt].mod_core_stext_copy.p_addr = NULL;
-               }
-               if (NULL != p_arg[p_cnt].kmod_stext_snapshot) {
-                  kzfree(p_arg[p_cnt].kmod_stext_snapshot);
-                  p_arg[p_cnt].kmod_stext_snapshot = NULL;
-               }
-            }
-         } else {
-            for (p_tmp = 0x0; p_tmp < p_cnt+1; p_tmp++) {
-               if (P_NEW_KMOD_STEXT == p_arg[p_cnt].kmod_stext_snapshot) {
-                  if (NULL != p_arg[p_cnt].mod_core_stext_copy.p_addr) {
-                     kzfree(p_arg[p_cnt].mod_core_stext_copy.p_addr);
-                     p_arg[p_cnt].mod_core_stext_copy.p_addr = NULL;
-                  }
-               }
-            }
-         }
-      }
-   }
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
@@ -456,7 +280,7 @@ int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
    struct kset *p_kset = *p_module_kset;
    struct kobject *p_kobj = NULL, *p_tmp_safe = NULL;
    struct module_kobject *p_mk = NULL;
-   int p_ret = 0x0;
+   int p_ret = P_LKRG_SUCCESS;
    unsigned int p_cnt = 0x0;
 
 // STRONG_DEBUG
@@ -559,8 +383,6 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
    int p_ret = P_LKRG_GENERAL_ERROR;
    unsigned int p_module_list_cnt_arg_old = *p_module_list_cnt_arg;
    unsigned int p_module_kobj_cnt_arg_old = *p_module_kobj_cnt_arg;
-   unsigned int p_cnt;
-
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
@@ -594,16 +416,6 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
 
       /* First free currently used memory! */
       if (*p_mlm_tmp) {
-         for (p_cnt = 0x0; p_cnt < p_module_list_cnt_arg_old; p_cnt++) {
-            if (NULL != (*p_mlm_tmp)[p_cnt].mod_core_stext_copy.p_addr) {
-               kzfree((*p_mlm_tmp)[p_cnt].mod_core_stext_copy.p_addr);
-               (*p_mlm_tmp)[p_cnt].mod_core_stext_copy.p_addr = NULL;
-            }
-            if (NULL != (*p_mlm_tmp)[p_cnt].kmod_stext_snapshot) {
-               kzfree((*p_mlm_tmp)[p_cnt].kmod_stext_snapshot);
-               (*p_mlm_tmp)[p_cnt].kmod_stext_snapshot = NULL;
-            }
-         }
          kzfree(*p_mlm_tmp);
          *p_mlm_tmp = NULL;
       }
@@ -687,16 +499,6 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
 
          /* First free currently used memory! */
          if (*p_mlm_tmp) {
-            for (p_cnt = 0x0; p_cnt < p_module_list_cnt_arg_old; p_cnt++) {
-               if (NULL != (*p_mlm_tmp)[p_cnt].mod_core_stext_copy.p_addr) {
-                  kzfree((*p_mlm_tmp)[p_cnt].mod_core_stext_copy.p_addr);
-                  (*p_mlm_tmp)[p_cnt].mod_core_stext_copy.p_addr = NULL;
-               }
-               if (NULL != (*p_mlm_tmp)[p_cnt].kmod_stext_snapshot) {
-                  kzfree((*p_mlm_tmp)[p_cnt].kmod_stext_snapshot);
-                  (*p_mlm_tmp)[p_cnt].kmod_stext_snapshot = NULL;
-               }
-            }
             kzfree(*p_mlm_tmp);
             *p_mlm_tmp = NULL;
          }
@@ -735,16 +537,6 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
       } else {
 //         printk(KERN_CRIT "p_module_list_cnt_arg_old[%d] *p_module_list_cnt_arg[%d] *p_mlm_tmp[%p]\n",
 //                          p_module_list_cnt_arg_old, *p_module_list_cnt_arg, *p_mlm_tmp);
-         for (p_cnt = 0x0; p_cnt < p_module_list_cnt_arg_old; p_cnt++) {
-            if (NULL != (*p_mlm_tmp)[p_cnt].mod_core_stext_copy.p_addr) {
-               kzfree((*p_mlm_tmp)[p_cnt].mod_core_stext_copy.p_addr);
-               (*p_mlm_tmp)[p_cnt].mod_core_stext_copy.p_addr = NULL;
-            }
-            if (NULL != (*p_mlm_tmp)[p_cnt].kmod_stext_snapshot) {
-               kzfree((*p_mlm_tmp)[p_cnt].kmod_stext_snapshot);
-               (*p_mlm_tmp)[p_cnt].kmod_stext_snapshot = NULL;
-            }
-         }
          memset(*p_mlm_tmp,0x0,sizeof(p_module_list_mem) * *p_module_list_cnt_arg);
       }
 

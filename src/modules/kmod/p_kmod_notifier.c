@@ -65,7 +65,6 @@ static void p_module_notifier_wrapper(unsigned long p_event, struct module *p_km
 static int p_module_event_notifier(struct notifier_block *p_this, unsigned long p_event, void *p_kmod) {
 
    struct module *p_tmp = p_kmod;
-   unsigned int p_cnt = 0x0;
 
 // STRONG_DEBUG
 #ifdef P_LKRG_DEBUG
@@ -147,15 +146,8 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
          schedule();
 
       /* Update global module list/kobj hash */
-//      p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
-//                                             (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
-
-      p_db.p_module_stexts_copy = 0x0;
-      for (p_db.p_module_list_hash = p_cnt = 0x0; p_cnt < p_db.p_module_list_nr; p_cnt++) {
-         p_db.p_module_list_hash ^= p_lkrg_fast_hash((unsigned char *)&p_db.p_module_list_array[p_cnt],
-                                                     (unsigned int)offsetof(p_module_list_mem, mod_core_stext_copy));
-         p_db.p_module_stexts_copy ^= p_db.p_module_list_array[p_cnt].mod_core_stext_copy.p_hash;
-      }
+      p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
+                                             (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
 
       p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                              (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
@@ -223,16 +215,8 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
             schedule();
 
          /* Update global module list/kobj hash */
-/*
          p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
                                              (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
-*/
-         p_db.p_module_stexts_copy = 0x0;
-         for (p_db.p_module_list_hash = p_cnt = 0x0; p_cnt < p_db.p_module_list_nr; p_cnt++) {
-            p_db.p_module_list_hash ^= p_lkrg_fast_hash((unsigned char *)&p_db.p_module_list_array[p_cnt],
-                                                        (unsigned int)offsetof(p_module_list_mem, mod_core_stext_copy));
-            p_db.p_module_stexts_copy ^= p_db.p_module_list_array[p_cnt].mod_core_stext_copy.p_hash;
-         }
 
          p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                              (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));

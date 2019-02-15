@@ -18,11 +18,6 @@
 #include "../../p_lkrg_main.h"
 
 /*
- * Submodule for handling self-modifications in the kernel core .text section
- */
-#include "p_stext_diff.c"
-
-/*
  * Local timer for integrity checks...
  */
 struct timer_list p_timer;
@@ -151,7 +146,6 @@ void p_check_integrity(struct work_struct *p_work) {
 
    /* temporary hash variable */
    uint64_t p_tmp_hash;
-   uint64_t p_tmp_hash_stexts = 0x0;
    /* per CPU temporary data */
    p_IDT_MSR_CRx_hash_mem *p_tmp_cpus;
    p_cpu_info p_tmp_cpu_info;
@@ -163,7 +157,6 @@ void p_check_integrity(struct work_struct *p_work) {
    char p_mod_bad_nr = 0x0;
    /* Are we compromised ? */
    unsigned int p_hack_check = 0x0;
-   unsigned int p_core_stext_hacked = 0x0;
    /* Module syncing temporary pointer */
    struct module *p_tmp_mod;
    unsigned int p_tmp = 0x0;
@@ -264,9 +257,6 @@ void p_check_integrity(struct work_struct *p_work) {
    put_online_cpus();
 
    p_text_section_lock();
-   /* First, we need to snapshot an entire .text */
-   *((char *)p_db.kernel_stext_snapshot + p_db.kernel_stext.p_size) = 0x0;
-   memcpy(p_db.kernel_stext_snapshot,p_db.kernel_stext.p_addr,p_db.kernel_stext.p_size);
 
    /* We are heavily consuming module list here - take 'module_mutex' */
    mutex_lock(&module_mutex);
@@ -332,87 +322,19 @@ void p_check_integrity(struct work_struct *p_work) {
    }
 
    /*
-    * Before checking "_stext" we need to verify copy of "_stext".
-    * It is critical for us since we rely on the copy to whitelist self-modifications.
-    */
-   p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
-                                 (unsigned int)p_db.kernel_stext_copy.p_size);
-
-   if (p_db.kernel_stext_copy.p_hash != p_tmp_hash) {
-      /* I'm hacked! ;( */
-      p_print_log(P_LKRG_CRIT,
-             "ALERT !!! COPY OF _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx]"
-             " and should be [0x%llx] !!!\n",
-             p_tmp_hash,p_db.kernel_stext_copy.p_hash);
-      p_print_log(P_LKRG_CRIT,
-             "!!! KERNEL CORE INTEGRITY VERIFICATION CAN'T BE TRUSTED !!!\n");
-      p_hack_check++;
-      /*
-       * If we find kernel .text corruption we won't be able to
-       * validate *_JUMP_LABEL modifications.
-       * We should bugcheck if copy of stext and core .text is corrupted.
-       */
-      p_core_stext_hacked++;
-   }
-
-   /*
     * Checking memory block:
     * "_stext"
     */
-
-   p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_snapshot,
+   p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext.p_addr,
                                  (unsigned int)p_db.kernel_stext.p_size);
 
    if (p_db.kernel_stext.p_hash != p_tmp_hash) {
-
-      /* We can only do whitelistening if we trust copy of stext */
-      if (!p_core_stext_hacked) {
-         /* "whitelisted" self-modifications? tracepoints? DO_ONCE()? */
-         if ( (p_cmp_bytes((char *)p_db.kernel_stext_snapshot,
-                           (char *)p_db.kernel_stext_copy.p_addr,
-                           (unsigned long)p_db.kernel_stext.p_size,
-                           0x0)) == -1) {
-
-            /* I'm hacked! ;( */
-            p_print_log(P_LKRG_CRIT,
-                   "ALERT !!! _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
-                                                                  p_tmp_hash,p_db.kernel_stext.p_hash);
-            p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
-                                                             (unsigned int)p_db.kernel_stext_copy.p_size);
-            p_hack_check++;
-         } else {
-            p_print_log(P_LKRG_WARN,
-                "Whitelisted legit self-modification detected! "
-                "Recalculating internal kernel core .text section hash\n");
-
-            p_db.kernel_stext.p_hash = p_tmp_hash; //<- might be modified during whitelisting algorithm
-/*
-            p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_snapshot,
-                                                        (unsigned int)p_db.kernel_stext.p_size);
-*/
-            p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
-                                                             (unsigned int)p_db.kernel_stext_copy.p_size);
-         }
-      /* We detected copy of stext and main stext corruption - we are hacked and can't recover */
-      } else {
-         /* I'm hacked! ;( */
-         p_print_log(P_LKRG_CRIT,
-                "ALERT !!! _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
-                                                               p_tmp_hash,p_db.kernel_stext.p_hash);
-         p_hack_check++;
-      }
-
-   /*
-    * Looks like copy of stext is corrupted but main stext memory is OK.
-    * Let's restore copy of stext to correct state.
-    *
-    * It is weird state because if someone can corrupt copy of stext he can also corrupt hashes.
-    * Still it is good to keep this logic, since if we developed DB guarding, this will be very useful.
-    */
-   } else if (p_core_stext_hacked) {
-      memcpy(p_db.kernel_stext_copy.p_addr, p_db.kernel_stext_snapshot, p_db.kernel_stext_copy.p_size);
-      p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
-                                                       (unsigned int)p_db.kernel_stext_copy.p_size);
+      /* We detected core kernel .text corruption - we are hacked and can't recover */
+      /* I'm hacked! ;( */
+      p_print_log(P_LKRG_CRIT,
+             "ALERT !!! _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
+                                                            p_tmp_hash,p_db.kernel_stext.p_hash);
+      p_hack_check++;
    }
 
    p_print_log(P_LKRG_INFO,"Hash from _stext memory block => [0x%llx]\n",p_tmp_hash);
@@ -1309,192 +1231,41 @@ void p_check_integrity(struct work_struct *p_work) {
    }
 */
 
-/*
+
    p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_module_list_tmp,
                                  (unsigned int)p_module_list_nr_tmp * sizeof(p_module_list_mem));
-*/
-
-   p_core_stext_hacked = 0x0;
-   for (p_tmp_hash = p_tmp = 0x0; p_tmp < p_module_list_nr_tmp; p_tmp++) {
-      p_tmp_hash ^= p_lkrg_fast_hash((unsigned char *)&p_module_list_tmp[p_tmp],
-                                     (unsigned int)offsetof(p_module_list_mem, mod_core_stext_copy));
-      p_tmp_hash_stexts ^= p_module_list_tmp[p_tmp].mod_core_stext_copy.p_hash;
-/*
-      p_print_log(P_LKRG_CRIT,
-          "p_tmp_hash_stexts => [0x%llx] p_module_list_tmp[%d].mod_core_stext_copy.p_hash[0x%llx]\n",
-           p_tmp_hash_stexts,p_tmp,p_module_list_tmp[p_tmp].mod_core_stext_copy.p_hash);
-*/
-
-      if (p_mod_bad_nr) {
-         unsigned int p_tmp_cnt;
-
-         for (p_tmp_cnt = 0x0; p_tmp_cnt < p_db.p_module_list_nr; p_tmp_cnt++) {
-            if (p_db.p_module_list_array[p_tmp_cnt].p_mod == p_module_list_tmp[p_tmp].p_mod) {
-               if (p_module_list_tmp[p_tmp].mod_core_stext_copy.p_hash != p_db.p_module_list_array[p_tmp_cnt].mod_core_stext_copy.p_hash) {
-                  p_module_list_tmp[p_tmp].dynamic_flag = 0x1;
-                  p_core_stext_hacked++;
-                  p_print_log(P_LKRG_CRIT,
-                         "!!! COPY OF _STEXT MEMORY BLOCK FOR MODULE[%s] IS CORRUPTED <%p> DB:[0x%llx] vs <%p>[0x%llx] !!!\n",
-                         p_module_list_tmp[p_tmp].p_name,
-                         p_db.p_module_list_array[p_tmp_cnt].mod_core_stext_copy.p_addr,
-                         p_db.p_module_list_array[p_tmp_cnt].mod_core_stext_copy.p_hash,
-                         p_module_list_tmp[p_tmp].mod_core_stext_copy.p_addr,
-                         p_module_list_tmp[p_tmp].mod_core_stext_copy.p_hash);
-               }
-            }
-         }
-
-      } else if (p_tmp < p_db.p_module_list_nr) {
-         if (p_module_list_tmp[p_tmp].mod_core_stext_copy.p_hash != p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_hash) {
-            p_module_list_tmp[p_tmp].dynamic_flag = 0x1;
-            p_core_stext_hacked++;
-            p_print_log(P_LKRG_CRIT,
-                   "!!! COPY OF _STEXT MEMORY BLOCK FOR MODULE[%s] IS CORRUPTED <%p> DB:[0x%llx] vs <%p>[0x%llx] !!!\n",
-                   p_module_list_tmp[p_tmp].p_name,
-                   p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_addr,
-                   p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_hash,
-                   p_module_list_tmp[p_tmp].mod_core_stext_copy.p_addr,
-                   p_module_list_tmp[p_tmp].mod_core_stext_copy.p_hash);
-         }
-      }
-   }
-
-   if (p_tmp_hash_stexts != p_db.p_module_stexts_copy) {
-      if (p_core_stext_hacked) {
-         /* I'm hacked! ;( */
-         p_print_log(P_LKRG_CRIT,
-                "ALERT !!! COPY OF THE MODULES _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx]"
-                " and should be [0x%llx] !!!\n",
-                p_tmp_hash_stexts,p_db.p_module_stexts_copy);
-         p_hack_check++;
-         /*
-          * If we find kernel .text corruption we won't be able to
-          * validate *_JUMP_LABEL modifications.
-          * We should bugcheck if copy of stext and core .text is corrupted.
-          */
-         p_core_stext_hacked++;
-      } else {
-         p_print_log(P_LKRG_WARN,
-                "Copy of the modules .text mem block is different because in DB we don't have all dumped modules.");
-      }
-   }
 
    p_print_log(P_LKRG_INFO,"Hash from 'module list' => [0x%llx]\n",p_tmp_hash);
 
    if (p_tmp_hash != p_db.p_module_list_hash) {
-      unsigned int p_tmp_cnt,p_tmp_cnt2,p_local_hack_check = 0x0;
-      char p_tmp_cnt2_flag;
+      unsigned int p_tmp_cnt,p_local_hack_check = 0x0;
 
       for (p_tmp = 0x0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
          for (p_tmp_cnt = 0x0; p_tmp_cnt < p_module_list_nr_tmp; p_tmp_cnt++) {
             if (p_db.p_module_list_array[p_tmp].p_mod == p_module_list_tmp[p_tmp_cnt].p_mod) {
                if (p_db.p_module_list_array[p_tmp].p_mod_core_text_hash != p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash) {
-                  if (!p_module_list_tmp[p_tmp_cnt].dynamic_flag &&
-                      p_db.p_module_list_array[p_tmp].kmod_stext_snapshot != P_NEW_KMOD_STEXT) {
-
-                     /*
-                      * if ( (p_cmp_bytes((char *)p_db.kernel_stext_snapshot,
-                      *     (char *)p_db.kernel_stext_copy.p_addr,
-                      *     (unsigned long)p_db.kernel_stext.p_size)) == -1) {
-                      */
-
-                     if ( (p_cmp_bytes((char *)p_db.p_module_list_array[p_tmp].kmod_stext_snapshot,
-                                       (char *)p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_addr,
-                                       (unsigned long)p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_size,
-                                       (p_module_list_mem *)&p_db.p_module_list_array[p_tmp])) == -1) {
-
-                     /* I'm hacked! ;( */
-//                     p_db.kernel_stext_copy.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_copy.p_addr,
-//                                                                      (unsigned int)p_db.kernel_stext_copy.p_size);
-
-                        p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_hash =
-                                       p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_addr,
-                                                        (unsigned int)p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_size);
-
-                        p_print_log(P_LKRG_CRIT,
-                               "ALERT !!! MODULE'S <%s> HASH IS DIFFERENT it is [0x%llx] and should be [0x%llx] !!!\n",
-                                p_module_list_tmp[p_tmp_cnt].p_name,
-                                p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash,
-                                p_db.p_module_list_array[p_tmp_cnt].p_mod_core_text_hash);
-                        p_hack_check++;
-                        p_local_hack_check++;
-
-                     } else {
-                        p_print_log(P_LKRG_WARN,
-                            "Whitelisted legit self-modification detected! "
-                            "Recalculating module's .text section hash\n");
-
-                        p_db.p_module_list_array[p_tmp].p_mod_core_text_hash =  //<- might be modified during whitelisting algorithm
-                                                 p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash;
-
-                        for (p_tmp_cnt2_flag = p_tmp_cnt2 = 0x0; p_tmp_cnt2 < p_db.p_module_kobj_nr; p_tmp_cnt2++) {
-                           if (p_db.p_module_kobj_array[p_tmp_cnt2].p_mod == p_db.p_module_list_array[p_tmp].p_mod) {
-                              p_tmp_cnt2_flag = 0x1;
-                              break;
-                           }
-                        }
-
-                        /*
-                        if ( (p_db.p_module_kobj_array[p_tmp].p_mod == p_db.p_module_list_array[p_tmp].p_mod) == p_module_kobj_tmp[p_tmp_cnt].p_mod) {
-                            printk(KERN_CRIT "YES [%s] [%s] [%s]\n",p_db.p_module_kobj_array[p_tmp].p_name,p_db.p_module_list_array[p_tmp].p_name,p_module_kobj_tmp[p_tmp_cnt].p_name);
-                        } else {
-                            printk(KERN_CRIT "NO [%s] [%s] [%s]\n",p_db.p_module_kobj_array[p_tmp].p_name,p_db.p_module_list_array[p_tmp].p_name,p_module_kobj_tmp[p_tmp_cnt].p_name);
-                        }
-                        */
-                        if (p_tmp_cnt2_flag) {
-                           p_print_log(P_LKRG_WARN,
-                                  "Because we whitelisted module's .text section hash we need to update KOBJs as well. "
-                                  "Module[%s] was [0x%llx] and should be [0x%llx]\n",
-                                  p_db.p_module_list_array[p_tmp].p_name,
-                                  p_db.p_module_kobj_array[p_tmp_cnt2].p_mod_core_text_hash,
-                                  p_db.p_module_list_array[p_tmp].p_mod_core_text_hash);
-                           p_db.p_module_kobj_array[p_tmp_cnt2].p_mod_core_text_hash = p_db.p_module_list_array[p_tmp].p_mod_core_text_hash;
-                           p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
-                                                                      (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
-                           if (p_tmp_cnt2 < p_module_kobj_nr_tmp) {
-                              p_module_kobj_tmp[p_tmp_cnt2].p_mod_core_text_hash = p_db.p_module_kobj_array[p_tmp_cnt2].p_mod_core_text_hash;
-                           }
-                        }
-/*
-                     p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext_snapshot,
-                                                                 (unsigned int)p_db.kernel_stext.p_size);
-*/
-                        p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_hash =
-                                         p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_addr,
-                                                          (unsigned int)p_db.p_module_list_array[p_tmp].mod_core_stext_copy.p_size);
-                     }
-
-                  } else {
-                     if (p_db.p_module_list_array[p_tmp].kmod_stext_snapshot == P_NEW_KMOD_STEXT) {
-                        // This shouldn't happen here...
-                        p_print_log(P_LKRG_CRIT,
-                               "?!?! p_db.p_module_list_array[p_tmp].kmod_stext_snapshot == P_NEW_KMOD_STEXT ?!?!\n");
-                     } else {
-                        p_print_log(P_LKRG_CRIT,
-                               "!!! CAN'T VERIFY STEXT FOR MODULE[%s] SINCE COPY OF STEXT IS CORRUPTED !!!\n",
-                               p_module_list_tmp[p_tmp].p_name);
-                        p_hack_check++;
-                        p_local_hack_check++;
-                     }
-                  }
+                  /* I'm hacked! ;( */
+                  p_print_log(P_LKRG_CRIT,
+                              "ALERT !!! MODULE'S <%s> HASH IS DIFFERENT it is [0x%llx] and should be [0x%llx] !!!\n",
+                              p_module_list_tmp[p_tmp_cnt].p_name,
+                              p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash,
+                              p_db.p_module_list_array[p_tmp_cnt].p_mod_core_text_hash);
+                  p_hack_check++;
+                  p_local_hack_check++;
                }
             }
          }
       }
-
+/*
       if (!p_local_hack_check) {
-         p_db.p_module_list_hash = p_db.p_module_stexts_copy = 0x0;
-         for (p_tmp_cnt = 0x0; p_tmp_cnt < p_db.p_module_list_nr; p_tmp_cnt++) {
-            p_db.p_module_list_hash ^= p_lkrg_fast_hash((unsigned char *)&p_db.p_module_list_array[p_tmp_cnt],
-                                                        (unsigned int)offsetof(p_module_list_mem, mod_core_stext_copy));
-            p_db.p_module_stexts_copy ^= p_db.p_module_list_array[p_tmp_cnt].mod_core_stext_copy.p_hash;
-         }
+         p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
+                                                    (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
 
          if (p_tmp_hash != p_db.p_module_list_hash) {
             p_local_hack_check = 0x1;
          }
       }
-
+*/
       /*
        * OK, we know hash will be different if there is inconsistency in the number
        * of tracked / discovered modules in module list and/or in sysfs (KOBJs)
@@ -1574,14 +1345,6 @@ void p_check_integrity(struct work_struct *p_work) {
    }
 
    if (p_module_list_tmp) {
-      for (p_tmp = 0x0; p_tmp < p_module_list_nr_tmp; p_tmp++) {
-         if (P_NEW_KMOD_STEXT == p_module_list_tmp[p_tmp].kmod_stext_snapshot) {
-            if (NULL != p_module_list_tmp[p_tmp].mod_core_stext_copy.p_addr) {
-               kzfree(p_module_list_tmp[p_tmp].mod_core_stext_copy.p_addr);
-               p_module_list_tmp[p_tmp].mod_core_stext_copy.p_addr = NULL;
-            }
-         }
-      }
       kzfree(p_module_list_tmp);
       p_module_list_tmp = NULL;
    }

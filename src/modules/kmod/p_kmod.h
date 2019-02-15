@@ -34,14 +34,7 @@ typedef struct p_module_list_mem {
    char p_name[MODULE_NAME_LEN+1];
    void *p_module_core;
    unsigned int p_core_text_size;
-
    uint64_t p_mod_core_text_hash;
-
-   /* JUMP_LABEL support */
-   p_hash_mem_block mod_core_stext_copy;  // copy of entire module's .text segment
-                                          //  - needed to deal with *_JMP_LABEL shit ;/
-   char dynamic_flag;                     // Used only during verification
-   char *kmod_stext_snapshot;             // temp memory for a .text section snapshot - used during verification
 
 } p_module_list_mem;
 

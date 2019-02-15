@@ -58,7 +58,6 @@ int p_switch_idt_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
           "Entering function <p_switch_idt_ret>\n");
 
 
-   get_online_cpus();
 /*
    on_each_cpu(p_dump_IDT_MSR_CRx,p_tmp_cpus,true);
    p_tmp_hash = hash_from_CPU_data(p_tmp_cpus);
@@ -66,7 +65,6 @@ int p_switch_idt_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
    smp_call_function_single(smp_processor_id(),p_dump_IDT_MSR_CRx,p_db.p_IDT_MSR_CRx_array,true);
    p_db.p_IDT_MSR_CRx_hashes = hash_from_CPU_data(p_db.p_IDT_MSR_CRx_array);
 
-   put_online_cpus();
    spin_unlock(&p_db_lock);
 
    p_debug_kprobe_log(

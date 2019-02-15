@@ -29,7 +29,7 @@ void p_offload_work(unsigned long p_timer);
 void p_offload_work(struct timer_list *p_timer);
 #endif
 
-int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size, p_module_list_mem *p_module);
+// int p_cmp_bytes(char *p_new, char *p_old, unsigned long p_size, p_module_list_mem *p_module);
 
 int p_offload_cache_init(void);
 void p_offload_cache_delete(void);
