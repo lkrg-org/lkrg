@@ -22,6 +22,6 @@ case "`readlink /proc/1/exe`" in
 		$P_PWD/$P_LKRG_SYSTEMD "$@"
 		;;
 	*)
-		echo "  ${P_RED}[-] Unsupported init system: not systemd?${P_NC}"
+		echo -e "  ${P_RED}[-] Unsupported init system: not systemd or not running as root?${P_NC}"
 		;;
 esac

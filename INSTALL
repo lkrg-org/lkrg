@@ -88,6 +88,46 @@ corruptions are detected.
     Jan 29 17:34:14 pi3-VM kernel: [201273.828062] [p_lkrg] System is clean!
     pi3@pi3-VM:~/lkrg-main$
 
+We have also prepared early boot systemd unit file. Similar optional
+functionality for other init systems may be added later. You can install LKRG
+using Makefile:
+
+    root@pi3-ubuntu:~/lkrg-main# make install
+    make -C /lib/modules/4.8.0-53-generic/build M=/root/lkrg-main modules_install
+    make[1]: Entering directory '/usr/src/linux-headers-4.8.0-53-generic'
+      DEPMOD  4.8.0-53-generic
+    make[1]: Leaving directory '/usr/src/linux-headers-4.8.0-53-generic'
+    depmod -a
+    /root/lkrg-main/scripts/bootup/lkrg-bootup.sh install
+     [*] Executing LKRG's bootup installation script
+      [+] Systemd detected
+           Installing lkrg.service file under /lib/systemd/system folder
+           Enabling lkrg.service on bootup
+    Created symlink from /etc/systemd/system/multi-user.target.wants/lkrg.service to /lib/systemd/system/lkrg.service.
+           To start lkrg.service please use: systemctl start lkrg
+      [+] Done!
+
+Please do not forget to run the following command to start LKRG service:
+
+    systemctl start lkrg
+
+You can uninstall LKRG using Makefile as well:
+
+    root@pi3-ubuntu:~/lkrg-main# make uninstall
+    /root/lkrg-main/scripts/bootup/lkrg-bootup.sh uninstall
+     [*] Executing LKRG's bootup installation script
+      [+] Systemd detected
+           Stopping lkrg.service
+           Disabling lkrg.service on bootup
+    Removed symlink /etc/systemd/system/multi-user.target.wants/lkrg.service.
+           Deleting lkrg.service file from the /lib/systemd/system folder
+      [+] Done!
+
+You can also use the following command to temporarily stop LKRG service without
+uninstalling it:
+
+    systemctl stop lkrg
+
 
 COMMUNICATION CHANNEL:
 ----------------------

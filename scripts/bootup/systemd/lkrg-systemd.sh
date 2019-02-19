@@ -26,8 +26,11 @@ if [ "$1" == "install" ]; then
 	cp $P_PWD/scripts/bootup/systemd/lkrg.service $P_SYSTEMD_DIR/lkrg.service
 	echo -e "       ${P_GREEN}Enabling ${P_YL}lkrg.service${P_GREEN} on bootup${P_NC}"
 	systemctl enable lkrg.service
+	echo -e "       ${P_GREEN}To start ${P_YL}lkrg.service${P_GREEN} please use: ${P_YL}systemctl start lkrg${P_NC}"
     fi
 elif [ "$1" == "uninstall" ]; then
+    echo -e "       ${P_GREEN}Stopping ${P_YL}lkrg.service${P_NC}"
+    systemctl stop lkrg.service
     echo -e "       ${P_GREEN}Disabling ${P_YL}lkrg.service${P_GREEN} on bootup${P_NC}"
     systemctl disable lkrg.service
     echo -e "       ${P_GREEN}Deleting ${P_YL}lkrg.service${P_GREEN} file from the ${P_YL}$P_SYSTEMD_DIR${P_GREEN} folder${P_NC}"
