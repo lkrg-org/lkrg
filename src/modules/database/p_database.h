@@ -94,7 +94,7 @@ enum p_jump_label_state {
 };
 
 /*
- * During *_JUMP_LABEL modification, we need to store an information about its state.
+ * During *_JUMP_LABEL modification, we need to store information about its state.
  */
 struct p_jump_label {
 

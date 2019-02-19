@@ -56,6 +56,9 @@ int p_register_arch_metadata(void) {
 #endif
 #endif
 
+   /*
+    * This is not an arch specific hook, but it's a good place to register it
+    */
    if (p_install_arch_jump_label_transform_hook()) {
       p_print_log(P_LKRG_ERR,
              "ERROR: Can't hook arch_jump_label_transform function :(\n");
@@ -88,7 +91,7 @@ int p_unregister_arch_metadata(void) {
 #endif
 
    /*
-    * This is not an ARCH specific hooks but it's a good place to deregister these hooks
+    * This is not an arch specific hook, but it's a good place to deregister it
     */
    p_uninstall_arch_jump_label_transform_hook();
 

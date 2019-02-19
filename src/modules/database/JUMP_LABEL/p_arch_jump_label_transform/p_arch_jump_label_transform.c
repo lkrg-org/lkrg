@@ -10,7 +10,7 @@
  *    Linux distributions provide kernel with these options compiled. It makes
  *    Linux kernel being self-modifying code. It is very troublesome for this
  *    project. We are relying on comparing hashes from the specific memory
- *    regions and by design self-midifications breaks this functionality.
+ *    regions and by design self-modifications break this functionality.
  *  - We are hooking into low-level *_JUMP_LABEL functions to be able to
  *    monitor whenever new modification is on the way.
  *
@@ -150,7 +150,7 @@ int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_reg
 
                if (!p_flag) {
                   p_print_log(P_LKRG_ERR,
-                              "[JUMP_LABEL] I've update module's list hash for module[%s : 0x%p] but can't find the same module in KOBJs list!\n",
+                              "[JUMP_LABEL] Updated module's list hash for module[%s : 0x%p] but can't find the same module in KOBJs list!\n",
                               p_db.p_module_list_array[p_tmp].p_name,p_db.p_module_list_array[p_tmp].p_mod);
                } else {
 

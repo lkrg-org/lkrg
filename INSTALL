@@ -18,16 +18,16 @@ the local directory via following command:
 There is also separate version of the project kept under "experimental" branch
 and you can read about it more here:
 
-    http://openwall.info/wiki/p_lkrg/Protected_Features
+    https://openwall.info/wiki/p_lkrg/Protected_Features
 
 If you do not want to use Git, you can also obtain tarballs from the Openwall
 website and verify the signature of the packages:
 
-    $ wget http://www.openwall.com/signatures/openwall-offline-signatures.asc
+    $ wget https://www.openwall.com/signatures/openwall-offline-signatures.asc
     $ gpg --import openwall-offline-signatures.asc
-    $ wget http://www.openwall.com/lkrg/lkrg-0.5.tar.gz.sign
-    $ wget http://www.openwall.com/lkrg/lkrg-0.5.tar.gz
-    $ gpg --verify lkrg-0.5.tar.gz.sign lkrg-0.5.tar.gz
+    $ wget https://www.openwall.com/lkrg/lkrg-0.6.tar.gz.sign
+    $ wget https://www.openwall.com/lkrg/lkrg-0.6.tar.gz
+    $ gpg --verify lkrg-0.6.tar.gz.sign lkrg-0.6.tar.gz
 
 
 BUILD REQUIREMENTS:
@@ -95,7 +95,7 @@ COMMUNICATION CHANNEL:
 The project has a built-in sysctl interface, which enables the interaction
 between the administrator and LKRG. The following options are available:
 
-    root@pi3-ubuntu:~/p_lkrg-main# sysctl -a|grep lkrg
+    root@pi3-ubuntu:~/p_lkrg-main# sysctl -a | grep lkrg
     lkrg.block_modules = 0
     lkrg.ci_panic = 0
     lkrg.clean_message = 1

@@ -10,7 +10,7 @@
  *    Linux distributions provide kernel with these options compiled. It makes
  *    Linux kernel being self-modifying code. It is very troublesome for this
  *    project. We are relying on comparing hashes from the specific memory
- *    regions and by design self-midifications breaks this functionality.
+ *    regions and by design self-modifications break this functionality.
  *  - We are hooking into low-level *_JUMP_LABEL functions to be able to
  *    monitor whenever new modification is on the way.
  *

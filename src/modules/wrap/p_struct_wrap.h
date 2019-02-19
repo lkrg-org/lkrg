@@ -7,9 +7,9 @@
  * Notes:
  *  - Wrapping some of the critical structures in the system e.g.:
  *   -> k[g/u]id_t
- *   -> accesing 'struct module' structure - since kernel 4.5 'struct module'
- *      was changed. Accessing some critical variables must be more 'smart'
- *      now. We are wrapping necessary fields here.
+ *   -> accessing 'struct module' structure - since kernel 4.5 'struct module'
+ *      was changed. Accessing some critical variables must be smarter now.
+ *      We are wrapping the necessary fields here.
  *
  * http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/diff/include/linux/module.h?id=7523e4dc5057
  *

@@ -1,3 +1,23 @@
+The following changes have been made between LKRG 0.5 and 0.6:
+
+*) [CI] Protect SMEP bit in CR4 and WP bit in CR0 on x86 architecture
+*) [CI] Reimplement *_JUMP_LABEL support: simpler and needs a lot less memory
+*) [CI] Propagate errors when kzalloc() fails
+*) [ED] Introduce pCFI mitigation (poor man's Control Flow Integrity) against
+unintended invocation of a few kernel functions especially useful in exploits
+*) [ED] Lock down the usermodehelper interface with a whitelist of programs
+*) [ED] Fix false positive on seccomp(SECCOMP_SET_MODE_FILTER,
+SECCOMP_FILTER_FLAG_TSYNC, ...) failing, where we must revert all threads'
+settings but did not (we do now)
+*) [ED] Freeze all user mode processes during Exploit Detection initialization
+to avoid false positives
+*) [ED] Minor change in how SIGKILL is delivered to the corrupted task
+*) Fix build error on Linux 4.17+ without CONFIG_ARCH_HAS_SYSCALL_WRAPPER
+*) Add LKRG early boot systemd unit file.  (Similar optional functionality for
+other init systems may be added later.  Contributions are welcome.)
+*) Add install/uninstall make targets, which deploy/remove the systemd service
+
+
 The following changes have been made between LKRG 0.4 and 0.5:
 
 *) [CI] Add *_JUMP_LABEL support for kernel modules (a major change)
