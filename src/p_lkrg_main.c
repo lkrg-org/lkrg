@@ -124,7 +124,11 @@ static int __init p_lkrg_register(void) {
    p_integrity_timer();
    p_register_notifiers();
    p_lkrg_global_ctrl.p_random_events = 0x1;
-   p_lkrg_global_ctrl.p_smep_panic = 0x1;
+   if (p_global_SMEP)
+      p_lkrg_global_ctrl.p_smep_panic = 0x1;
+   else
+      p_print_log(P_LKRG_ERR,
+             "System does NOT support SMEP. LKRG can't enforece smep_panic :(\n");
 
    mutex_lock(&module_mutex);
    if (p_lkrg_global_ctrl.p_hide_module) {
