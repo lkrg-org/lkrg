@@ -64,6 +64,8 @@ typedef struct _p_lkrg_global_ctrl_structure {
    unsigned int p_clean_message;
    unsigned int p_random_events;
    unsigned int p_ci_panic;
+   unsigned int p_smep_panic;
+   unsigned int p_umh_lock;
 
 } p_lkrg_global_ctrl_struct;
 
