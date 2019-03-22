@@ -34,6 +34,10 @@ struct mutex *p_kernfs_mutex = NULL;
 #endif
 struct kset **p_module_kset = NULL;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+int (*p_ddebug_remove_module_ptr)(const char *p_name) = 0x0;
+#endif
+
 int p_kmod_init(void) {
 
    int p_ret = P_LKRG_SUCCESS;
@@ -50,10 +54,18 @@ int p_kmod_init(void) {
 #endif
    p_module_kset      = (struct kset **)p_kallsyms_lookup_name("module_kset");
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+   p_ddebug_remove_module_ptr = (int(*)(const char *))p_kallsyms_lookup_name("ddebug_remove_module");
+#endif
+
+
    // DEBUG
    p_debug_log(P_LKRG_DBG,
           "<p_kmod_init> p_ddebug_tables[0x%lx] p_ddebug_lock[0x%lx] "
                         "module_mutex[0x%lx] p_global_modules[0x%p] "
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+                        "p_ddebug_remove_module_ptr[0x%p]"
+#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
                         "p_kernfs_mutex[0x%p] p_module_kset[0x%p]\n",
 #else
@@ -62,11 +74,14 @@ int p_kmod_init(void) {
                                                             (long)p_ddebug_tables,
                                                             (long)p_ddebug_lock,
                                                             (long)&module_mutex,
-                                                             p_global_modules,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-                                                             p_kernfs_mutex,
+                                                            p_global_modules,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+                                                            p_ddebug_remove_module_ptr,
 #endif
-                                                             p_module_kset);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
+                                                            p_kernfs_mutex,
+#endif
+                                                            p_module_kset);
 
    if (!p_global_modules) {
       p_print_log(P_LKRG_ERR,
@@ -74,6 +89,15 @@ int p_kmod_init(void) {
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_kmod_init_out;
    }
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+   if (!p_ddebug_remove_module_ptr) {
+      p_print_log(P_LKRG_ERR,
+             "KMOD error! Can't find 'ddebug_remove_module' function :( Exiting...\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_kmod_init_out;
+   }
+#endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
    if (!p_kernfs_mutex) {

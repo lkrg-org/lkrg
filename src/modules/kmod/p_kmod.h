@@ -80,6 +80,10 @@ extern struct mutex *p_kernfs_mutex;
 #endif
 extern struct kset **p_module_kset;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+extern int (*p_ddebug_remove_module_ptr)(const char *p_name);
+#endif
+
 /* Module activity events */
 extern struct mutex p_module_activity;
 extern struct module *p_module_activity_ptr;

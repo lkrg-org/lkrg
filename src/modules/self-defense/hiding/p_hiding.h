@@ -52,7 +52,7 @@ do {                                                                       \
    p_debug_log(P_LKRG_DBG,                                                 \
        "Deleting ddebug information for module [%s]\n",                    \
                                               p_arg->name);                \
-   ddebug_remove_module(p_arg->name);                                      \
+   p_ddebug_remove_module(p_arg->name);                                    \
 } while(0)
 
 

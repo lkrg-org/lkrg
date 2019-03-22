@@ -158,4 +158,18 @@ static inline struct static_key *p_jump_entry_key(const struct jump_entry *entry
 
 #endif
 
+static inline int p_ddebug_remove_module(const char *p_name) {
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
+
+   return ddebug_remove_module(p_name);
+
+#else
+
+   return p_ddebug_remove_module_ptr(p_name);
+
+#endif
+
+}
+
 #endif
