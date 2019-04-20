@@ -98,8 +98,8 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
    if (p_event == MODULE_STATE_GOING) {
 
       get_online_cpus();
-      on_each_cpu(p_dump_IDT_MSR_CRx,p_db.p_IDT_MSR_CRx_array,true);
-      p_db.p_IDT_MSR_CRx_hashes = hash_from_CPU_data(p_db.p_IDT_MSR_CRx_array);
+      on_each_cpu(p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
+      p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
       put_online_cpus();
 
       /*
@@ -171,8 +171,8 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
       if (p_event == MODULE_STATE_LIVE) {
 
          get_online_cpus();
-         on_each_cpu(p_dump_IDT_MSR_CRx,p_db.p_IDT_MSR_CRx_array,true);
-         p_db.p_IDT_MSR_CRx_hashes = hash_from_CPU_data(p_db.p_IDT_MSR_CRx_array);
+         on_each_cpu(p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
+         p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
          put_online_cpus();
 
          /*

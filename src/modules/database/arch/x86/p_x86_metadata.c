@@ -3,18 +3,17 @@
  *
  * Component:
  *  - Database module
- *   => submodule for dumping IDT
+ *    => submodule for dumping IDT
  *
  * Notes:
  *  - IDT can be different per CPU which makes it quite complicated...
- *    we need to run 'dumping' IDT on each CPU to be sure everything
- *    is clear.
+ *    We need to run 'dumping' function on each CPU individually
  *
  *  - Linux kernel defines different types of CPUs:
- *   => online CPUs
- *   => possible CPUs
- *   => present CPUs
- *   => active CPUs
+ *    => online CPUs
+ *    => possible CPUs
+ *    => present CPUs
+ *    => active CPUs
  *
  *    We are going to run procedure only on 'active CPUs' and different
  *    procedure is checking if number of active CPUs changes over time...
@@ -29,6 +28,7 @@
 
 #include "../../../../p_lkrg_main.h"
 
+#ifdef CONFIG_X86
 
 u64 p_read_msr(/*int p_cpu, */u32 p_arg) {
 
@@ -74,9 +74,9 @@ u64 p_read_msr(/*int p_cpu, */u32 p_arg) {
  * This function is independetly executed by each active CPU.
  * IDT is individual per logical CPU (same as MSRs, etc).
  */
-void p_dump_IDT_MSR_CRx(void *_p_arg) {
+void p_dump_x86_metadata(void *_p_arg) {
 
-   p_IDT_MSR_CRx_hash_mem *p_arg = _p_arg;
+   p_CPU_metadata_hash_mem *p_arg = _p_arg;
 /*
  * IDTR register
  */
@@ -90,7 +90,7 @@ void p_dump_IDT_MSR_CRx(void *_p_arg) {
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_dump_IDT_MSR_CRx>\n");
+          "Entering function <p_dump_x86_metadata>\n");
 
    /*
     * Get ID and lock - no preemtion.
@@ -102,7 +102,7 @@ void p_dump_IDT_MSR_CRx(void *_p_arg) {
     * To avoid multpile access to the same page from all CPUs
     * memory will be already zero'd
     */
-//   memset(&p_arg[p_curr_cpu],0x0,sizeof(p_IDT_MSR_CRx_hash_mem));
+//   memset(&p_arg[p_curr_cpu],0x0,sizeof(p_CPU_metadata_hash_mem));
 
    /*
     * First fill information about current CPU
@@ -377,6 +377,8 @@ void p_dump_IDT_MSR_CRx(void *_p_arg) {
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_dump_IDT_MSR_CRx>\n");
+          "Leaving function <p_dump_x86_metadata>\n");
 
 }
+
+#endif

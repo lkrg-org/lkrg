@@ -59,6 +59,7 @@ static int __init p_lkrg_register(void) {
                "kallsyms_lookup_name() => 0x%lx\n",(long)p_kallsyms_lookup_name);
      }
 #endif
+
    /*
     * First, we need to plant *kprobes... Before DB is created!
     */
@@ -124,11 +125,14 @@ static int __init p_lkrg_register(void) {
    p_integrity_timer();
    p_register_notifiers();
    p_lkrg_global_ctrl.p_random_events = 0x1;
-   if (p_global_SMEP)
+
+#ifdef CONFIG_X86
+   if (P_IS_SMEP_ENABLED(p_pcfi_CPU_flags))
       p_lkrg_global_ctrl.p_smep_panic = 0x1;
    else
       p_print_log(P_LKRG_ERR,
              "System does NOT support SMEP. LKRG can't enforece smep_panic :(\n");
+#endif
 
    mutex_lock(&module_mutex);
    if (p_lkrg_global_ctrl.p_hide_module) {
@@ -162,9 +166,9 @@ p_main_error:
    p_exploit_detection_exit();
    p_deregister_module_notifier();
    p_offload_cache_delete();
-   if (p_db.p_IDT_MSR_CRx_array) {
-      kzfree(p_db.p_IDT_MSR_CRx_array);
-      p_db.p_IDT_MSR_CRx_array = NULL;
+   if (p_db.p_CPU_metadata_array) {
+      kzfree(p_db.p_CPU_metadata_array);
+      p_db.p_CPU_metadata_array = NULL;
    }
 
    return p_ret;
@@ -204,8 +208,8 @@ static void __exit p_lkrg_deregister(void) {
    p_offload_cache_delete();
    p_unregister_arch_metadata();
 
-   if (p_db.p_IDT_MSR_CRx_array)
-      kzfree(p_db.p_IDT_MSR_CRx_array);
+   if (p_db.p_CPU_metadata_array)
+      kzfree(p_db.p_CPU_metadata_array);
 
    p_print_log(P_LKRG_CRIT, "LKRG unloaded!\n");
 }

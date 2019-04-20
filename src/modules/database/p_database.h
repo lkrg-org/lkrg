@@ -69,10 +69,11 @@ typedef struct p_cpu_info {
 #define P_CPU_ONLINE 1
 
 /*
- * x86/amd64 CPU specific data
+ * Unique metadata per CPU arch. Currently, we support:
+ *  - x86
+ *  - arm64
  */
-#include "arch/x86/IDT.h"
-#include "arch/x86/MSR.h"
+#include "arch/p_arch_metadata.h"
 
 /*
  * Linux Kernel Module's specific structures...
@@ -124,12 +125,12 @@ typedef struct p_hash_database {
     *
     * Btw. our procedure must handle hot CPUs plug[in/out] as well !!!
     */
-   p_IDT_MSR_CRx_hash_mem *p_IDT_MSR_CRx_array;
+   p_CPU_metadata_hash_mem *p_CPU_metadata_array;
 
    /*
-    * Hash from the all 'p_IDT_MSR_CRx_hash_mem' structures
+    * Hash from the all 'p_CPU_metadata_hash_mem' structures
     */
-   uint64_t p_IDT_MSR_CRx_hashes;
+   uint64_t p_CPU_metadata_hashes;
 
 
    /*
@@ -195,9 +196,8 @@ int p_cpu_callback(struct notifier_block *p_block, unsigned long p_action, void 
 #endif
 int p_cpu_online_action(unsigned int p_cpu);
 int p_cpu_dead_action(unsigned int p_cpu);
-uint64_t hash_from_CPU_data(p_IDT_MSR_CRx_hash_mem *p_arg);
+uint64_t hash_from_CPU_data(p_CPU_metadata_hash_mem *p_arg);
 
 
-#include "arch/p_arch_metadata.h"
 
 #endif

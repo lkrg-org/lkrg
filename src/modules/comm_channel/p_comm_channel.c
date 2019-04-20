@@ -46,8 +46,10 @@ static int p_random_events_max = 0x1;
 static int p_ci_panic_min = 0x0;
 static int p_ci_panic_max = 0x1;
 
+#ifdef CONFIG_X86
 static int p_smep_panic_min = 0x0;
 static int p_smep_panic_max = 0x1;
+#endif
 
 static int p_umh_lock_min = 0x0;
 static int p_umh_lock_max = 0x1;
@@ -64,8 +66,10 @@ static int p_sysctl_random_events(struct ctl_table *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 static int p_sysctl_ci_panic(struct ctl_table *p_table, int p_write,
                              void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+#ifdef CONFIG_X86
 static int p_sysctl_smep_panic(struct ctl_table *p_table, int p_write,
                                void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+#endif
 static int p_sysctl_umh_lock(struct ctl_table *p_table, int p_write,
                              void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 
@@ -154,6 +158,7 @@ struct ctl_table p_lkrg_sysctl_table[] = {
       .extra1         = &p_ci_panic_min,
       .extra2         = &p_ci_panic_max,
    },
+#ifdef CONFIG_X86
    {
       .procname       = "smep_panic",
       .data           = &p_lkrg_global_ctrl.p_smep_panic,
@@ -163,6 +168,7 @@ struct ctl_table p_lkrg_sysctl_table[] = {
       .extra1         = &p_smep_panic_min,
       .extra2         = &p_smep_panic_max,
    },
+#endif
    {
       .procname       = "umh_lock",
       .data           = &p_lkrg_global_ctrl.p_umh_lock,
@@ -315,6 +321,7 @@ static int p_sysctl_ci_panic(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
+#ifdef CONFIG_X86
 static int p_sysctl_smep_panic(struct ctl_table *p_table, int p_write,
                                void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
@@ -328,7 +335,7 @@ static int p_sysctl_smep_panic(struct ctl_table *p_table, int p_write,
    p_tmp = p_lkrg_global_ctrl.p_smep_panic;
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
       if (p_lkrg_global_ctrl.p_smep_panic && !p_tmp) {
-         if (p_global_SMEP) {
+         if (P_IS_SMEP_ENABLED(p_pcfi_CPU_flags)) {
             p_print_log(P_LKRG_CRIT,
                         "Enabling kernel panic on LKRG's SMEP verification failure.\n");
          } else {
@@ -338,7 +345,7 @@ static int p_sysctl_smep_panic(struct ctl_table *p_table, int p_write,
          }
 
       } else if (p_tmp && !p_lkrg_global_ctrl.p_smep_panic) {
-         if (p_global_SMEP) {
+         if (P_IS_SMEP_ENABLED(p_pcfi_CPU_flags)) {
             p_print_log(P_LKRG_CRIT,
                         "Disabling kernel panic on LKRG's SMEP verification failure.\n");
          } else {
@@ -355,6 +362,7 @@ static int p_sysctl_smep_panic(struct ctl_table *p_table, int p_write,
 
    return p_ret;
 }
+#endif
 
 static int p_sysctl_umh_lock(struct ctl_table *p_table, int p_write,
                              void __user *p_buffer, size_t *p_len, loff_t *p_pos) {

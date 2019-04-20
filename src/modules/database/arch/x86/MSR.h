@@ -3,7 +3,7 @@
  *
  * Component:
  *  - Database module
- *   => Submodule - X86/AMD64 MSR specific data
+ *    => Submodule - X86/AMD64 MSR specific data
  *
  * Notes:
  *  - X86/AMD64 MSR specific data

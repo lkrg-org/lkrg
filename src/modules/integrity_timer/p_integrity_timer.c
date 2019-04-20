@@ -147,7 +147,7 @@ void p_check_integrity(struct work_struct *p_work) {
    /* temporary hash variable */
    uint64_t p_tmp_hash;
    /* per CPU temporary data */
-   p_IDT_MSR_CRx_hash_mem *p_tmp_cpus;
+   p_CPU_metadata_hash_mem *p_tmp_cpus;
    p_cpu_info p_tmp_cpu_info;
    /* Linux Kernel Modules integrity */
    unsigned int p_module_list_nr_tmp; // Count by walk through the list first
@@ -176,7 +176,7 @@ void p_check_integrity(struct work_struct *p_work) {
     * __GFP_NOFAIL flag will always generate slowpath warn because developers
     * decided to depreciate this flag ;/
     */
-//   while ( (p_tmp_cpus = kzalloc(sizeof(p_IDT_MSR_CRx_hash_mem)*p_db.p_cpu.p_nr_cpu_ids,
+//   while ( (p_tmp_cpus = kzalloc(sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids,
 //                              GFP_KERNEL | GFP_ATOMIC | GFP_NOFS | __GFP_REPEAT)) == NULL);
 
    /*
@@ -189,7 +189,7 @@ void p_check_integrity(struct work_struct *p_work) {
     * Emergency pools will be consumed in 'kmod' module (because we will be under 'spinlock'
     * timing pressure).
     */
-   while ( (p_tmp_cpus = kzalloc(sizeof(p_IDT_MSR_CRx_hash_mem)*p_db.p_cpu.p_nr_cpu_ids,
+   while ( (p_tmp_cpus = kzalloc(sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids,
                                              GFP_KERNEL | GFP_NOFS | __GFP_REPEAT)) == NULL);
 
 
@@ -225,7 +225,7 @@ void p_check_integrity(struct work_struct *p_work) {
              * It will generate warnings/OOPS - it is not documented but this is
              * how this function reacts.
              */
-            //smp_call_function_single(p_tmp,p_dump_IDT_MSR_CRx,p_tmp_cpus,true);
+            //smp_call_function_single(p_tmp,p_dump_CPU_metadata,p_tmp_cpus,true);
 //printk(KERN_INFO "smp_call_function_single() -> DONE\n");
 //         }
 //      }
@@ -243,13 +243,13 @@ void p_check_integrity(struct work_struct *p_work) {
    * on_each_cpu() might mitigate this problem a bit becuase has extra
    * self-balancing code for performance reasons.
    */
-   on_each_cpu(p_dump_IDT_MSR_CRx,p_tmp_cpus,true);
+   on_each_cpu(p_dump_CPU_metadata,p_tmp_cpus,true);
 
 
    /*
     * OK, so now get the same information for currently locked core!
     */
-//   p_dump_IDT_MSR_CRx(p_tmp_cpus); // no return value
+//   p_dump_CPU_metadata(p_tmp_cpus); // no return value
 
    /* Now we are safe to disable IRQs on current core */
 
@@ -292,11 +292,11 @@ void p_check_integrity(struct work_struct *p_work) {
    spin_lock_irqsave(&p_db_lock,p_db_flags);
 //   spin_lock(&p_db_lock);
 
-   if (p_db.p_IDT_MSR_CRx_hashes != p_tmp_hash) {
+   if (p_db.p_CPU_metadata_hashes != p_tmp_hash) {
       /* I'm hacked! ;( */
       p_print_log(P_LKRG_CRIT,
              "ALERT !!! HASHES FROM CPUs METADATA IS DIFFERENT- it is [0x%llx] and should be [0x%llx] !!!\n",
-                                                               p_tmp_hash,p_db.p_IDT_MSR_CRx_hashes);
+                                                               p_tmp_hash,p_db.p_CPU_metadata_hashes);
       p_hack_check++;
    }
 

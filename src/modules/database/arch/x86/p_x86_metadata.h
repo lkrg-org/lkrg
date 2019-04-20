@@ -3,10 +3,10 @@
  *
  * Component:
  *  - Database module
- *   => Submodule - X86/AMD64 IDT specific structures
+ *   => Submodule - X86/AMD64 specific structures
  *
  * Notes:
- *  - X86/AMD64 IDT specific structures
+ *  - None
  *
  * Timeline:
  *  - Created: 28.XI.2015
@@ -16,8 +16,13 @@
  *
  */
 
-#ifndef P_LKRG_IDT_H
-#define P_LKRG_IDT_H
+#ifndef P_LKRG_X86_METADATA_H
+#define P_LKRG_X86_METADATA_H
+
+/*
+ * Submodule for MSRs
+ */
+#include "MSR.h"
 
 /*
  * IDT descriptor
@@ -54,7 +59,7 @@ typedef struct p_idt_descriptor {
  *  - hash from the entire IDT
  *  - MSR (Model Specific Registers)
  */
-typedef struct p_IDT_MSR_CRx_hash_mem {
+typedef struct p_CPU_metadata_hash_mem {
 
    /*
     * Some information about CPU to support hot-plug[in/out]
@@ -119,10 +124,9 @@ typedef struct p_IDT_MSR_CRx_hash_mem {
     * ... MORE MSRs ... ;)
     */
 
-} p_IDT_MSR_CRx_hash_mem;
+} p_CPU_metadata_hash_mem;
 
-
-void p_dump_IDT_MSR_CRx(void *_p_arg);
-//void p_dump_IDT_MSR_CRx(p_IDT_MSR_CRx_hash_mem *p_arg);
+void p_dump_x86_metadata(void *_p_arg);
+//void p_dump_x86_metadata(p_CPU_metadata_hash_mem *p_arg);
 
 #endif

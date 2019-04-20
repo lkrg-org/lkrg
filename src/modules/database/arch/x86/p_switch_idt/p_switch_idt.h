@@ -23,6 +23,8 @@
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
 
+#ifdef CONFIG_X86
+
 #ifndef P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
 #define P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
 
@@ -36,6 +38,8 @@ int p_switch_idt_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs);
 int p_switch_idt_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs);
 int p_install_switch_idt_hook(void);
 void p_uninstall_switch_idt_hook(void);
+
+#endif
 
 #endif
 

@@ -25,6 +25,7 @@ static int p_lookup_syms_hack(void *unused, const char *name,
                               struct module *mod, unsigned long addr) {
 
    if (strcmp("kallsyms_lookup_name", name) == 0x0) {
+      p_kallsyms_lookup_name = (unsigned long (*)(const char*)) (addr);
       return addr;
    }
 
@@ -48,15 +49,21 @@ long get_kallsyms_address(void) {
       goto get_kallsyms_address_out;
    }
 
-// DEBUG
-      p_debug_log(P_LKRG_DBG,
-             "kallsyms_on_each_symbol() returned => 0x%x\n",p_tmp);
+   p_print_log(P_LKRG_INFO,
+          "kallsyms_on_each_symbol() returned => 0x%x [0x%lx]\n",
+          p_tmp,
+          (unsigned long)p_kallsyms_lookup_name);
 
-#ifdef CONFIG_X86_64
+/*
+#ifdef CONFIG_X86_64 || CONFIG_ARM64
    p_kallsyms_lookup_name = (unsigned long (*)(const char*)) (0xFFFFFFFF00000000 | p_tmp);
 #else
    p_kallsyms_lookup_name = (unsigned long (*)(const char*)) (p_tmp);
 #endif
+
+
+   p_kallsyms_lookup_name = (unsigned long (*)(const char*)) (p_tmp);
+*/
 
 get_kallsyms_address_out:
 

@@ -42,7 +42,7 @@ static struct kretprobe p_arch_jump_label_transform_kretprobe = {
 
 int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
-   struct jump_entry *p_tmp = (struct jump_entry *)p_regs->di;
+   struct jump_entry *p_tmp = (struct jump_entry *)p_regs_get_arg1(p_regs);
    unsigned long p_addr = p_jump_entry_code(p_tmp);
    struct module *p_module = NULL;
 
@@ -53,7 +53,7 @@ int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, struct pt
 
    p_print_log(P_LKRG_WARN,
                "[JUMP_LABEL] New modification: type[%s] code[0x%llx] target[0x%llx] key[0x%llx]!\n",
-               (p_regs->si == 1) ? "JUMP_LABEL_JMP" : (p_regs->si == 0) ? "JUMP_LABEL_NOP" : "UNKNOWN",
+               (p_regs_get_arg2(p_regs) == 1) ? "JUMP_LABEL_JMP" : (p_regs_get_arg2(p_regs) == 0) ? "JUMP_LABEL_NOP" : "UNKNOWN",
                p_jump_entry_code(p_tmp),
                p_jump_entry_target(p_tmp),
                (unsigned long long)p_jump_entry_key(p_tmp));

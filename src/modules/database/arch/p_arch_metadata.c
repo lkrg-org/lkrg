@@ -19,6 +19,21 @@
 
 int (*p_core_kernel_text)(unsigned long p_addr) = 0x0;
 
+
+void p_dump_CPU_metadata(void *_p_arg) {
+
+#ifdef CONFIG_X86
+
+   p_dump_x86_metadata(_p_arg);
+
+#elif defined(CONFIG_ARM64)
+
+   p_dump_arm64_metadata(_p_arg);
+
+#endif
+
+}
+
 int p_register_arch_metadata(void) {
 
    int p_ret = P_LKRG_SUCCESS;
@@ -36,8 +51,6 @@ int p_register_arch_metadata(void) {
       goto p_register_arch_metadata_out;
    }
 
-
-#ifdef CONFIG_X86
 #ifdef P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
 
    if (p_install_switch_idt_hook()) {
@@ -53,7 +66,6 @@ int p_register_arch_metadata(void) {
       //
    }
 
-#endif
 #endif
 
    /*
@@ -84,10 +96,8 @@ int p_unregister_arch_metadata(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_register_arch_metadata>\n");
 
-#ifdef CONFIG_X86
 #ifdef P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
    p_uninstall_switch_idt_hook();
-#endif
 #endif
 
    /*

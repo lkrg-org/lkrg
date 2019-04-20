@@ -180,7 +180,7 @@ int p_cpu_online_action(unsigned int p_cpu) {
 
    spin_lock(&p_db_lock);
 
-   smp_call_function_single(p_cpu,p_dump_IDT_MSR_CRx,p_db.p_IDT_MSR_CRx_array,true);
+   smp_call_function_single(p_cpu,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
 
    /* Let's play... God mode on ;) */
 //   spin_lock_irqsave(&p_db_lock,p_db_flags);
@@ -189,7 +189,7 @@ int p_cpu_online_action(unsigned int p_cpu) {
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
    p_db.p_cpu.active_CPUs++;
 #endif
-   p_db.p_IDT_MSR_CRx_hashes = hash_from_CPU_data(p_db.p_IDT_MSR_CRx_array);
+   p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
 
    /* UP kernel became SMP one! we need to do more work ;/ */
    if (tmp_online_CPUs == 1 && p_db.p_cpu.online_CPUs > 1) {
@@ -268,7 +268,7 @@ int p_cpu_dead_action(unsigned int p_cpu) {
 
    spin_lock(&p_db_lock);
 
-   p_db.p_IDT_MSR_CRx_array[p_cpu].p_cpu_online = P_CPU_OFFLINE;
+   p_db.p_CPU_metadata_array[p_cpu].p_cpu_online = P_CPU_OFFLINE;
 
    /* Update database */
 
@@ -279,7 +279,7 @@ int p_cpu_dead_action(unsigned int p_cpu) {
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
    p_db.p_cpu.online_CPUs--;
 #endif
-   p_db.p_IDT_MSR_CRx_hashes = hash_from_CPU_data(p_db.p_IDT_MSR_CRx_array);
+   p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
 
    /*
     * SMP kernel might became UP one! Never had a chance to test it ;/

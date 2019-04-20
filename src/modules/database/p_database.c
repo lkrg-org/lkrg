@@ -130,12 +130,16 @@ hash_from_kernel_rodata_out:
 
 int hash_from_iommu_table(void) {
 
+#ifdef CONFIG_X86
    unsigned long p_tmp = 0x0;
+#endif
    int p_ret = P_LKRG_SUCCESS;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <hash_from_iommu_table>\n");
+
+#ifdef CONFIG_X86
 
    p_db.kernel_iommu_table.p_addr = (unsigned long *)p_kallsyms_lookup_name("__iommu_table");
    p_tmp = (unsigned long)p_kallsyms_lookup_name("__iommu_table_end");
@@ -163,6 +167,13 @@ int hash_from_iommu_table(void) {
 
 hash_from_iommu_table_out:
 
+#else
+
+// Static value - might change in normal system...
+   p_db.kernel_iommu_table.p_hash = 0xFFFFFFFF;
+
+#endif
+
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
           "Leaving function <hash_from_iommu_table> (p_ret => %d)\n",p_ret);
@@ -170,7 +181,7 @@ hash_from_iommu_table_out:
    return p_ret;
 }
 
-uint64_t hash_from_CPU_data(p_IDT_MSR_CRx_hash_mem *p_arg) {
+uint64_t hash_from_CPU_data(p_CPU_metadata_hash_mem *p_arg) {
 
    int p_tmp = 0x0;
    uint64_t p_hash = 0x0;
@@ -183,7 +194,7 @@ uint64_t hash_from_CPU_data(p_IDT_MSR_CRx_hash_mem *p_arg) {
       if (p_arg[p_tmp].p_cpu_online == P_CPU_ONLINE) {
          if (cpu_online(p_tmp)) {
             p_hash ^= p_lkrg_fast_hash((unsigned char *)&p_arg[p_tmp],
-                                       (unsigned int)sizeof(p_IDT_MSR_CRx_hash_mem));
+                                       (unsigned int)sizeof(p_CPU_metadata_hash_mem));
             p_debug_log(P_LKRG_DBG,
                    "<hash_from_CPU_data> Hash for cpu id %i total_hash[0x%llx]\n",p_tmp,p_hash);
          } else {
@@ -247,7 +258,7 @@ int p_create_database(void) {
     * __GFP_NOFAIL flag will always generate slowpath warn because developers
     * decided to depreciate this flag ;/
     */
-   if ( (p_db.p_IDT_MSR_CRx_array = kzalloc(sizeof(p_IDT_MSR_CRx_hash_mem)*p_db.p_cpu.p_nr_cpu_ids,
+   if ( (p_db.p_CPU_metadata_array = kzalloc(sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids,
                                                                   GFP_KERNEL | __GFP_REPEAT)) == NULL) {
       /*
        * I should NEVER be here!
@@ -260,10 +271,10 @@ int p_create_database(void) {
 // STRONG_DEBUG
      else {
         p_debug_log(P_LKRG_STRONG_DBG,
-               "<p_create_database> p_db.p_IDT_MSR_CRx_array[%p] with requested size[%d] "
-               "= sizeof(p_IDT_MSR_CRx_hash_mem)[%d] * p_db.p_cpu.p_nr_cpu_ids[%d]\n",
-               p_db.p_IDT_MSR_CRx_array,(int)(sizeof(p_IDT_MSR_CRx_hash_mem)*p_db.p_cpu.p_nr_cpu_ids),
-               (int)sizeof(p_IDT_MSR_CRx_hash_mem),p_db.p_cpu.p_nr_cpu_ids);
+               "<p_create_database> p_db.p_CPU_metadata_array[%p] with requested size[%d] "
+               "= sizeof(p_CPU_metadata_hash_mem)[%d] * p_db.p_cpu.p_nr_cpu_ids[%d]\n",
+               p_db.p_CPU_metadata_array,(int)(sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids),
+               (int)sizeof(p_CPU_metadata_hash_mem),p_db.p_cpu.p_nr_cpu_ids);
    }
 
    /*
@@ -282,7 +293,7 @@ int p_create_database(void) {
    for_each_present_cpu(p_tmp) {
       if (cpu_online(p_tmp)) {
 //         if (p_tmp_cpu != p_tmp) {
-//          p_dump_IDT_MSR_CRx(p_db.p_IDT_MSR_CRx_array);
+//          p_dump_CPU_metadata(p_db.p_CPU_metadata_array);
 
             /*
              * There is an undesirable situation in SMP Linux machines when sending
@@ -292,20 +303,20 @@ int p_create_database(void) {
              *  *) http://blog.pi3.com.pl/?p=549
              *  *) http://lists.openwall.net/linux-kernel/2016/09/21/68
              */
-            smp_call_function_single(p_tmp,p_dump_IDT_MSR_CRx,p_db.p_IDT_MSR_CRx_array,true);
+            smp_call_function_single(p_tmp,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
 //         }
       } else {
          p_print_log(P_LKRG_WARN,
                 "!!! WARNING !!! CPU ID:%d is offline !!!\n",p_tmp);
 //                "Let's try to run on it anyway...",p_tmp);
-//         p_dump_IDT_MSR_CRx(p_db.p_IDT_MSR_CRx_array);
-//         smp_call_function_single(p_tmp,p_dump_IDT_MSR_CRx,p_db.p_IDT_MSR_CRx_array,true);
+//         p_dump_CPU_metadata(p_db.p_CPU_metadata_array);
+//         smp_call_function_single(p_tmp,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
       }
    }
 //   put_cpu();
-//   smp_call_function_single(p_tmp_cpu,p_dump_IDT_MSR_CRx,p_db.p_IDT_MSR_CRx_array,true);
+//   smp_call_function_single(p_tmp_cpu,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
 
-   p_db.p_IDT_MSR_CRx_hashes = hash_from_CPU_data(p_db.p_IDT_MSR_CRx_array);
+   p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
 
    /* Some arch needs extra hooks */
    if (p_register_arch_metadata() != P_LKRG_SUCCESS) {
