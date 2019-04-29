@@ -19,7 +19,7 @@ echo -e "  ${P_GREEN}[+] ${P_WHITE}Systemd detected${P_NC}"
 
 if [ "$1" == "install" ]; then
     if [ -f $P_SYSTEMD_DIR/lkrg.service ]; then
-	echo -e "      ${P_RED}ERROR! ${P_YL}lkrg.service${P_RED} file already exists under ${P_YL}$P_SYSTEMD_DIR${P_RED} folder"
+	echo -e "      ${P_RED}ERROR! ${P_YL}lkrg.service${P_RED} file already exists under ${P_YL}$P_SYSTEMD_DIR${P_RED} folder${P_NC}"
 	exit 1
     else
 	echo -e "       ${P_GREEN}Installing ${P_YL}lkrg.service${P_GREEN} file under ${P_YL}$P_SYSTEMD_DIR${P_GREEN} folder${P_NC}"

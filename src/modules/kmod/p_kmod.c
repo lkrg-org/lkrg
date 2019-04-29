@@ -605,8 +605,15 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
          memset(*p_mkm_tmp,0x0,sizeof(p_module_kobj_mem) * *p_module_kobj_cnt_arg);
       }
    } else {
-      *p_mlm_tmp = NULL;
-      *p_mkm_tmp = NULL;
+
+      if (*p_mlm_tmp) {
+         kzfree(*p_mlm_tmp);
+         *p_mlm_tmp = NULL;
+      }
+      if (*p_mkm_tmp) {
+         kzfree(*p_mkm_tmp);
+         *p_mkm_tmp = NULL;
+      }
       goto p_kmod_hash_err;
    }
 

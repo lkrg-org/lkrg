@@ -378,12 +378,13 @@ int p_create_database(void) {
    p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
 */
-   /* Register module notification routine */
-   p_register_module_notifier();
 
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
    p_text_section_unlock();
+
+   /* Register module notification routine - must be outside p_text_section_(un)lock */
+   p_register_module_notifier();
 
 /*
    if (p_install_arch_jump_label_transform_hook()) {

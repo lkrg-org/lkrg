@@ -13,6 +13,12 @@ P_KVER ?= $(shell uname -r)
 P_KERNEL := /lib/modules/$(P_KVER)/build
 P_BOOTUP_SCRIPT ?= scripts/bootup/lkrg-bootup.sh
 
+#
+# Uncomment for debug compilation
+#
+# ccflags-m := -ggdb
+# ccflags-y := ${ccflags-m}
+
 obj-m += p_lkrg.o
 p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
                src/modules/hashing/p_lkrg_fast_hash.o \
