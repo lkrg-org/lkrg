@@ -5,7 +5,8 @@
 #  - Adam 'pi3' Zabrocki (http://pi3.com.pl)
 ##
 
-export CFLAGS="$CFLAGS"
+# Not needed
+# export CFLAGS="$CFLAGS"
 
 P_OUTPUT = output
 P_PWD ?= $(shell pwd)

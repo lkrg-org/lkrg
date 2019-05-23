@@ -38,7 +38,9 @@ static int p_taskfree_notifier(struct notifier_block *p_nb, unsigned long p_val,
 static int p_profile_event_exit_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data);
 static int p_profile_event_munmap_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data);
 static int p_usb_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data);
+#if defined(CONFIG_ACPI)
 static int p_acpi_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data);
+#endif
 
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
@@ -91,9 +93,11 @@ static struct notifier_block p_usb_notifier_nb = {
    .notifier_call = p_usb_notifier,
 };
 
+#if defined(CONFIG_ACPI)
 static struct notifier_block p_acpi_notifier_nb = {
    .notifier_call = p_acpi_notifier,
 };
+#endif
 
 
 void p_register_notifiers(void) {
@@ -119,7 +123,9 @@ void p_register_notifiers(void) {
    profile_event_register(PROFILE_TASK_EXIT, &p_profile_event_exit_notifier_nb);
    profile_event_register(PROFILE_MUNMAP, &p_profile_event_munmap_notifier_nb);
    usb_register_notify(&p_usb_notifier_nb);
+#if defined(CONFIG_ACPI)
    register_acpi_notifier(&p_acpi_notifier_nb);
+#endif
 
 
 // STRONG_DEBUG
@@ -311,6 +317,7 @@ static int p_usb_notifier(struct notifier_block *p_nb, unsigned long p_val, void
    return 0x0;
 }
 
+#if defined(CONFIG_ACPI)
 static int p_acpi_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
 // STRONG_DEBUG
@@ -326,6 +333,7 @@ static int p_acpi_notifier(struct notifier_block *p_nb, unsigned long p_val, voi
 
    return 0x0;
 }
+#endif
 
 
 void p_deregister_notifiers(void) {
@@ -351,7 +359,9 @@ void p_deregister_notifiers(void) {
    profile_event_unregister(PROFILE_TASK_EXIT, &p_profile_event_exit_notifier_nb);
    profile_event_unregister(PROFILE_MUNMAP, &p_profile_event_munmap_notifier_nb);
    usb_unregister_notify(&p_usb_notifier_nb);
+#if defined(CONFIG_ACPI)
    unregister_acpi_notifier(&p_acpi_notifier_nb);
+#endif
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,

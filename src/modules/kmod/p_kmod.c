@@ -46,38 +46,45 @@ int p_kmod_init(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_kmod_init>\n");
 
+#if defined(CONFIG_DYNAMIC_DEBUG)
    p_ddebug_tables    = (struct list_head *)p_kallsyms_lookup_name("ddebug_tables");
    p_ddebug_lock      = (struct mutex *)p_kallsyms_lookup_name("ddebug_lock");
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+   p_ddebug_remove_module_ptr = (int(*)(const char *))p_kallsyms_lookup_name("ddebug_remove_module");
+ #endif
+#endif
+
    p_global_modules   = (struct list_head *)p_kallsyms_lookup_name("modules");
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
    p_kernfs_mutex     = (struct mutex *)p_kallsyms_lookup_name("kernfs_mutex");
 #endif
    p_module_kset      = (struct kset **)p_kallsyms_lookup_name("module_kset");
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
-   p_ddebug_remove_module_ptr = (int(*)(const char *))p_kallsyms_lookup_name("ddebug_remove_module");
-#endif
 
 
    // DEBUG
-   p_debug_log(P_LKRG_DBG,
-          "<p_kmod_init> p_ddebug_tables[0x%lx] p_ddebug_lock[0x%lx] "
-                        "module_mutex[0x%lx] p_global_modules[0x%p] "
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+   p_debug_log(P_LKRG_DBG, "<p_kmod_init> "
+#if defined(CONFIG_DYNAMIC_DEBUG)
+                        "p_ddebug_tables[0x%lx] p_ddebug_lock[0x%lx] "
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
                         "p_ddebug_remove_module_ptr[0x%p]"
+ #endif
 #endif
+                        "module_mutex[0x%lx] p_global_modules[0x%p] "
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
                         "p_kernfs_mutex[0x%p] p_module_kset[0x%p]\n",
 #else
                         "p_module_kset[0x%p]\n",
 #endif
+#if defined(CONFIG_DYNAMIC_DEBUG)
                                                             (long)p_ddebug_tables,
                                                             (long)p_ddebug_lock,
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+                                                            p_ddebug_remove_module_ptr,
+ #endif
+#endif
                                                             (long)&module_mutex,
                                                             p_global_modules,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
-                                                            p_ddebug_remove_module_ptr,
-#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
                                                             p_kernfs_mutex,
 #endif
@@ -90,13 +97,15 @@ int p_kmod_init(void) {
       goto p_kmod_init_out;
    }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+#if defined(CONFIG_DYNAMIC_DEBUG)
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
    if (!p_ddebug_remove_module_ptr) {
       p_print_log(P_LKRG_ERR,
              "KMOD error! Can't find 'ddebug_remove_module' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_kmod_init_out;
    }
+ #endif
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)

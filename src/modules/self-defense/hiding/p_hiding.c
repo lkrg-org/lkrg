@@ -45,7 +45,9 @@ void p_hide_itself(void) {
 
    P_HIDE_FROM_MODULE_LIST(p_find_me);
    P_HIDE_FROM_KOBJ(p_find_me);
+#if defined(CONFIG_DYNAMIC_DEBUG)
    P_HIDE_FROM_DDEBUG(p_find_me);
+#endif
 
    p_lkrg_global_ctrl.p_hide_module = 0x1;
 

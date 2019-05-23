@@ -74,17 +74,18 @@ typedef struct _p_lkrg_global_ctrl_structure {
 
 extern p_lkrg_global_ctrl_struct p_lkrg_global_ctrl;
 
+#if defined(CONFIG_DYNAMIC_DEBUG)
 extern struct list_head *p_ddebug_tables;
 extern struct mutex *p_ddebug_lock;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+extern int (*p_ddebug_remove_module_ptr)(const char *p_name);
+#endif
+#endif
 extern struct list_head *p_global_modules;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
 extern struct mutex *p_kernfs_mutex;
 #endif
 extern struct kset **p_module_kset;
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
-extern int (*p_ddebug_remove_module_ptr)(const char *p_name);
-#endif
 
 /* Module activity events */
 extern struct mutex p_module_activity;
