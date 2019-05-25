@@ -157,8 +157,10 @@ unsigned int p_count_modules_from_module_list(void) {
       if (p_mod->state != MODULE_STATE_LIVE)
          continue;
 
+/*
       if (p_mod == p_find_me)
          continue;
+*/
 
       if (!p_module_core(p_mod) || !p_core_text_size(p_mod))
          continue;
@@ -200,8 +202,10 @@ int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
       if (p_mod->state != MODULE_STATE_LIVE)
          continue;
 
+/*
       if (p_mod == p_find_me)
          continue;
+*/
 
       if (!p_module_core(p_mod) || !p_core_text_size(p_mod))
          continue;
@@ -283,9 +287,11 @@ unsigned int p_count_modules_from_sysfs_kobj(void) {
          continue;
       }
 
+/*
       if (p_mod == p_find_me) {
          continue;
       }
+*/
 
       if (!p_module_core(p_mod) || !p_core_text_size(p_mod)) {
          continue;
@@ -350,9 +356,11 @@ int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
          continue;
       }
 
+/*
       if (p_mod == p_find_me) {
          continue;
       }
+*/
 
       if (!p_module_core(p_mod) || !p_core_text_size(p_mod)) {
          continue;
