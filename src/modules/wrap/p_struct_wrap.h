@@ -88,6 +88,18 @@ static inline unsigned int p_get_gid(const kgid_t *p_from) {
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 6)
 
+#if defined(CONFIG_GRKERNSEC)
+
+static inline void *p_module_core(struct module *p_mod) {
+   return p_mod->core_layout.base_rx;
+}
+
+static inline unsigned int p_core_text_size(struct module *p_mod) {
+   return p_mod->core_layout.size_rx;
+}
+
+#else
+
 static inline void *p_module_core(struct module *p_mod) {
    return p_mod->core_layout.base;
 }
@@ -103,6 +115,8 @@ static inline unsigned int p_core_text_size(struct module *p_mod) {
 static inline unsigned int p_init_text_size(struct module *p_mod) {
    return p_mod->init_layout.text_size;
 }
+
+#endif
 
 #else
 

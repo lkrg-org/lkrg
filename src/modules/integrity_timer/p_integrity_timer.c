@@ -344,8 +344,12 @@ void p_check_integrity(struct work_struct *p_work) {
     * "_rodata"
     */
    if (p_db.kernel_rodata.p_addr && p_db.kernel_rodata.p_hash) {
+#if !defined(CONFIG_GRKERNSEC)
       p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_rodata.p_addr,
                                     (unsigned int)p_db.kernel_rodata.p_size);
+#else
+      p_tmp_hash = 0xFFFFFFFF;
+#endif
 
       if (p_db.kernel_rodata.p_hash != p_tmp_hash) {
          /* I'm hacked! ;( */

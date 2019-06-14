@@ -111,8 +111,16 @@ int hash_from_kernel_rodata(void) {
 
    p_db.kernel_rodata.p_size = (unsigned long)(p_tmp - (unsigned long)p_db.kernel_rodata.p_addr);
 
+#if !defined(CONFIG_GRKERNSEC)
+
    p_db.kernel_rodata.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_rodata.p_addr,
                                                 (unsigned int)p_db.kernel_rodata.p_size);
+
+#else
+
+   p_db.kernel_rodata.p_hash = 0xFFFFFFFF;
+
+#endif
 
    p_debug_log(P_LKRG_DBG,
           "hash [0x%llx] _rodata start [0x%lx] size [0x%lx]\n",p_db.kernel_rodata.p_hash,
@@ -349,17 +357,8 @@ int p_create_database(void) {
       p_db.kernel_iommu_table.p_addr = NULL;
    }
 
-   p_text_section_lock();
-   if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
-      p_print_log(P_LKRG_CRIT,
-         "CREATING DATABASE ERROR: HASH FROM _STEXT!\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_create_database_out;
-   }
-//   p_text_section_unlock();
 
-   /* We are heavily consuming module list here - take 'module_mutex' */
-   mutex_lock(&module_mutex);
+   p_text_section_lock();
 
    /*
     * Memory allocation may fail... let's loop here!
@@ -379,8 +378,6 @@ int p_create_database(void) {
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
 */
 
-   /* Release the 'module_mutex' */
-   mutex_unlock(&module_mutex);
    p_text_section_unlock();
 
    /* Register module notification routine - must be outside p_text_section_(un)lock */
@@ -405,6 +402,16 @@ int p_create_database(void) {
    p_debug_log(P_LKRG_DBG,
           "p_module_list_hash => [0x%llx]\np_module_kobj_hash => [0x%llx]\n",
           p_db.p_module_list_hash,p_db.p_module_kobj_hash);
+
+
+   p_text_section_lock();
+   if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
+      p_print_log(P_LKRG_CRIT,
+         "CREATING DATABASE ERROR: HASH FROM _STEXT!\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_create_database_out;
+   }
+   p_text_section_unlock();
 
    p_ret = P_LKRG_SUCCESS;
 
