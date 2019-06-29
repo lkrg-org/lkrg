@@ -165,6 +165,18 @@ static int __init p_lkrg_register(void) {
    }
    mutex_unlock(&module_mutex);
 
+#if defined(CONFIG_GRKERNSEC)
+   p_text_section_lock();
+   if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
+      p_print_log(P_LKRG_CRIT,
+         "CREATING DATABASE ERROR: HASH FROM _STEXT!\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      p_text_section_unlock();
+      goto p_main_error;
+   }
+   p_text_section_unlock();
+#endif
+
    p_print_log(P_LKRG_CRIT,
           "LKRG initialized successfully!\n");
 

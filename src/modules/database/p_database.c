@@ -404,16 +404,18 @@ int p_create_database(void) {
           p_db.p_module_list_hash,p_db.p_module_kobj_hash);
 
 
+#if !defined(CONFIG_GRKERNSEC)
    p_text_section_lock();
    if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
          "CREATING DATABASE ERROR: HASH FROM _STEXT!\n");
       p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_create_database_out;
+   } else {
+      p_ret = P_LKRG_SUCCESS;
    }
    p_text_section_unlock();
+#endif
 
-   p_ret = P_LKRG_SUCCESS;
 
 p_create_database_out:
 
