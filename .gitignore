@@ -6,6 +6,7 @@ modules.order
 *.ko
 *.mod.c
 *.o.d
+*.o.ur-safe
 *.o
 .cache.mk
 

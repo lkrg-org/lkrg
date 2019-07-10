@@ -41,7 +41,7 @@ p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
                src/modules/exploit_detection/syscalls/p_call_usermodehelper/p_call_usermodehelper.o \
                src/modules/exploit_detection/syscalls/p_call_usermodehelper_exec/p_call_usermodehelper_exec.o \
                src/modules/exploit_detection/syscalls/p_do_exit/p_do_exit.o \
-               src/modules/exploit_detection/syscalls/p_do_fork/p_do_fork.o \
+               src/modules/exploit_detection/syscalls/p_wake_up_new_task/p_wake_up_new_task.o \
                src/modules/exploit_detection/syscalls/p_sys_setuid/p_sys_setuid.o \
                src/modules/exploit_detection/syscalls/p_sys_setreuid/p_sys_setreuid.o \
                src/modules/exploit_detection/syscalls/p_sys_setresuid/p_sys_setresuid.o \
