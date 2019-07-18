@@ -361,30 +361,4 @@ static inline void p_syscall_set_arg2(struct pt_regs *p_regs, unsigned long p_va
 
 #endif
 
-static inline bool p_user_access_begin(const void __user *ptr, size_t len) {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,0,0)
-   if (unlikely(!access_ok(VERIFY_READ,ptr,len)))
-      return 0;
-#if defined(CONFIG_X86) && defined(CONFIG_X86_SMAP)
-   stac();
-   mb();
-   rmb();
-#endif
-   return 1;
-#else
-   return user_access_begin(ptr,len);
-#endif
-}
-
-static inline void p_user_access_end(void) {
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,0,0)
-#if defined(CONFIG_X86) && defined(CONFIG_X86_SMAP)
-   clac();
-#endif
-#else
-   user_access_end();
-#endif
-}
-
 #endif
