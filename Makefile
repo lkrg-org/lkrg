@@ -5,9 +5,6 @@
 #  - Adam 'pi3' Zabrocki (http://pi3.com.pl)
 ##
 
-# Not needed
-# export CFLAGS="$CFLAGS"
-
 P_OUTPUT = output
 P_PWD ?= $(shell pwd)
 P_KVER ?= $(shell uname -r)
