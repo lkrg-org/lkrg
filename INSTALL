@@ -10,8 +10,8 @@ on any Linux distribution.
 GETTING THE SOURCES:
 --------------------
 
-LKRG is being hosted on the bitbucket git repository, which can be cloned to
-the local directory via following command:
+LKRG is hosted on the Bitbucket git repository, which can be cloned to the
+local directory using the following command:
 
     $ git clone https://bitbucket.org/Adam_pi3/lkrg-main.git
 
@@ -25,9 +25,9 @@ website and verify the signature of the packages:
 
     $ wget https://www.openwall.com/signatures/openwall-offline-signatures.asc
     $ gpg --import openwall-offline-signatures.asc
-    $ wget https://www.openwall.com/lkrg/lkrg-0.6.tar.gz.sign
-    $ wget https://www.openwall.com/lkrg/lkrg-0.6.tar.gz
-    $ gpg --verify lkrg-0.6.tar.gz.sign lkrg-0.6.tar.gz
+    $ wget https://www.openwall.com/lkrg/lkrg-0.7.tar.gz.sign
+    $ wget https://www.openwall.com/lkrg/lkrg-0.7.tar.gz
+    $ gpg --verify lkrg-0.7.tar.gz.sign lkrg-0.7.tar.gz
 
 
 BUILD REQUIREMENTS:
@@ -73,37 +73,49 @@ corruptions are detected.
     license:        GPL
     description:    pi3's Linux kernel Runtime Guard
     author:         Adam 'pi3' Zabrocki (http://pi3.com.pl)
-    srcversion:     0732EECE0E4A7E4C51A09B3
+    srcversion:     F16B46BE3DCDF09D598D2C5
     depends:
+    retpoline:      Y
     name:           p_lkrg
-    vermagic:       4.13.0-31-generic SMP mod_unload
+    vermagic:       4.18.0-20-generic SMP mod_unload
     parm:           p_init_log_level:Logging level init value [1 (alive) is default] (uint)
     pi3@pi3-VM:~/lkrg-main$ sudo insmod output/p_lkrg.ko p_init_log_level=3
     [sudo] password for pi3:
     pi3@pi3-VM:~/lkrg-main$ sudo tail /var/log/kern.log
-    Jan 29 17:33:58 pi3-VM kernel: [201258.270920] p_lkrg: loading out-of-tree module taints kernel.
-    Jan 29 17:33:58 pi3-VM kernel: [201258.270964] p_lkrg: module verification failed: signature and/or required key missing - tainting kernel
-    Jan 29 17:33:58 pi3-VM kernel: [201258.273105] [p_lkrg] Loading LKRG...
-    Jan 29 17:33:59 pi3-VM kernel: [201258.590589] [p_lkrg] LKRG initialized successfully!
-    Jan 29 17:34:14 pi3-VM kernel: [201273.828062] [p_lkrg] System is clean!
+    May 28 01:35:20 pi3-vm kernel: [    8.489334] p_lkrg: loading out-of-tree module taints kernel.
+    May 28 01:35:20 pi3-vm kernel: [    8.489405] p_lkrg: module verification failed: signature and/or required key missing - tainting kernel
+    May 28 01:35:20 pi3-vm kernel: [    8.489803] [p_lkrg] Loading LKRG...
+    May 28 01:35:20 pi3-vm kernel: [    8.491452] Freezing user space processes ... (elapsed 0.052 seconds) done.
+    May 28 01:35:20 pi3-vm kernel: [    8.544359] OOM killer disabled.
+    May 28 01:35:20 pi3-vm kernel: [    8.544364] [p_lkrg] Verifying 20 potential UMH paths for whitelisting...
+    May 28 01:35:20 pi3-vm kernel: [    8.551581] [p_lkrg] 4 UMH paths were whitelisted...
+    May 28 01:35:20 pi3-vm kernel: [    8.883852] [p_lkrg] LKRG initialized successfully!
+    May 28 01:35:20 pi3-vm kernel: [    8.884081] OOM killer enabled.
+    May 28 01:35:20 pi3-vm kernel: [    8.884081] Restarting tasks ... done.
+    May 28 01:35:20 pi3-vm kernel: [    8.992053] [p_lkrg] System is clean!
     pi3@pi3-VM:~/lkrg-main$
 
 We have also prepared early boot systemd unit file. Similar optional
 functionality for other init systems may be added later. You can install LKRG
 using Makefile:
 
-    root@pi3-ubuntu:~/lkrg-main# make install
-    make -C /lib/modules/4.8.0-53-generic/build M=/root/lkrg-main modules_install
-    make[1]: Entering directory '/usr/src/linux-headers-4.8.0-53-generic'
-      DEPMOD  4.8.0-53-generic
-    make[1]: Leaving directory '/usr/src/linux-headers-4.8.0-53-generic'
+    pi3@pi3-VM:~/lkrg-main$ sudo make install
+    make -C /lib/modules/4.18.0-20-generic/build M=/home/pi3/lkrg-main modules_install
+    make[1]: Entering directory '/usr/src/linux-headers-4.18.0-20-generic'
+      INSTALL /home/pi3/lkrg-main/p_lkrg.ko
+    At main.c:160:
+    - SSL error:02001002:system library:fopen:No such file or directory: ../crypto/bio/bss_file.c:72
+    - SSL error:2006D080:BIO routines:BIO_new_file:no such file: ../crypto/bio/bss_file.c:79
+    sign-file: certs/signing_key.pem: No such file or directory
+      DEPMOD  4.18.0-20-generic
+    make[1]: Leaving directory '/usr/src/linux-headers-4.18.0-20-generic'
     depmod -a
-    /root/lkrg-main/scripts/bootup/lkrg-bootup.sh install
+    /home/pi3/lkrg-main/scripts/bootup/lkrg-bootup.sh install
      [*] Executing LKRG's bootup installation script
       [+] Systemd detected
-           Installing lkrg.service file under /lib/systemd/system folder
+           Installing lkrg.service file under /etc/systemd/system folder
            Enabling lkrg.service on bootup
-    Created symlink from /etc/systemd/system/multi-user.target.wants/lkrg.service to /lib/systemd/system/lkrg.service.
+    Created symlink /etc/systemd/system/multi-user.target.wants/lkrg.service → /etc/systemd/system/lkrg.service.
            To start lkrg.service please use: systemctl start lkrg
       [+] Done!
 
@@ -113,8 +125,8 @@ Please do not forget to run the following command to start LKRG service:
 
 You can uninstall LKRG using Makefile as well:
 
-    root@pi3-ubuntu:~/lkrg-main# make uninstall
-    /root/lkrg-main/scripts/bootup/lkrg-bootup.sh uninstall
+    pi3@pi3-VM:~/lkrg-main$ sudo make uninstall
+    /home/pi3/lkrg-main/scripts/bootup/lkrg-bootup.sh uninstall
      [*] Executing LKRG's bootup installation script
       [+] Systemd detected
            Stopping lkrg.service
@@ -135,14 +147,17 @@ COMMUNICATION CHANNEL:
 The project has a built-in sysctl interface, which enables the interaction
 between the administrator and LKRG. The following options are available:
 
-    root@pi3-ubuntu:~/p_lkrg-main# sysctl -a | grep lkrg
+    pi3@pi3-VM:~/lkrg-main$ sudo sysctl -a | grep lkrg
     lkrg.block_modules = 0
     lkrg.ci_panic = 0
-    lkrg.clean_message = 1
+    lkrg.clean_message = 0
     lkrg.force_run = 0
+    lkrg.hide = 0
     lkrg.log_level = 1
     lkrg.random_events = 1
+    lkrg.smep_panic = 1
     lkrg.timestamp = 15
+    lkrg.umh_lock = 0
 
  -> Blocking module functionality (lkrg.block_modules) - only two options are
     available:
@@ -161,6 +176,10 @@ between the administrator and LKRG. The following options are available:
     It is always visible as 0 number. Nevertheless, if you set it to 1, the
     integrity checking function will be immediately fired and value restored to
     0 again
+ -> Hiding (lkrg.hide) - if built with this optional feature included, LKRG can
+    (un)hide itself from the module list (but it can be detected regardless):
+        1 - hide LKRG (if it is not already hidden)
+        0 - unhide LKRG (if it is not already unhidden)
  -> log level (lkrg.log_level) - it might be a number between 0-4 or 0-6 (if
     debugging compilation was used). A strong debug provides very useful data
     to identify where could be a specific problem with LKRG (if it ever
@@ -171,7 +190,18 @@ between the administrator and LKRG. The following options are available:
             only at regular intervals configured by lkrg.timestamp)
         1 - perform integrity checking on the random events (as well as at the
             regular intervals)
+ -> Kernel panic on SMEP verification failure (lkrg.smep_panic) - this feature
+    is only available on x86 CPUs supporting SMEP and only with SMEP enabled in
+    the kernel. Only two options are available:
+        0 - do NOT crash the kernel if SMEP gets disabled, just re-enable it
+        1 - crash the kernel (call panic()) if SMEP gets disabled (default)
  -> timestamp (lkrg.timestamp) - changes how often kernel timer will be
     launched (kernel timer periodically calls integrity function). It can't be
     less than 5 seconds (not to eat too much system resources) and not more
     than 1800 seconds (half an hour) - not to be silent for too long
+ -> Full lock down of the kernel's usermodehelper interface (lkrg.umh_lock).
+    This might break things if your distro uses UMH to invoke any programs.
+    Only two options are available:
+        0 - do NOT lock down the UMH interface fully, but allow to execute
+            only LKRG's whitelisted programs (default)
+        1 - lock down the UMH interface fully

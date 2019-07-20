@@ -1,3 +1,47 @@
+The following changes have been made between LKRG 0.6 and 0.7:
+
+*) Refactor LKRG code to support multiple CPU architectures
+*) Add experimental support for ARM64
+*) Add experimental support for grsecurity kernels (with some limitations)
+*) Add support for kernels 5.1 and 5.2 (and hopefully beyond)
+*) Add support for kernels without enabled CONFIG_DYNAMIC_DEBUG
+*) Add support for kernels without enabled CONFIG_ACPI
+*) Add support for kernels without enabled CONFIG_STACKTRACE
+*) Add support for kernels with enabled CONFIG_STATIC_USERMODEHELPER
+*) [CI] Fix race condition with *_JUMP_LABEL engine resulting in potential
+deadlock when LKRG is initialized in parallel with other heavy kernel module
+(un)loading events
+*) [CI] Re-enable self-hashing
+*) [ED] Change the logic how LKRG tracks a newly created task in the system
+*) [ED] Rewrite internal logic how LKRG synchronizes with the task's resources
+*) [ED] Filter our kernel threads and system-init process when validation is
+performed bypassing threads iteration
+*) [ED] Disable IRQ in most cases when LKRG's PIDs database lock is taken.
+Otherwise, we could have potential race and deadlock with kprobe engine
+itself, and SoftIRQs could deadlock with LKRG's pCFI.
+*) [ED] Fix potential FP during LKRG unloading procedure and add memory barrier
+*) [ED] Fix logic for *init_module/delete_module for kernels with
+CONFIG_ARCH_HAS_SYSCALL_WRAPPER
+*) [ED] Fix FP (race condition) in pCFI in glitching scenario during process
+update, and add memory barrier
+*) [ED] Fix potential glitch in pCFI
+*) [ED] Add support for OverlayFS (which is commonly used by Docker)
+*) [ED] Whitelist Ubuntu Apport (thanks to Pawel Krawczyk)
+*) [ED] Enforce stack pointer validation on lookup_fast function
+*) [ED] Add SMEP/WP bit verification (and re-enforcement) in more places
+*) [ED] Refactor some of the logic to be compatible with x86 lacking SMEP
+*) [ED] Add new sysctl lkrg.smep_panic (only on x86, enabled by default)
+*) [ED] Add new sysctl lkrg.umh_lock (disabled by default)
+*) Update INSTALL to document the new sysctl's and the previously undocumented
+lkrg.hide sysctl
+*) Minor change of initialization logic
+*) Add potential debug compilation option to Makefile
+*) Mute the most noisy STRONG_DEBUG output by default
+*) Don't export global CFLAGS since it might be incompatible when LKRG is part
+of a bigger project's build
+*) Restore terminal colors when systemd service installation fails
+
+
 The following changes have been made between LKRG 0.5 and 0.6:
 
 *) [CI] Protect SMEP bit in CR4 and WP bit in CR0 on x86 architecture
