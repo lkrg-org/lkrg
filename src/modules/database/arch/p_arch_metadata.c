@@ -22,6 +22,12 @@ int (*p_core_kernel_text)(unsigned long p_addr) = 0x0;
 
 void p_dump_CPU_metadata(void *_p_arg) {
 
+   /* pCFI - on x86 validate SMEP and WP */
+   if (p_pcfi_CPU_flags)
+      p_ed_pcfi_validate_cpu_extra(0);
+   else
+      p_ed_pcfi_validate_cpu(0);
+
 #ifdef CONFIG_X86
 
    p_dump_x86_metadata(_p_arg);
