@@ -159,11 +159,9 @@ static int __init p_lkrg_register(void) {
              "System does NOT support SMEP. LKRG can't enforece smep_panic :(\n");
 #endif
 
-   mutex_lock(&module_mutex);
    if (p_lkrg_global_ctrl.p_hide_module) {
       p_hide_itself();
    }
-   mutex_unlock(&module_mutex);
 
 #if defined(CONFIG_GRKERNSEC)
    p_text_section_lock();
