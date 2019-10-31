@@ -147,10 +147,6 @@ static int __init p_lkrg_register(void) {
       goto p_main_error;
    }
 
-   p_integrity_timer();
-   p_register_notifiers();
-   p_lkrg_global_ctrl.p_random_events = 0x1;
-
 #ifdef CONFIG_X86
    if (P_IS_SMEP_ENABLED(p_pcfi_CPU_flags))
       p_lkrg_global_ctrl.p_smep_panic = 0x1;
@@ -163,17 +159,9 @@ static int __init p_lkrg_register(void) {
       p_hide_itself();
    }
 
-#if defined(CONFIG_GRKERNSEC)
-   p_text_section_lock();
-   if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
-      p_print_log(P_LKRG_CRIT,
-         "CREATING DATABASE ERROR: HASH FROM _STEXT!\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      p_text_section_unlock();
-      goto p_main_error;
-   }
-   p_text_section_unlock();
-#endif
+   p_integrity_timer();
+   p_register_notifiers();
+   p_lkrg_global_ctrl.p_random_events = 0x1;
 
    p_print_log(P_LKRG_CRIT,
           "LKRG initialized successfully!\n");

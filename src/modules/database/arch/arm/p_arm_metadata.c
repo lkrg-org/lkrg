@@ -3,7 +3,7 @@
  *
  * Component:
  *  - Database module
- *    => submodule for dumping ARM64 specific metadata
+ *    => submodule for dumping ARM specific metadata
  *
  * Notes:
  *  - Metadata can be different per CPU which makes it quite complicated...
@@ -19,7 +19,7 @@
  *    procedure is checking if number of active CPUs changes over time...
  *
  * Timeline:
- *  - Created: 05.IV.2019
+ *  - Created: 09.X.2019
  *
  * Author:
  *  - Adam 'pi3' Zabrocki (http://pi3.com.pl)
@@ -28,19 +28,19 @@
 
 #include "../../../../p_lkrg_main.h"
 
-#if defined(CONFIG_ARM64)
+#if defined(CONFIG_ARM)
 
 /*
  * This function is independetly executed by each active CPU.
  */
-void p_dump_arm64_metadata(void *_p_arg) {
+void p_dump_arm_metadata(void *_p_arg) {
 
    p_CPU_metadata_hash_mem *p_arg = _p_arg;
    int p_curr_cpu = 0xFFFFFFFF;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_dump_arm64_metadata>\n");
+          "Entering function <p_dump_arm_metadata>\n");
 
    /*
     * Get ID and lock - no preemtion.
@@ -62,7 +62,7 @@ void p_dump_arm64_metadata(void *_p_arg) {
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_dump_arm64_metadata>\n");
+          "Leaving function <p_dump_arm_metadata>\n");
 }
 
 #endif

@@ -277,6 +277,90 @@ static inline void p_syscall_set_arg2(struct pt_regs *p_regs, unsigned long p_va
 #endif
 }
 
+/* ARM */
+#elif defined(CONFIG_ARM)
+
+/*
+ * Get
+ */
+static inline unsigned long p_regs_get_arg1(struct pt_regs *p_regs) {
+   return p_regs->ARM_r0;
+}
+
+static inline unsigned long p_regs_get_arg2(struct pt_regs *p_regs) {
+   return p_regs->ARM_r1;
+}
+
+static inline unsigned long p_regs_get_fp(struct pt_regs *p_regs) {
+   return p_regs->ARM_fp;
+}
+
+static inline unsigned long p_regs_get_sp(struct pt_regs *p_regs) {
+   return frame_pointer(p_regs);
+}
+
+static inline unsigned long p_regs_get_ip(struct pt_regs *p_regs) {
+   return p_regs->ARM_pc;
+}
+
+static inline unsigned long p_regs_get_ret(struct pt_regs *p_regs) {
+   return p_regs->ARM_r0;
+}
+
+static inline unsigned long p_get_thread_sp(struct task_struct *p_arg) {
+   return thread_saved_sp(p_arg);
+}
+
+/*
+ * Syscalls
+ */
+static inline unsigned long p_syscall_get_arg1(struct pt_regs *p_regs) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,17,0) && defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER)
+   return p_regs_get_arg1((struct pt_regs *)p_regs_get_arg1(p_regs));
+#else
+   return p_regs_get_arg1(p_regs);
+#endif
+}
+
+static inline unsigned long p_syscall_get_arg2(struct pt_regs *p_regs) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,17,0) && defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER)
+   return p_regs_get_arg2((struct pt_regs *)p_regs_get_arg1(p_regs));
+#else
+   return p_regs_get_arg2(p_regs);
+#endif
+}
+
+/*
+ * Set
+ */
+static inline void p_regs_set_arg1(struct pt_regs *p_regs, unsigned long p_val) {
+   p_regs->ARM_r0 = p_val;
+}
+
+static inline void p_regs_set_arg2(struct pt_regs *p_regs, unsigned long p_val) {
+   p_regs->ARM_r1 = p_val;
+}
+
+/*
+ * Syscalls
+ */
+static inline void p_syscall_set_arg1(struct pt_regs *p_regs, unsigned long p_val) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,17,0) && defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER)
+   p_regs_set_arg1((struct pt_regs *)p_regs_get_arg1(p_regs), p_val);
+#else
+   p_regs_set_arg1(p_regs, p_val);
+#endif
+}
+
+static inline void p_syscall_set_arg2(struct pt_regs *p_regs, unsigned long p_val) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,17,0) && defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER)
+   p_regs_set_arg2((struct pt_regs *)p_regs_get_arg1(p_regs), p_val);
+#else
+   p_regs_set_arg2(p_regs, p_val);
+#endif
+}
+
+/* ARM64 */
 #elif defined(CONFIG_ARM64)
 
 /*

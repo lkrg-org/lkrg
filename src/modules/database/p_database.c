@@ -417,6 +417,8 @@ int p_create_database(void) {
 #endif
 
 
+   p_ret = P_LKRG_SUCCESS;
+
 p_create_database_out:
 
 // STRONG_DEBUG

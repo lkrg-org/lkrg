@@ -21,7 +21,7 @@
 
 #include "../../p_lkrg_main.h"
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0) && defined(_ASM_X86_IDLE_H)
 static int p_idle_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data);
 #endif
 #ifdef CONFIG_CPU_FREQ
@@ -43,7 +43,7 @@ static int p_acpi_notifier(struct notifier_block *p_nb, unsigned long p_val, voi
 #endif
 
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0) && defined(_ASM_X86_IDLE_H)
 static struct notifier_block p_idle_notifier_nb = {
    .notifier_call = p_idle_notifier,
 };
@@ -106,7 +106,7 @@ void p_register_notifiers(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_register_notifiers>\n");
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0) &&  defined(_ASM_X86_IDLE_H)
    idle_notifier_register(&p_idle_notifier_nb);
 #endif
 #ifdef CONFIG_CPU_FREQ
@@ -133,7 +133,7 @@ void p_register_notifiers(void) {
           "Leaving function <p_register_notifiers>\n");
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0) && defined(_ASM_X86_IDLE_H)
 static int p_idle_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
 // STRONG_DEBUG
@@ -342,7 +342,7 @@ void p_deregister_notifiers(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_deregister_notifiers>\n");
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0) && defined(_ASM_X86_IDLE_H)
    idle_notifier_unregister(&p_idle_notifier_nb);
 #endif
 #ifdef CONFIG_CPU_FREQ
