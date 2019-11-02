@@ -84,6 +84,7 @@ typedef struct p_cpu_info {
  * Dynamic *_JUMP_LABEL support (arch independent)
  */
 #include "JUMP_LABEL/p_arch_jump_label_transform/p_arch_jump_label_transform.h"
+#include "JUMP_LABEL/p_arch_jump_label_transform_apply/p_arch_jump_label_transform_apply.h"
 
 enum p_jump_label_state {
 
@@ -101,6 +102,8 @@ struct p_jump_label {
 
    enum p_jump_label_state p_state;
    struct module *p_mod;
+   unsigned long *p_mod_mask;
+   spinlock_t p_jl_lock;
 
 };
 

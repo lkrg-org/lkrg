@@ -460,6 +460,12 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
          kzfree(*p_mlm_tmp);
          *p_mlm_tmp = NULL;
       }
+
+      if (p_db.p_jump_label.p_mod_mask) {
+         kfree(p_db.p_jump_label.p_mod_mask);
+         p_db.p_jump_label.p_mod_mask = NULL;
+      }
+
       p_flag = 1;
    }
 
@@ -473,6 +479,18 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
     */
 
    if (!p_flag || 1 == p_flag) {
+
+      if ( (p_db.p_jump_label.p_mod_mask = kmalloc(BITS_TO_LONGS(*p_module_list_cnt_arg),
+                                                   GFP_ATOMIC)) == NULL) {
+         /*
+          * I should NEVER be here!
+          */
+         p_ret = P_LKRG_GENERAL_ERROR;
+         p_print_log(P_LKRG_CRIT,
+                "KMOD HASH kmalloc() error! Can't allocate memory for module bitmask ;[\n");
+         goto p_kmod_hash_err;
+      }
+
 
       /*
        * OK, we now know how many modules we have in the module list
@@ -542,6 +560,22 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
          if (*p_mlm_tmp) {
             kzfree(*p_mlm_tmp);
             *p_mlm_tmp = NULL;
+         }
+
+         if (p_db.p_jump_label.p_mod_mask) {
+            kfree(p_db.p_jump_label.p_mod_mask);
+            p_db.p_jump_label.p_mod_mask = NULL;
+         }
+
+         if ( (p_db.p_jump_label.p_mod_mask = kmalloc(BITS_TO_LONGS(*p_module_list_cnt_arg),
+                                                      GFP_ATOMIC)) == NULL) {
+            /*
+             * I should NEVER be here!
+             */
+            p_ret = P_LKRG_GENERAL_ERROR;
+            p_print_log(P_LKRG_CRIT,
+                   "KMOD HASH kmalloc() error! Can't allocate memory for module bitmask ;[\n");
+            goto p_kmod_hash_err;
          }
 
          /*
@@ -631,6 +665,10 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
          kzfree(*p_mkm_tmp);
          *p_mkm_tmp = NULL;
       }
+      if (p_db.p_jump_label.p_mod_mask) {
+         kfree(p_db.p_jump_label.p_mod_mask);
+         p_db.p_jump_label.p_mod_mask = NULL;
+      }
       goto p_kmod_hash_err;
    }
 
@@ -657,6 +695,10 @@ p_kmod_hash_err:
       if (*p_mkm_tmp) {
          kzfree(*p_mkm_tmp);
          *p_mkm_tmp = NULL;
+      }
+      if (p_db.p_jump_label.p_mod_mask) {
+         kfree(p_db.p_jump_label.p_mod_mask);
+         p_db.p_jump_label.p_mod_mask = NULL;
       }
    }
 

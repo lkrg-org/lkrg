@@ -360,12 +360,16 @@ int p_create_database(void) {
 
    p_text_section_lock();
 
+   spin_lock(&p_db.p_jump_label.p_jl_lock);
+
    /*
     * Memory allocation may fail... let's loop here!
     */
    while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
                      &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x1) != P_LKRG_SUCCESS)
       schedule();
+
+   spin_unlock(&p_db.p_jump_label.p_jl_lock);
 
    /* Hash */
    p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,

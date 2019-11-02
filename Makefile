@@ -30,6 +30,7 @@ p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
                src/modules/database/arch/arm/p_arm_metadata.o \
                src/modules/database/arch/p_arch_metadata.o \
                src/modules/database/JUMP_LABEL/p_arch_jump_label_transform/p_arch_jump_label_transform.o \
+               src/modules/database/JUMP_LABEL/p_arch_jump_label_transform_apply/p_arch_jump_label_transform_apply.o \
                src/modules/database/p_database.o \
                src/modules/notifiers/p_notifiers.o \
                src/modules/self-defense/hiding/p_hiding.o \

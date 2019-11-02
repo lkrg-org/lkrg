@@ -146,10 +146,14 @@ p_module_event_notifier_going_retry:
 //      spin_lock_irqsave(&p_db_lock,p_db_flags);
       spin_lock(&p_db_lock);
 
+      spin_lock(&p_db.p_jump_label.p_jl_lock);
+
       /* OK, now recalculate hashes again! */
       while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
                         &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x2) != P_LKRG_SUCCESS)
          schedule();
+
+      spin_unlock(&p_db.p_jump_label.p_jl_lock);
 
       /* Update global module list/kobj hash */
       p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
@@ -226,10 +230,14 @@ p_module_event_notifier_live_retry:
 //         spin_lock_irqsave(&p_db_lock,p_db_flags);
          spin_lock(&p_db_lock);
 
+         spin_lock(&p_db.p_jump_label.p_jl_lock);
+
          /* OK, now recalculate hashes again! */
          while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
                            &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x2) != P_LKRG_SUCCESS)
             schedule();
+
+         spin_unlock(&p_db.p_jump_label.p_jl_lock);
 
          /* Update global module list/kobj hash */
          p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
@@ -301,5 +309,19 @@ void p_register_module_notifier(void) {
 void p_deregister_module_notifier(void) {
 
    unregister_module_notifier(&p_module_block_notifier);
+
+   if (p_db.p_module_list_array) {
+      kzfree(p_db.p_module_list_array);
+      p_db.p_module_list_array = NULL;
+   }
+   if (p_db.p_module_kobj_array) {
+      kzfree(p_db.p_module_kobj_array);
+      p_db.p_module_kobj_array = NULL;
+   }
+   if (p_db.p_jump_label.p_mod_mask) {
+      kfree(p_db.p_jump_label.p_mod_mask);
+      p_db.p_jump_label.p_mod_mask = NULL;
+   }
+
 //   printk("Goodbye ;)\n");
 }

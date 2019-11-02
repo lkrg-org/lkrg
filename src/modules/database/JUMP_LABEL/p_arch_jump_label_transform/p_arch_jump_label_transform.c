@@ -52,12 +52,13 @@ int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, struct pt
           "p_arch_jump_label_transform_entry: comm[%s] Pid:%d\n",current->comm,current->pid);
 
    p_print_log(P_LKRG_WARN,
-               "[JUMP_LABEL] New modification: type[%s] code[0x%llx] target[0x%llx] key[0x%llx]!\n",
+               "[JUMP_LABEL] New modification: type[%s] code[0x%llx] target[0x%llx] key[0x%lx]!\n",
                (p_regs_get_arg2(p_regs) == 1) ? "JUMP_LABEL_JMP" : (p_regs_get_arg2(p_regs) == 0) ? "JUMP_LABEL_NOP" : "UNKNOWN",
                p_jump_entry_code(p_tmp),
                p_jump_entry_target(p_tmp),
-               (unsigned long long)p_jump_entry_key(p_tmp));
+               (unsigned long)p_jump_entry_key(p_tmp));
 
+   spin_lock(&p_db.p_jump_label.p_jl_lock);
 
    if (p_core_kernel_text(p_addr)) {
       /*
@@ -174,6 +175,8 @@ int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_reg
    }
 
    p_db.p_jump_label.p_state = P_JUMP_LABEL_NONE;
+
+   spin_unlock(&p_db.p_jump_label.p_jl_lock);
 
    p_debug_kprobe_log(
           "Entering function <p_arch_jump_label_transform_ret>\n");

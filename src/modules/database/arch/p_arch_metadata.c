@@ -74,6 +74,7 @@ int p_register_arch_metadata(void) {
 
 #endif
 
+   spin_lock_init(&p_db.p_jump_label.p_jl_lock);
    /*
     * This is not an arch specific hook, but it's a good place to register it
     */
@@ -83,6 +84,18 @@ int p_register_arch_metadata(void) {
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_register_arch_metadata_out;
    }
+
+#ifdef P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_APPLY_H
+   /*
+    * This is not an arch specific hook, but it's a good place to register it
+    */
+   if (p_install_arch_jump_label_transform_apply_hook()) {
+      p_print_log(P_LKRG_ERR,
+             "ERROR: Can't hook arch_jump_label_transform_apply function :(\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_register_arch_metadata_out;
+   }
+#endif
 
 p_register_arch_metadata_out:
 
@@ -110,6 +123,9 @@ int p_unregister_arch_metadata(void) {
     * This is not an arch specific hook, but it's a good place to deregister it
     */
    p_uninstall_arch_jump_label_transform_hook();
+#ifdef P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_APPLY_H
+   p_uninstall_arch_jump_label_transform_apply_hook();
+#endif
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
