@@ -236,6 +236,7 @@ void p_dump_x86_metadata(void *_p_arg) {
 
    /* MSR_IA32_CR_PAT */
    // Try reading at least 3 times before give up in case of error...
+/*
    P_MSR_READ_COUNT(3,p_arg[p_curr_cpu].p_MSR_IA32_CR_PAT,MSR_IA32_CR_PAT);
 
    if (!p_arg[p_curr_cpu].p_MSR_IA32_CR_PAT) {
@@ -248,7 +249,7 @@ void p_dump_x86_metadata(void *_p_arg) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_CR_PAT[0x%llx] address in db[%p]\n",
           p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_CR_PAT,&p_arg[p_curr_cpu].p_MSR_IA32_CR_PAT);
-
+*/
 
    /* MSR_IA32_APICBASE */
    // Try reading at least 3 times before give up in case of error...
