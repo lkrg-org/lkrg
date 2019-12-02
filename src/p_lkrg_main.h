@@ -19,6 +19,7 @@
 #define P_LKRG_MAIN_H
 
 #define P_LKRG_UNHIDE
+//#define P_LKRG_CI_X86_NO_MSR
 //#define P_LKRG_PCFI_NO_STACKWALK
 
 #include <linux/kernel.h>
