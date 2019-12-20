@@ -174,6 +174,7 @@ static int __init p_lkrg_register(void) {
 
    int p_ret = P_LKRG_SUCCESS;
    char p_cpu = 0x0;
+   char p_freeze = 0x0;
 
    p_print_log(P_LKRG_CRIT, "Loading LKRG...\n");
 
@@ -221,6 +222,8 @@ static int __init p_lkrg_register(void) {
    // Freeze all non-kernel processes
    while (P_SYM(p_freeze_processes)())
       schedule();
+
+   p_freeze = 0x1;
 
    /*
     * First, we need to plant *kprobes... Before DB is created!
@@ -385,8 +388,11 @@ p_main_error:
       p_uninit_page_attr();
    }
 
-   // Thaw all non-kernel processes
-   P_SYM(p_thaw_processes)();
+   if (p_freeze) {
+      // Thaw all non-kernel processes
+      P_SYM(p_thaw_processes)();
+      p_freeze = 0x0;
+   }
 
    return p_ret;
 }
