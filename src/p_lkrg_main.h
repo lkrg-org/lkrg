@@ -172,6 +172,8 @@ typedef struct _p_lkrg_ro_page {
 extern p_ro_page p_ro;
 
 #define P_SYM(p_field) p_ro.p_lkrg_global_ctrl.syms.p_field
+#define P_CTRL(p_field) p_ro.p_lkrg_global_ctrl.ctrl.p_field
+#define P_CTRL_ADDR &p_ro.p_lkrg_global_ctrl
 
 /*
  * RHEL support

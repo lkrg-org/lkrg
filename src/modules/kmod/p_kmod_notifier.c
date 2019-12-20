@@ -38,7 +38,7 @@ static void p_module_notifier_wrapper(unsigned long p_event, struct module *p_km
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_module_notifier_wrapper>\n");
 
-   if (p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules) {
+   if (P_CTRL(p_block_modules)) {
       p_kmod->init = p_block_always;
    }
 
@@ -180,7 +180,7 @@ p_module_event_notifier_going_retry:
       goto p_module_event_notifier_unlock_out;
    }
 
-   if (p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules) {
+   if (P_CTRL(p_block_modules)) {
 //      if (p_tmp->state == MODULE_STATE_COMING) { <- Linux kernel bug - might not update state value :(
       if (p_event == MODULE_STATE_COMING) {
          /* We are not going to modify DB */

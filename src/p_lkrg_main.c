@@ -63,7 +63,7 @@ void p_init_page_attr(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_init_page_attr>\n");
 
-   p_long_tmp = (unsigned long *)&p_ro.p_lkrg_global_ctrl;
+   p_long_tmp = (unsigned long *)P_CTRL_ADDR;
 
 #if !defined(CONFIG_ARM)
    if (*(p_long_tmp-p_long_offset) == P_LKRG_MARKER1) {
@@ -133,7 +133,7 @@ void p_uninit_page_attr(void) {
           "Entering function <p_uninit_page_attr>\n");
 
    if (p_attr_init) {
-      p_long_tmp = (unsigned long *)&p_ro.p_lkrg_global_ctrl;
+      p_long_tmp = (unsigned long *)P_CTRL_ADDR;
       p_set_memory_rw((unsigned long)p_long_tmp,1);
       p_print_log(P_LKRG_INFO, "Configuration page marked to be RW again.\n");
 #if !defined(CONFIG_ARM)
@@ -185,9 +185,9 @@ static int __init p_lkrg_register(void) {
    p_global_siphash_key.p_high = (uint64_t)get_random_long();
 
    if (p_init_log_level >= P_LOG_LEVEL_MAX)
-      p_ro.p_lkrg_global_ctrl.ctrl.p_log_level = P_LOG_LEVEL_MAX-1;      // Max
+      P_CTRL(p_log_level) = P_LOG_LEVEL_MAX-1;      // Max
    else
-      p_ro.p_lkrg_global_ctrl.ctrl.p_log_level = p_init_log_level;
+      P_CTRL(p_log_level) = p_init_log_level;
 
    if (get_kallsyms_address() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
@@ -337,20 +337,20 @@ static int __init p_lkrg_register(void) {
 
 #if defined(CONFIG_X86)
    if (P_IS_SMEP_ENABLED(p_pcfi_CPU_flags)) {
-      p_ro.p_lkrg_global_ctrl.ctrl.p_smep_panic = 0x1;
+      P_CTRL(p_smep_panic) = 0x1;
    } else {
       p_print_log(P_LKRG_ERR,
              "System does NOT support SMEP. LKRG can't enforece smep_panic :(\n");
    }
 #endif
 
-   if (p_ro.p_lkrg_global_ctrl.ctrl.p_hide_module) {
+   if (P_CTRL(p_hide_module)) {
       p_hide_itself();
    }
 
    p_integrity_timer();
    p_register_notifiers();
-   p_ro.p_lkrg_global_ctrl.ctrl.p_random_events = 0x1;
+   P_CTRL(p_random_events) = 0x1;
    p_init_page_attr();
 
    p_print_log(P_LKRG_CRIT,

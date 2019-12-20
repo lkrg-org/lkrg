@@ -92,7 +92,7 @@ void p_integrity_timer(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_integrity_timer>\n");
 
-   p_timer.expires    = jiffies + p_ro.p_lkrg_global_ctrl.ctrl.p_timestamp*HZ;
+   p_timer.expires    = jiffies + P_CTRL(p_timestamp)*HZ;
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0)
    p_timer.data       = 0x1;
@@ -462,7 +462,7 @@ void p_check_integrity(struct work_struct *p_work) {
                   p_module_kobj_tmp[p_tmp_hash].p_core_text_size,
                   p_module_kobj_tmp[p_tmp_hash].p_mod_core_text_hash);
 
-               if (!p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules) {
+               if (!P_CTRL(p_block_modules)) {
                   /* Maybe we have sleeping module activity event ? */
                   if (mutex_is_locked(&p_module_activity)) {
                      // STRONG_DEBUG
@@ -588,7 +588,7 @@ void p_check_integrity(struct work_struct *p_work) {
                   p_module_list_tmp[p_tmp_hash].p_core_text_size,
                   p_module_list_tmp[p_tmp_hash].p_mod_core_text_hash);
 
-               if (!p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules) {
+               if (!P_CTRL(p_block_modules)) {
                   /* Maybe we have sleeping module activity event ? */
                   if (mutex_is_locked(&p_module_activity)) {
                      // STRONG_DEBUG
@@ -750,7 +750,7 @@ void p_check_integrity(struct work_struct *p_work) {
                // But we can try to poke that page where modules used to be to find out scratches
                // of information about it (e.g. name? symbols table?)
 
-               if (!p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules) {
+               if (!P_CTRL(p_block_modules)) {
                   /* Maybe we have sleeping module activity event ? */
                   if (mutex_is_locked(&p_module_activity)) {
                      // STRONG_DEBUG
@@ -871,7 +871,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
                // TODO: Dump module
 
-               if (!p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules) {
+               if (!P_CTRL(p_block_modules)) {
                   /* Maybe we have sleeping module activity event ? */
                   if (mutex_is_locked(&p_module_activity)) {
                      // STRONG_DEBUG
@@ -1025,7 +1025,7 @@ void p_check_integrity(struct work_struct *p_work) {
                // But we can try to poke that page where modules used to be to find out scratches
                // of information about it (e.g. name? symbols table?)
 
-               if (!p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules) {
+               if (!P_CTRL(p_block_modules)) {
                   /* Maybe we have sleeping module activity event ? */
                   if (mutex_is_locked(&p_module_activity)) {
                      // STRONG_DEBUG
@@ -1144,7 +1144,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
                // TODO: Dump module
 
-               if (!p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules) {
+               if (!P_CTRL(p_block_modules)) {
                   /* Maybe we have sleeping module activity event ? */
                   if (mutex_is_locked(&p_module_activity)) {
                      // STRONG_DEBUG
@@ -1346,11 +1346,11 @@ void p_check_integrity(struct work_struct *p_work) {
    if (p_hack_check) {
       p_print_log(P_LKRG_CRIT,
              "ALERT !!! SYSTEM HAS BEEN COMPROMISED - DETECTED DIFFERENT %u CHECKSUMS !!!\n",p_hack_check);
-      if (p_ro.p_lkrg_global_ctrl.ctrl.p_ci_panic) {
+      if (P_CTRL(p_ci_panic)) {
          // OK, we need to crash the kernel now
          panic(P_LKRG_SIGNATURE "CI verification failed! Killing the kernel...\n");
       }
-   } else if (p_ro.p_lkrg_global_ctrl.ctrl.p_clean_message) {
+   } else if (P_CTRL(p_clean_message)) {
       p_print_log(P_LKRG_ALIVE,"System is clean!\n");
    }
 

@@ -92,7 +92,7 @@ struct ctl_table p_lkrg_sysctl_base[] = {
 struct ctl_table p_lkrg_sysctl_table[] = {
    {
       .procname       = "timestamp",
-      .data           = &p_ro.p_lkrg_global_ctrl.ctrl.p_timestamp,
+      .data           = &P_CTRL(p_timestamp),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
       .proc_handler   = p_sysctl_timestamp,
@@ -101,7 +101,7 @@ struct ctl_table p_lkrg_sysctl_table[] = {
    },
    {
       .procname       = "block_modules",
-      .data           = &p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules,
+      .data           = &P_CTRL(p_block_modules),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
       .proc_handler   = p_sysctl_block_modules,
@@ -110,7 +110,7 @@ struct ctl_table p_lkrg_sysctl_table[] = {
    },
    {
       .procname       = "log_level",
-      .data           = &p_ro.p_lkrg_global_ctrl.ctrl.p_log_level,
+      .data           = &P_CTRL(p_log_level),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
 //      .proc_handler   = proc_dointvec_minmax,
@@ -120,7 +120,7 @@ struct ctl_table p_lkrg_sysctl_table[] = {
    },
    {
       .procname       = "force_run",
-      .data           = &p_ro.p_lkrg_global_ctrl.ctrl.p_force_run,
+      .data           = &P_CTRL(p_force_run),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
       .proc_handler   = p_sysctl_force_run,
@@ -130,7 +130,7 @@ struct ctl_table p_lkrg_sysctl_table[] = {
 #ifdef P_LKRG_UNHIDE
    {
       .procname       = "hide",
-      .data           = &p_ro.p_lkrg_global_ctrl.ctrl.p_hide_module,
+      .data           = &P_CTRL(p_hide_module),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
       .proc_handler   = p_sysctl_hide,
@@ -140,7 +140,7 @@ struct ctl_table p_lkrg_sysctl_table[] = {
 #endif
    {
       .procname       = "clean_message",
-      .data           = &p_ro.p_lkrg_global_ctrl.ctrl.p_clean_message,
+      .data           = &P_CTRL(p_clean_message),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
       .proc_handler   = p_sysctl_clean_message,
@@ -149,7 +149,7 @@ struct ctl_table p_lkrg_sysctl_table[] = {
    },
    {
       .procname       = "random_events",
-      .data           = &p_ro.p_lkrg_global_ctrl.ctrl.p_random_events,
+      .data           = &P_CTRL(p_random_events),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
       .proc_handler   = p_sysctl_random_events,
@@ -158,7 +158,7 @@ struct ctl_table p_lkrg_sysctl_table[] = {
    },
    {
       .procname       = "ci_panic",
-      .data           = &p_ro.p_lkrg_global_ctrl.ctrl.p_ci_panic,
+      .data           = &P_CTRL(p_ci_panic),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
       .proc_handler   = p_sysctl_ci_panic,
@@ -168,7 +168,7 @@ struct ctl_table p_lkrg_sysctl_table[] = {
 #ifdef CONFIG_X86
    {
       .procname       = "smep_panic",
-      .data           = &p_ro.p_lkrg_global_ctrl.ctrl.p_smep_panic,
+      .data           = &P_CTRL(p_smep_panic),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
       .proc_handler   = p_sysctl_smep_panic,
@@ -178,7 +178,7 @@ struct ctl_table p_lkrg_sysctl_table[] = {
 #endif
    {
       .procname       = "umh_lock",
-      .data           = &p_ro.p_lkrg_global_ctrl.ctrl.p_umh_lock,
+      .data           = &P_CTRL(p_umh_lock),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
       .proc_handler   = p_sysctl_umh_lock,
@@ -199,7 +199,7 @@ static int p_sysctl_timestamp(struct ctl_table *p_table, int p_write,
 
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      p_print_log(P_LKRG_CRIT, "[CI] New timestamp => %d\n",p_ro.p_lkrg_global_ctrl.ctrl.p_timestamp);
+      p_print_log(P_LKRG_CRIT, "[CI] New timestamp => %d\n",P_CTRL(p_timestamp));
       p_offload_work(0); // run integrity check!
    }
    p_lkrg_close_rw();
@@ -221,13 +221,13 @@ static int p_sysctl_block_modules(struct ctl_table *p_table, int p_write,
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_sysctl_block_modules>\n");
 
-   p_tmp = p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules;
+   p_tmp = P_CTRL(p_block_modules);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules && !p_tmp) {
+      if (P_CTRL(p_block_modules) && !p_tmp) {
          p_print_log(P_LKRG_CRIT,
                      "Enabling \"blocking modules\" feature.\n");
-      } else if (p_tmp && !p_ro.p_lkrg_global_ctrl.ctrl.p_clean_message) {
+      } else if (p_tmp && !P_CTRL(p_clean_message)) {
          p_print_log(P_LKRG_CRIT,
                      "Disabling \"blocking modules\" feature.\n");
       }
@@ -262,8 +262,8 @@ static int p_sysctl_log_level(struct ctl_table *p_table, int p_write,
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
       p_print_log(P_LKRG_CRIT, "New log level => %d (%s)\n",
-                  p_ro.p_lkrg_global_ctrl.ctrl.p_log_level,
-                  p_log_level_string[p_ro.p_lkrg_global_ctrl.ctrl.p_log_level]);
+                  P_CTRL(p_log_level),
+                  p_log_level_string[P_CTRL(p_log_level]));
    }
    p_lkrg_close_rw();
 
@@ -286,9 +286,9 @@ static int p_sysctl_force_run(struct ctl_table *p_table, int p_write,
 
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (p_ro.p_lkrg_global_ctrl.ctrl.p_force_run) {
+      if (P_CTRL(p_force_run)) {
          p_offload_work(0); // run integrity check!
-         p_ro.p_lkrg_global_ctrl.ctrl.p_force_run = 0x0; // Restore 0 value - user only sees that value!
+         P_CTRL(p_force_run) = 0x0; // Restore 0 value - user only sees that value!
       }
    }
    p_lkrg_close_rw();
@@ -311,14 +311,14 @@ static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_sysctl_hide>\n");
 
-   p_tmp = p_ro.p_lkrg_global_ctrl.ctrl.p_hide_module;
+   p_tmp = P_CTRL(p_hide_module);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (p_ro.p_lkrg_global_ctrl.ctrl.p_hide_module) {
-         p_ro.p_lkrg_global_ctrl.ctrl.p_hide_module = p_tmp; // Restore previous state - for sync
+      if (P_CTRL(p_hide_module)) {
+         P_CTRL(p_hide_module) = p_tmp; // Restore previous state - for sync
          p_hide_itself(); // hide module!
       } else {
-         p_ro.p_lkrg_global_ctrl.ctrl.p_hide_module = p_tmp; // Restore previous state - for sync
+         P_CTRL(p_hide_module) = p_tmp; // Restore previous state - for sync
          p_unhide_itself(); // Unide module!
       }
    }
@@ -342,13 +342,13 @@ static int p_sysctl_clean_message(struct ctl_table *p_table, int p_write,
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_sysctl_clean_message>\n");
 
-   p_tmp = p_ro.p_lkrg_global_ctrl.ctrl.p_clean_message;
+   p_tmp = P_CTRL(p_clean_message);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (p_ro.p_lkrg_global_ctrl.ctrl.p_clean_message && !p_tmp) {
+      if (P_CTRL(p_clean_message) && !p_tmp) {
          p_print_log(P_LKRG_CRIT,
                      "Enabling \"clean\" message.\n");
-      } else if (p_tmp && !p_ro.p_lkrg_global_ctrl.ctrl.p_clean_message) {
+      } else if (p_tmp && !P_CTRL(p_clean_message)) {
          p_print_log(P_LKRG_CRIT,
                      "Disabling \"clean\" message.\n");
       }
@@ -372,14 +372,14 @@ static int p_sysctl_random_events(struct ctl_table *p_table, int p_write,
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_sysctl_random_events>\n");
 
-   p_tmp = p_ro.p_lkrg_global_ctrl.ctrl.p_random_events;
+   p_tmp = P_CTRL(p_random_events);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (p_ro.p_lkrg_global_ctrl.ctrl.p_random_events && !p_tmp) {
+      if (P_CTRL(p_random_events) && !p_tmp) {
          p_print_log(P_LKRG_CRIT,
                      "Enabling LKRG verification on the random events in the system.\n");
          p_register_notifiers();
-      } else if (p_tmp && !p_ro.p_lkrg_global_ctrl.ctrl.p_random_events) {
+      } else if (p_tmp && !P_CTRL(p_random_events)) {
          p_print_log(P_LKRG_CRIT,
                      "Disabling LKRG verification on the random events in the system.\n");
          p_deregister_notifiers();
@@ -404,13 +404,13 @@ static int p_sysctl_ci_panic(struct ctl_table *p_table, int p_write,
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_sysctl_ci_panic>\n");
 
-   p_tmp = p_ro.p_lkrg_global_ctrl.ctrl.p_ci_panic;
+   p_tmp = P_CTRL(p_ci_panic);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (p_ro.p_lkrg_global_ctrl.ctrl.p_ci_panic && !p_tmp) {
+      if (P_CTRL(p_ci_panic) && !p_tmp) {
          p_print_log(P_LKRG_CRIT,
                      "Enabling kernel panic on LKRG's CI verification failure.\n");
-      } else if (p_tmp && !p_ro.p_lkrg_global_ctrl.ctrl.p_ci_panic) {
+      } else if (p_tmp && !P_CTRL(p_ci_panic)) {
          p_print_log(P_LKRG_CRIT,
                      "Disabling kernel panic on LKRG's CI verification failure.\n");
       }
@@ -435,25 +435,25 @@ static int p_sysctl_smep_panic(struct ctl_table *p_table, int p_write,
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_sysctl_smep_panic>\n");
 
-   p_tmp = p_ro.p_lkrg_global_ctrl.ctrl.p_smep_panic;
+   p_tmp = P_CTRL(p_smep_panic);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (p_ro.p_lkrg_global_ctrl.ctrl.p_smep_panic && !p_tmp) {
+      if (P_CTRL(p_smep_panic) && !p_tmp) {
          if (P_IS_SMEP_ENABLED(p_pcfi_CPU_flags)) {
             p_print_log(P_LKRG_CRIT,
                         "Enabling kernel panic on LKRG's SMEP verification failure.\n");
          } else {
-            p_ro.p_lkrg_global_ctrl.ctrl.p_smep_panic = 0x0;
+            P_CTRL(p_smep_panic) = 0x0;
             p_print_log(P_LKRG_CRIT,
                         "System does NOT support SMEP. LKRG can't enable/disable smep_panic :(\n");
          }
 
-      } else if (p_tmp && !p_ro.p_lkrg_global_ctrl.ctrl.p_smep_panic) {
+      } else if (p_tmp && !P_CTRL(p_smep_panic)) {
          if (P_IS_SMEP_ENABLED(p_pcfi_CPU_flags)) {
             p_print_log(P_LKRG_CRIT,
                         "Disabling kernel panic on LKRG's SMEP verification failure.\n");
          } else {
-            p_ro.p_lkrg_global_ctrl.ctrl.p_smep_panic = 0x0;
+            P_CTRL(p_smep_panic) = 0x0;
             p_print_log(P_LKRG_CRIT,
                         "System does NOT support SMEP. LKRG can't enable/disable smep_panic :(\n");
          }
@@ -479,13 +479,13 @@ static int p_sysctl_umh_lock(struct ctl_table *p_table, int p_write,
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_sysctl_umh_lock>\n");
 
-   p_tmp = p_ro.p_lkrg_global_ctrl.ctrl.p_umh_lock;
+   p_tmp = P_CTRL(p_umh_lock);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (p_ro.p_lkrg_global_ctrl.ctrl.p_umh_lock && !p_tmp) {
+      if (P_CTRL(p_umh_lock) && !p_tmp) {
          p_print_log(P_LKRG_CRIT,
                      "Enabling complete lock-down of UMH interface.\n");
-      } else if (p_tmp && !p_ro.p_lkrg_global_ctrl.ctrl.p_umh_lock) {
+      } else if (p_tmp && !P_CTRL(p_umh_lock)) {
          p_print_log(P_LKRG_CRIT,
                      "Disabling complete lock-down of UMH interface.\n");
       }

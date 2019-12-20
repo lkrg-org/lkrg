@@ -314,14 +314,14 @@ static inline void p_lkrg_open_rw(void) {
    p_text_section_lock();
    preempt_disable();
    barrier();
-   p_set_memory_rw((unsigned long)&p_ro.p_lkrg_global_ctrl,1);
+   p_set_memory_rw((unsigned long)P_CTRL_ADDR,1);
    barrier();
 }
 
 static inline void p_lkrg_close_rw(void) {
 
    barrier();
-   p_set_memory_ro((unsigned long)&p_ro.p_lkrg_global_ctrl,1);
+   p_set_memory_ro((unsigned long)P_CTRL_ADDR,1);
    barrier();
    preempt_enable(); //_no_resched();
    p_text_section_unlock();
@@ -429,14 +429,14 @@ static inline void p_lkrg_open_rw(void) {
    p_text_section_lock();
    preempt_disable();
    barrier();
-   p_set_memory_rw((unsigned long)&p_ro.p_lkrg_global_ctrl,1);
+   p_set_memory_rw((unsigned long)P_CTRL_ADDR,1);
    barrier();
 }
 
 static inline void p_lkrg_close_rw(void) {
 
    barrier();
-   p_set_memory_ro((unsigned long)&p_ro.p_lkrg_global_ctrl,1);
+   p_set_memory_ro((unsigned long)P_CTRL_ADDR,1);
    barrier();
    preempt_enable(); //_no_resched();
    p_text_section_unlock();
@@ -558,14 +558,14 @@ static inline void p_lkrg_open_rw(void) {
    p_text_section_lock();
    preempt_disable();
    barrier();
-   p_set_memory_rw((unsigned long)&p_ro.p_lkrg_global_ctrl,1);
+   p_set_memory_rw((unsigned long)P_CTRL_ADDR,1);
    barrier();
 }
 
 static inline void p_lkrg_close_rw(void) {
 
    barrier();
-   p_set_memory_ro((unsigned long)&p_ro.p_lkrg_global_ctrl,1);
+   p_set_memory_ro((unsigned long)P_CTRL_ADDR,1);
    barrier();
    preempt_enable(); //_no_resched();
    p_text_section_unlock();
