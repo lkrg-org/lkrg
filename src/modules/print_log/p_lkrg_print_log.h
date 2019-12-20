@@ -138,7 +138,7 @@
 ({                                                                                       \
    int p_print_ret = 0x0;                                                                \
                                                                                          \
-   if (p_lkrg_global_ctrl.p_log_level >= P_LOG_LEVEL_ALIVE) {                            \
+   if (p_ro.p_lkrg_global_ctrl.ctrl.p_log_level >= P_LOG_LEVEL_ALIVE) {                  \
       p_print_ret = printk(p_fmt, ## p_args);                                            \
    }                                                                                     \
                                                                                          \
@@ -149,7 +149,7 @@
 ({                                                                                       \
    int p_print_ret = 0x0;                                                                \
                                                                                          \
-   if (p_lkrg_global_ctrl.p_log_level >= P_LOG_LEVEL_ERRORS) {                           \
+   if (p_ro.p_lkrg_global_ctrl.ctrl.p_log_level >= P_LOG_LEVEL_ERRORS) {                 \
       p_print_ret = printk(p_fmt, ## p_args);                                            \
    }                                                                                     \
                                                                                          \
@@ -160,7 +160,7 @@
 ({                                                                                       \
    int p_print_ret = 0x0;                                                                \
                                                                                          \
-   if (p_lkrg_global_ctrl.p_log_level >= P_LOG_LEVEL_WARNS) {                            \
+   if (p_ro.p_lkrg_global_ctrl.ctrl.p_log_level >= P_LOG_LEVEL_WARNS) {                  \
       p_print_ret = printk(p_fmt, ## p_args);                                            \
    }                                                                                     \
                                                                                          \
@@ -171,7 +171,7 @@
 ({                                                                                       \
    int p_print_ret = 0x0;                                                                \
                                                                                          \
-   if (p_lkrg_global_ctrl.p_log_level >= P_LOG_LEVEL_INFOS) {                            \
+   if (p_ro.p_lkrg_global_ctrl.ctrl.p_log_level >= P_LOG_LEVEL_INFOS) {                  \
       p_print_ret = printk(p_fmt, ## p_args);                                            \
    }                                                                                     \
                                                                                          \
@@ -212,7 +212,7 @@
 ({                                                                                       \
    int p_print_ret = 0x0;                                                                \
                                                                                          \
-   if (p_lkrg_global_ctrl.p_log_level >= P_LOG_LEVEL_DBG) {                              \
+   if (p_ro.p_lkrg_global_ctrl.ctrl.p_log_level >= P_LOG_LEVEL_DBG) {                    \
       p_print_ret = printk(p_fmt, ## p_args);                                            \
    }                                                                                     \
                                                                                          \
@@ -223,7 +223,7 @@
 ({                                                                                       \
    int p_print_ret = 0x0;                                                                \
                                                                                          \
-   if (p_lkrg_global_ctrl.p_log_level >= P_LOG_LEVEL_STRONG_DBG) {                       \
+   if (p_ro.p_lkrg_global_ctrl.ctrl.p_log_level >= P_LOG_LEVEL_STRONG_DBG) {             \
       p_print_ret = printk(p_fmt, ## p_args);                                            \
    }                                                                                     \
                                                                                          \

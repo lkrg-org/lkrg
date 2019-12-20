@@ -19,7 +19,7 @@
 #ifndef P_LKRG_RESOLVE_KSYM_H
 #define P_LKRG_RESOLVE_KSYM_H
 
-extern unsigned long (*p_kallsyms_lookup_name)(const char *name);
+//extern unsigned long (*p_kallsyms_lookup_name)(const char *name);
 
 long get_kallsyms_address(void);
 

@@ -92,7 +92,7 @@ void p_integrity_timer(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_integrity_timer>\n");
 
-   p_timer.expires    = jiffies + p_lkrg_global_ctrl.p_timestamp*HZ;
+   p_timer.expires    = jiffies + p_ro.p_lkrg_global_ctrl.ctrl.p_timestamp*HZ;
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0)
    p_timer.data       = 0x1;
@@ -125,7 +125,7 @@ void p_offload_work(struct timer_list *p_timer) {
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0)
           "p_timer => %ld\n",p_timer);
 #else
-          "p_timer => %p\n",p_timer);
+          "p_timer => %lx\n",(unsigned long)p_timer);
 #endif
 
    while ( (p_worker = p_alloc_offload()) == NULL); // Should never be NULL
@@ -262,7 +262,7 @@ void p_check_integrity(struct work_struct *p_work) {
    mutex_lock(&module_mutex);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
    /* Hacky way of 'stopping' KOBJs activities */
-   mutex_lock(p_kernfs_mutex);
+   mutex_lock(P_SYM(p_kernfs_mutex));
 #endif
 
    /*
@@ -282,7 +282,7 @@ void p_check_integrity(struct work_struct *p_work) {
 /*
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
    * unlock KOBJ activities *
-   mutex_unlock(p_kernfs_mutex);
+   mutex_unlock(P_SYM(p_kernfs_mutex));
 #endif
    * Release the 'module_mutex' *
    mutex_unlock(&module_mutex);
@@ -455,20 +455,21 @@ void p_check_integrity(struct work_struct *p_work) {
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
-                  "HIDDEN MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%llx]\n",
+                  "HIDDEN MODULE:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]\n",
                   p_module_kobj_tmp[p_tmp_hash].p_name,
-                  p_module_kobj_tmp[p_tmp_hash].p_mod,
-                  p_module_kobj_tmp[p_tmp_hash].p_module_core,
+                  (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
+                  (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
                   p_module_kobj_tmp[p_tmp_hash].p_core_text_size,
                   p_module_kobj_tmp[p_tmp_hash].p_mod_core_text_hash);
 
-               if (!p_lkrg_global_ctrl.p_block_modules) {
+               if (!p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules) {
                   /* Maybe we have sleeping module activity event ? */
                   if (mutex_is_locked(&p_module_activity)) {
                      // STRONG_DEBUG
                      p_debug_log(P_LKRG_STRONG_DBG,
-                                "Hidden[%p] p_module_activity_ptr[%p]\n",
-                                p_module_kobj_tmp[p_tmp_hash].p_mod,p_module_activity_ptr);
+                                "Hidden[0x%lx] p_module_activity_ptr[0x%lx]\n",
+                                (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
+                                (unsigned long)p_module_activity_ptr);
                      if (p_module_kobj_tmp[p_tmp_hash].p_mod == p_module_activity_ptr) {
                         p_hack_check--;
                         p_print_log(P_LKRG_CRIT,
@@ -580,20 +581,21 @@ void p_check_integrity(struct work_struct *p_work) {
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
-                  "HIDDEN MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%llx]\n",
+                  "HIDDEN MODULE:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]\n",
                   p_module_list_tmp[p_tmp_hash].p_name,
-                  p_module_list_tmp[p_tmp_hash].p_mod,
-                  p_module_list_tmp[p_tmp_hash].p_module_core,
+                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
+                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
                   p_module_list_tmp[p_tmp_hash].p_core_text_size,
                   p_module_list_tmp[p_tmp_hash].p_mod_core_text_hash);
 
-               if (!p_lkrg_global_ctrl.p_block_modules) {
+               if (!p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules) {
                   /* Maybe we have sleeping module activity event ? */
                   if (mutex_is_locked(&p_module_activity)) {
                      // STRONG_DEBUG
                      p_debug_log(P_LKRG_STRONG_DBG,
-                                "Hidden[%p] p_module_activity_ptr[%p]\n",
-                                p_module_list_tmp[p_tmp_hash].p_mod,p_module_activity_ptr);
+                                "Hidden[0x%lx] p_module_activity_ptr[0x%lx]\n",
+                                (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
+                                (unsigned long)p_module_activity_ptr);
                      if (p_module_list_tmp[p_tmp_hash].p_mod == p_module_activity_ptr) {
                         p_print_log(P_LKRG_CRIT,
                                     "** HIDDEN MODULE IS THE SAME AS ON-GOING MODULE ACTIVITY EVENTS **\n"
@@ -736,10 +738,10 @@ void p_check_integrity(struct work_struct *p_work) {
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
-                  "LOST MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%llx]\n",
+                  "LOST MODULE:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]\n",
                   p_db.p_module_list_array[p_tmp_hash].p_name,
-                  p_db.p_module_list_array[p_tmp_hash].p_mod,
-                  p_db.p_module_list_array[p_tmp_hash].p_module_core,
+                  (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_mod,
+                  (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_module_core,
                   p_db.p_module_list_array[p_tmp_hash].p_core_text_size,
                   p_db.p_module_list_array[p_tmp_hash].p_mod_core_text_hash);
 
@@ -748,13 +750,14 @@ void p_check_integrity(struct work_struct *p_work) {
                // But we can try to poke that page where modules used to be to find out scratches
                // of information about it (e.g. name? symbols table?)
 
-               if (!p_lkrg_global_ctrl.p_block_modules) {
+               if (!p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules) {
                   /* Maybe we have sleeping module activity event ? */
                   if (mutex_is_locked(&p_module_activity)) {
                      // STRONG_DEBUG
                      p_debug_log(P_LKRG_STRONG_DBG,
-                                "Lost[%p] p_module_activity_ptr[%p]\n",
-                                p_db.p_module_list_array[p_tmp_hash].p_mod,p_module_activity_ptr);
+                                "Lost[0x%lx] p_module_activity_ptr[0x%lx]\n",
+                                (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_mod,
+                                (unsigned long)p_module_activity_ptr);
                      if (p_db.p_module_list_array[p_tmp_hash].p_mod == p_module_activity_ptr) {
                         p_print_log(P_LKRG_CRIT,
                                     "** LOST MODULE IS THE SAME AS ON-GOING MODULE ACTIVITY EVENTS **\n"
@@ -859,22 +862,23 @@ void p_check_integrity(struct work_struct *p_work) {
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
-                  "EXTRA MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%llx]\n",
+                  "EXTRA MODULE:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]\n",
                   p_module_list_tmp[p_tmp_hash].p_name,
-                  p_module_list_tmp[p_tmp_hash].p_mod,
-                  p_module_list_tmp[p_tmp_hash].p_module_core,
+                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
+                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
                   p_module_list_tmp[p_tmp_hash].p_core_text_size,
                   p_module_list_tmp[p_tmp_hash].p_mod_core_text_hash);
 
                // TODO: Dump module
 
-               if (!p_lkrg_global_ctrl.p_block_modules) {
+               if (!p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules) {
                   /* Maybe we have sleeping module activity event ? */
                   if (mutex_is_locked(&p_module_activity)) {
                      // STRONG_DEBUG
                      p_debug_log(P_LKRG_STRONG_DBG,
-                                "Extra[%p] p_module_activity_ptr[%p]\n",
-                                p_module_list_tmp[p_tmp_hash].p_mod,p_module_activity_ptr);
+                                "Extra[0x%lx] p_module_activity_ptr[0x%lx]\n",
+                                (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
+                                (unsigned long)p_module_activity_ptr);
                      if (p_module_list_tmp[p_tmp_hash].p_mod == p_module_activity_ptr) {
                         p_print_log(P_LKRG_CRIT,
                                     "** EXTRA MODULE IS THE SAME AS ON-GOING MODULE ACTIVITY EVENTS **\n"
@@ -1009,10 +1013,10 @@ void p_check_integrity(struct work_struct *p_work) {
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
-                  "LOST MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%llx]\n",
+                  "LOST MODULE:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]\n",
                   p_db.p_module_kobj_array[p_tmp_hash].p_name,
-                  p_db.p_module_kobj_array[p_tmp_hash].p_mod,
-                  p_db.p_module_kobj_array[p_tmp_hash].p_module_core,
+                  (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_mod,
+                  (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_module_core,
                   p_db.p_module_kobj_array[p_tmp_hash].p_core_text_size,
                   p_db.p_module_kobj_array[p_tmp_hash].p_mod_core_text_hash);
 
@@ -1021,13 +1025,14 @@ void p_check_integrity(struct work_struct *p_work) {
                // But we can try to poke that page where modules used to be to find out scratches
                // of information about it (e.g. name? symbols table?)
 
-               if (!p_lkrg_global_ctrl.p_block_modules) {
+               if (!p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules) {
                   /* Maybe we have sleeping module activity event ? */
                   if (mutex_is_locked(&p_module_activity)) {
                      // STRONG_DEBUG
                      p_debug_log(P_LKRG_STRONG_DBG,
-                                "Lost[%p] p_module_activity_ptr[%p]\n",
-                                p_db.p_module_kobj_array[p_tmp_hash].p_mod,p_module_activity_ptr);
+                                "Lost[0x%lx] p_module_activity_ptr[0x%lx]\n",
+                                (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_mod,
+                                (unsigned long)p_module_activity_ptr);
                      if (p_db.p_module_kobj_array[p_tmp_hash].p_mod == p_module_activity_ptr) {
                         p_print_log(P_LKRG_CRIT,
                                     "** LOST MODULE IS THE SAME AS ON-GOING MODULE ACTIVITY EVENTS **\n"
@@ -1130,22 +1135,23 @@ void p_check_integrity(struct work_struct *p_work) {
                p_tmp_flag_cnt++;
                /* Let's dump information about 'hidden' module */
                p_print_log(P_LKRG_CRIT,
-                  "EXTRA MODULE:\nname[%s] module at addr[%p] module core[%p] with size[0x%x] hash[0x%llx]\n",
+                  "EXTRA MODULE:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]\n",
                   p_module_kobj_tmp[p_tmp_hash].p_name,
-                  p_module_kobj_tmp[p_tmp_hash].p_mod,
-                  p_module_kobj_tmp[p_tmp_hash].p_module_core,
+                  (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
+                  (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
                   p_module_kobj_tmp[p_tmp_hash].p_core_text_size,
                   p_module_kobj_tmp[p_tmp_hash].p_mod_core_text_hash);
 
                // TODO: Dump module
 
-               if (!p_lkrg_global_ctrl.p_block_modules) {
+               if (!p_ro.p_lkrg_global_ctrl.ctrl.p_block_modules) {
                   /* Maybe we have sleeping module activity event ? */
                   if (mutex_is_locked(&p_module_activity)) {
                      // STRONG_DEBUG
                      p_debug_log(P_LKRG_STRONG_DBG,
-                                "Extra[%p] p_module_activity_ptr[%p]\n",
-                                p_module_kobj_tmp[p_tmp_hash].p_mod,p_module_activity_ptr);
+                                "Extra[0x%lx] p_module_activity_ptr[0x%lx]\n",
+                                (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
+                                (unsigned long)p_module_activity_ptr);
                      if (p_module_kobj_tmp[p_tmp_hash].p_mod == p_module_activity_ptr) {
                         p_print_log(P_LKRG_CRIT,
                                     "** EXTRA MODULE IS THE SAME AS ON-GOING MODULE ACTIVITY EVENTS **\n"
@@ -1340,11 +1346,11 @@ void p_check_integrity(struct work_struct *p_work) {
    if (p_hack_check) {
       p_print_log(P_LKRG_CRIT,
              "ALERT !!! SYSTEM HAS BEEN COMPROMISED - DETECTED DIFFERENT %u CHECKSUMS !!!\n",p_hack_check);
-      if (p_lkrg_global_ctrl.p_ci_panic) {
+      if (p_ro.p_lkrg_global_ctrl.ctrl.p_ci_panic) {
          // OK, we need to crash the kernel now
          panic(P_LKRG_SIGNATURE "CI verification failed! Killing the kernel...\n");
       }
-   } else if (p_lkrg_global_ctrl.p_clean_message) {
+   } else if (p_ro.p_lkrg_global_ctrl.ctrl.p_clean_message) {
       p_print_log(P_LKRG_ALIVE,"System is clean!\n");
    }
 
@@ -1365,7 +1371,7 @@ p_check_integrity_cancel:
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
    /* unlock KOBJ activities */
-   mutex_unlock(p_kernfs_mutex);
+   mutex_unlock(P_SYM(p_kernfs_mutex));
 #endif
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);

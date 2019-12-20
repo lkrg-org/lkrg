@@ -18,8 +18,6 @@
 #include "../../p_lkrg_main.h"
 
 p_hash_database p_db;
-struct mutex *p_text_mutex = NULL;
-struct mutex *p_jump_label_mutex = NULL;
 
 int hash_from_ex_table(void) {
 
@@ -30,8 +28,8 @@ int hash_from_ex_table(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <hash_from_ex_table>\n");
 
-   p_db.kernel_ex_table.p_addr = (unsigned long *)p_kallsyms_lookup_name("__start___ex_table");
-   p_tmp = (unsigned long)p_kallsyms_lookup_name("__stop___ex_table");
+   p_db.kernel_ex_table.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("__start___ex_table");
+   p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("__stop___ex_table");
 
    if (!p_db.kernel_ex_table.p_addr || !p_tmp || p_tmp < (unsigned long)p_db.kernel_ex_table.p_addr) {
       p_ret = P_LKRG_GENERAL_ERROR;
@@ -66,8 +64,8 @@ int hash_from_kernel_stext(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <hash_from_kernel_stext>\n");
 
-   p_db.kernel_stext.p_addr = (unsigned long *)p_kallsyms_lookup_name("_stext");
-   p_tmp = (unsigned long)p_kallsyms_lookup_name("_etext");
+   p_db.kernel_stext.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("_stext");
+   p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("_etext");
 
    if (!p_db.kernel_stext.p_addr || !p_tmp || p_tmp < (unsigned long)p_db.kernel_stext.p_addr) {
       p_ret = P_LKRG_GENERAL_ERROR;
@@ -101,8 +99,8 @@ int hash_from_kernel_rodata(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <hash_from_kernel_rodata>\n");
 
-   p_db.kernel_rodata.p_addr = (unsigned long *)p_kallsyms_lookup_name("__start_rodata");
-   p_tmp = (unsigned long)p_kallsyms_lookup_name("__end_rodata");
+   p_db.kernel_rodata.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("__start_rodata");
+   p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("__end_rodata");
 
    if (!p_db.kernel_rodata.p_addr || !p_tmp || p_tmp < (unsigned long)p_db.kernel_rodata.p_addr) {
       p_ret = P_LKRG_GENERAL_ERROR;
@@ -149,8 +147,8 @@ int hash_from_iommu_table(void) {
 
 #ifdef CONFIG_X86
 
-   p_db.kernel_iommu_table.p_addr = (unsigned long *)p_kallsyms_lookup_name("__iommu_table");
-   p_tmp = (unsigned long)p_kallsyms_lookup_name("__iommu_table_end");
+   p_db.kernel_iommu_table.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("__iommu_table");
+   p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("__iommu_table_end");
 
    if (!p_db.kernel_iommu_table.p_addr || !p_tmp || p_tmp < (unsigned long)p_db.kernel_iommu_table.p_addr) {
       p_ret = P_LKRG_GENERAL_ERROR;
@@ -236,14 +234,14 @@ int p_create_database(void) {
 
    memset(&p_db,0x0,sizeof(p_hash_database));
 
-   if ( (p_text_mutex = (struct mutex *)p_kallsyms_lookup_name("text_mutex")) == NULL) {
+   if ( (P_SYM(p_text_mutex) = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("text_mutex")) == NULL) {
       p_print_log(P_LKRG_ERR,
              "CREATING DATABASE: error! Can't find 'text_mutex' variable :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_create_database_out;
    }
 
-   if ( (p_jump_label_mutex = (struct mutex *)p_kallsyms_lookup_name("jump_label_mutex")) == NULL) {
+   if ( (P_SYM(p_jump_label_mutex) = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("jump_label_mutex")) == NULL) {
       p_print_log(P_LKRG_ERR,
              "CREATING DATABASE: error! Can't find 'jump_label_mutex' variable :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
@@ -279,9 +277,10 @@ int p_create_database(void) {
 // STRONG_DEBUG
      else {
         p_debug_log(P_LKRG_STRONG_DBG,
-               "<p_create_database> p_db.p_CPU_metadata_array[%p] with requested size[%d] "
+               "<p_create_database> p_db.p_CPU_metadata_array[0x%lx] with requested size[%d] "
                "= sizeof(p_CPU_metadata_hash_mem)[%d] * p_db.p_cpu.p_nr_cpu_ids[%d]\n",
-               p_db.p_CPU_metadata_array,(int)(sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids),
+               (unsigned long)p_db.p_CPU_metadata_array,
+               (int)(sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids),
                (int)sizeof(p_CPU_metadata_hash_mem),p_db.p_cpu.p_nr_cpu_ids);
    }
 

@@ -161,8 +161,6 @@ typedef struct p_hash_database {
 
 
 extern p_hash_database p_db;
-extern struct mutex *p_text_mutex;
-extern struct mutex *p_jump_label_mutex;
 extern struct notifier_block p_cpu_notifier;
 
 int hash_from_ex_table(void);
@@ -174,19 +172,19 @@ static inline void p_text_section_lock(void) {
 
    //jump_label_lock();
 /*
-   mutex_lock(p_jump_label_mutex);
-   mutex_lock(p_text_mutex);
+   mutex_lock(P_SYM(p_jump_label_mutex));
+   mutex_lock(P_SYM(p_text_mutex));
 */
 
-   while (!mutex_trylock(p_jump_label_mutex))
+   while (!mutex_trylock(P_SYM(p_jump_label_mutex)))
       schedule();
-   mutex_lock(p_text_mutex);
+   mutex_lock(P_SYM(p_text_mutex));
 }
 
 static inline void p_text_section_unlock(void) {
 
-   mutex_unlock(p_text_mutex);
-   mutex_unlock(p_jump_label_mutex);
+   mutex_unlock(P_SYM(p_text_mutex));
+   mutex_unlock(P_SYM(p_jump_label_mutex));
 
 //   jump_label_unlock();
 }

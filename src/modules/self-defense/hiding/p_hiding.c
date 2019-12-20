@@ -31,7 +31,7 @@ void p_hide_itself(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_hide_itself>\n");
 
-   if (p_lkrg_global_ctrl.p_hide_module) {
+   if (p_ro.p_lkrg_global_ctrl.ctrl.p_hide_module) {
       p_print_log(P_LKRG_WARN,
              "Module is already hidden!\n");
       goto p_hide_itself_out;
@@ -70,7 +70,9 @@ void p_hide_itself(void) {
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
    /* We should be fine now! */
 
-   p_lkrg_global_ctrl.p_hide_module = 0x1;
+   p_lkrg_open_rw();
+   p_ro.p_lkrg_global_ctrl.ctrl.p_hide_module = 0x1;
+   p_lkrg_close_rw();
 
    spin_unlock(&p_db_lock);
    /* Release the 'module_mutex' */
@@ -90,7 +92,7 @@ p_hide_itself_out:
 void p_unhide_itself(void) {
 
    /* Dead function - used only during development process */
-   struct module     *p_tmp_mod    = P_GLOBAL_TO_MODULE(p_global_modules);
+   struct module     *p_tmp_mod    = P_GLOBAL_TO_MODULE(P_SYM(p_global_modules));
    struct kset       *p_tmp_kset   = p_tmp_mod->mkobj.kobj.kset;
    struct kobj_type  *p_tmp_ktype  = p_tmp_mod->mkobj.kobj.ktype;
 
@@ -98,7 +100,7 @@ void p_unhide_itself(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_unhide_itself>\n");
 
-   if (!p_lkrg_global_ctrl.p_hide_module) {
+   if (!p_ro.p_lkrg_global_ctrl.ctrl.p_hide_module) {
       p_print_log(P_LKRG_WARN,
              "Module is already unhidden (visible)!\n");
       goto p_unhide_itself_out;
@@ -109,7 +111,7 @@ void p_unhide_itself(void) {
    mutex_lock(&module_mutex);
    spin_lock(&p_db_lock);
 
-   P_UNHIDE_FROM_MODULE_LIST(p_find_me,p_global_modules);
+   P_UNHIDE_FROM_MODULE_LIST(p_find_me,P_SYM(p_global_modules));
    P_UNHIDE_FROM_KOBJ(p_find_me,p_tmp_kset,p_tmp_ktype);
 
 //   P_UNHIDE_FROM_KOBJ(p_find_me,p_find_kobj_parent,
@@ -132,7 +134,9 @@ void p_unhide_itself(void) {
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
    /* We should be fine now! */
 
-   p_lkrg_global_ctrl.p_hide_module = 0x0;
+   p_lkrg_open_rw();
+   p_ro.p_lkrg_global_ctrl.ctrl.p_hide_module = 0x0;
+   p_lkrg_close_rw();
 
    spin_unlock(&p_db_lock);
    /* Release the 'module_mutex' */

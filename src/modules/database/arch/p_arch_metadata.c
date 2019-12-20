@@ -17,8 +17,6 @@
 
 #include "../../../p_lkrg_main.h"
 
-int (*p_core_kernel_text)(unsigned long p_addr) = 0x0;
-
 
 void p_dump_CPU_metadata(void *_p_arg) {
 
@@ -48,9 +46,9 @@ int p_register_arch_metadata(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_register_arch_metadata>\n");
 
-   p_core_kernel_text = (int (*)(unsigned long))p_kallsyms_lookup_name("core_kernel_text");
+   P_SYM(p_core_kernel_text) = (int (*)(unsigned long))P_SYM(p_kallsyms_lookup_name)("core_kernel_text");
 
-   if (!p_core_kernel_text) {
+   if (!P_SYM(p_core_kernel_text)) {
       p_print_log(P_LKRG_ERR,
              "[ED] ERROR: Can't find 'core_kernel_text' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;

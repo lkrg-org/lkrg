@@ -24,19 +24,6 @@
 /* Submodule for 'kmod' module */
 #include "p_kmod_notifier.c"
 
-p_lkrg_global_ctrl_struct p_lkrg_global_ctrl;
-
-struct list_head *p_ddebug_tables = NULL;
-struct mutex *p_ddebug_lock = NULL;
-struct list_head *p_global_modules = NULL;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-struct mutex *p_kernfs_mutex = NULL;
-#endif
-struct kset **p_module_kset = NULL;
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
-int (*p_ddebug_remove_module_ptr)(const char *p_name) = 0x0;
-#endif
 
 int p_kmod_init(void) {
 
@@ -47,18 +34,18 @@ int p_kmod_init(void) {
           "Entering function <p_kmod_init>\n");
 
 #if defined(CONFIG_DYNAMIC_DEBUG)
-   p_ddebug_tables    = (struct list_head *)p_kallsyms_lookup_name("ddebug_tables");
-   p_ddebug_lock      = (struct mutex *)p_kallsyms_lookup_name("ddebug_lock");
+   P_SYM(p_ddebug_tables)    = (struct list_head *)P_SYM(p_kallsyms_lookup_name)("ddebug_tables");
+   P_SYM(p_ddebug_lock)      = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("ddebug_lock");
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
-   p_ddebug_remove_module_ptr = (int(*)(const char *))p_kallsyms_lookup_name("ddebug_remove_module");
+   P_SYM(p_ddebug_remove_module_ptr) = (int(*)(const char *))P_SYM(p_kallsyms_lookup_name)("ddebug_remove_module");
  #endif
 #endif
 
-   p_global_modules   = (struct list_head *)p_kallsyms_lookup_name("modules");
+   P_SYM(p_global_modules)   = (struct list_head *)P_SYM(p_kallsyms_lookup_name)("modules");
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-   p_kernfs_mutex     = (struct mutex *)p_kallsyms_lookup_name("kernfs_mutex");
+   P_SYM(p_kernfs_mutex)     = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("kernfs_mutex");
 #endif
-   p_module_kset      = (struct kset **)p_kallsyms_lookup_name("module_kset");
+   P_SYM(p_module_kset)      = (struct kset **)P_SYM(p_kallsyms_lookup_name)("module_kset");
 
 
 
@@ -67,30 +54,30 @@ int p_kmod_init(void) {
 #if defined(CONFIG_DYNAMIC_DEBUG)
                         "p_ddebug_tables[0x%lx] p_ddebug_lock[0x%lx] "
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
-                        "p_ddebug_remove_module_ptr[0x%p]"
+                        "p_ddebug_remove_module_ptr[0x%lx]"
  #endif
 #endif
-                        "module_mutex[0x%lx] p_global_modules[0x%p] "
+                        "module_mutex[0x%lx] p_global_modules[0x%lx] "
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-                        "p_kernfs_mutex[0x%p] p_module_kset[0x%p]\n",
+                        "p_kernfs_mutex[0x%lx] p_module_kset[0x%lx]\n",
 #else
-                        "p_module_kset[0x%p]\n",
+                        "p_module_kset[0x%lx]\n",
 #endif
 #if defined(CONFIG_DYNAMIC_DEBUG)
-                                                            (long)p_ddebug_tables,
-                                                            (long)p_ddebug_lock,
+                                                            (unsigned long)P_SYM(p_ddebug_tables),
+                                                            (unsigned long)P_SYM(p_ddebug_lock),
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
-                                                            p_ddebug_remove_module_ptr,
+                                                            (unsigned long)P_SYM(p_ddebug_remove_module_ptr),
  #endif
 #endif
                                                             (long)&module_mutex,
-                                                            p_global_modules,
+                                                            (unsigned long)P_SYM(p_global_modules),
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-                                                            p_kernfs_mutex,
+                                                            (unsigned long)P_SYM(p_kernfs_mutex),
 #endif
-                                                            p_module_kset);
+                                                            (unsigned long)P_SYM(p_module_kset));
 
-   if (!p_global_modules) {
+   if (!P_SYM(p_global_modules)) {
       p_print_log(P_LKRG_ERR,
              "KMOD error! Can't initialize global modules variable :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
@@ -99,7 +86,7 @@ int p_kmod_init(void) {
 
 #if defined(CONFIG_DYNAMIC_DEBUG)
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
-   if (!p_ddebug_remove_module_ptr) {
+   if (!P_SYM(p_ddebug_remove_module_ptr)) {
       p_print_log(P_LKRG_ERR,
              "KMOD error! Can't find 'ddebug_remove_module' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
@@ -109,7 +96,7 @@ int p_kmod_init(void) {
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-   if (!p_kernfs_mutex) {
+   if (!P_SYM(p_kernfs_mutex)) {
       p_print_log(P_LKRG_ERR,
              "KMOD error! Can't find 'kernfs_mutex' variable :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
@@ -117,7 +104,7 @@ int p_kmod_init(void) {
    }
 #endif
 
-   if (!p_module_kset) {
+   if (!P_SYM(p_module_kset)) {
       p_print_log(P_LKRG_ERR,
              "KMOD error! Can't find 'module_kset' variable :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
@@ -147,7 +134,7 @@ unsigned int p_count_modules_from_module_list(void) {
           "Entering function <p_count_modules_from_module_list>\n");
 
 //   mutex_lock(&module_mutex);
-   list_for_each_entry(p_mod, p_global_modules, list) {
+   list_for_each_entry(p_mod, P_SYM(p_global_modules), list) {
 
 /*
       if (p_mod->state >= MODULE_STATE_UNFORMED ||
@@ -193,7 +180,7 @@ int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
           "Entering function <p_list_from_module_list>\n");
 
 //   mutex_lock(&module_mutex);
-   list_for_each_entry(p_mod, p_global_modules, list) {
+   list_for_each_entry(p_mod, P_SYM(p_global_modules), list) {
 /*
       if (p_mod->state >= MODULE_STATE_UNFORMED ||
           p_mod->state < MODULE_STATE_LIVE)
@@ -226,9 +213,12 @@ int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
 
 // STRONG_DEBUG
       p_debug_log(P_LKRG_STRONG_DBG,
-             "[%s | %p] module_core[%p | 0x%x] hash[0x%llx]\n",
-             p_arg[p_cnt].p_name,p_arg[p_cnt].p_mod,p_arg[p_cnt].p_module_core,
-             p_arg[p_cnt].p_core_text_size,p_arg[p_cnt].p_mod_core_text_hash);
+             "[%s | 0x%lx] module_core[0x%lx | 0x%x] hash[0x%llx]\n",
+             p_arg[p_cnt].p_name,
+             (unsigned long)p_arg[p_cnt].p_mod,
+             (unsigned long)p_arg[p_cnt].p_module_core,
+             p_arg[p_cnt].p_core_text_size,
+             p_arg[p_cnt].p_mod_core_text_hash);
 
       p_cnt++;
    }
@@ -248,7 +238,7 @@ int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
 unsigned int p_count_modules_from_sysfs_kobj(void) {
 
    struct module *p_mod = NULL;
-   struct kset *p_kset = *p_module_kset;
+   struct kset *p_kset = *P_SYM(p_module_kset);
    struct kobject *p_kobj = NULL, *p_tmp_safe = NULL;
    struct module_kobject *p_mk = NULL;
    unsigned int p_cnt = 0x0;
@@ -316,7 +306,7 @@ unsigned int p_count_modules_from_sysfs_kobj(void) {
 int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
 
    struct module *p_mod = NULL;
-   struct kset *p_kset = *p_module_kset;
+   struct kset *p_kset = *P_SYM(p_module_kset);
    struct kobject *p_kobj = NULL, *p_tmp_safe = NULL;
    struct module_kobject *p_mk = NULL;
    int p_ret = P_LKRG_SUCCESS;
@@ -390,16 +380,26 @@ int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
 
 // STRONG_DEBUG
       p_debug_log(P_LKRG_STRONG_DBG,
-             "[%s | %p] module_core[%p | 0x%x] hash[0x%llx]\n"
-             "module_kobject[%p] KOBJ: name[%s] parent[%p] kset[%p] ktype[%p] sd[%p] refcount[0x%x|%d]\n",
-             p_arg[p_cnt].p_name,p_arg[p_cnt].p_mod,p_arg[p_cnt].p_module_core,
-             p_arg[p_cnt].p_core_text_size,p_arg[p_cnt].p_mod_core_text_hash,
-             p_arg[p_cnt].p_mk,p_arg[p_cnt].kobj.name,p_arg[p_cnt].kobj.parent,
-             p_arg[p_cnt].kobj.kset,p_arg[p_cnt].kobj.ktype,p_arg[p_cnt].kobj.sd,
+             "[%s | 0x%lx] module_core[0x%lx | 0x%x] hash[0x%llx]\n"
+             "module_kobject[0x%lx] KOBJ: name[%s] parent[0x%lx] "
+             "kset[0x%lx] ktype[0x%lx] sd[0x%lx] refcount[0x%x|%d]\n",
+             p_arg[p_cnt].p_name,
+             (unsigned long)p_arg[p_cnt].p_mod,
+             (unsigned long)p_arg[p_cnt].p_module_core,
+             p_arg[p_cnt].p_core_text_size,
+             p_arg[p_cnt].p_mod_core_text_hash,
+             (unsigned long)p_arg[p_cnt].p_mk,
+             p_arg[p_cnt].kobj.name,
+             (unsigned long)p_arg[p_cnt].kobj.parent,
+             (unsigned long)p_arg[p_cnt].kobj.kset,
+             (unsigned long)p_arg[p_cnt].kobj.ktype,
+             (unsigned long)p_arg[p_cnt].kobj.sd,
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,11,0)
-             p_arg[p_cnt].kobj.kref.refcount.counter,p_arg[p_cnt].kobj.kref.refcount.counter);
+             p_arg[p_cnt].kobj.kref.refcount.counter,
+             p_arg[p_cnt].kobj.kref.refcount.counter);
 #else
-             p_arg[p_cnt].kobj.kref.refcount.refs.counter,p_arg[p_cnt].kobj.kref.refcount.refs.counter);
+             p_arg[p_cnt].kobj.kref.refcount.refs.counter,
+             p_arg[p_cnt].kobj.kref.refcount.refs.counter);
 #endif
 
       p_cnt++;
@@ -516,8 +516,8 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
       // STRONG_DEBUG
         else {
            p_debug_log(P_LKRG_STRONG_DBG,
-                  "<p_kmod_hash> p_mlm_tmp allocated at: %p with size: %zd[0x%zx]\n",
-                  *p_mlm_tmp,
+                  "<p_kmod_hash> p_mlm_tmp allocated at: 0x%lx with size: %zd[0x%zx]\n",
+                  (unsigned long)*p_mlm_tmp,
                   sizeof(p_module_list_mem) * (*p_module_list_cnt_arg+P_MODULE_BUFFER_RACE),
                   sizeof(p_module_list_mem) * (*p_module_list_cnt_arg+P_MODULE_BUFFER_RACE));
       }
@@ -546,8 +546,8 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
       // STRONG_DEBUG
         else {
            p_debug_log(P_LKRG_STRONG_DBG,
-                  "<p_kmod_hash> p_mkm_tmp allocated at: %p with size: %zd[0x%zx]\n",
-                  *p_mkm_tmp,
+                  "<p_kmod_hash> p_mkm_tmp allocated at: 0x%lx with size: %zd[0x%zx]\n",
+                  (unsigned long)*p_mkm_tmp,
                   sizeof(p_module_kobj_mem) * (*p_module_kobj_cnt_arg+P_MODULE_BUFFER_RACE),
                   sizeof(p_module_kobj_mem) * (*p_module_kobj_cnt_arg+P_MODULE_BUFFER_RACE));
       }
@@ -603,15 +603,15 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
            else {
 //              p_print_log(P_LKRG_CRIT,
               p_debug_log(P_LKRG_STRONG_DBG,
-                     "<p_kmod_hash> p_mlm_tmp allocated at: %p with size: %zd[0x%zx]\n",
-                     *p_mlm_tmp,
+                     "<p_kmod_hash> p_mlm_tmp allocated at: 0x%lx with size: %zd[0x%zx]\n",
+                     (unsigned long)*p_mlm_tmp,
                      sizeof(p_module_list_mem) * (*p_module_list_cnt_arg+P_MODULE_BUFFER_RACE),
                      sizeof(p_module_list_mem) * (*p_module_list_cnt_arg+P_MODULE_BUFFER_RACE));
          }
 
       } else {
-//         printk(KERN_CRIT "p_module_list_cnt_arg_old[%d] *p_module_list_cnt_arg[%d] *p_mlm_tmp[%p]\n",
-//                          p_module_list_cnt_arg_old, *p_module_list_cnt_arg, *p_mlm_tmp);
+//         printk(KERN_CRIT "p_module_list_cnt_arg_old[%d] *p_module_list_cnt_arg[%d] *p_mlm_tmp[0x%lx]\n",
+//                          p_module_list_cnt_arg_old, *p_module_list_cnt_arg, (unsigned long)*p_mlm_tmp);
          memset(*p_mlm_tmp,0x0,sizeof(p_module_list_mem) * *p_module_list_cnt_arg);
       }
 
@@ -646,8 +646,8 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
       // STRONG_DEBUG
            else {
               p_debug_log(P_LKRG_STRONG_DBG,
-                     "<p_kmod_hash> p_mkm_tmp allocated at: %p with size: %zd[0x%zx]\n",
-                     *p_mkm_tmp,
+                     "<p_kmod_hash> p_mkm_tmp allocated at: 0x%lx with size: %zd[0x%zx]\n",
+                     (unsigned long)*p_mkm_tmp,
                      sizeof(p_module_kobj_mem) * (*p_module_kobj_cnt_arg+P_MODULE_BUFFER_RACE),
                      sizeof(p_module_kobj_mem) * (*p_module_kobj_cnt_arg+P_MODULE_BUFFER_RACE));
          }

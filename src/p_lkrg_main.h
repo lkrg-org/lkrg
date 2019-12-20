@@ -68,6 +68,111 @@
 #include <asm/stacktrace.h>
 #include <asm/tlbflush.h>
 
+//#define p_lkrg_read_only __attribute__((__section__(".data..p_lkrg_read_only"),aligned(PAGE_SIZE)))
+#define __p_lkrg_read_only __attribute__((__section__(".p_lkrg_read_only")))
+
+#if defined(CONFIG_X86_64) || defined(CONFIG_ARM64)
+ #define P_LKRG_MARKER1 0x3369705f6d616441
+ #define P_LKRG_MARKER2 0xdeadbabedeadbabe
+#else
+ #define P_LKRG_MARKER1 0x3369705f
+ #define P_LKRG_MARKER2 0xdeadbabe
+#endif
+
+typedef struct _p_lkrg_global_conf_structure {
+
+   unsigned int p_timestamp;
+   unsigned int p_log_level;
+   unsigned int p_force_run;
+   unsigned int p_block_modules;
+   unsigned int p_hide_module;
+   unsigned int p_clean_message;
+   unsigned int p_random_events;
+   unsigned int p_ci_panic;
+#ifdef CONFIG_X86
+   unsigned int p_smep_panic;
+#endif
+   unsigned int p_umh_lock;
+
+} p_lkrg_global_conf_struct;
+
+typedef struct _p_lkrg_global_symbols_structure {
+
+   unsigned long (*p_kallsyms_lookup_name)(const char *name);
+   int (*p_freeze_processes)(void);
+   void (*p_thaw_processes)(void);
+#if !defined(CONFIG_ARM64)
+   void (*p_flush_tlb_all)(void);
+#endif
+#if defined(CONFIG_X86)
+   int (*p_change_page_attr_set_clr)(unsigned long *addr, int numpages,
+                                     pgprot_t mask_set, pgprot_t mask_clr,
+                                     int force_split, int in_flag,
+                                     struct page **pages);
+#elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)
+   int (*p_change_memory_common)(unsigned long addr, int numpages,
+                                 pgprot_t set_mask, pgprot_t clear_mask);
+#endif
+   int (*p_is_kernel_text_address)(unsigned long p_addr);
+   void (*p_get_seccomp_filter)(struct task_struct *p_task);
+   void (*p_put_seccomp_filter)(struct task_struct *p_task);
+#ifdef CONFIG_SECURITY_SELINUX
+   int *p_selinux_enabled;
+#ifdef CONFIG_SECURITY_SELINUX_DEVELOP
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,17,0)
+   struct p_selinux_state *p_selinux_state;
+#else
+   int *p_selinux_enforcing;
+#endif
+#endif
+#endif
+   int (*p_core_kernel_text)(unsigned long p_addr);
+   struct mutex *p_text_mutex;
+   struct mutex *p_jump_label_mutex;
+   struct text_poke_loc **p_tp_vec;
+   int *p_tp_vec_nr;
+#if defined(CONFIG_DYNAMIC_DEBUG)
+   struct list_head *p_ddebug_tables;
+   struct mutex *p_ddebug_lock;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+   int (*p_ddebug_remove_module_ptr)(const char *p_name);
+#endif
+#endif
+   struct list_head *p_global_modules;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
+   struct mutex *p_kernfs_mutex;
+#endif
+   struct kset **p_module_kset;
+
+} p_lkrg_global_syms;
+
+typedef struct _p2_lkrg_global_ctrl_structure {
+
+   p_lkrg_global_conf_struct ctrl;
+   p_lkrg_global_syms syms;
+
+} p_lkrg_global_ctrl_struct __attribute__((aligned(PAGE_SIZE)));
+
+typedef struct _p_lkrg_ro_page {
+
+#if !defined(CONFIG_ARM)
+   unsigned long p_marker_np1 __attribute__((aligned(PAGE_SIZE)));
+#endif
+
+   p_lkrg_global_ctrl_struct p_lkrg_global_ctrl;
+
+#if !defined(CONFIG_ARM)
+   unsigned long p_marker_np2 __attribute__((aligned(PAGE_SIZE)));
+   unsigned long p_marker_np3 __attribute__((aligned(PAGE_SIZE)));
+#endif
+
+} p_ro_page;
+
+
+extern p_ro_page p_ro;
+
+#define P_SYM(p_field) p_ro.p_lkrg_global_ctrl.syms.p_field
+
 /*
  * RHEL support
  */
