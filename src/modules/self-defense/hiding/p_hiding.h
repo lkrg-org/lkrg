@@ -20,8 +20,8 @@
 
 #define P_HIDE_FROM_MODULE_LIST(p_arg)                                     \
 do {                                                                       \
-   p_debug_log(P_LKRG_DBG, "Hiding module [%s | %p]\n",                    \
-                                     p_arg->name,p_arg);                   \
+   p_debug_log(P_LKRG_DBG, "Hiding module [%s | 0x%lx]\n",                 \
+                                     p_arg->name,(unsigned long)p_arg);    \
    list_del(&p_arg->list);                                                 \
    /* p_arg->list.next->prev = p_arg->list.prev; */                        \
    /* p_arg->list.prev->next = p_arg->list.next; */                        \
@@ -30,8 +30,8 @@ do {                                                                       \
 #define P_HIDE_FROM_KOBJ(p_arg)                                            \
 do {                                                                       \
    if (p_arg->holders_dir && p_arg->holders_dir->parent) {                 \
-      p_debug_log(P_LKRG_DBG, "Deleting KOBJ [%p]\n",                      \
-                               p_arg->holders_dir->parent);                \
+      p_debug_log(P_LKRG_DBG, "Deleting KOBJ [0x%lx]\n",                   \
+                               (unsigned long)p_arg->holders_dir->parent); \
       kobject_del(p_arg->holders_dir->parent);                             \
    }                                                                       \
 } while(0)
@@ -39,8 +39,8 @@ do {                                                                       \
 /*
 #define P_HIDE_FROM_KOBJ(p_arg)                                            \
 do {                                                                       \
-   p_debug_log(P_LKRG_DBG, "Deleting KOBJ [%p]\n",                         \
-                                  &p_arg->mkobj.kobj);                     \
+   p_debug_log(P_LKRG_DBG, "Deleting KOBJ [0x%lx]\n",                      \
+                                  (unsigned long)&p_arg->mkobj.kobj);      \
    kobject_del(&p_arg->mkobj.kobj);                                        \
    p_arg->sect_attrs  = NULL;                                              \
    p_arg->notes_attrs = NULL;                                              \
@@ -57,12 +57,12 @@ do {                                                                       \
 } while(0)
 #endif
 
-#ifdef P_LKRG_UNHIDE   // (p_find_me, p_global_modules)
+#ifdef P_LKRG_UNHIDE   // (p_find_me, P_SYM(p_global_modules))
 
 #define P_UNHIDE_FROM_MODULE_LIST(x, y)                                    \
 do {                                                                       \
-   p_debug_log(P_LKRG_DBG, "Unhiding module [%s | %p]\n",                  \
-                                                x->name,x);                \
+   p_debug_log(P_LKRG_DBG, "Unhiding module [%s | 0x%lx]\n",               \
+                                                x->name,(unsigned long)x); \
    list_add_rcu(&x->list, y);                                              \
 } while(0)
 
@@ -122,8 +122,8 @@ do {                                                                       \
 do {                                                                       \
    int p_ret;                                                              \
                                                                            \
-   p_debug_log(P_LKRG_DBG, "Reestoring KOBJ[0x%p] for [%s]\n",             \
-                                  &p_mod->mkobj.kobj,p_mod->name);         \
+   p_debug_log(P_LKRG_DBG, "Reestoring KOBJ[0x%lx] for [%s]\n",            \
+                                  (unsigned long)&p_mod->mkobj.kobj,p_mod->name);   \
    if ( (p_ret = kobject_add(&p_mod->mkobj.kobj, p_kobj_parent,            \
                                                      "p_lkrg")) < 0) {     \
       p_print_log(P_LKRG_INFO, "FAILED to restore KOBJ :(\n");             \

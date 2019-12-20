@@ -87,9 +87,9 @@ int p_install_switch_idt_hook(void) {
                   p_ret);
       goto p_install_switch_idt_hook_out;
    }
-   p_print_log(P_LKRG_INFO, "Planted [kretprobe] <%s> at: %p\n",
+   p_print_log(P_LKRG_INFO, "Planted [kretprobe] <%s> at: 0x%lx\n",
                p_switch_idt_kretprobe.kp.symbol_name,
-               p_switch_idt_kretprobe.kp.addr);
+               (unsigned long)p_switch_idt_kretprobe.kp.addr);
    p_switch_idt_kretprobe_state = 0x1;
 
 //   p_ret = 0x0; <- should be 0x0 anyway...
@@ -111,14 +111,14 @@ void p_uninstall_switch_idt_hook(void) {
           "Entering function <p_uninstall_switch_idt_hook>\n");
 
    if (!p_switch_idt_kretprobe_state) {
-      p_print_log(P_LKRG_INFO, "[kretprobe] <%s> at 0x%p is NOT installed\n",
+      p_print_log(P_LKRG_INFO, "[kretprobe] <%s> at 0x%lx is NOT installed\n",
                   p_switch_idt_kretprobe.kp.symbol_name,
-                  p_switch_idt_kretprobe.kp.addr);
+                  (unsigned long)p_switch_idt_kretprobe.kp.addr);
    } else {
       unregister_kretprobe(&p_switch_idt_kretprobe);
-      p_print_log(P_LKRG_INFO, "Removing [kretprobe] <%s> at 0x%p nmissed[%d]\n",
+      p_print_log(P_LKRG_INFO, "Removing [kretprobe] <%s> at 0x%lx nmissed[%d]\n",
                   p_switch_idt_kretprobe.kp.symbol_name,
-                  p_switch_idt_kretprobe.kp.addr,
+                  (unsigned long)p_switch_idt_kretprobe.kp.addr,
                   p_switch_idt_kretprobe.nmissed);
       p_switch_idt_kretprobe_state = 0x0;
    }

@@ -198,8 +198,8 @@ void p_dump_x86_metadata(void *_p_arg) {
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_SYSENTER_CS[0x%llx] address in db[%p]\n",
-          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_CS,&p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_CS);
+          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_SYSENTER_CS[0x%llx] address in db[0x%lx]\n",
+          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_CS,(unsigned long)&p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_CS);
 
 
    /* MSR_IA32_SYSENTER_ESP */
@@ -214,8 +214,8 @@ void p_dump_x86_metadata(void *_p_arg) {
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_SYSENTER_ESP[0x%llx] address in db[%p]\n",
-          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_ESP,&p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_ESP);
+          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_SYSENTER_ESP[0x%llx] address in db[0x%lx]\n",
+          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_ESP,(unsigned long)&p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_ESP);
 
 
    /* MSR_IA32_SYSENTER_EIP */
@@ -230,8 +230,8 @@ void p_dump_x86_metadata(void *_p_arg) {
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_SYSENTER_EIP[0x%llx] address in db[%p]\n",
-          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_EIP,&p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_EIP);
+          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_SYSENTER_EIP[0x%llx] address in db[0x%lx]\n",
+          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_EIP,(unsigned long)&p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_EIP);
 
 
    /* MSR_IA32_CR_PAT */
@@ -247,8 +247,8 @@ void p_dump_x86_metadata(void *_p_arg) {
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_CR_PAT[0x%llx] address in db[%p]\n",
-          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_CR_PAT,&p_arg[p_curr_cpu].p_MSR_IA32_CR_PAT);
+          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_CR_PAT[0x%llx] address in db[0x%lx]\n",
+          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_CR_PAT,(unsigned long)&p_arg[p_curr_cpu].p_MSR_IA32_CR_PAT);
 */
 
    /* MSR_IA32_APICBASE */
@@ -263,8 +263,8 @@ void p_dump_x86_metadata(void *_p_arg) {
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_APICBASE[0x%llx] address in db[%p]\n",
-          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_APICBASE,&p_arg[p_curr_cpu].p_MSR_IA32_APICBASE);
+          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_APICBASE[0x%llx] address in db[0x%lx]\n",
+          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_APICBASE,(unsigned long)&p_arg[p_curr_cpu].p_MSR_IA32_APICBASE);
 
 
    /* MSR_EFER */
@@ -279,8 +279,8 @@ void p_dump_x86_metadata(void *_p_arg) {
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_EFER[0x%llx] address in db[%p]\n",
-          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_EFER,&p_arg[p_curr_cpu].p_MSR_EFER);
+          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_EFER[0x%llx] address in db[0x%lx]\n",
+          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_EFER,(unsigned long)&p_arg[p_curr_cpu].p_MSR_EFER);
 
 
    /* MSR_STAR */
@@ -295,8 +295,8 @@ void p_dump_x86_metadata(void *_p_arg) {
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_STAR[0x%llx] address in db[%p]\n",
-          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_STAR,&p_arg[p_curr_cpu].p_MSR_STAR);
+          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_STAR[0x%llx] address in db[0x%lx]\n",
+          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_STAR,(unsigned long)&p_arg[p_curr_cpu].p_MSR_STAR);
 
 
    /* MSR_LSTAR */
@@ -311,8 +311,8 @@ void p_dump_x86_metadata(void *_p_arg) {
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_LSTAR[0x%llx] address in db[%p]\n",
-          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_LSTAR,&p_arg[p_curr_cpu].p_MSR_LSTAR);
+          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_LSTAR[0x%llx] address in db[0x%lx]\n",
+          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_LSTAR,(unsigned long)&p_arg[p_curr_cpu].p_MSR_LSTAR);
 
 
    /* MSR_CSTAR */
@@ -327,8 +327,8 @@ void p_dump_x86_metadata(void *_p_arg) {
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_CSTAR[0x%llx] address in db[%p]\n",
-          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_CSTAR,&p_arg[p_curr_cpu].p_MSR_CSTAR);
+          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_CSTAR[0x%llx] address in db[0x%lx]\n",
+          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_CSTAR,(unsigned long)&p_arg[p_curr_cpu].p_MSR_CSTAR);
 
 
    /* MSR_SYSCALL_MASK */
@@ -343,8 +343,8 @@ void p_dump_x86_metadata(void *_p_arg) {
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_SYSCALL_MASK[0x%llx] address in db[%p]\n",
-          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_SYSCALL_MASK,&p_arg[p_curr_cpu].p_MSR_SYSCALL_MASK);
+          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_SYSCALL_MASK[0x%llx] address in db[0x%lx]\n",
+          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_SYSCALL_MASK,(unsigned long)&p_arg[p_curr_cpu].p_MSR_SYSCALL_MASK);
 
 
    /* p_MSR_KERNEL_GS_BASE */
@@ -360,8 +360,8 @@ void p_dump_x86_metadata(void *_p_arg) {
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_KERNEL_GS_BASE[0x%llx] address in db[%p]\n",
-          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_KERNEL_GS_BASE,&p_arg[p_curr_cpu].p_MSR_KERNEL_GS_BASE);
+          "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_KERNEL_GS_BASE[0x%llx] address in db[0x%lx]\n",
+          p_curr_cpu,p_arg[p_curr_cpu].p_MSR_KERNEL_GS_BASE,(unsigned long)&p_arg[p_curr_cpu].p_MSR_KERNEL_GS_BASE);
 */
 
    /*
