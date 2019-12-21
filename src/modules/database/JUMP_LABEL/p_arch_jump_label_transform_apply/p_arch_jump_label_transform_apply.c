@@ -145,7 +145,8 @@ int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct 
             p_module = p_db.p_module_list_array[p_tmp].p_mod;
 
             p_print_log(P_LKRG_WARN,
-                        "[JUMP_LABEL <batch mode>] Updating module's core .text section hash - module[%s : 0x%lx]!\n",
+                        "[JUMP_LABEL <batch mode>] Updating module's core .text section hash!\n");
+            p_print_log(P_LKRG_INFO,"module[%s : 0x%lx]!\n",
                         p_db.p_module_list_array[p_tmp].p_name,
                         (unsigned long)p_db.p_module_list_array[p_tmp].p_mod);
 
