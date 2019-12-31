@@ -78,6 +78,7 @@ typedef struct p_CPU_metadata_hash_mem {
    /*
     * Now MSRs...
     */
+   char       p_MSR_marker;
 
    /* x86 critical MSRs */
    u64        p_MSR_IA32_SYSENTER_CS;        // 0x00000174

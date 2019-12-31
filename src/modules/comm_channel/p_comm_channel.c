@@ -54,6 +54,10 @@ static int p_smep_panic_max = 0x1;
 static int p_umh_lock_min = 0x0;
 static int p_umh_lock_max = 0x1;
 
+/* Enforce MSR validation */
+static int p_enforce_msr_min = 0x0;
+static int p_enforce_msr_max = 0x1;
+
 static int p_sysctl_timestamp(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 static int p_sysctl_block_modules(struct ctl_table *p_table, int p_write,
@@ -78,6 +82,8 @@ static int p_sysctl_smep_panic(struct ctl_table *p_table, int p_write,
 #endif
 static int p_sysctl_umh_lock(struct ctl_table *p_table, int p_write,
                              void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_enforce_msr(struct ctl_table *p_table, int p_write,
+                                void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 
 
 struct ctl_table p_lkrg_sysctl_base[] = {
@@ -184,6 +190,15 @@ struct ctl_table p_lkrg_sysctl_table[] = {
       .proc_handler   = p_sysctl_umh_lock,
       .extra1         = &p_umh_lock_min,
       .extra2         = &p_umh_lock_max,
+   },
+   {
+      .procname       = "enforce_msr",
+      .data           = &P_CTRL(p_enforce_msr),
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_enforce_msr,
+      .extra1         = &p_enforce_msr_min,
+      .extra2         = &p_enforce_msr_max,
    },
    { }
 };
@@ -495,6 +510,53 @@ static int p_sysctl_umh_lock(struct ctl_table *p_table, int p_write,
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
           "Leaving function <p_sysctl_umh_lock>\n");
+
+   return p_ret;
+}
+
+static int p_sysctl_enforce_msr(struct ctl_table *p_table, int p_write,
+                                void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   int p_cpu;
+   unsigned int p_tmp;
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Entering function <p_sysctl_enforce_msr>\n");
+
+   p_tmp = P_CTRL(p_enforce_msr);
+   p_lkrg_open_rw();
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      if (P_CTRL(p_enforce_msr) && !p_tmp) {
+         p_offload_work(0); // run integrity check!
+         schedule();
+         spin_lock(&p_db_lock);
+         memset(p_db.p_CPU_metadata_array,0x0,sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids);
+         for_each_present_cpu(p_cpu) {
+            if (cpu_online(p_cpu)) {
+                  smp_call_function_single(p_cpu,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
+            }
+         }
+         p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
+         spin_unlock(&p_db_lock);
+         p_print_log(P_LKRG_CRIT,
+                     "Enabling MSRs verification during CI.\n");
+      } else if (p_tmp && !P_CTRL(p_enforce_msr)) {
+         p_offload_work(0); // run integrity check!
+         schedule();
+         spin_lock(&p_db_lock);
+         p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
+         spin_unlock(&p_db_lock);
+         p_print_log(P_LKRG_CRIT,
+                     "Disabling MSRs verification during CI.\n");
+      }
+   }
+   p_lkrg_close_rw();
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Leaving function <p_sysctl_enforce_msr>\n");
 
    return p_ret;
 }

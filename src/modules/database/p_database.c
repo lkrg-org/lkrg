@@ -199,8 +199,13 @@ uint64_t hash_from_CPU_data(p_CPU_metadata_hash_mem *p_arg) {
    for_each_present_cpu(p_tmp) {
       if (p_arg[p_tmp].p_cpu_online == P_CPU_ONLINE) {
          if (cpu_online(p_tmp)) {
-            p_hash ^= p_lkrg_fast_hash((unsigned char *)&p_arg[p_tmp],
-                                       (unsigned int)sizeof(p_CPU_metadata_hash_mem));
+            if (P_CTRL(p_enforce_msr)) {
+               p_hash ^= p_lkrg_fast_hash((unsigned char *)&p_arg[p_tmp],
+                                          (unsigned int)sizeof(p_CPU_metadata_hash_mem));
+            } else {
+               p_hash ^= p_lkrg_fast_hash((unsigned char *)&p_arg[p_tmp],
+                                          (unsigned int)offsetof(p_CPU_metadata_hash_mem, p_MSR_marker));
+            }
             p_debug_log(P_LKRG_DBG,
                    "<hash_from_CPU_data> Hash for cpu id %i total_hash[0x%llx]\n",p_tmp,p_hash);
          } else {

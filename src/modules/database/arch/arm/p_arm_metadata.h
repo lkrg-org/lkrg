@@ -32,6 +32,8 @@ typedef struct p_CPU_metadata_hash_mem {
    int p_cpu_id;
    char p_cpu_online; // 1 - online, 0 - offline
 
+   char       p_MSR_marker;
+
 } p_CPU_metadata_hash_mem;
 
 void p_dump_arm_metadata(void *_p_arg);

@@ -19,7 +19,6 @@
 #define P_LKRG_MAIN_H
 
 #define P_LKRG_UNHIDE
-//#define P_LKRG_CI_X86_NO_MSR
 //#define P_LKRG_PCFI_NO_STACKWALK
 
 #include <linux/kernel.h>
@@ -93,6 +92,7 @@ typedef struct _p_lkrg_global_conf_structure {
    unsigned int p_smep_panic;
 #endif
    unsigned int p_umh_lock;
+   unsigned int p_enforce_msr;
 
 } p_lkrg_global_conf_struct;
 

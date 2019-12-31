@@ -21,24 +21,14 @@
 
 u64 p_read_msr(/*int p_cpu, */u32 p_arg);
 
-#if defined(P_LKRG_CI_X86_NO_MSR)
+#define P_MSR_READ_COUNT(x,y,z)              \
+do {                                         \
+   char p_tmp = x-1;                         \
+   do {                                      \
+      y = p_read_msr(z);                     \
+   } while(!y && p_tmp--);                   \
+} while(0)
 
- #define P_MSR_READ_COUNT(x,y,z)              \
- do {                                         \
-       y = -1;                                \
- } while(0)
-
-#else
-
- #define P_MSR_READ_COUNT(x,y,z)              \
- do {                                         \
-    char p_tmp = x-1;                         \
-    do {                                      \
-       y = p_read_msr(z);                     \
-    } while(!y && p_tmp--);                   \
- } while(0)
-
-#endif
 
 #ifdef CONFIG_X86_64
  #define P_MSR_ASM_RET(val, low, high)     (((u64)(high) << 32) | (low))
