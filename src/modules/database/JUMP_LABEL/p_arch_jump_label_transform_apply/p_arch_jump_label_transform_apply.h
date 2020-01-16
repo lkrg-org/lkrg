@@ -28,6 +28,8 @@
  *
  */
 
+#if defined(CONFIG_X86)
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,3,0)
 
 #ifndef P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_APPLY_H
@@ -47,6 +49,8 @@ int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct 
 int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs);
 int p_install_arch_jump_label_transform_apply_hook(void);
 void p_uninstall_arch_jump_label_transform_apply_hook(void);
+
+#endif
 
 #endif
 
