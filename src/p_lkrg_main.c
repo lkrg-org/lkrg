@@ -379,9 +379,9 @@ p_main_error:
 #endif
 
       p_exploit_detection_exit();
-      p_deregister_module_notifier();
-      p_offload_cache_delete();
       p_unregister_arch_metadata();
+      p_offload_cache_delete();
+      p_deregister_module_notifier();
       if (p_db.p_CPU_metadata_array) {
          kzfree(p_db.p_CPU_metadata_array);
          p_db.p_CPU_metadata_array = NULL;
@@ -433,10 +433,10 @@ static void __exit p_lkrg_deregister(void) {
 #endif
 
    p_exploit_detection_exit();
-   p_deregister_module_notifier();
-
    p_offload_cache_delete();
    p_unregister_arch_metadata();
+   p_deregister_module_notifier();
+
 
    if (p_db.p_CPU_metadata_array)
       kzfree(p_db.p_CPU_metadata_array);

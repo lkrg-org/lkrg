@@ -480,7 +480,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
 
    if (!p_flag || 1 == p_flag) {
 
-      if ( (p_db.p_jump_label.p_mod_mask = kmalloc(BITS_TO_LONGS(*p_module_list_cnt_arg),
+      if ( (p_db.p_jump_label.p_mod_mask = kmalloc(BITS_TO_LONGS(*p_module_list_cnt_arg)*sizeof(unsigned long),
                                                    GFP_ATOMIC)) == NULL) {
          /*
           * I should NEVER be here!
@@ -567,7 +567,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
             p_db.p_jump_label.p_mod_mask = NULL;
          }
 
-         if ( (p_db.p_jump_label.p_mod_mask = kmalloc(BITS_TO_LONGS(*p_module_list_cnt_arg),
+         if ( (p_db.p_jump_label.p_mod_mask = kmalloc(BITS_TO_LONGS(*p_module_list_cnt_arg)*sizeof(unsigned long),
                                                       GFP_ATOMIC)) == NULL) {
             /*
              * I should NEVER be here!
