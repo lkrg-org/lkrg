@@ -58,6 +58,10 @@ static int p_umh_lock_max = 0x1;
 static int p_enforce_msr_min = 0x0;
 static int p_enforce_msr_max = 0x1;
 
+/* Enforce pCFI validation */
+static int p_enforce_pcfi_min = 0x0;
+static int p_enforce_pcfi_max = 0x2;
+
 static int p_sysctl_timestamp(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 static int p_sysctl_block_modules(struct ctl_table *p_table, int p_write,
@@ -84,6 +88,8 @@ static int p_sysctl_umh_lock(struct ctl_table *p_table, int p_write,
                              void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 static int p_sysctl_enforce_msr(struct ctl_table *p_table, int p_write,
                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_enforce_pcfi(struct ctl_table *p_table, int p_write,
+                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 
 
 struct ctl_table p_lkrg_sysctl_base[] = {
@@ -199,6 +205,15 @@ struct ctl_table p_lkrg_sysctl_table[] = {
       .proc_handler   = p_sysctl_enforce_msr,
       .extra1         = &p_enforce_msr_min,
       .extra2         = &p_enforce_msr_max,
+   },
+   {
+      .procname       = "enforce_pcfi",
+      .data           = &P_CTRL(p_enforce_pcfi),
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_enforce_pcfi,
+      .extra1         = &p_enforce_pcfi_min,
+      .extra2         = &p_enforce_pcfi_max,
    },
    { }
 };
@@ -557,6 +572,33 @@ static int p_sysctl_enforce_msr(struct ctl_table *p_table, int p_write,
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
           "Leaving function <p_sysctl_enforce_msr>\n");
+
+   return p_ret;
+}
+
+static int p_sysctl_enforce_pcfi(struct ctl_table *p_table, int p_write,
+                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   char *p_pcfi_strings[] = { "Disabled",
+                              "No stackwalk (weak)",
+                              "Fully enabled" };
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Entering function <p_sysctl_enforce_pcfi>\n");
+
+   p_lkrg_open_rw();
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      p_print_log(P_LKRG_CRIT, "[ED] New pCFI configuration => %d (%s)\n",
+                  P_CTRL(p_enforce_pcfi),
+                  p_pcfi_strings[P_CTRL(p_enforce_pcfi)]);
+   }
+   p_lkrg_close_rw();
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Leaving function <p_sysctl_enforce_pcfi>\n");
 
    return p_ret;
 }

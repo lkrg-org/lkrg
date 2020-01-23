@@ -30,19 +30,20 @@ p_ro_page p_ro __p_lkrg_read_only = {
 #endif
 
    .p_lkrg_global_ctrl.ctrl = {
-      .p_timestamp = 15,     // timestamp
-      .p_log_level = 3,      // log_level
-      .p_force_run = 0,      // force_run
-      .p_block_modules = 0,  // block_modules
-      .p_hide_module = 0,    // hide_module
-      .p_clean_message = 0,  // clean_message
-      .p_random_events = 0,  // random_events
-      .p_ci_panic = 0,       // ci_panic
+      .p_timestamp = 15,                  // timestamp
+      .p_log_level = 3,                   // log_level
+      .p_force_run = 0,                   // force_run
+      .p_block_modules = 0,               // block_modules
+      .p_hide_module = 0,                 // hide_module
+      .p_clean_message = 0,               // clean_message
+      .p_random_events = 0,               // random_events
+      .p_ci_panic = 0,                    // ci_panic
 #if defined(CONFIG_X86)
-      .p_smep_panic = 0,     // smep_panic
+      .p_smep_panic = 0,                  // smep_panic
 #endif
-      .p_umh_lock = 0,       // umh_lock
-      .p_enforce_msr = 1     // enforce_msr
+      .p_umh_lock = 0,                    // umh_lock
+      .p_enforce_msr = 1,                 // enforce_msr
+      .p_enforce_pcfi = P_PCFI_ENABLED    // enforce_pcfi
    },
 
 #if !defined(CONFIG_ARM)
