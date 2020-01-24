@@ -131,6 +131,13 @@ void p_dump_x86_metadata(void *_p_arg) {
                              :"%eax");
 #endif
 
+   /*
+    * On all x86 platforms there's defined maximum P_X86_MAX_IDT vectors.
+    * We can hardcode that size here since some 'weird' modules might
+    * incorrectly set it to MAX_SHORT value.
+    */
+   p_arg[p_curr_cpu].p_size = P_X86_MAX_IDT;
+
    p_arg[p_curr_cpu].p_hash = p_lkrg_fast_hash((unsigned char *)p_arg[p_curr_cpu].p_base,
                                                (unsigned int)sizeof(p_idt_descriptor) * P_X86_MAX_IDT);
 

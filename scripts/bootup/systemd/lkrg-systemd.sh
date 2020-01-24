@@ -9,6 +9,11 @@
 P_PWD=`pwd`
 P_SYSTEMD_DIR=`systemctl show -p UnitPath | cut -d " " -f5`
 
+case "$P_SYSTEMD_DIR" in
+    \/run/*) P_SYSTEMD_DIR=/etc/systemd/system ;;
+esac
+
+
 P_RED='\033[0;31m'
 P_GREEN='\033[0;32m'
 P_WHITE='\033[1;37m'
