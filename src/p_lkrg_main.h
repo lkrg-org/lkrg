@@ -90,7 +90,7 @@ typedef struct _p_lkrg_global_conf_structure {
 #ifdef CONFIG_X86
    unsigned int p_smep_panic;
 #endif
-   unsigned int p_umh_lock;
+   unsigned int p_enforce_umh;
    unsigned int p_enforce_msr;
    unsigned int p_enforce_pcfi;
 

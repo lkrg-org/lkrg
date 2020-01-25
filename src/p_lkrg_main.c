@@ -41,7 +41,7 @@ p_ro_page p_ro __p_lkrg_read_only = {
 #if defined(CONFIG_X86)
       .p_smep_panic = 0,                  // smep_panic
 #endif
-      .p_umh_lock = 0,                    // umh_lock
+      .p_enforce_umh = 1,                 // enforce_umh
       .p_enforce_msr = 1,                 // enforce_msr
       .p_enforce_pcfi = P_PCFI_ENABLED    // enforce_pcfi
    },
