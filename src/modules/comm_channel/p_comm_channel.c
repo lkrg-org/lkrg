@@ -257,7 +257,7 @@ static int p_sysctl_block_modules(struct ctl_table *p_table, int p_write,
       if (P_CTRL(p_block_modules) && !p_tmp) {
          p_print_log(P_LKRG_CRIT,
                      "Enabling \"blocking modules\" feature.\n");
-      } else if (p_tmp && !P_CTRL(p_clean_message)) {
+      } else if (p_tmp && !P_CTRL(p_block_modules)) {
          p_print_log(P_LKRG_CRIT,
                      "Disabling \"blocking modules\" feature.\n");
       }

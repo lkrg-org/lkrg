@@ -205,6 +205,5 @@ extern p_ro_page p_ro;
  #define __GFP_REPEAT   ((__force gfp_t)___GFP_RETRY_MAYFAIL)
 #endif
 
-extern unsigned int p_init_log_level;
 
 #endif

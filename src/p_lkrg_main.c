@@ -17,7 +17,13 @@
 
 #include "p_lkrg_main.h"
 
-unsigned int p_init_log_level = 1;
+unsigned int log_level = 1;
+unsigned int clean_message = 0;
+unsigned int block_modules = 0;
+unsigned int enforce_umh = 1;
+unsigned int enforce_msr = 1;
+unsigned int enforce_pcfi = P_PCFI_ENABLED;
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
 static enum cpuhp_state p_hot_cpus;
 #endif
@@ -169,6 +175,52 @@ void p_uninit_page_attr(void) {
 
 }
 
+void p_parse_module_params(void) {
+
+   /* log_level */
+   if (log_level >= P_LOG_LEVEL_MAX) {
+      P_CTRL(p_log_level) = P_LOG_LEVEL_MAX-1;      // Max
+   } else {
+      P_CTRL(p_log_level) = log_level;
+   }
+
+   /* clean_message */
+   if (clean_message > 1) {
+      P_CTRL(p_clean_message) = 1;
+   } else {
+      P_CTRL(p_clean_message) = clean_message;
+   }
+
+   /* block_modules */
+   if (block_modules > 1) {
+      P_CTRL(p_block_modules) = 1;
+   } else {
+      P_CTRL(p_block_modules) = block_modules;
+   }
+
+   /* enforce_umh */
+   if (enforce_umh > 2) {
+      P_CTRL(p_enforce_umh) = 2;
+   } else {
+      P_CTRL(p_enforce_umh) = enforce_umh;
+   }
+
+   /* enforce_msr */
+   if (enforce_msr > 1) {
+      P_CTRL(p_enforce_msr) = 1;
+   } else {
+      P_CTRL(p_enforce_msr) = enforce_msr;
+   }
+
+   /* enforce_pcfi */
+   if (enforce_pcfi > P_PCFI_ENABLED) {
+      P_CTRL(p_enforce_pcfi) = P_PCFI_ENABLED;
+   } else {
+      P_CTRL(p_enforce_pcfi) = enforce_pcfi;
+   }
+
+}
+
 /*
  * Main entry point for the module - initialization.
  */
@@ -186,10 +238,7 @@ static int __init p_lkrg_register(void) {
    p_global_siphash_key.p_low  = (uint64_t)get_random_long();
    p_global_siphash_key.p_high = (uint64_t)get_random_long();
 
-   if (p_init_log_level >= P_LOG_LEVEL_MAX)
-      P_CTRL(p_log_level) = P_LOG_LEVEL_MAX-1;      // Max
-   else
-      P_CTRL(p_log_level) = p_init_log_level;
+   p_parse_module_params();
 
    if (get_kallsyms_address() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
@@ -452,8 +501,18 @@ static void __exit p_lkrg_deregister(void) {
 module_init(p_lkrg_register);
 module_exit(p_lkrg_deregister);
 
-module_param(p_init_log_level, uint, 0000);
-MODULE_PARM_DESC(p_init_log_level, "Logging level init value [1 (alive) is default]");
+module_param(log_level, uint, 0000);
+MODULE_PARM_DESC(log_level, "log_level [1 (alive) is default]");
+module_param(clean_message, uint, 0000);
+MODULE_PARM_DESC(clean_message, "clean_message [0 (don't print) is default]");
+module_param(block_modules, uint, 0000);
+MODULE_PARM_DESC(block_modules, "block_modules [0 (don't block) is default]");
+module_param(enforce_umh, uint, 0000);
+MODULE_PARM_DESC(enforce_umh, "enforce_umh [1 (whitelist UMH paths) is default]");
+module_param(enforce_msr, uint, 0000);
+MODULE_PARM_DESC(enforce_msr, "enforce_msr [1 (enabled) is default]");
+module_param(enforce_pcfi, uint, 0000);
+MODULE_PARM_DESC(enforce_pcfi, "enforce_pcfi [2 (fully enabled pCFI) is default]");
 
 MODULE_AUTHOR("Adam 'pi3' Zabrocki (http://pi3.com.pl)");
 MODULE_DESCRIPTION("pi3's Linux kernel Runtime Guard");
