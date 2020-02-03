@@ -66,7 +66,12 @@ int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, str
    for (p_jl_batch_nr = 0; p_cnt < p_nr; p_cnt++) {
       p_tmp = (struct text_poke_loc *)&P_SYM(p_tp_vec)[p_jl_batch_nr*sizeof(struct text_poke_loc)];
       if (p_tmp->len == JUMP_LABEL_NOP_SIZE &&
-          p_tmp->addr && p_tmp->detour) {
+          p_tmp->addr
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 5, 0)
+          && p_tmp->opcode) {
+#else
+          && p_tmp->detour) {
+#endif
          p_jl_batch_addr[p_jl_batch_nr++] = (unsigned long)p_tmp->addr;
       }
    }
