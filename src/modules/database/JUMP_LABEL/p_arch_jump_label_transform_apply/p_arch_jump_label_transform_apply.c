@@ -179,7 +179,9 @@ int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct 
 
             if (!p_flag) {
                p_print_log(P_LKRG_ERR,
-                           "[JUMP_LABEL <batch mode>] Updated module's list hash for module[%s : 0x%lx] but can't find the same module in KOBJs list!\n",
+                           "[JUMP_LABEL <batch mode>] Updated module's list hash for module[%s] but can't find the same module in KOBJs list!\n",
+                           p_db.p_module_list_array[p_tmp].p_name);
+               p_print_log(P_LKRG_INFO,"module[%s : 0x%lx]!\n",
                            p_db.p_module_list_array[p_tmp].p_name,
                            (unsigned long)p_db.p_module_list_array[p_tmp].p_mod);
             } else {
