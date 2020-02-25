@@ -16,7 +16,7 @@
  *
  * Caveats:
  *  - Since kernel 5.3 Linux has support for 'batch mode' *_JUMP_LABEL.
- *    Let's handle that as wellL
+ *    Let's handle that as well.
  *
  *    https://lore.kernel.org/patchwork/patch/1064287/
  *

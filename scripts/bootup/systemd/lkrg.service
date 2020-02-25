@@ -12,8 +12,7 @@ Before=network.target
 
 [Service]
 Type=simple
-ExecStartPre=/sbin/modprobe p_lkrg log_level=3
-ExecStart=/sbin/sysctl lkrg.clean_message=0
+ExecStart=/sbin/modprobe p_lkrg
 ExecStop=/sbin/rmmod p_lkrg
 RemainAfterExit=yes
 Restart=on-failure

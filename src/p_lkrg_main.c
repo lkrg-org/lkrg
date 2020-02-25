@@ -17,7 +17,7 @@
 
 #include "p_lkrg_main.h"
 
-unsigned int log_level = 1;
+unsigned int log_level = 3;
 unsigned int clean_message = 0;
 unsigned int block_modules = 0;
 unsigned int enforce_umh = 1;
@@ -64,7 +64,7 @@ void p_init_page_attr(void) {
 
    unsigned long *p_long_tmp = 0x0;
 #if !defined(CONFIG_ARM)
-   unsigned long p_long_offset = PAGE_SIZE/sizeof(p_long_tmp); // By purpose sizeof pointer
+   unsigned long p_long_offset = PAGE_SIZE/sizeof(p_long_tmp); // On purpose sizeof pointer
 #endif
 
 // STRONG_DEBUG
@@ -80,15 +80,15 @@ void p_init_page_attr(void) {
          p_print_log(P_LKRG_INFO, "Found marker after configuration page.\n");
 #endif
          p_set_memory_ro((unsigned long)p_long_tmp,1);
-         p_print_log(P_LKRG_INFO, "Configuration page mark as RO.\n");
+         p_print_log(P_LKRG_INFO, "Configuration page marked read-only.\n");
          p_attr_init++;
 #if !defined(CONFIG_ARM)
          p_set_memory_np((unsigned long)(p_long_tmp-p_long_offset),1);
-         p_print_log(P_LKRG_INFO, "Set-up GUARD page before configuration.\n");
+         p_print_log(P_LKRG_INFO, "Setup guard page before configuration page.\n");
          if (*(p_long_tmp+p_long_offset*2) == P_LKRG_MARKER2) {
             p_print_log(P_LKRG_INFO, "Found next marker after configuration page.\n");
             p_set_memory_np((unsigned long)(p_long_tmp+p_long_offset),1);
-            p_print_log(P_LKRG_INFO, "Set-up GUARD page after configuration.\n");
+            p_print_log(P_LKRG_INFO, "Setup guard page after configuration page.\n");
             p_attr_init++;
          }
 #endif
@@ -133,7 +133,7 @@ void p_uninit_page_attr(void) {
 
    unsigned long *p_long_tmp = 0x0;
 #if !defined(CONFIG_ARM)
-   unsigned long p_long_offset = PAGE_SIZE/sizeof(p_long_tmp); // By purpose sizeof pointer
+   unsigned long p_long_offset = PAGE_SIZE/sizeof(p_long_tmp); // On purpose sizeof pointer
 #endif
 
 // STRONG_DEBUG
@@ -143,14 +143,14 @@ void p_uninit_page_attr(void) {
    if (p_attr_init) {
       p_long_tmp = (unsigned long *)P_CTRL_ADDR;
       p_set_memory_rw((unsigned long)p_long_tmp,1);
-      p_print_log(P_LKRG_INFO, "Configuration page marked to be RW again.\n");
+      p_print_log(P_LKRG_INFO, "Configuration page marked read-write.\n");
 #if !defined(CONFIG_ARM)
       p_set_memory_p((unsigned long)(p_long_tmp-p_long_offset),1);
-      p_print_log(P_LKRG_INFO, "GUARD page before configuration marked to be PRESENT again.\n");
+      p_print_log(P_LKRG_INFO, "Disabled guard page before configuration page.\n");
       p_set_memory_rw((unsigned long)(p_long_tmp-p_long_offset),1);
       *(p_long_tmp-p_long_offset) = P_LKRG_MARKER1;
       if (p_attr_init > 1) {
-         p_print_log(P_LKRG_INFO, "GUARD page after configuration marked to be PRESENT again.\n");
+         p_print_log(P_LKRG_INFO, "Disabled guard page after configuration page.\n");
          p_set_memory_p((unsigned long)(p_long_tmp+p_long_offset),1);
          p_set_memory_rw((unsigned long)(p_long_tmp+p_long_offset),1);
          *(p_long_tmp+p_long_offset) = P_LKRG_MARKER1;
@@ -391,7 +391,7 @@ static int __init p_lkrg_register(void) {
       P_CTRL(p_smep_panic) = 0x1;
    } else {
       p_print_log(P_LKRG_ERR,
-             "System does NOT support SMEP. LKRG can't enforece smep_panic :(\n");
+             "System does NOT support SMEP. LKRG can't enforce smep_panic :(\n");
    }
 #endif
 
@@ -502,7 +502,7 @@ module_init(p_lkrg_register);
 module_exit(p_lkrg_deregister);
 
 module_param(log_level, uint, 0000);
-MODULE_PARM_DESC(log_level, "log_level [1 (alive) is default]");
+MODULE_PARM_DESC(log_level, "log_level [3 (warn) is default]");
 module_param(clean_message, uint, 0000);
 MODULE_PARM_DESC(clean_message, "clean_message [0 (don't print) is default]");
 module_param(block_modules, uint, 0000);

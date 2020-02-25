@@ -125,7 +125,6 @@ struct ctl_table p_lkrg_sysctl_table[] = {
       .data           = &P_CTRL(p_log_level),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
-//      .proc_handler   = proc_dointvec_minmax,
       .proc_handler   = p_sysctl_log_level,
       .extra1         = &p_log_level_min,
       .extra2         = &p_log_level_max,
@@ -274,16 +273,17 @@ static int p_sysctl_block_modules(struct ctl_table *p_table, int p_write,
 static int p_sysctl_log_level(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
    int p_ret;
-   char *p_log_level_string[] = { "NONE",
-                                  "ALIVE",
-                                  "ERROR",
-                                  "WARN",
-                                  "INFO"
+   static const char * const p_log_level_string[] = {
+      "NONE",
+      "ALIVE",
+      "ERROR",
+      "WARN",
+      "INFO"
 #if defined(P_LKRG_DEBUG)
-                                  ,"DEBUG",
-                                  "STRONG_DEBUG"
+      ,"DEBUG",
+      "STRONG_DEBUG"
 #endif
-                                };
+   };
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
@@ -503,9 +503,11 @@ static int p_sysctl_enforce_umh(struct ctl_table *p_table, int p_write,
                              void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
-   char *p_umh_strings[] = { "Disable protection",
-                             "Whitelist UMH paths",
-                             "Completely block UMH" };
+   static const char * const p_umh_strings[] = {
+      "Disable protection",
+      "Whitelist UMH paths",
+      "Completely block UMH"
+   };
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
@@ -577,9 +579,11 @@ static int p_sysctl_enforce_pcfi(struct ctl_table *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
-   char *p_pcfi_strings[] = { "Disabled",
-                              "No stackwalk (weak)",
-                              "Fully enabled" };
+   static const char * const p_pcfi_strings[] = {
+      "Disabled",
+      "No stackwalk (weak)",
+      "Fully enabled"
+   };
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
