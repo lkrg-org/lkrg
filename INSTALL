@@ -15,11 +15,6 @@ local directory using the following command:
 
     $ git clone https://bitbucket.org/Adam_pi3/lkrg-main.git
 
-There is also separate version of the project kept under "experimental" branch
-and you can read about it more here:
-
-    https://openwall.info/wiki/p_lkrg/Protected_Features
-
 If you do not want to use Git, you can also obtain tarballs from the Openwall
 website and verify the signature of the packages:
 
@@ -63,36 +58,42 @@ account:
 INSTALLATION:
 -------------
 
-Installation of LKRG is exactly the same as loading normal kernel module. As
-soon as system is installed it starts the work. If default logging level is
-used, LKRG produces one short sentence saying that system is clean unless
-corruptions are detected.
+Basic installation of LKRG amounts to loading the kernel module. As soon as
+the module is loaded into the kernel, it starts to work. LKRG accepts several
+optional parameters. The default values for the parameters can be seen in
+the module description. For more details about each parameter please refer to
+the "COMMUNICATION CHANNEL" section. Module parameters are named the same as
+the sysctl's described in that section.
 
     pi3@pi3-VM:~/lkrg-main$ modinfo output/p_lkrg.ko
     filename:       /home/pi3/lkrg-main/output/p_lkrg.ko
-    license:        GPL
+    license:        GPL v2
     description:    pi3's Linux kernel Runtime Guard
     author:         Adam 'pi3' Zabrocki (http://pi3.com.pl)
-    srcversion:     F16B46BE3DCDF09D598D2C5
+    srcversion:     FFE0BFCF0525FAE2B2A4F65
     depends:
     retpoline:      Y
     name:           p_lkrg
-    vermagic:       4.18.0-20-generic SMP mod_unload
-    parm:           p_init_log_level:Logging level init value [1 (alive) is default] (uint)
-    pi3@pi3-VM:~/lkrg-main$ sudo insmod output/p_lkrg.ko p_init_log_level=3
+    vermagic:       5.5.1-050501-generic SMP mod_unload
+    parm:           log_level:log_level [3 (warn) is default] (uint)
+    parm:           clean_message:clean_message [0 (don't print) is default] (uint)
+    parm:           block_modules:block_modules [0 (don't block) is default] (uint)
+    parm:           enforce_umh:enforce_umh [1 (whitelist UMH paths) is default] (uint)
+    parm:           enforce_msr:enforce_msr [1 (enabled) is default] (uint)
+    parm:           enforce_pcfi:enforce_pcfi [2 (fully enabled pCFI) is default] (uint)
+    pi3@pi3-VM:~/lkrg-main$ sudo insmod output/p_lkrg.ko
     [sudo] password for pi3:
     pi3@pi3-VM:~/lkrg-main$ sudo tail /var/log/kern.log
-    May 28 01:35:20 pi3-vm kernel: [    8.489334] p_lkrg: loading out-of-tree module taints kernel.
-    May 28 01:35:20 pi3-vm kernel: [    8.489405] p_lkrg: module verification failed: signature and/or required key missing - tainting kernel
-    May 28 01:35:20 pi3-vm kernel: [    8.489803] [p_lkrg] Loading LKRG...
-    May 28 01:35:20 pi3-vm kernel: [    8.491452] Freezing user space processes ... (elapsed 0.052 seconds) done.
-    May 28 01:35:20 pi3-vm kernel: [    8.544359] OOM killer disabled.
-    May 28 01:35:20 pi3-vm kernel: [    8.544364] [p_lkrg] Verifying 20 potential UMH paths for whitelisting...
-    May 28 01:35:20 pi3-vm kernel: [    8.551581] [p_lkrg] 4 UMH paths were whitelisted...
-    May 28 01:35:20 pi3-vm kernel: [    8.883852] [p_lkrg] LKRG initialized successfully!
-    May 28 01:35:20 pi3-vm kernel: [    8.884081] OOM killer enabled.
-    May 28 01:35:20 pi3-vm kernel: [    8.884081] Restarting tasks ... done.
-    May 28 01:35:20 pi3-vm kernel: [    8.992053] [p_lkrg] System is clean!
+    [Tue Feb 25 00:26:59 2020] p_lkrg: loading out-of-tree module taints kernel.
+    [Tue Feb 25 00:26:59 2020] p_lkrg: module verification failed: signature and/or required key missing - tainting kernel
+    [Tue Feb 25 00:26:59 2020] [p_lkrg] Loading LKRG...
+    [Tue Feb 25 00:26:59 2020] Freezing user space processes ... (elapsed 0.247 seconds) done.
+    [Tue Feb 25 00:27:00 2020] OOM killer disabled.
+    [Tue Feb 25 00:27:00 2020] [p_lkrg] Verifying 21 potential UMH paths for whitelisting...
+    [Tue Feb 25 00:27:00 2020] [p_lkrg] 5 UMH paths were whitelisted...
+    [Tue Feb 25 00:27:01 2020] [p_lkrg] LKRG initialized successfully!
+    [Tue Feb 25 00:27:01 2020] OOM killer enabled.
+    [Tue Feb 25 00:27:01 2020] Restarting tasks ... done.
     pi3@pi3-VM:~/lkrg-main$
 
 We have also prepared early boot systemd unit file. Similar optional
@@ -100,15 +101,16 @@ functionality for other init systems may be added later. You can install LKRG
 using Makefile:
 
     pi3@pi3-VM:~/lkrg-main$ sudo make install
-    make -C /lib/modules/4.18.0-20-generic/build M=/home/pi3/lkrg-main modules_install
-    make[1]: Entering directory '/usr/src/linux-headers-4.18.0-20-generic'
+    make -C /lib/modules/5.5.1-050501-generic/build M=/home/pi3/lkrg-main modules_install
+    make[1]: Entering directory '/usr/src/linux-headers-5.5.1-050501-generic'
       INSTALL /home/pi3/lkrg-main/p_lkrg.ko
     At main.c:160:
     - SSL error:02001002:system library:fopen:No such file or directory: ../crypto/bio/bss_file.c:72
     - SSL error:2006D080:BIO routines:BIO_new_file:no such file: ../crypto/bio/bss_file.c:79
     sign-file: certs/signing_key.pem: No such file or directory
-      DEPMOD  4.18.0-20-generic
-    make[1]: Leaving directory '/usr/src/linux-headers-4.18.0-20-generic'
+      DEPMOD  5.5.1-050501-generic
+    Warning: modules_install: missing 'System.map' file. Skipping depmod.
+    make[1]: Leaving directory '/usr/src/linux-headers-5.5.1-050501-generic'
     depmod -a
     /home/pi3/lkrg-main/scripts/bootup/lkrg-bootup.sh install
      [*] Executing LKRG's bootup installation script
@@ -131,8 +133,8 @@ You can uninstall LKRG using Makefile as well:
       [+] Systemd detected
            Stopping lkrg.service
            Disabling lkrg.service on bootup
-    Removed symlink /etc/systemd/system/multi-user.target.wants/lkrg.service.
-           Deleting lkrg.service file from the /lib/systemd/system folder
+    Removed /etc/systemd/system/multi-user.target.wants/lkrg.service.
+           Deleting lkrg.service file from the /etc/systemd/system folder
       [+] Done!
 
 You can also use the following command to temporarily stop LKRG service without
@@ -151,20 +153,22 @@ between the administrator and LKRG. The following options are available:
     lkrg.block_modules = 0
     lkrg.ci_panic = 0
     lkrg.clean_message = 0
+    lkrg.enforce_msr = 1
+    lkrg.enforce_pcfi = 2
+    lkrg.enforce_umh = 1
     lkrg.force_run = 0
     lkrg.hide = 0
     lkrg.log_level = 3
     lkrg.random_events = 1
     lkrg.smep_panic = 1
     lkrg.timestamp = 15
-    lkrg.umh_lock = 0
 
  -> Blocking module functionality (lkrg.block_modules) - only two options are
     available:
         0 - do NOT lock the kernel and allow to load kernel module
         1 - lock the kernel and do NOT allow to load kernel module
- -> Kernel panic on CI failure (lkrg.ci_panic) - only two options are
-    available:
+ -> Kernel panic on code integrity (CI) failure (lkrg.ci_panic) - only two
+    options are available:
         0 - do NOT crash the kernel on CI failure (default)
         1 - crash the kernel (call panic()) on CI failure
  -> Printing "System is clean!" message (lkrg.clean_message) - only two options
@@ -172,6 +176,30 @@ between the administrator and LKRG. The following options are available:
         0 - do NOT print "System is clean!" message regardless of log_level
             value
         1 - if log_level value allows it, print "System is clean!" message
+ -> Enforce MSR validation (lkrg.enforce_msr).
+    MSR validation can be enabled on x86(-64) architectures. However, there
+    might be a situation where it is not desired e.g. if you are running LKRG
+    on the host machine which manages VMs. In such case the host machine might
+    dynamically reconfigure some of the MSRs which LKRG validates.
+    The following options are available:
+        0 - do not validate MSR
+        1 - enforce MSR validation (default)
+ -> Enforce poor's man CFI (lkrg.enforce_pcfi).
+    LKRG's pCFI validates integrity of the stack. It has an ability to perform
+    full stack-walk and validates if each return address on the stack is
+    pointing to the valid .text section. Additionally, it snapshots original
+    stack page address and validates if the current stack pointer points to the
+    valid region in memory.
+    The following options are available:
+        0 - pCFI is disabled
+        1 - pCFI won't perform full stack validation (no stack-walk)
+        2 - pCFI is fully enabled (default)
+ -> Lock down the kernel's usermodehelper (UMH) interface (lkrg.enforce_umh).
+    This might break things if your distro uses UMH to invoke any programs.
+    The following options are available:
+        0 - UMH lock down is disabled
+        1 - only whitelisted programs are allowed to be executed (default)
+        2 - lock down the UMH interface fully
  -> Force (lkrg.force_run) - forces LKRG to run integrity function right now.
     It is always visible as 0 number. Nevertheless, if you set it to 1, the
     integrity checking function will be immediately fired and value restored to
@@ -199,9 +227,3 @@ between the administrator and LKRG. The following options are available:
     launched (kernel timer periodically calls integrity function). It can't be
     less than 5 seconds (not to eat too much system resources) and not more
     than 1800 seconds (half an hour) - not to be silent for too long
- -> Full lock down of the kernel's usermodehelper interface (lkrg.umh_lock).
-    This might break things if your distro uses UMH to invoke any programs.
-    Only two options are available:
-        0 - do NOT lock down the UMH interface fully, but allow to execute
-            only LKRG's whitelisted programs (default)
-        1 - lock down the UMH interface fully
