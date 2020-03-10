@@ -83,7 +83,7 @@ typedef struct _p_lkrg_global_conf_structure {
    unsigned int p_log_level;
    unsigned int p_force_run;
    unsigned int p_block_modules;
-   unsigned int p_hide_module;
+   unsigned int p_hide_lkrg;
    unsigned int p_clean_message;
    unsigned int p_random_events;
    unsigned int p_ci_panic;

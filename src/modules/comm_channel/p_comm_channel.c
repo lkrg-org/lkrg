@@ -33,8 +33,8 @@ static int p_force_run_min = 0x0;
 static int p_force_run_max = 0x1;
 
 #ifdef P_LKRG_UNHIDE
-static int p_hide_module_min = 0x0;
-static int p_hide_module_max = 0x1;
+static int p_hide_lkrg_min = 0x0;
+static int p_hide_lkrg_max = 0x1;
 #endif
 
 static int p_clean_message_min = 0x0;
@@ -141,12 +141,12 @@ struct ctl_table p_lkrg_sysctl_table[] = {
 #ifdef P_LKRG_UNHIDE
    {
       .procname       = "hide",
-      .data           = &P_CTRL(p_hide_module),
+      .data           = &P_CTRL(p_hide_lkrg),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
       .proc_handler   = p_sysctl_hide,
-      .extra1         = &p_hide_module_min,
-      .extra2         = &p_hide_module_max,
+      .extra1         = &p_hide_lkrg_min,
+      .extra2         = &p_hide_lkrg_max,
    },
 #endif
    {
@@ -341,14 +341,14 @@ static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_sysctl_hide>\n");
 
-   p_tmp = P_CTRL(p_hide_module);
+   p_tmp = P_CTRL(p_hide_lkrg);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (P_CTRL(p_hide_module)) {
-         P_CTRL(p_hide_module) = p_tmp; // Restore previous state - for sync
+      if (P_CTRL(p_hide_lkrg)) {
+         P_CTRL(p_hide_lkrg) = p_tmp; // Restore previous state - for sync
          p_hide_itself(); // hide module!
       } else {
-         P_CTRL(p_hide_module) = p_tmp; // Restore previous state - for sync
+         P_CTRL(p_hide_lkrg) = p_tmp; // Restore previous state - for sync
          p_unhide_itself(); // Unide module!
       }
    }

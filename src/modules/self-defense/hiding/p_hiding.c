@@ -31,7 +31,7 @@ void p_hide_itself(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_hide_itself>\n");
 
-   if (P_CTRL(p_hide_module)) {
+   if (P_CTRL(p_hide_lkrg)) {
       p_print_log(P_LKRG_WARN,
              "Module is already hidden!\n");
       goto p_hide_itself_out;
@@ -71,7 +71,7 @@ void p_hide_itself(void) {
    /* We should be fine now! */
 
    p_lkrg_open_rw();
-   P_CTRL(p_hide_module) = 0x1;
+   P_CTRL(p_hide_lkrg) = 0x1;
    p_lkrg_close_rw();
 
    spin_unlock(&p_db_lock);
@@ -100,7 +100,7 @@ void p_unhide_itself(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_unhide_itself>\n");
 
-   if (!P_CTRL(p_hide_module)) {
+   if (!P_CTRL(p_hide_lkrg)) {
       p_print_log(P_LKRG_WARN,
              "Module is already unhidden (visible)!\n");
       goto p_unhide_itself_out;
@@ -135,7 +135,7 @@ void p_unhide_itself(void) {
    /* We should be fine now! */
 
    p_lkrg_open_rw();
-   P_CTRL(p_hide_module) = 0x0;
+   P_CTRL(p_hide_lkrg) = 0x0;
    p_lkrg_close_rw();
 
    spin_unlock(&p_db_lock);
