@@ -17,7 +17,6 @@
 
 #include "../../../p_lkrg_main.h"
 
-struct module             *p_find_me = THIS_MODULE;
 /*
 struct kobject            *p_find_kobj_parent;
 struct module_sect_attrs  *p_find_sect_attrs;
@@ -47,10 +46,10 @@ void p_hide_itself(void) {
    mutex_lock(&module_mutex);
    spin_lock(&p_db_lock);
 
-   P_HIDE_FROM_MODULE_LIST(p_find_me);
-   P_HIDE_FROM_KOBJ(p_find_me);
+   P_HIDE_FROM_MODULE_LIST(P_SYM(p_find_me));
+   P_HIDE_FROM_KOBJ(P_SYM(p_find_me));
 #if defined(CONFIG_DYNAMIC_DEBUG)
-   P_HIDE_FROM_DDEBUG(p_find_me);
+   P_HIDE_FROM_DDEBUG(P_SYM(p_find_me));
 #endif
 
    spin_lock(&p_db.p_jump_label.p_jl_lock);
@@ -111,10 +110,10 @@ void p_unhide_itself(void) {
    mutex_lock(&module_mutex);
    spin_lock(&p_db_lock);
 
-   P_UNHIDE_FROM_MODULE_LIST(p_find_me,P_SYM(p_global_modules));
-   P_UNHIDE_FROM_KOBJ(p_find_me,p_tmp_kset,p_tmp_ktype);
+   P_UNHIDE_FROM_MODULE_LIST(P_SYM(p_find_me),P_SYM(p_global_modules));
+   P_UNHIDE_FROM_KOBJ(P_SYM(p_find_me),p_tmp_kset,p_tmp_ktype);
 
-//   P_UNHIDE_FROM_KOBJ(p_find_me,p_find_kobj_parent,
+//   P_UNHIDE_FROM_KOBJ(P_SYM(p_find_me),p_find_kobj_parent,
 //                      p_find_sect_attrs,p_find_notes_attrs);
 
    spin_lock(&p_db.p_jump_label.p_jl_lock);

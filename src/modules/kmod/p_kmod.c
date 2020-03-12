@@ -145,7 +145,7 @@ unsigned int p_count_modules_from_module_list(void) {
          continue;
 
 /*
-      if (p_mod == p_find_me)
+      if (p_mod == P_SYM(p_find_me))
          continue;
 */
 
@@ -190,7 +190,7 @@ int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
          continue;
 
 /*
-      if (p_mod == p_find_me)
+      if (p_mod == P_SYM(p_find_me))
          continue;
 */
 
@@ -278,7 +278,7 @@ unsigned int p_count_modules_from_sysfs_kobj(void) {
       }
 
 /*
-      if (p_mod == p_find_me) {
+      if (p_mod == P_SYM(p_find_me)) {
          continue;
       }
 */
@@ -347,7 +347,7 @@ int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
       }
 
 /*
-      if (p_mod == p_find_me) {
+      if (p_mod == P_SYM(p_find_me)) {
          continue;
       }
 */

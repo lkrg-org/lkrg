@@ -180,7 +180,7 @@ p_module_event_notifier_going_retry:
       goto p_module_event_notifier_unlock_out;
    }
 
-   if (P_CTRL(p_block_modules)) {
+   if (P_CTRL(p_block_modules) && p_tmp != P_SYM(p_find_me)) {
 //      if (p_tmp->state == MODULE_STATE_COMING) { <- Linux kernel bug - might not update state value :(
       if (p_event == MODULE_STATE_COMING) {
          /* We are not going to modify DB */

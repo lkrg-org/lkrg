@@ -57,7 +57,7 @@ do {                                                                       \
 } while(0)
 #endif
 
-#ifdef P_LKRG_UNHIDE   // (p_find_me, P_SYM(p_global_modules))
+#ifdef P_LKRG_UNHIDE   // (P_SYM(p_find_me), P_SYM(p_global_modules))
 
 #define P_UNHIDE_FROM_MODULE_LIST(x, y)                                    \
 do {                                                                       \
@@ -135,8 +135,6 @@ do {                                                                       \
 */
 #endif
 
-
-extern struct module *p_find_me;
 
 void p_hide_itself(void);
 #ifdef P_LKRG_UNHIDE

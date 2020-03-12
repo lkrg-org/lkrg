@@ -239,6 +239,7 @@ static int __init p_lkrg_register(void) {
    p_global_siphash_key.p_high = (uint64_t)get_random_long();
 
    p_parse_module_params();
+   P_SYM(p_find_me) = THIS_MODULE;
 
    if (get_kallsyms_address() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,

@@ -143,6 +143,7 @@ typedef struct _p_lkrg_global_symbols_structure {
    struct mutex *p_kernfs_mutex;
 #endif
    struct kset **p_module_kset;
+   struct module *p_find_me;
 
 } p_lkrg_global_syms;
 
