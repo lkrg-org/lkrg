@@ -1377,7 +1377,7 @@ p_check_integrity_cancel:
    mutex_unlock(&module_mutex);
    p_text_section_unlock();
 
-   p_ed_enforce_validation();
+   p_ed_enforce_validation_paranoid();
 
    if (p_tmp_cpus) {
       kzfree(p_tmp_cpus);
