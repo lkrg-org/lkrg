@@ -51,7 +51,7 @@ int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, str
 
    int p_nr = *P_SYM(p_tp_vec_nr);
    int p_cnt = 0x0;
-   struct text_poke_loc *p_tmp;
+   p_text_poke_loc *p_tmp;
 
    p_debug_kprobe_log(
           "Entering function <p_arch_jump_label_transform_apply_entry>\n");
@@ -64,7 +64,11 @@ int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, str
    spin_lock(&p_db.p_jump_label.p_jl_lock);
 
    for (p_jl_batch_nr = 0; p_cnt < p_nr; p_cnt++) {
-      p_tmp = (struct text_poke_loc *)&P_SYM(p_tp_vec)[p_jl_batch_nr*sizeof(struct text_poke_loc)];
+      p_tmp = (p_text_poke_loc *)&P_SYM(p_tp_vec)[p_jl_batch_nr*sizeof(p_text_poke_loc)];
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
+      if ( (p_tmp->opcode == CALL_INSN_OPCODE || p_tmp->opcode == JMP32_INSN_OPCODE)  &&
+          p_tmp->rel_addr) {
+#else
       if (p_tmp->len == JUMP_LABEL_NOP_SIZE &&
           p_tmp->addr
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 5, 0)
@@ -72,7 +76,15 @@ int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, str
 #else
           && p_tmp->detour) {
 #endif
-         p_jl_batch_addr[p_jl_batch_nr++] = (unsigned long)p_tmp->addr;
+
+#endif
+         p_jl_batch_addr[p_jl_batch_nr++] =
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
+                  (unsigned long)p_tmp->rel_addr +
+                  (unsigned long)p_db.kernel_stext.p_addr;
+#else
+                  (unsigned long)p_tmp->addr;
+#endif
       }
    }
 
