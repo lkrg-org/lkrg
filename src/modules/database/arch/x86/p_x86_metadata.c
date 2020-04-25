@@ -189,7 +189,7 @@ void p_dump_x86_metadata(void *_p_arg) {
 #endif
 
 
-   if (P_CTRL(p_enforce_msr)) {
+   if (P_CTRL(p_msr_validate)) {
 
       /*
        * Now MSRs...

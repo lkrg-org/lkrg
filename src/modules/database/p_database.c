@@ -199,7 +199,7 @@ uint64_t hash_from_CPU_data(p_CPU_metadata_hash_mem *p_arg) {
    for_each_present_cpu(p_tmp) {
       if (p_arg[p_tmp].p_cpu_online == P_CPU_ONLINE) {
          if (cpu_online(p_tmp)) {
-            if (P_CTRL(p_enforce_msr)) {
+            if (P_CTRL(p_msr_validate)) {
                p_hash ^= p_lkrg_fast_hash((unsigned char *)&p_arg[p_tmp],
                                           (unsigned int)sizeof(p_CPU_metadata_hash_mem));
             } else {

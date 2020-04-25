@@ -20,8 +20,20 @@
 
 static struct ctl_table_header *p_sysctl_handle;
 
-static int p_timestamp_min = 0x5;
-static int p_timestamp_max = 0x708; // 1800
+static int p_kint_validate_min = 0x0;
+static int p_kint_validate_max = 0x3;
+
+static int p_kint_enforce_min = 0x0;
+static int p_kint_enforce_max = 0x2;
+
+static int p_pint_validate_min = 0x0;
+static int p_pint_validate_max = 0x3;
+
+static int p_pint_enforce_min = 0x0;
+static int p_pint_enforce_max = 0x2;
+
+static int p_interval_min = 0x5;
+static int p_interval_max = 0x708; // 1800
 
 static int p_log_level_min = P_LOG_LEVEL_NONE;
 static int p_log_level_max = P_LOG_LEVEL_MAX - 1;
@@ -29,66 +41,78 @@ static int p_log_level_max = P_LOG_LEVEL_MAX - 1;
 static int p_block_module_min = 0x0;
 static int p_block_module_max = 0x1;
 
-static int p_force_run_min = 0x0;
-static int p_force_run_max = 0x1;
+static int p_trigger_min = 0x0;
+static int p_trigger_max = 0x1;
 
 #ifdef P_LKRG_UNHIDE
 static int p_hide_lkrg_min = 0x0;
 static int p_hide_lkrg_max = 0x1;
 #endif
 
-static int p_clean_message_min = 0x0;
-static int p_clean_message_max = 0x1;
-
-static int p_random_events_min = 0x0;
-static int p_random_events_max = 0x1;
-
-static int p_ci_panic_min = 0x0;
-static int p_ci_panic_max = 0x1;
+static int p_heartbeat_min = 0x0;
+static int p_heartbeat_max = 0x1;
 
 #ifdef CONFIG_X86
-static int p_smep_panic_min = 0x0;
-static int p_smep_panic_max = 0x1;
+static int p_smep_validate_min = 0x0;
+static int p_smep_validate_max = 0x1;
+
+static int p_smep_enforce_min = 0x0;
+static int p_smep_enforce_max = 0x2;
 #endif
 
-static int p_enforce_umh_min = 0x0;
-static int p_enforce_umh_max = 0x2;
+static int p_umh_validate_min = 0x0;
+static int p_umh_validate_max = 0x2;
 
-/* Enforce MSR validation */
-static int p_enforce_msr_min = 0x0;
-static int p_enforce_msr_max = 0x1;
+static int p_umh_enforce_min = 0x0;
+static int p_umh_enforce_max = 0x2;
 
-/* Enforce pCFI validation */
-static int p_enforce_pcfi_min = 0x0;
-static int p_enforce_pcfi_max = 0x2;
+static int p_msr_validate_min = 0x0;
+static int p_msr_validate_max = 0x1;
 
-static int p_sysctl_timestamp(struct ctl_table *p_table, int p_write,
-                              void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_pcfi_validate_min = 0x0;
+static int p_pcfi_validate_max = 0x2;
+
+static int p_pcfi_enforce_min = 0x0;
+static int p_pcfi_enforce_max = 0x2;
+
+
+static int p_sysctl_kint_validate(struct ctl_table *p_table, int p_write,
+                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_kint_enforce(struct ctl_table *p_table, int p_write,
+                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_pint_validate(struct ctl_table *p_table, int p_write,
+                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_pint_enforce(struct ctl_table *p_table, int p_write,
+                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_interval(struct ctl_table *p_table, int p_write,
+                             void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 static int p_sysctl_block_modules(struct ctl_table *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 static int p_sysctl_log_level(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_force_run(struct ctl_table *p_table, int p_write,
-                              void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_trigger(struct ctl_table *p_table, int p_write,
+                            void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #ifdef P_LKRG_UNHIDE
 static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
                          void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #endif
-static int p_sysctl_clean_message(struct ctl_table *p_table, int p_write,
-                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_random_events(struct ctl_table *p_table, int p_write,
-                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_ci_panic(struct ctl_table *p_table, int p_write,
-                             void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_heartbeat(struct ctl_table *p_table, int p_write,
+                              void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #ifdef CONFIG_X86
-static int p_sysctl_smep_panic(struct ctl_table *p_table, int p_write,
-                               void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_smep_validate(struct ctl_table *p_table, int p_write,
+                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
+                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #endif
-static int p_sysctl_enforce_umh(struct ctl_table *p_table, int p_write,
+static int p_sysctl_umh_validate(struct ctl_table *p_table, int p_write,
+                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_umh_enforce(struct ctl_table *p_table, int p_write,
                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_enforce_msr(struct ctl_table *p_table, int p_write,
-                                void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_enforce_pcfi(struct ctl_table *p_table, int p_write,
+static int p_sysctl_msr_validate(struct ctl_table *p_table, int p_write,
+                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_pcfi_validate(struct ctl_table *p_table, int p_write,
+                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_pcfi_enforce(struct ctl_table *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 
 
@@ -103,13 +127,49 @@ struct ctl_table p_lkrg_sysctl_base[] = {
 
 struct ctl_table p_lkrg_sysctl_table[] = {
    {
-      .procname       = "timestamp",
-      .data           = &P_CTRL(p_timestamp),
+      .procname       = "kint_validate",
+      .data           = &P_CTRL(p_kint_validate),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
-      .proc_handler   = p_sysctl_timestamp,
-      .extra1         = &p_timestamp_min,
-      .extra2         = &p_timestamp_max,
+      .proc_handler   = p_sysctl_kint_validate,
+      .extra1         = &p_kint_validate_min,
+      .extra2         = &p_kint_validate_max,
+   },
+   {
+      .procname       = "kint_enforce",
+      .data           = &P_CTRL(p_kint_enforce),
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_kint_enforce,
+      .extra1         = &p_kint_enforce_min,
+      .extra2         = &p_kint_enforce_max,
+   },
+   {
+      .procname       = "pint_validate",
+      .data           = &P_CTRL(p_pint_validate),
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_pint_validate,
+      .extra1         = &p_pint_validate_min,
+      .extra2         = &p_pint_validate_max,
+   },
+   {
+      .procname       = "pint_enforce",
+      .data           = &P_CTRL(p_pint_enforce),
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_pint_enforce,
+      .extra1         = &p_pint_enforce_min,
+      .extra2         = &p_pint_enforce_max,
+   },
+   {
+      .procname       = "interval",
+      .data           = &P_CTRL(p_interval),
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_interval,
+      .extra1         = &p_interval_min,
+      .extra2         = &p_interval_max,
    },
    {
       .procname       = "block_modules",
@@ -130,13 +190,13 @@ struct ctl_table p_lkrg_sysctl_table[] = {
       .extra2         = &p_log_level_max,
    },
    {
-      .procname       = "force_run",
-      .data           = &P_CTRL(p_force_run),
+      .procname       = "trigger",
+      .data           = &P_CTRL(p_trigger),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
-      .proc_handler   = p_sysctl_force_run,
-      .extra1         = &p_force_run_min,
-      .extra2         = &p_force_run_max,
+      .proc_handler   = p_sysctl_trigger,
+      .extra1         = &p_trigger_min,
+      .extra2         = &p_trigger_max,
    },
 #ifdef P_LKRG_UNHIDE
    {
@@ -150,92 +210,268 @@ struct ctl_table p_lkrg_sysctl_table[] = {
    },
 #endif
    {
-      .procname       = "clean_message",
-      .data           = &P_CTRL(p_clean_message),
+      .procname       = "heartbeat",
+      .data           = &P_CTRL(p_heartbeat),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
-      .proc_handler   = p_sysctl_clean_message,
-      .extra1         = &p_clean_message_min,
-      .extra2         = &p_clean_message_max,
-   },
-   {
-      .procname       = "random_events",
-      .data           = &P_CTRL(p_random_events),
-      .maxlen         = sizeof(unsigned int),
-      .mode           = 0600,
-      .proc_handler   = p_sysctl_random_events,
-      .extra1         = &p_random_events_min,
-      .extra2         = &p_random_events_max,
-   },
-   {
-      .procname       = "ci_panic",
-      .data           = &P_CTRL(p_ci_panic),
-      .maxlen         = sizeof(unsigned int),
-      .mode           = 0600,
-      .proc_handler   = p_sysctl_ci_panic,
-      .extra1         = &p_ci_panic_min,
-      .extra2         = &p_ci_panic_max,
+      .proc_handler   = p_sysctl_heartbeat,
+      .extra1         = &p_heartbeat_min,
+      .extra2         = &p_heartbeat_max,
    },
 #ifdef CONFIG_X86
    {
-      .procname       = "smep_panic",
-      .data           = &P_CTRL(p_smep_panic),
+      .procname       = "smep_validate",
+      .data           = &P_CTRL(p_smep_validate),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
-      .proc_handler   = p_sysctl_smep_panic,
-      .extra1         = &p_smep_panic_min,
-      .extra2         = &p_smep_panic_max,
+      .proc_handler   = p_sysctl_smep_validate,
+      .extra1         = &p_smep_validate_min,
+      .extra2         = &p_smep_validate_max,
+   },
+   {
+      .procname       = "smep_enforce",
+      .data           = &P_CTRL(p_smep_enforce),
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_smep_enforce,
+      .extra1         = &p_smep_enforce_min,
+      .extra2         = &p_smep_enforce_max,
    },
 #endif
    {
-      .procname       = "enforce_umh",
-      .data           = &P_CTRL(p_enforce_umh),
+      .procname       = "umh_validate",
+      .data           = &P_CTRL(p_umh_validate),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
-      .proc_handler   = p_sysctl_enforce_umh,
-      .extra1         = &p_enforce_umh_min,
-      .extra2         = &p_enforce_umh_max,
+      .proc_handler   = p_sysctl_umh_validate,
+      .extra1         = &p_umh_validate_min,
+      .extra2         = &p_umh_validate_max,
    },
    {
-      .procname       = "enforce_msr",
-      .data           = &P_CTRL(p_enforce_msr),
+      .procname       = "umh_enforce",
+      .data           = &P_CTRL(p_umh_enforce),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
-      .proc_handler   = p_sysctl_enforce_msr,
-      .extra1         = &p_enforce_msr_min,
-      .extra2         = &p_enforce_msr_max,
+      .proc_handler   = p_sysctl_umh_enforce,
+      .extra1         = &p_umh_enforce_min,
+      .extra2         = &p_umh_enforce_max,
    },
    {
-      .procname       = "enforce_pcfi",
-      .data           = &P_CTRL(p_enforce_pcfi),
+      .procname       = "msr_validate",
+      .data           = &P_CTRL(p_msr_validate),
       .maxlen         = sizeof(unsigned int),
       .mode           = 0600,
-      .proc_handler   = p_sysctl_enforce_pcfi,
-      .extra1         = &p_enforce_pcfi_min,
-      .extra2         = &p_enforce_pcfi_max,
+      .proc_handler   = p_sysctl_msr_validate,
+      .extra1         = &p_msr_validate_min,
+      .extra2         = &p_msr_validate_max,
+   },
+   {
+      .procname       = "pcfi_validate",
+      .data           = &P_CTRL(p_pcfi_validate),
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_pcfi_validate,
+      .extra1         = &p_pcfi_validate_min,
+      .extra2         = &p_pcfi_validate_max,
+   },
+   {
+      .procname       = "pcfi_enforce",
+      .data           = &P_CTRL(p_pcfi_enforce),
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_pcfi_enforce,
+      .extra1         = &p_pcfi_enforce_min,
+      .extra2         = &p_pcfi_enforce_max,
    },
    { }
 };
 
 
-static int p_sysctl_timestamp(struct ctl_table *p_table, int p_write,
+static int p_sysctl_kint_validate(struct ctl_table *p_table, int p_write,
+                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   unsigned int p_tmp;
+   char *p_str[] = {
+      "DISABLED",
+      "MANUAL",
+      "PERIODICALLY",
+      "PERIODICALLY + RANDOM EVENTS"
+   };
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Entering function <p_sysctl_kint_validate>\n");
+
+   p_tmp = P_CTRL(p_kint_validate);
+   p_lkrg_open_rw();
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      if (P_CTRL(p_kint_validate) != p_tmp) {
+         p_print_log(P_LKRG_CRIT,
+                     "Changing \"kint_validate\" logic. From Old[%d | %s] to new[%d | %s] one.\n",
+                     p_tmp,
+                     p_str[p_tmp],
+                     P_CTRL(p_kint_validate),
+                     p_str[P_CTRL(p_kint_validate)]
+                     );
+
+         /* Random events */
+         if (p_tmp < 0x3 && P_CTRL(p_kint_validate) == 0x3) {
+            p_register_notifiers();
+         } else if (p_tmp == 0x3 && P_CTRL(p_kint_validate) < 0x3) {
+            p_deregister_notifiers();
+         }
+      }
+   }
+   p_lkrg_close_rw();
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Leaving function <p_sysctl_kint_validate>\n");
+
+   return p_ret;
+}
+
+static int p_sysctl_kint_enforce(struct ctl_table *p_table, int p_write,
+                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   unsigned int p_tmp;
+   char *p_str[] = {
+      "LOG & ACCEPT",
+#ifdef CONFIG_X86
+      "LOG ONLY (For SELinux and CR0.WP LOG & RESTORE)",
+#else
+      "LOG ONLY (For SELinux LOG & RESTORE)",
+#endif
+      "PANIC"
+   };
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Entering function <p_sysctl_kint_enforce>\n");
+
+   p_tmp = P_CTRL(p_kint_enforce);
+   p_lkrg_open_rw();
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      if (P_CTRL(p_kint_enforce) != p_tmp) {
+         p_print_log(P_LKRG_CRIT,
+                     "Changing \"kint_enforce\" logic. From Old[%d | %s] to new[%d | %s] one.\n",
+                     p_tmp,
+                     p_str[p_tmp],
+                     P_CTRL(p_kint_enforce),
+                     p_str[P_CTRL(p_kint_enforce)]
+                     );
+#ifdef CONFIG_X86
+         if (P_CTRL(p_kint_enforce)) {
+            P_ENABLE_WP_FLAG(P_VAR(p_pcfi_CPU_flags));
+         }
+#endif
+      }
+   }
+   p_lkrg_close_rw();
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Leaving function <p_sysctl_kint_enforce>\n");
+
+   return p_ret;
+}
+
+static int p_sysctl_pint_validate(struct ctl_table *p_table, int p_write,
+                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   unsigned int p_tmp;
+   char *p_str[] = {
+      "DISABLED",
+      "CURRENT",
+      "CURRENT + WAKING_UP",
+      "ALL TASKS"
+   };
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Entering function <p_sysctl_pint_validate>\n");
+
+   p_tmp = P_CTRL(p_pint_validate);
+   p_lkrg_open_rw();
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      if (P_CTRL(p_pint_validate) != p_tmp) {
+         p_print_log(P_LKRG_CRIT,
+                     "Changing \"pint_validate\" logic. From Old[%d | %s] to new[%d | %s] one.\n",
+                     p_tmp,
+                     p_str[p_tmp],
+                     P_CTRL(p_pint_validate),
+                     p_str[P_CTRL(p_pint_validate)]
+                     );
+      }
+   }
+   p_lkrg_close_rw();
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Leaving function <p_sysctl_pint_validate>\n");
+
+   return p_ret;
+}
+
+static int p_sysctl_pint_enforce(struct ctl_table *p_table, int p_write,
+                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   unsigned int p_tmp;
+   char *p_str[] = {
+      "LOG & ACCEPT",
+      "KILL TASK",
+      "PANIC"
+   };
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Entering function <p_sysctl_pint_enforce>\n");
+
+   p_tmp = P_CTRL(p_pint_enforce);
+   p_lkrg_open_rw();
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      if (P_CTRL(p_pint_enforce) != p_tmp) {
+         p_print_log(P_LKRG_CRIT,
+                     "Changing \"pint_enforce\" logic. From Old[%d | %s] to new[%d | %s] one.\n",
+                     p_tmp,
+                     p_str[p_tmp],
+                     P_CTRL(p_pint_enforce),
+                     p_str[P_CTRL(p_pint_enforce)]
+                     );
+      }
+   }
+   p_lkrg_close_rw();
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Leaving function <p_sysctl_pint_enforce>\n");
+
+   return p_ret;
+}
+
+
+static int p_sysctl_interval(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
    int p_ret;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_timestamp>\n");
+          "Entering function <p_sysctl_interval>\n");
 
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      p_print_log(P_LKRG_CRIT, "[CI] New timestamp => %d\n",P_CTRL(p_timestamp));
+      p_print_log(P_LKRG_CRIT, "[KINT] New interval => %d\n",P_CTRL(p_interval));
       p_offload_work(0); // run integrity check!
    }
    p_lkrg_close_rw();
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_timestamp>\n");
+          "Leaving function <p_sysctl_interval>\n");
 
    return p_ret;
 }
@@ -305,27 +541,27 @@ static int p_sysctl_log_level(struct ctl_table *p_table, int p_write,
 }
 
 
-static int p_sysctl_force_run(struct ctl_table *p_table, int p_write,
-                              void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+static int p_sysctl_trigger(struct ctl_table *p_table, int p_write,
+                            void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_force_run>\n");
+          "Entering function <p_sysctl_trigger>\n");
 
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (P_CTRL(p_force_run)) {
+      if (P_CTRL(p_trigger)) {
          p_offload_work(0); // run integrity check!
-         P_CTRL(p_force_run) = 0x0; // Restore 0 value - user only sees that value!
+         P_CTRL(p_trigger) = 0x0; // Restore 0 value - user only sees that value!
       }
    }
    p_lkrg_close_rw();
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_force_run>\n");
+          "Leaving function <p_sysctl_trigger>\n");
 
    return p_ret;
 }
@@ -362,130 +598,108 @@ static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
 }
 #endif
 
-static int p_sysctl_clean_message(struct ctl_table *p_table, int p_write,
-                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+static int p_sysctl_heartbeat(struct ctl_table *p_table, int p_write,
+                              void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
    unsigned int p_tmp;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_clean_message>\n");
+          "Entering function <p_sysctl_heartbeat>\n");
 
-   p_tmp = P_CTRL(p_clean_message);
+   p_tmp = P_CTRL(p_heartbeat);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (P_CTRL(p_clean_message) && !p_tmp) {
+      if (P_CTRL(p_heartbeat) && !p_tmp) {
          p_print_log(P_LKRG_CRIT,
-                     "Enabling \"clean\" message.\n");
-      } else if (p_tmp && !P_CTRL(p_clean_message)) {
+                     "Enabling heartbeat message.\n");
+      } else if (p_tmp && !P_CTRL(p_heartbeat)) {
          p_print_log(P_LKRG_CRIT,
-                     "Disabling \"clean\" message.\n");
+                     "Disabling heartbeat message.\n");
       }
    }
    p_lkrg_close_rw();
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_clean_message>\n");
-
-   return p_ret;
-}
-
-static int p_sysctl_random_events(struct ctl_table *p_table, int p_write,
-                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
-
-   int p_ret;
-   unsigned int p_tmp;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_random_events>\n");
-
-   p_tmp = P_CTRL(p_random_events);
-   p_lkrg_open_rw();
-   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (P_CTRL(p_random_events) && !p_tmp) {
-         p_print_log(P_LKRG_CRIT,
-                     "Enabling LKRG verification on the random events in the system.\n");
-         p_register_notifiers();
-      } else if (p_tmp && !P_CTRL(p_random_events)) {
-         p_print_log(P_LKRG_CRIT,
-                     "Disabling LKRG verification on the random events in the system.\n");
-         p_deregister_notifiers();
-      }
-   }
-   p_lkrg_close_rw();
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_random_events>\n");
-
-   return p_ret;
-}
-
-static int p_sysctl_ci_panic(struct ctl_table *p_table, int p_write,
-                             void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
-
-   int p_ret;
-   unsigned int p_tmp;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_ci_panic>\n");
-
-   p_tmp = P_CTRL(p_ci_panic);
-   p_lkrg_open_rw();
-   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (P_CTRL(p_ci_panic) && !p_tmp) {
-         p_print_log(P_LKRG_CRIT,
-                     "Enabling kernel panic on LKRG's CI verification failure.\n");
-      } else if (p_tmp && !P_CTRL(p_ci_panic)) {
-         p_print_log(P_LKRG_CRIT,
-                     "Disabling kernel panic on LKRG's CI verification failure.\n");
-      }
-   }
-   p_lkrg_close_rw();
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_ci_panic>\n");
+          "Leaving function <p_sysctl_heartbeat>\n");
 
    return p_ret;
 }
 
 #ifdef CONFIG_X86
-static int p_sysctl_smep_panic(struct ctl_table *p_table, int p_write,
-                               void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+static int p_sysctl_smep_validate(struct ctl_table *p_table, int p_write,
+                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
    unsigned int p_tmp;
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_smep_panic>\n");
+          "Entering function <p_sysctl_smep_validate>\n");
 
-   p_tmp = P_CTRL(p_smep_panic);
+   p_tmp = P_CTRL(p_smep_validate);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (P_CTRL(p_smep_panic) && !p_tmp) {
-         if (P_IS_SMEP_ENABLED(p_pcfi_CPU_flags)) {
+      if (P_CTRL(p_smep_validate) && !p_tmp) {
+         if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
             p_print_log(P_LKRG_CRIT,
-                        "Enabling kernel panic on LKRG's SMEP verification failure.\n");
+                   "Enabling SMEP validation feature.\n");
+            P_ENABLE_SMEP_FLAG(P_VAR(p_pcfi_CPU_flags));
          } else {
-            P_CTRL(p_smep_panic) = 0x0;
-            p_print_log(P_LKRG_CRIT,
-                        "System does NOT support SMEP. LKRG can't enable/disable smep_panic :(\n");
+            p_print_log(P_LKRG_ERR,
+                   "System does NOT support SMEP. LKRG can't enable SMEP validation :(\n");
+            P_CTRL(p_smep_validate) = 0x0;
          }
+      } else if (p_tmp && !P_CTRL(p_block_modules)) {
+         p_print_log(P_LKRG_CRIT,
+                     "Disabling SMEP validation feature.\n");
+      }
 
-      } else if (p_tmp && !P_CTRL(p_smep_panic)) {
-         if (P_IS_SMEP_ENABLED(p_pcfi_CPU_flags)) {
-            p_print_log(P_LKRG_CRIT,
-                        "Disabling kernel panic on LKRG's SMEP verification failure.\n");
+   }
+   p_lkrg_close_rw();
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Leaving function <p_sysctl_smep_validate>\n");
+
+   return p_ret;
+}
+
+static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
+                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   unsigned int p_tmp;
+   char *p_str[] = {
+      "LOG & ACCEPT",
+      "LOG & RESTORE",
+      "PANIC"
+   };
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Entering function <p_sysctl_smep_enforce>\n");
+
+   p_tmp = P_CTRL(p_smep_enforce);
+   p_lkrg_open_rw();
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      if (P_CTRL(p_smep_enforce) != p_tmp) {
+         p_print_log(P_LKRG_CRIT,
+                     "Changing \"smep_enforce\" logic. From Old[%d | %s] to new[%d | %s] one.\n",
+                     p_tmp,
+                     p_str[p_tmp],
+                     P_CTRL(p_smep_enforce),
+                     p_str[P_CTRL(p_smep_enforce)]
+                     );
+         if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+            P_ENABLE_SMEP_FLAG(P_VAR(p_pcfi_CPU_flags));
          } else {
-            P_CTRL(p_smep_panic) = 0x0;
-            p_print_log(P_LKRG_CRIT,
-                        "System does NOT support SMEP. LKRG can't enable/disable smep_panic :(\n");
+            p_print_log(P_LKRG_ERR,
+                   "System does NOT support SMEP. LKRG's SMEP validation will be disabled :(\n");
+            P_CTRL(p_smep_enforce) = 0x0;
+            P_CTRL(p_smep_validate) = 0x0;
          }
       }
    }
@@ -493,17 +707,18 @@ static int p_sysctl_smep_panic(struct ctl_table *p_table, int p_write,
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_smep_panic>\n");
+          "Leaving function <p_sysctl_smep_enforce>\n");
 
    return p_ret;
 }
 #endif
 
-static int p_sysctl_enforce_umh(struct ctl_table *p_table, int p_write,
-                             void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+static int p_sysctl_umh_validate(struct ctl_table *p_table, int p_write,
+                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
-   static const char * const p_umh_strings[] = {
+   unsigned int p_tmp;
+   static const char * const p_str[] = {
       "Disable protection",
       "Whitelist UMH paths",
       "Completely block UMH"
@@ -511,25 +726,69 @@ static int p_sysctl_enforce_umh(struct ctl_table *p_table, int p_write,
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_enforce_umh>\n");
+          "Entering function <p_sysctl_umh_validate>\n");
 
+   p_tmp = P_CTRL(p_umh_validate);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      p_print_log(P_LKRG_CRIT, "[ED] New UMH configuration => %d (%s)\n",
-                  P_CTRL(p_enforce_umh),
-                  p_umh_strings[P_CTRL(p_enforce_umh)]);
+      if (P_CTRL(p_umh_validate) != p_tmp) {
+         p_print_log(P_LKRG_CRIT,
+                     "Changing \"umh_validate\" logic. From Old[%d | %s] to new[%d | %s] one.\n",
+                     p_tmp,
+                     p_str[p_tmp],
+                     P_CTRL(p_umh_validate),
+                     p_str[P_CTRL(p_umh_validate)]
+                     );
+      }
    }
    p_lkrg_close_rw();
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_enforce_umh>\n");
+          "Leaving function <p_sysctl_umh_validate>\n");
 
    return p_ret;
 }
 
-static int p_sysctl_enforce_msr(struct ctl_table *p_table, int p_write,
-                                void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+static int p_sysctl_umh_enforce(struct ctl_table *p_table, int p_write,
+                               void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   unsigned int p_tmp;
+   char *p_str[] = {
+      "LOG ONLY",
+      "PREVENT EXECUTION",
+      "PANIC"
+   };
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Entering function <p_sysctl_umh_enforce>\n");
+
+   p_tmp = P_CTRL(p_umh_enforce);
+   p_lkrg_open_rw();
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      if (P_CTRL(p_umh_enforce) != p_tmp) {
+         p_print_log(P_LKRG_CRIT,
+                     "Changing \"umh_enforce\" logic. From Old[%d | %s] to new[%d | %s] one.\n",
+                     p_tmp,
+                     p_str[p_tmp],
+                     P_CTRL(p_umh_enforce),
+                     p_str[P_CTRL(p_umh_enforce)]
+                     );
+      }
+   }
+   p_lkrg_close_rw();
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Leaving function <p_sysctl_umh_enforce>\n");
+
+   return p_ret;
+}
+
+static int p_sysctl_msr_validate(struct ctl_table *p_table, int p_write,
+                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
    int p_cpu;
@@ -537,12 +796,12 @@ static int p_sysctl_enforce_msr(struct ctl_table *p_table, int p_write,
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_enforce_msr>\n");
+          "Entering function <p_sysctl_msr_validate>\n");
 
-   p_tmp = P_CTRL(p_enforce_msr);
+   p_tmp = P_CTRL(p_msr_validate);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      if (P_CTRL(p_enforce_msr) && !p_tmp) {
+      if (P_CTRL(p_msr_validate) && !p_tmp) {
          p_offload_work(0); // run integrity check!
          schedule();
          spin_lock(&p_db_lock);
@@ -555,31 +814,32 @@ static int p_sysctl_enforce_msr(struct ctl_table *p_table, int p_write,
          p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
          spin_unlock(&p_db_lock);
          p_print_log(P_LKRG_CRIT,
-                     "Enabling MSRs verification during CI.\n");
-      } else if (p_tmp && !P_CTRL(p_enforce_msr)) {
+                     "Enabling MSRs verification during Kernel Integrity validation (KINT).\n");
+      } else if (p_tmp && !P_CTRL(p_msr_validate)) {
          p_offload_work(0); // run integrity check!
          schedule();
          spin_lock(&p_db_lock);
          p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
          spin_unlock(&p_db_lock);
          p_print_log(P_LKRG_CRIT,
-                     "Disabling MSRs verification during CI.\n");
+                     "Disabling MSRs verification during Kernel Integrity validation (KINT).\n");
       }
    }
    p_lkrg_close_rw();
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_enforce_msr>\n");
+          "Leaving function <p_sysctl_msr_validate>\n");
 
    return p_ret;
 }
 
-static int p_sysctl_enforce_pcfi(struct ctl_table *p_table, int p_write,
-                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+static int p_sysctl_pcfi_validate(struct ctl_table *p_table, int p_write,
+                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
-   static const char * const p_pcfi_strings[] = {
+   unsigned int p_tmp;
+   static const char * const p_str[] = {
       "Disabled",
       "No stackwalk (weak)",
       "Fully enabled"
@@ -587,22 +847,67 @@ static int p_sysctl_enforce_pcfi(struct ctl_table *p_table, int p_write,
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_enforce_pcfi>\n");
+          "Entering function <p_sysctl_pcfi_validate>\n");
 
+   p_tmp = P_CTRL(p_pcfi_validate);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      p_print_log(P_LKRG_CRIT, "[ED] New pCFI configuration => %d (%s)\n",
-                  P_CTRL(p_enforce_pcfi),
-                  p_pcfi_strings[P_CTRL(p_enforce_pcfi)]);
+      if (P_CTRL(p_pcfi_validate) != p_tmp) {
+         p_print_log(P_LKRG_CRIT,
+                     "Changing \"pcfi_validate\" logic. From Old[%d | %s] to new[%d | %s] one.\n",
+                     p_tmp,
+                     p_str[p_tmp],
+                     P_CTRL(p_pcfi_validate),
+                     p_str[P_CTRL(p_pcfi_validate)]
+                     );
+      }
    }
    p_lkrg_close_rw();
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_enforce_pcfi>\n");
+          "Leaving function <p_sysctl_pcfi_validate>\n");
 
    return p_ret;
 }
+
+static int p_sysctl_pcfi_enforce(struct ctl_table *p_table, int p_write,
+                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   unsigned int p_tmp;
+   char *p_str[] = {
+      "LOG ONLY",
+      "KILL TASK",
+      "PANIC"
+   };
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Entering function <p_sysctl_pcfi_enforce>\n");
+
+   p_tmp = P_CTRL(p_pcfi_enforce);
+   p_lkrg_open_rw();
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      if (P_CTRL(p_pcfi_enforce) != p_tmp) {
+         p_print_log(P_LKRG_CRIT,
+                     "Changing \"pcfi_enforce\" logic. From Old[%d | %s] to new[%d | %s] one.\n",
+                     p_tmp,
+                     p_str[p_tmp],
+                     P_CTRL(p_pcfi_enforce),
+                     p_str[P_CTRL(p_pcfi_enforce)]
+                     );
+      }
+   }
+   p_lkrg_close_rw();
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Leaving function <p_sysctl_pcfi_enforce>\n");
+
+   return p_ret;
+}
+
 
 int p_register_comm_channel(void) {
 

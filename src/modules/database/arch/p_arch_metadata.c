@@ -20,11 +20,7 @@
 
 void p_dump_CPU_metadata(void *_p_arg) {
 
-   /* pCFI - on x86 validate SMEP and WP */
-   if (p_pcfi_CPU_flags)
-      p_ed_pcfi_validate_cpu_extra(0);
-   else
-      p_ed_pcfi_validate_cpu(0);
+   p_ed_pcfi_cpu(0);
 
 #ifdef CONFIG_X86
 
@@ -33,6 +29,10 @@ void p_dump_CPU_metadata(void *_p_arg) {
 #elif defined(CONFIG_ARM64)
 
    p_dump_arm64_metadata(_p_arg);
+
+#elif defined(CONFIG_ARM)
+
+   p_dump_arm_metadata(_p_arg);
 
 #endif
 

@@ -92,7 +92,7 @@ void p_integrity_timer(void) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_integrity_timer>\n");
 
-   p_timer.expires    = jiffies + P_CTRL(p_timestamp)*HZ;
+   p_timer.expires    = jiffies + P_CTRL(p_interval)*HZ;
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0)
    p_timer.data       = 0x1;
@@ -147,7 +147,7 @@ void p_check_integrity(struct work_struct *p_work) {
    /* temporary hash variable */
    uint64_t p_tmp_hash;
    /* per CPU temporary data */
-   p_CPU_metadata_hash_mem *p_tmp_cpus;
+   p_CPU_metadata_hash_mem *p_tmp_cpus = NULL;
    p_cpu_info p_tmp_cpu_info;
    /* Linux Kernel Modules integrity */
    unsigned int p_module_list_nr_tmp; // Count by walk through the list first
@@ -165,6 +165,11 @@ void p_check_integrity(struct work_struct *p_work) {
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_check_integrity>\n");
+
+
+   if (!P_CTRL(p_kint_validate))
+      goto p_check_integrity_tasks;
+
 
    /*
     * First allocate temporary buffer for per CPU data. Number of possible CPUs
@@ -297,7 +302,9 @@ void p_check_integrity(struct work_struct *p_work) {
       p_print_log(P_LKRG_CRIT,
              "ALERT !!! HASHES FROM CPUs METADATA IS DIFFERENT- it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                p_tmp_hash,p_db.p_CPU_metadata_hashes);
-      p_hack_check++;
+      P_KINT_IF_ACCEPT(p_db.p_CPU_metadata_hashes,
+                       p_tmp_hash,
+                       p_hack_check);
    }
 
    p_print_log(P_LKRG_INFO,"Hash from CPUs metadata => [0x%llx]\n",p_tmp_hash);
@@ -315,7 +322,9 @@ void p_check_integrity(struct work_struct *p_work) {
          p_print_log(P_LKRG_CRIT,
                 "ALERT !!! EXCEPTION TABLE HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                   p_tmp_hash,p_db.kernel_ex_table.p_hash);
-         p_hack_check++;
+         P_KINT_IF_ACCEPT(p_db.kernel_ex_table.p_hash,
+                          p_tmp_hash,
+                          p_hack_check);
       }
 
       p_print_log(P_LKRG_INFO,"Hash from kernel exception table => [0x%llx]\n",p_tmp_hash);
@@ -334,7 +343,9 @@ void p_check_integrity(struct work_struct *p_work) {
       p_print_log(P_LKRG_CRIT,
              "ALERT !!! _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                             p_tmp_hash,p_db.kernel_stext.p_hash);
-      p_hack_check++;
+      P_KINT_IF_ACCEPT(p_db.kernel_stext.p_hash,
+                       p_tmp_hash,
+                       p_hack_check);
    }
 
    p_print_log(P_LKRG_INFO,"Hash from _stext memory block => [0x%llx]\n",p_tmp_hash);
@@ -356,7 +367,9 @@ void p_check_integrity(struct work_struct *p_work) {
          p_print_log(P_LKRG_CRIT,
                 "ALERT !!! _RODATA MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                   p_tmp_hash,p_db.kernel_rodata.p_hash);
-         p_hack_check++;
+         P_KINT_IF_ACCEPT(p_db.kernel_rodata.p_hash,
+                          p_tmp_hash,
+                          p_hack_check);
       }
 
       p_print_log(P_LKRG_INFO,"Hash from _rodata memory block => [0x%llx]\n",p_tmp_hash);
@@ -379,7 +392,9 @@ void p_check_integrity(struct work_struct *p_work) {
          p_print_log(P_LKRG_CRIT,
                 "ALERT !!! IOMMU TABLE HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                   p_tmp_hash,p_db.kernel_iommu_table.p_hash);
-         p_hack_check++;
+         P_KINT_IF_ACCEPT(p_db.kernel_iommu_table.p_hash,
+                          p_tmp_hash,
+                          p_hack_check);
       }
 
       p_print_log(P_LKRG_INFO,"Hash from IOMMU table => [0x%llx]\n",p_tmp_hash);
@@ -433,7 +448,7 @@ void p_check_integrity(struct work_struct *p_work) {
           * NOTE: We should have been able to log this module in the loading
           *       stage by notifier!
           */
-         p_hack_check++;
+         P_KINT_HACK_I(p_hack_check);
 
          p_tmp_diff = p_module_kobj_nr_tmp - p_module_list_nr_tmp;
          p_print_log(P_LKRG_CRIT,
@@ -471,7 +486,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                 (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                                 (unsigned long)p_module_activity_ptr);
                      if (p_module_kobj_tmp[p_tmp_hash].p_mod == p_module_activity_ptr) {
-                        p_hack_check--;
+                        P_KINT_HACK_D(p_hack_check);
                         p_print_log(P_LKRG_CRIT,
                                     "** HIDDEN MODULE IS THE SAME AS ON-GOING MODULE ACTIVITY EVENTS **\n"
                                     "** !! MOST LIKELY SYSTEM IS STABLE !! **\n");
@@ -479,7 +494,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         p_tmp_mod = find_module(p_module_kobj_tmp[p_tmp_hash].p_name);
                         if (p_tmp_mod) {
                            if (p_tmp_mod->state != MODULE_STATE_LIVE) {
-                              p_hack_check--;
+                              P_KINT_HACK_D(p_hack_check);
                               p_print_log(P_LKRG_CRIT,
                                     "** HIDDEN MODULE IS NOT IN THE 'LIVE' STATE BUT IN [%s] STATE **\n"
                                     "** !! MOST LIKELY SYSTEM IS STABLE !! **\n",
@@ -488,7 +503,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                                                (p_tmp_mod->state == 3) ? "COMING" : "UNKNOWN!"
                                                                );
                            } else {
-                              p_hack_check--;
+                              P_KINT_HACK_D(p_hack_check);
                               p_print_log(P_LKRG_CRIT,
                                     "** HIDDEN MODULE HAS 'LIVE' STATE BUT _BLOCKING MODULES_ IS DISABLED **\n"
                                     "** MODULE WAS CORRECTLY IDENTIFIED THROUGH THE OFFICIAL API **\n"
@@ -509,7 +524,7 @@ void p_check_integrity(struct work_struct *p_work) {
                      p_tmp_mod = find_module(p_module_kobj_tmp[p_tmp_hash].p_name);
                      if (p_tmp_mod) {
                         if (p_tmp_mod->state != MODULE_STATE_LIVE) {
-                           p_hack_check--;
+                           P_KINT_HACK_D(p_hack_check);
                            p_print_log(P_LKRG_CRIT,
                                     "** HIDDEN MODULE IS NOT IN THE 'LIVE' STATE BUT IN [%s] STATE **\n"
                                     "** !! MOST LIKELY SYSTEM IS STABLE !! **\n",
@@ -518,7 +533,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                                                (p_tmp_mod->state == 3) ? "COMING" : "UNKNOWN!"
                                                                );
                         } else {
-                           p_hack_check--;
+                           P_KINT_HACK_D(p_hack_check);
                            p_print_log(P_LKRG_CRIT,
                                  "** HIDDEN MODULE HAS 'LIVE' STATE BUT _BLOCKING MODULES_ IS DISABLED **\n"
                                  "** MODULE WAS CORRECTLY IDENTIFIED THROUGH THE OFFICIAL API **\n"
@@ -1260,7 +1275,9 @@ void p_check_integrity(struct work_struct *p_work) {
                               p_module_list_tmp[p_tmp_cnt].p_name,
                               p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash,
                               p_db.p_module_list_array[p_tmp_cnt].p_mod_core_text_hash);
-                  p_hack_check++;
+                  P_KINT_IF_ACCEPT(p_db.p_module_list_array[p_tmp_cnt].p_mod_core_text_hash,
+                                   p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash,
+                                   p_hack_check);
                   p_local_hack_check++;
                }
             }
@@ -1288,13 +1305,13 @@ void p_check_integrity(struct work_struct *p_work) {
 
             /* Maybe we have sleeping module activity event ? */
             if (mutex_is_locked(&p_module_activity)) {
-                  p_hack_check--;
+                  P_KINT_HACK_D(p_hack_check);
                   p_print_log(P_LKRG_CRIT,
                               "** UNHANDLED ON-GOING MODULE ACTIVITY EVENTS DETECTED **\n"
                               "** !! IT IS POSSIBLE SYSTEM IS STABLE BUT UNHANDLED !! **\n"
                               "** !! ACTIVITY CHANGED MODULE LIST CONSISTENCY !! **\n");
             } else {
-               p_hack_check++;
+               P_KINT_HACK_I(p_hack_check);
             }
          }
       }
@@ -1323,7 +1340,7 @@ void p_check_integrity(struct work_struct *p_work) {
                            "** !! IT IS POSSIBLE SYSTEM IS STABLE BUT UNHANDLED !! **\n"
                            "** !! ACTIVITY CHANGED KOBJ LIST CONSISTENCY !! **\n");
          } else {
-            p_hack_check++;
+            P_KINT_HACK_I(p_hack_check);
          }
       }
 
@@ -1337,7 +1354,9 @@ void p_check_integrity(struct work_struct *p_work) {
                           p_module_kobj_tmp[p_tmp_hash].p_name,
                           p_module_kobj_tmp[p_tmp_hash].p_mod_core_text_hash,
                           p_db.p_module_kobj_array[p_tmp_cnt].p_mod_core_text_hash);
-                  p_hack_check++;
+                  P_KINT_IF_ACCEPT(p_db.p_module_kobj_array[p_tmp_cnt].p_mod_core_text_hash,
+                                   p_module_kobj_tmp[p_tmp_hash].p_mod_core_text_hash,
+                                   p_hack_check);
                }
          }
       }
@@ -1346,11 +1365,11 @@ void p_check_integrity(struct work_struct *p_work) {
    if (p_hack_check) {
       p_print_log(P_LKRG_CRIT,
              "ALERT !!! SYSTEM HAS BEEN COMPROMISED - DETECTED DIFFERENT %u CHECKSUMS !!!\n",p_hack_check);
-      if (P_CTRL(p_ci_panic)) {
+      if (P_CTRL(p_kint_enforce == 0x2)) {
          // OK, we need to crash the kernel now
-         panic(P_LKRG_SIGNATURE "CI verification failed! Killing the kernel...\n");
+         panic(P_LKRG_SIGNATURE "Kernel Integrity verification failed! Killing the kernel...\n");
       }
-   } else if (P_CTRL(p_clean_message)) {
+   } else if (P_CTRL(p_heartbeat)) {
       p_print_log(P_LKRG_ALIVE,"System is clean!\n");
    }
 
@@ -1376,14 +1395,18 @@ p_check_integrity_cancel:
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
    p_text_section_unlock();
-
-   p_ed_enforce_validation_paranoid();
-
    if (p_tmp_cpus) {
       kzfree(p_tmp_cpus);
       p_tmp_cpus = NULL;
    }
 
+p_check_integrity_tasks:
+
+   if (!p_ed_enforce_validation_paranoid()) {
+      if (P_CTRL(p_heartbeat) && !P_CTRL(p_kint_validate)) {
+         p_print_log(P_LKRG_ALIVE,"Tasks are clean!\n");
+      }
+   }
 
    /* Free the worker struct */
    if (p_work) {

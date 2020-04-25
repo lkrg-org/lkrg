@@ -18,11 +18,22 @@
 #include "p_lkrg_main.h"
 
 unsigned int log_level = 3;
-unsigned int clean_message = 0;
+unsigned int heartbeat = 0;
 unsigned int block_modules = 0;
-unsigned int enforce_umh = 1;
-unsigned int enforce_msr = 1;
-unsigned int enforce_pcfi = P_PCFI_ENABLED;
+unsigned int interval = 15;
+unsigned int kint_validate = 3;
+unsigned int kint_enforce = 2;
+unsigned int msr_validate = 1;
+unsigned int pint_validate = 2;
+unsigned int pint_enforce = 1;
+unsigned int pcfi_validate = 2;
+unsigned int pcfi_enforce = 1;
+unsigned int umh_validate = 1;
+unsigned int umh_enforce = 1;
+#if defined(CONFIG_X86)
+unsigned int smep_validate = 1;
+unsigned int smep_enforce = 2;
+#endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
 static enum cpuhp_state p_hot_cpus;
@@ -36,20 +47,25 @@ p_ro_page p_ro __p_lkrg_read_only = {
 #endif
 
    .p_lkrg_global_ctrl.ctrl = {
-      .p_timestamp = 15,                  // timestamp
+      .p_kint_validate = 3,               // kint_validate
+      .p_kint_enforce = 2,                // kint_enforce
+      .p_pint_validate = 2,               // pint_validate
+      .p_pint_enforce = 1,                // pint_enforce
+      .p_interval = 15,                   // interval
       .p_log_level = 3,                   // log_level
-      .p_force_run = 0,                   // force_run
+      .p_trigger = 0,                     // trigger
       .p_block_modules = 0,               // block_modules
       .p_hide_lkrg = 0,                   // hide_lkrg
-      .p_clean_message = 0,               // clean_message
-      .p_random_events = 0,               // random_events
-      .p_ci_panic = 0,                    // ci_panic
+      .p_heartbeat = 0,                   // heartbeat
 #if defined(CONFIG_X86)
-      .p_smep_panic = 0,                  // smep_panic
+      .p_smep_validate = 1,               // smep_validate
+      .p_smep_enforce = 0,                // smep_enforce
 #endif
-      .p_enforce_umh = 1,                 // enforce_umh
-      .p_enforce_msr = 1,                 // enforce_msr
-      .p_enforce_pcfi = P_PCFI_ENABLED    // enforce_pcfi
+      .p_umh_validate = 1,                // umh_validate
+      .p_umh_enforce = 1,                 // umh_enforce
+      .p_msr_validate = 1,                // msr_validate
+      .p_pcfi_validate = 2,               // pcfi_validate
+      .p_pcfi_enforce = 1                 // pcfi_enforce
    },
 
 #if !defined(CONFIG_ARM)
@@ -177,6 +193,15 @@ void p_uninit_page_attr(void) {
 
 void p_parse_module_params(void) {
 
+   /* Interval */
+   if (interval > 0x708) {
+      P_CTRL(p_interval) = 0x708;      // Max
+   } else if (interval < 5) {
+      P_CTRL(p_interval) = 5;          // Min
+   } else {
+      P_CTRL(p_interval) = interval;
+   }
+
    /* log_level */
    if (log_level >= P_LOG_LEVEL_MAX) {
       P_CTRL(p_log_level) = P_LOG_LEVEL_MAX-1;      // Max
@@ -184,11 +209,11 @@ void p_parse_module_params(void) {
       P_CTRL(p_log_level) = log_level;
    }
 
-   /* clean_message */
-   if (clean_message > 1) {
-      P_CTRL(p_clean_message) = 1;
+   /* heartbeat */
+   if (heartbeat > 1) {
+      P_CTRL(p_heartbeat) = 1;
    } else {
-      P_CTRL(p_clean_message) = clean_message;
+      P_CTRL(p_heartbeat) = heartbeat;
    }
 
    /* block_modules */
@@ -198,26 +223,86 @@ void p_parse_module_params(void) {
       P_CTRL(p_block_modules) = block_modules;
    }
 
-   /* enforce_umh */
-   if (enforce_umh > 2) {
-      P_CTRL(p_enforce_umh) = 2;
+   /* kint_validate */
+   if (kint_validate > 3) {
+      P_CTRL(p_kint_validate) = 3;
    } else {
-      P_CTRL(p_enforce_umh) = enforce_umh;
+      P_CTRL(p_kint_validate) = kint_validate;
    }
 
-   /* enforce_msr */
-   if (enforce_msr > 1) {
-      P_CTRL(p_enforce_msr) = 1;
+   /* kint_enforce */
+   if (kint_enforce > 2) {
+      P_CTRL(p_kint_enforce) = 2;
    } else {
-      P_CTRL(p_enforce_msr) = enforce_msr;
+      P_CTRL(p_kint_enforce) = kint_enforce;
    }
 
-   /* enforce_pcfi */
-   if (enforce_pcfi > P_PCFI_ENABLED) {
-      P_CTRL(p_enforce_pcfi) = P_PCFI_ENABLED;
+   /* msr_validate */
+   if (msr_validate > 1) {
+      P_CTRL(p_msr_validate) = 1;
    } else {
-      P_CTRL(p_enforce_pcfi) = enforce_pcfi;
+      P_CTRL(p_msr_validate) = msr_validate;
    }
+
+   /* pint_validate */
+   if (pint_validate > 3) {
+      P_CTRL(p_pint_validate) = 3;
+   } else {
+      P_CTRL(p_pint_validate) = pint_validate;
+   }
+
+   /* pint_enforce */
+   if (pint_enforce > 2) {
+      P_CTRL(p_pint_enforce) = 2;
+   } else {
+      P_CTRL(p_pint_enforce) = pint_enforce;
+   }
+
+   /* umh_validate */
+   if (umh_validate > 2) {
+      P_CTRL(p_umh_validate) = 2;
+   } else {
+      P_CTRL(p_umh_validate) = umh_validate;
+   }
+
+   /* umh_enforce */
+   if (umh_enforce > 2) {
+      P_CTRL(p_umh_enforce) = 2;
+   } else {
+      P_CTRL(p_umh_enforce) = umh_enforce;
+   }
+
+   /* pcfi_validate */
+   if (pcfi_validate > 2) {
+      P_CTRL(p_pcfi_validate) = 2;
+   } else {
+      P_CTRL(p_pcfi_validate) = pcfi_validate;
+   }
+
+   /* pcfi_enforce */
+   if (pcfi_enforce > 2) {
+      P_CTRL(p_pcfi_enforce) = 2;
+   } else {
+      P_CTRL(p_pcfi_enforce) = pcfi_enforce;
+   }
+
+#if defined(CONFIG_X86)
+   /* smep_validate */
+   if (smep_validate > 1) {
+      P_CTRL(p_smep_validate) = 1;
+   } else {
+      P_CTRL(p_smep_validate) = smep_validate;
+   }
+
+   /* smep_enforce */
+   if (smep_enforce > 2) {
+      P_CTRL(p_smep_enforce) = 2;
+   } else {
+      P_CTRL(p_smep_enforce) = smep_enforce;
+   }
+
+   P_ENABLE_WP_FLAG(P_VAR(p_pcfi_CPU_flags));
+#endif
 
 }
 
@@ -388,11 +473,11 @@ static int __init p_lkrg_register(void) {
    }
 
 #if defined(CONFIG_X86)
-   if (P_IS_SMEP_ENABLED(p_pcfi_CPU_flags)) {
-      P_CTRL(p_smep_panic) = 0x1;
-   } else {
+   if (!P_IS_SMEP_FLAG_ENABLED(P_VAR(p_pcfi_CPU_flags))) {
+      P_CTRL(p_smep_validate) = 0x0;
+      P_CTRL(p_smep_enforce) = 0x0;
       p_print_log(P_LKRG_ERR,
-             "System does NOT support SMEP. LKRG can't enforce smep_panic :(\n");
+            "System does NOT support SMEP. LKRG can't enforce SMEP validation :(\n");
    }
 #endif
 
@@ -402,7 +487,6 @@ static int __init p_lkrg_register(void) {
 
    p_integrity_timer();
    p_register_notifiers();
-   P_CTRL(p_random_events) = 0x1;
    p_init_page_attr();
 
    p_print_log(P_LKRG_CRIT,
@@ -467,7 +551,7 @@ static void __exit p_lkrg_deregister(void) {
    while (P_SYM(p_freeze_processes)())
       schedule();
 
-   del_timer(&p_timer);
+   del_timer_sync(&p_timer);
    p_deregister_notifiers();
    p_deregister_comm_channel();
 
@@ -504,16 +588,36 @@ module_exit(p_lkrg_deregister);
 
 module_param(log_level, uint, 0000);
 MODULE_PARM_DESC(log_level, "log_level [3 (warn) is default]");
-module_param(clean_message, uint, 0000);
-MODULE_PARM_DESC(clean_message, "clean_message [0 (don't print) is default]");
+module_param(heartbeat, uint, 0000);
+MODULE_PARM_DESC(heartbeat, "heartbeat [0 (don't print) is default]");
 module_param(block_modules, uint, 0000);
 MODULE_PARM_DESC(block_modules, "block_modules [0 (don't block) is default]");
-module_param(enforce_umh, uint, 0000);
-MODULE_PARM_DESC(enforce_umh, "enforce_umh [1 (whitelist UMH paths) is default]");
-module_param(enforce_msr, uint, 0000);
-MODULE_PARM_DESC(enforce_msr, "enforce_msr [1 (enabled) is default]");
-module_param(enforce_pcfi, uint, 0000);
-MODULE_PARM_DESC(enforce_pcfi, "enforce_pcfi [2 (fully enabled pCFI) is default]");
+module_param(interval, uint, 0000);
+MODULE_PARM_DESC(interval, "interval [15 seconds is default]");
+module_param(kint_validate, uint, 0000);
+MODULE_PARM_DESC(kint_validate, "kint_validate [3 (periodically + random events) is default]");
+module_param(kint_enforce, uint, 0000);
+MODULE_PARM_DESC(kint_enforce, "kint_enforce [2 (panic) is default]");
+module_param(msr_validate, uint, 0000);
+MODULE_PARM_DESC(msr_validate, "msr_validate [1 (enabled) is default]");
+module_param(pint_validate, uint, 0000);
+MODULE_PARM_DESC(pint_validate, "pint_validate [2 (current + waking_up) is default]");
+module_param(pint_enforce, uint, 0000);
+MODULE_PARM_DESC(pint_enforce, "pint_enforce [1 (kill task) is default]");
+module_param(umh_validate, uint, 0000);
+MODULE_PARM_DESC(umh_validate, "umh_validate [1 (whitelist UMH paths) is default]");
+module_param(umh_enforce, uint, 0000);
+MODULE_PARM_DESC(umh_enforce, "umh_enforce [1 (prevent execution) is default]");
+module_param(pcfi_validate, uint, 0000);
+MODULE_PARM_DESC(pcfi_validate, "pcfi_validate [2 (fully enabled pCFI) is default]");
+module_param(pcfi_enforce, uint, 0000);
+MODULE_PARM_DESC(pcfi_enforce, "pcfi_enforce [1 (kill task) is default]");
+#if defined(CONFIG_X86)
+module_param(smep_validate, uint, 0000);
+MODULE_PARM_DESC(smep_validate, "smep_validate [1 (enabled) is default]");
+module_param(smep_enforce, uint, 0000);
+MODULE_PARM_DESC(smep_enforce, "smep_enforce [2 (panic) is default]");
+#endif
 
 MODULE_AUTHOR("Adam 'pi3' Zabrocki (http://pi3.com.pl)");
 MODULE_DESCRIPTION("pi3's Linux kernel Runtime Guard");

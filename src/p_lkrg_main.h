@@ -79,20 +79,25 @@
 
 typedef struct _p_lkrg_global_conf_structure {
 
-   unsigned int p_timestamp;
+   unsigned int p_kint_validate;
+   unsigned int p_kint_enforce;
+   unsigned int p_pint_validate;
+   unsigned int p_pint_enforce;
+   unsigned int p_interval;
    unsigned int p_log_level;
-   unsigned int p_force_run;
+   unsigned int p_trigger;
    unsigned int p_block_modules;
    unsigned int p_hide_lkrg;
-   unsigned int p_clean_message;
-   unsigned int p_random_events;
-   unsigned int p_ci_panic;
+   unsigned int p_heartbeat;
 #ifdef CONFIG_X86
-   unsigned int p_smep_panic;
+   unsigned int p_smep_validate;
+   unsigned int p_smep_enforce;
 #endif
-   unsigned int p_enforce_umh;
-   unsigned int p_enforce_msr;
-   unsigned int p_enforce_pcfi;
+   unsigned int p_umh_validate;
+   unsigned int p_umh_enforce;
+   unsigned int p_msr_validate;
+   unsigned int p_pcfi_validate;
+   unsigned int p_pcfi_enforce;
 
 } p_lkrg_global_conf_struct;
 
@@ -149,10 +154,17 @@ typedef struct _p_lkrg_global_symbols_structure {
 
 } p_lkrg_global_syms;
 
+typedef struct _p_lkrg_critical_variables {
+
+   unsigned long p_pcfi_CPU_flags;
+
+} p_lkrg_critical_var;
+
 typedef struct _p2_lkrg_global_ctrl_structure {
 
    p_lkrg_global_conf_struct ctrl;
    p_lkrg_global_syms syms;
+   p_lkrg_critical_var var;
 
 } p_lkrg_global_ctrl_struct __attribute__((aligned(PAGE_SIZE)));
 
@@ -174,6 +186,7 @@ typedef struct _p_lkrg_ro_page {
 
 extern p_ro_page p_ro;
 
+#define P_VAR(p_field) p_ro.p_lkrg_global_ctrl.var.p_field
 #define P_SYM(p_field) p_ro.p_lkrg_global_ctrl.syms.p_field
 #define P_CTRL(p_field) p_ro.p_lkrg_global_ctrl.ctrl.p_field
 #define P_CTRL_ADDR &p_ro.p_lkrg_global_ctrl

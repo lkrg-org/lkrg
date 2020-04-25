@@ -258,6 +258,10 @@ static inline void p_regs_set_arg2(struct pt_regs *p_regs, unsigned long p_val) 
    p_regs->si = p_val;
 }
 
+static inline void p_regs_set_ip(struct pt_regs *p_regs, unsigned long p_val) {
+   p_regs->ip = p_val;
+}
+
 /*
  * Syscalls
  */
@@ -307,6 +311,30 @@ static inline int p_set_memory_p(unsigned long p_addr, int p_numpages) {
                                             __pgprot(_PAGE_PRESENT),
                                             __pgprot(0),
                                             0, 0, NULL);
+}
+
+static inline void p_lkrg_open_rw_x86(void) {
+
+   register unsigned long p_cr0;
+
+   p_text_section_lock();
+   preempt_disable();
+   barrier();
+   p_cr0 = read_cr0() ^ X86_CR0_WP;
+   write_cr0(p_cr0);
+   barrier();
+}
+
+static inline void p_lkrg_close_rw_x86(void) {
+
+   register unsigned long p_cr0;
+
+   barrier();
+   p_cr0 = read_cr0() ^ X86_CR0_WP;
+   write_cr0(p_cr0);
+   barrier();
+   preempt_enable(); //_no_resched();
+   p_text_section_unlock();
 }
 
 static inline void p_lkrg_open_rw(void) {
@@ -389,6 +417,10 @@ static inline void p_regs_set_arg1(struct pt_regs *p_regs, unsigned long p_val) 
 
 static inline void p_regs_set_arg2(struct pt_regs *p_regs, unsigned long p_val) {
    p_regs->ARM_r1 = p_val;
+}
+
+static inline void p_regs_set_ip(struct pt_regs *p_regs, unsigned long p_val) {
+   p_regs->ARM_pc = p_val;
 }
 
 /*
@@ -504,6 +536,10 @@ static inline void p_regs_set_arg1(struct pt_regs *p_regs, unsigned long p_val) 
 
 static inline void p_regs_set_arg2(struct pt_regs *p_regs, unsigned long p_val) {
    p_regs->regs[1] = p_val;
+}
+
+static inline void p_regs_set_ip(struct pt_regs *p_regs, unsigned long p_val) {
+   p_regs->pc = p_val;
 }
 
 /*
