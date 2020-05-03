@@ -157,7 +157,7 @@ typedef struct _p_lkrg_global_symbols_structure {
 
 typedef struct _p_lkrg_critical_variables {
 
-   unsigned long p_pcfi_CPU_flags;
+   unsigned long p_dummy1;
 
 } p_lkrg_critical_var;
 

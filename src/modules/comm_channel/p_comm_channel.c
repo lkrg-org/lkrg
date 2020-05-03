@@ -364,7 +364,7 @@ static int p_sysctl_kint_enforce(struct ctl_table *p_table, int p_write,
                      );
 #ifdef CONFIG_X86
          if (P_CTRL(p_kint_enforce)) {
-            P_ENABLE_WP_FLAG(P_VAR(p_pcfi_CPU_flags));
+            P_ENABLE_WP_FLAG(p_pcfi_CPU_flags);
          }
 #endif
       }
@@ -646,13 +646,14 @@ static int p_sysctl_smep_validate(struct ctl_table *p_table, int p_write,
          if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
             p_print_log(P_LKRG_CRIT,
                    "Enabling SMEP validation feature.\n");
-            P_ENABLE_SMEP_FLAG(P_VAR(p_pcfi_CPU_flags));
+            P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
          } else {
             p_print_log(P_LKRG_ERR,
                    "System does NOT support SMEP. LKRG can't enable SMEP validation :(\n");
             P_CTRL(p_smep_validate) = 0x0;
+            P_CTRL(p_smep_enforce) = 0x0;
          }
-      } else if (p_tmp && !P_CTRL(p_block_modules)) {
+      } else if (p_tmp && !P_CTRL(p_smep_validate)) {
          p_print_log(P_LKRG_CRIT,
                      "Disabling SMEP validation feature.\n");
       }
@@ -694,7 +695,7 @@ static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
                      p_str[P_CTRL(p_smep_enforce)]
                      );
          if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
-            P_ENABLE_SMEP_FLAG(P_VAR(p_pcfi_CPU_flags));
+            P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
          } else {
             p_print_log(P_LKRG_ERR,
                    "System does NOT support SMEP. LKRG's SMEP validation will be disabled :(\n");

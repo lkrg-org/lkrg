@@ -301,7 +301,7 @@ void p_parse_module_params(void) {
       P_CTRL(p_smep_enforce) = smep_enforce;
    }
 
-   P_ENABLE_WP_FLAG(P_VAR(p_pcfi_CPU_flags));
+   P_ENABLE_WP_FLAG(p_pcfi_CPU_flags);
 #endif
 
 }
@@ -473,7 +473,7 @@ static int __init p_lkrg_register(void) {
    }
 
 #if defined(CONFIG_X86)
-   if (!P_IS_SMEP_FLAG_ENABLED(P_VAR(p_pcfi_CPU_flags))) {
+   if (!P_IS_SMEP_FLAG_ENABLED(p_pcfi_CPU_flags)) {
       P_CTRL(p_smep_validate) = 0x0;
       P_CTRL(p_smep_enforce) = 0x0;
       p_print_log(P_LKRG_ERR,
