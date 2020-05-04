@@ -222,6 +222,7 @@ extern p_ro_page p_ro;
  * Exploit Detection
  */
 #include "modules/exploit_detection/p_exploit_detection.h"
+#include "modules/exploit_detection/syscalls/p_install.h"
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 13, 0)
  #define __GFP_REPEAT   ((__force gfp_t)___GFP_RETRY_MAYFAIL)
