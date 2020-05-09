@@ -65,7 +65,9 @@
 #include <linux/stacktrace.h>
 #include <asm/stacktrace.h>
 #include <asm/tlbflush.h>
+#if defined(CONFIG_X86)
 #include <asm/unwind.h>
+#endif
 
 //#define p_lkrg_read_only __attribute__((__section__(".data..p_lkrg_read_only"),aligned(PAGE_SIZE)))
 #define __p_lkrg_read_only __attribute__((__section__(".p_lkrg_read_only")))
@@ -90,7 +92,7 @@ typedef struct _p_lkrg_global_conf_structure {
    unsigned int p_block_modules;
    unsigned int p_hide_lkrg;
    unsigned int p_heartbeat;
-#ifdef CONFIG_X86
+#if defined(CONFIG_X86)
    unsigned int p_smep_validate;
    unsigned int p_smep_enforce;
 #endif
@@ -135,6 +137,7 @@ typedef struct _p_lkrg_global_symbols_structure {
 #endif
 #endif
    int (*p_core_kernel_text)(unsigned long p_addr);
+   pmd_t *(*p_mm_find_pmd)(struct mm_struct *mm, unsigned long address);
    struct mutex *p_text_mutex;
    struct mutex *p_jump_label_mutex;
    struct text_poke_loc **p_tp_vec;
