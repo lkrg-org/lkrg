@@ -286,22 +286,35 @@ void p_parse_module_params(void) {
       P_CTRL(p_pcfi_enforce) = pcfi_enforce;
    }
 
-#if defined(CONFIG_X86)
-   /* smep_validate */
-   if (smep_validate > 1) {
-      P_CTRL(p_smep_validate) = 1;
-   } else {
-      P_CTRL(p_smep_validate) = smep_validate;
-   }
+   p_pcfi_CPU_flags = 0x0;
 
-   /* smep_enforce */
-   if (smep_enforce > 2) {
-      P_CTRL(p_smep_enforce) = 2;
+#if defined(CONFIG_X86)
+
+   if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+      P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
+
+      /* smep_validate */
+      if (smep_validate > 1) {
+         P_CTRL(p_smep_validate) = 1;
+      } else {
+         P_CTRL(p_smep_validate) = smep_validate;
+      }
+
+      /* smep_enforce */
+      if (smep_enforce > 2) {
+         P_CTRL(p_smep_enforce) = 2;
+      } else {
+         P_CTRL(p_smep_enforce) = smep_enforce;
+      }
    } else {
-      P_CTRL(p_smep_enforce) = smep_enforce;
+      P_CTRL(p_smep_validate) = 0x0;
+      P_CTRL(p_smep_enforce) = 0x0;
+      p_print_log(P_LKRG_ERR,
+            "System does NOT support SMEP. LKRG can't enforce SMEP validation :(\n");
    }
 
    P_ENABLE_WP_FLAG(p_pcfi_CPU_flags);
+
 #endif
 
 }
@@ -471,15 +484,6 @@ static int __init p_lkrg_register(void) {
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
-
-#if defined(CONFIG_X86)
-   if (!P_IS_SMEP_FLAG_ENABLED(p_pcfi_CPU_flags)) {
-      P_CTRL(p_smep_validate) = 0x0;
-      P_CTRL(p_smep_enforce) = 0x0;
-      p_print_log(P_LKRG_ERR,
-            "System does NOT support SMEP. LKRG can't enforce SMEP validation :(\n");
-   }
-#endif
 
    if (P_CTRL(p_hide_lkrg)) {
       p_hide_itself();
