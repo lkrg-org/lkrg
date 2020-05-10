@@ -58,6 +58,12 @@ static int p_smep_validate_max = 0x1;
 
 static int p_smep_enforce_min = 0x0;
 static int p_smep_enforce_max = 0x2;
+
+static int p_smap_validate_min = 0x0;
+static int p_smap_validate_max = 0x1;
+
+static int p_smap_enforce_min = 0x0;
+static int p_smap_enforce_max = 0x2;
 #endif
 
 static int p_umh_validate_min = 0x0;
@@ -102,6 +108,10 @@ static int p_sysctl_heartbeat(struct ctl_table *p_table, int p_write,
 static int p_sysctl_smep_validate(struct ctl_table *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
+                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_smap_validate(struct ctl_table *p_table, int p_write,
+                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_smap_enforce(struct ctl_table *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #endif
 static int p_sysctl_umh_validate(struct ctl_table *p_table, int p_write,
@@ -236,6 +246,24 @@ struct ctl_table p_lkrg_sysctl_table[] = {
       .proc_handler   = p_sysctl_smep_enforce,
       .extra1         = &p_smep_enforce_min,
       .extra2         = &p_smep_enforce_max,
+   },
+   {
+      .procname       = "smap_validate",
+      .data           = &P_CTRL(p_smap_validate),
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_smap_validate,
+      .extra1         = &p_smap_validate_min,
+      .extra2         = &p_smap_validate_max,
+   },
+   {
+      .procname       = "smap_enforce",
+      .data           = &P_CTRL(p_smap_enforce),
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_smap_enforce,
+      .extra1         = &p_smap_enforce_min,
+      .extra2         = &p_smap_enforce_max,
    },
 #endif
    {
@@ -709,6 +737,90 @@ static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
           "Leaving function <p_sysctl_smep_enforce>\n");
+
+   return p_ret;
+}
+
+static int p_sysctl_smap_validate(struct ctl_table *p_table, int p_write,
+                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   unsigned int p_tmp;
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Entering function <p_sysctl_smap_validate>\n");
+
+   p_tmp = P_CTRL(p_smap_validate);
+   p_lkrg_open_rw();
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      if (P_CTRL(p_smap_validate) && !p_tmp) {
+         if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+            p_print_log(P_LKRG_CRIT,
+                   "Enabling SMAP validation feature.\n");
+            P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
+         } else {
+            p_print_log(P_LKRG_ERR,
+                   "System does NOT support SMAP. LKRG can't enable SMAP validation :(\n");
+            P_CTRL(p_smap_validate) = 0x0;
+            P_CTRL(p_smap_enforce) = 0x0;
+         }
+      } else if (p_tmp && !P_CTRL(p_smap_validate)) {
+         p_print_log(P_LKRG_CRIT,
+                     "Disabling SMAP validation feature.\n");
+      }
+
+   }
+   p_lkrg_close_rw();
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Leaving function <p_sysctl_smap_validate>\n");
+
+   return p_ret;
+}
+
+static int p_sysctl_smap_enforce(struct ctl_table *p_table, int p_write,
+                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   unsigned int p_tmp;
+   char *p_str[] = {
+      "LOG & ACCEPT",
+      "LOG & RESTORE",
+      "PANIC"
+   };
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Entering function <p_sysctl_smap_enforce>\n");
+
+   p_tmp = P_CTRL(p_smap_enforce);
+   p_lkrg_open_rw();
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      if (P_CTRL(p_smap_enforce) != p_tmp) {
+         p_print_log(P_LKRG_CRIT,
+                     "Changing \"smap_enforce\" logic. From Old[%d | %s] to new[%d | %s] one.\n",
+                     p_tmp,
+                     p_str[p_tmp],
+                     P_CTRL(p_smap_enforce),
+                     p_str[P_CTRL(p_smap_enforce)]
+                     );
+         if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+            P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
+         } else {
+            p_print_log(P_LKRG_ERR,
+                   "System does NOT support SMAP. LKRG's SMAP validation will be disabled :(\n");
+            P_CTRL(p_smap_enforce) = 0x0;
+            P_CTRL(p_smap_validate) = 0x0;
+         }
+      }
+   }
+   p_lkrg_close_rw();
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Leaving function <p_sysctl_smap_enforce>\n");
 
    return p_ret;
 }

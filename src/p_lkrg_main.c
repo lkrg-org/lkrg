@@ -33,6 +33,8 @@ unsigned int umh_enforce = 1;
 #if defined(CONFIG_X86)
 unsigned int smep_validate = 1;
 unsigned int smep_enforce = 2;
+unsigned int smap_validate = 1;
+unsigned int smap_enforce = 2;
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
@@ -60,6 +62,8 @@ p_ro_page p_ro __p_lkrg_read_only = {
 #if defined(CONFIG_X86)
       .p_smep_validate = 1,               // smep_validate
       .p_smep_enforce = 0,                // smep_enforce
+      .p_smap_validate = 1,               // smap_validate
+      .p_smap_enforce = 0,                // smap_enforce
 #endif
       .p_umh_validate = 1,                // umh_validate
       .p_umh_enforce = 1,                 // umh_enforce
@@ -311,6 +315,29 @@ void p_parse_module_params(void) {
       P_CTRL(p_smep_enforce) = 0x0;
       p_print_log(P_LKRG_ERR,
             "System does NOT support SMEP. LKRG can't enforce SMEP validation :(\n");
+   }
+
+   if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+      P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
+
+      /* smap_validate */
+      if (smap_validate > 1) {
+         P_CTRL(p_smap_validate) = 1;
+      } else {
+         P_CTRL(p_smap_validate) = smap_validate;
+      }
+
+      /* smap_enforce */
+      if (smap_enforce > 2) {
+         P_CTRL(p_smap_enforce) = 2;
+      } else {
+         P_CTRL(p_smap_enforce) = smap_enforce;
+      }
+   } else {
+      P_CTRL(p_smap_validate) = 0x0;
+      P_CTRL(p_smap_enforce) = 0x0;
+      p_print_log(P_LKRG_ERR,
+            "System does NOT support SMAP. LKRG can't enforce SMAP validation :(\n");
    }
 
    P_ENABLE_WP_FLAG(p_pcfi_CPU_flags);
@@ -621,6 +648,10 @@ module_param(smep_validate, uint, 0000);
 MODULE_PARM_DESC(smep_validate, "smep_validate [1 (enabled) is default]");
 module_param(smep_enforce, uint, 0000);
 MODULE_PARM_DESC(smep_enforce, "smep_enforce [2 (panic) is default]");
+module_param(smap_validate, uint, 0000);
+MODULE_PARM_DESC(smap_validate, "smap_validate [1 (enabled) is default]");
+module_param(smap_enforce, uint, 0000);
+MODULE_PARM_DESC(smap_enforce, "smap_enforce [2 (panic) is default]");
 #endif
 
 MODULE_AUTHOR("Adam 'pi3' Zabrocki (http://pi3.com.pl)");

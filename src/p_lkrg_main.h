@@ -95,6 +95,8 @@ typedef struct _p_lkrg_global_conf_structure {
 #if defined(CONFIG_X86)
    unsigned int p_smep_validate;
    unsigned int p_smep_enforce;
+   unsigned int p_smap_validate;
+   unsigned int p_smap_enforce;
 #endif
    unsigned int p_umh_validate;
    unsigned int p_umh_enforce;
