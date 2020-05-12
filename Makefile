@@ -40,6 +40,7 @@ p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
                src/modules/notifiers/p_notifiers.o \
                src/modules/self-defense/hiding/p_hiding.o \
                src/modules/exploit_detection/p_rb_ed_trees/p_rb_ed_pids/p_rb_ed_pids_tree.o \
+               src/modules/exploit_detection/syscalls/p_install.o \
                src/modules/exploit_detection/syscalls/p_sys_execve/p_sys_execve.o \
                src/modules/exploit_detection/syscalls/p_sys_execveat/p_sys_execveat.o \
                src/modules/exploit_detection/syscalls/p_call_usermodehelper/p_call_usermodehelper.o \
