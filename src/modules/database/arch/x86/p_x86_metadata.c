@@ -71,7 +71,7 @@ u64 p_read_msr(/*int p_cpu, */u32 p_arg) {
 }
 
 /*
- * This function is independetly executed by each active CPU.
+ * This function is independently executed by each active CPU.
  * IDT is individual per logical CPU (same as MSRs, etc).
  */
 void p_dump_x86_metadata(void *_p_arg) {

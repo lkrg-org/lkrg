@@ -20,7 +20,7 @@
 #define P_LKRG_ARM64_METADATA_H
 
 /*
- * Each CPU in the system independetly dump own critical data and save it using
+ * Each CPU in the system independently dump own critical data and save it using
  * following structure - it includes:
  *  - ...
  */

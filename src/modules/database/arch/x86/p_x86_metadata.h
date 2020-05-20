@@ -52,7 +52,7 @@ typedef struct p_idt_descriptor {
 #define P_X86_MAX_IDT 256
 
 /*
- * Each CPU in the system independetly dump own critical data and save it using
+ * Each CPU in the system independently dump own critical data and save it using
  * following structure - it includes:
  *  - IDT base
  *  - IDT size

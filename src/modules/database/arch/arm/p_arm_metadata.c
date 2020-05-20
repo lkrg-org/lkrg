@@ -31,7 +31,7 @@
 #if defined(CONFIG_ARM)
 
 /*
- * This function is independetly executed by each active CPU.
+ * This function is independently executed by each active CPU.
  */
 void p_dump_arm_metadata(void *_p_arg) {
 
