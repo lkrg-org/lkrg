@@ -82,27 +82,29 @@
 
 typedef struct _p_lkrg_global_conf_structure {
 
-   unsigned int p_kint_validate;
-   unsigned int p_kint_enforce;
-   unsigned int p_pint_validate;
-   unsigned int p_pint_enforce;
-   unsigned int p_interval;
-   unsigned int p_log_level;
-   unsigned int p_trigger;
-   unsigned int p_block_modules;
-   unsigned int p_hide_lkrg;
-   unsigned int p_heartbeat;
 #if defined(CONFIG_X86)
    unsigned int p_smep_validate;
-   unsigned int p_smep_enforce;
    unsigned int p_smap_validate;
+#endif
+   unsigned int p_pcfi_validate;
+   unsigned int p_pint_validate;
+   unsigned int p_kint_validate;
+   unsigned int p_log_level;
+   unsigned int p_block_modules;
+   unsigned int p_msr_validate;
+   unsigned int p_heartbeat;
+   unsigned int p_interval;
+   unsigned int p_umh_validate;
+#if defined(CONFIG_X86)
+   unsigned int p_smep_enforce;
    unsigned int p_smap_enforce;
 #endif
-   unsigned int p_umh_validate;
-   unsigned int p_umh_enforce;
-   unsigned int p_msr_validate;
-   unsigned int p_pcfi_validate;
    unsigned int p_pcfi_enforce;
+   unsigned int p_pint_enforce;
+   unsigned int p_kint_enforce;
+   unsigned int p_trigger;
+   unsigned int p_hide_lkrg;
+   unsigned int p_umh_enforce;
 
 } p_lkrg_global_conf_struct;
 
