@@ -36,6 +36,9 @@ unsigned int smep_enforce = 2;
 unsigned int smap_validate = 1;
 unsigned int smap_enforce = 2;
 #endif
+unsigned int profile_validate = 9;
+unsigned int profile_enforce = 9;
+
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
 static enum cpuhp_state p_hot_cpus;
@@ -69,7 +72,10 @@ p_ro_page p_ro __p_lkrg_read_only = {
       .p_umh_enforce = 1,                 // umh_enforce
       .p_msr_validate = 1,                // msr_validate
       .p_pcfi_validate = 2,               // pcfi_validate
-      .p_pcfi_enforce = 1                 // pcfi_enforce
+      .p_pcfi_enforce = 1,                // pcfi_enforce
+      /* Profiles */
+      .p_profile_validate = 9,            // profile_validate
+      .p_profile_enforce = 9              // profile_enforce
    },
 
 #if !defined(CONFIG_ARM)

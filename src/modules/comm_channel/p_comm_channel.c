@@ -52,7 +52,7 @@ static int p_hide_lkrg_max = 0x1;
 static int p_heartbeat_min = 0x0;
 static int p_heartbeat_max = 0x1;
 
-#ifdef CONFIG_X86
+#if defined(CONFIG_X86)
 static int p_smep_validate_min = 0x0;
 static int p_smep_validate_max = 0x1;
 
@@ -81,6 +81,13 @@ static int p_pcfi_validate_max = 0x2;
 static int p_pcfi_enforce_min = 0x0;
 static int p_pcfi_enforce_max = 0x2;
 
+/* Profiles */
+static int p_profile_validate_min = 0;
+static int p_profile_validate_max = 9;
+
+static int p_profile_enforce_min = 0;
+static int p_profile_enforce_max = 9;
+
 
 static int p_sysctl_kint_validate(struct ctl_table *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos);
@@ -104,7 +111,7 @@ static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
 #endif
 static int p_sysctl_heartbeat(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-#ifdef CONFIG_X86
+#if defined(CONFIG_X86)
 static int p_sysctl_smep_validate(struct ctl_table *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
@@ -124,6 +131,10 @@ static int p_sysctl_pcfi_validate(struct ctl_table *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 static int p_sysctl_pcfi_enforce(struct ctl_table *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
+                                     void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
+                                    void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 
 
 struct ctl_table p_lkrg_sysctl_base[] = {
@@ -228,7 +239,7 @@ struct ctl_table p_lkrg_sysctl_table[] = {
       .extra1         = &p_heartbeat_min,
       .extra2         = &p_heartbeat_max,
    },
-#ifdef CONFIG_X86
+#if defined(CONFIG_X86)
    {
       .procname       = "smep_validate",
       .data           = &P_CTRL(p_smep_validate),
@@ -311,6 +322,24 @@ struct ctl_table p_lkrg_sysctl_table[] = {
       .extra1         = &p_pcfi_enforce_min,
       .extra2         = &p_pcfi_enforce_max,
    },
+   {
+      .procname       = "profile_validate",
+      .data           = &P_CTRL(p_profile_validate),
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_profile_validate,
+      .extra1         = &p_profile_validate_min,
+      .extra2         = &p_profile_validate_max,
+   },
+   {
+      .procname       = "profile_enforce",
+      .data           = &P_CTRL(p_profile_enforce),
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_profile_enforce,
+      .extra1         = &p_profile_enforce_min,
+      .extra2         = &p_profile_enforce_max,
+   },
    { }
 };
 
@@ -342,7 +371,7 @@ static int p_sysctl_kint_validate(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_kint_validate),
                      p_str[P_CTRL(p_kint_validate)]
                      );
-
+         P_CTRL(p_profile_validate) = 0x9;
          /* Random events */
          if (p_tmp < 0x3 && P_CTRL(p_kint_validate) == 0x3) {
             p_register_notifiers();
@@ -367,7 +396,7 @@ static int p_sysctl_kint_enforce(struct ctl_table *p_table, int p_write,
    unsigned int p_tmp;
    char *p_str[] = {
       "LOG & ACCEPT",
-#ifdef CONFIG_X86
+#if defined(CONFIG_X86)
       "LOG ONLY (For SELinux and CR0.WP LOG & RESTORE)",
 #else
       "LOG ONLY (For SELinux LOG & RESTORE)",
@@ -390,7 +419,8 @@ static int p_sysctl_kint_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_kint_enforce),
                      p_str[P_CTRL(p_kint_enforce)]
                      );
-#ifdef CONFIG_X86
+         P_CTRL(p_profile_enforce) = 0x9;
+#if defined(CONFIG_X86)
          if (P_CTRL(p_kint_enforce)) {
             P_ENABLE_WP_FLAG(p_pcfi_CPU_flags);
          }
@@ -433,6 +463,7 @@ static int p_sysctl_pint_validate(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_pint_validate),
                      p_str[P_CTRL(p_pint_validate)]
                      );
+         P_CTRL(p_profile_validate) = 0x9;
       }
    }
    p_lkrg_close_rw();
@@ -470,6 +501,7 @@ static int p_sysctl_pint_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_pint_enforce),
                      p_str[P_CTRL(p_pint_enforce)]
                      );
+         P_CTRL(p_profile_enforce) = 0x9;
       }
    }
    p_lkrg_close_rw();
@@ -656,7 +688,7 @@ static int p_sysctl_heartbeat(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-#ifdef CONFIG_X86
+#if defined(CONFIG_X86)
 static int p_sysctl_smep_validate(struct ctl_table *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
@@ -681,9 +713,11 @@ static int p_sysctl_smep_validate(struct ctl_table *p_table, int p_write,
             P_CTRL(p_smep_validate) = 0x0;
             P_CTRL(p_smep_enforce) = 0x0;
          }
+         P_CTRL(p_profile_validate) = 0x9;
       } else if (p_tmp && !P_CTRL(p_smep_validate)) {
          p_print_log(P_LKRG_CRIT,
                      "Disabling SMEP validation feature.\n");
+         P_CTRL(p_profile_validate) = 0x9;
       }
 
    }
@@ -722,6 +756,7 @@ static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_smep_enforce),
                      p_str[P_CTRL(p_smep_enforce)]
                      );
+         P_CTRL(p_profile_enforce) = 0x9;
          if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
             P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
          } else {
@@ -765,9 +800,11 @@ static int p_sysctl_smap_validate(struct ctl_table *p_table, int p_write,
             P_CTRL(p_smap_validate) = 0x0;
             P_CTRL(p_smap_enforce) = 0x0;
          }
+         P_CTRL(p_profile_validate) = 0x9;
       } else if (p_tmp && !P_CTRL(p_smap_validate)) {
          p_print_log(P_LKRG_CRIT,
                      "Disabling SMAP validation feature.\n");
+         P_CTRL(p_profile_validate) = 0x9;
       }
 
    }
@@ -806,6 +843,7 @@ static int p_sysctl_smap_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_smap_enforce),
                      p_str[P_CTRL(p_smap_enforce)]
                      );
+         P_CTRL(p_profile_enforce) = 0x9;
          if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
             P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
          } else {
@@ -852,6 +890,7 @@ static int p_sysctl_umh_validate(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_umh_validate),
                      p_str[P_CTRL(p_umh_validate)]
                      );
+         P_CTRL(p_profile_validate) = 0x9;
       }
    }
    p_lkrg_close_rw();
@@ -889,6 +928,7 @@ static int p_sysctl_umh_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_umh_enforce),
                      p_str[P_CTRL(p_umh_enforce)]
                      );
+         P_CTRL(p_profile_validate) = 0x9;
       }
    }
    p_lkrg_close_rw();
@@ -915,8 +955,6 @@ static int p_sysctl_msr_validate(struct ctl_table *p_table, int p_write,
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
       if (P_CTRL(p_msr_validate) && !p_tmp) {
-         p_offload_work(0); // run integrity check!
-         schedule();
          spin_lock(&p_db_lock);
          memset(p_db.p_CPU_metadata_array,0x0,sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids);
          for_each_present_cpu(p_cpu) {
@@ -928,14 +966,14 @@ static int p_sysctl_msr_validate(struct ctl_table *p_table, int p_write,
          spin_unlock(&p_db_lock);
          p_print_log(P_LKRG_CRIT,
                      "Enabling MSRs verification during Kernel Integrity validation (KINT).\n");
+         P_CTRL(p_profile_validate) = 0x9;
       } else if (p_tmp && !P_CTRL(p_msr_validate)) {
-         p_offload_work(0); // run integrity check!
-         schedule();
          spin_lock(&p_db_lock);
          p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
          spin_unlock(&p_db_lock);
          p_print_log(P_LKRG_CRIT,
                      "Disabling MSRs verification during Kernel Integrity validation (KINT).\n");
+         P_CTRL(p_profile_validate) = 0x9;
       }
    }
    p_lkrg_close_rw();
@@ -973,6 +1011,7 @@ static int p_sysctl_pcfi_validate(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_pcfi_validate),
                      p_str[P_CTRL(p_pcfi_validate)]
                      );
+         P_CTRL(p_profile_validate) = 0x9;
       }
    }
    p_lkrg_close_rw();
@@ -1010,6 +1049,7 @@ static int p_sysctl_pcfi_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_pcfi_enforce),
                      p_str[P_CTRL(p_pcfi_enforce)]
                      );
+         P_CTRL(p_profile_enforce) = 0x9;
       }
    }
    p_lkrg_close_rw();
@@ -1017,6 +1057,420 @@ static int p_sysctl_pcfi_enforce(struct ctl_table *p_table, int p_write,
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
           "Leaving function <p_sysctl_pcfi_enforce>\n");
+
+   return p_ret;
+}
+
+static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
+                                     void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   unsigned int p_tmp;
+   int p_cpu;
+   static const char * const p_str[] = {
+      "Disabled",
+      "Light",
+      "Balanced",
+      "Moderate",
+      "Heavy"
+   };
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Entering function <p_sysctl_profile_validate>\n");
+
+   p_tmp = P_CTRL(p_profile_validate);
+   p_lkrg_open_rw();
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      if (P_CTRL(p_profile_validate) != p_tmp) {
+         if (P_CTRL(p_profile_validate) > 4 && P_CTRL(p_profile_validate) != 9) {
+            p_print_log(P_LKRG_CRIT, "Invalid \"profile_validate\" value.\n");
+            P_CTRL(p_profile_validate) = p_tmp;
+         } else {
+
+            switch (P_CTRL(p_profile_validate)) {
+
+               case 0:
+                  /* kint_validate */
+                  if (P_CTRL(p_kint_validate) == 0x3)
+                     p_deregister_notifiers();
+                  P_CTRL(p_kint_validate) = 0x0;  // Disabled
+                  /* pint_validate */
+                  P_CTRL(p_pint_validate) = 0x0;  // Disabled
+                  /* pcfi_validate */
+                  P_CTRL(p_pcfi_validate) = 0x0;  // Disabled
+                  /* umh_validate */
+                  P_CTRL(p_umh_validate) = 0x0;   // Disabled
+                  /* msr_validate */
+                  if (P_CTRL(p_msr_validate)) {
+                     spin_lock(&p_db_lock);
+                     P_CTRL(p_msr_validate) = 0x0; // Disable
+                     p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
+                     spin_unlock(&p_db_lock);
+                  }
+#if defined(CONFIG_X86)
+                  /* smep_validate */
+                  P_CTRL(p_smep_validate) = 0x0;
+                  /* smap_validate */
+                  P_CTRL(p_smap_validate) = 0x0;
+#endif
+                  break;
+
+               case 1:
+                  /* kint_validate */
+                  if (P_CTRL(p_kint_validate) == 0x3)
+                     p_deregister_notifiers();
+                  P_CTRL(p_kint_validate) = 0x1;  // Manual trigger only
+                  /* pint_validate */
+                  P_CTRL(p_pint_validate) = 0x1;  // Current task only
+                  /* pcfi_validate */
+                  P_CTRL(p_pcfi_validate) = 0x1;  // Weak pCFI
+                  /* umh_validate */
+                  P_CTRL(p_umh_validate) = 0x1;   // Whitelist
+                  /* msr_validate */
+                  if (P_CTRL(p_msr_validate)) {
+                     spin_lock(&p_db_lock);
+                     P_CTRL(p_msr_validate) = 0x0; // Disable
+                     p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
+                     spin_unlock(&p_db_lock);
+                  }
+#if defined(CONFIG_X86)
+                  /* smep_validate */
+                  if (!P_CTRL(p_smep_validate)) {
+                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+                        P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
+                        P_CTRL(p_smep_validate) = 0x1;  // Enable
+                     } else {
+                        P_CTRL(p_smep_validate) = 0x0;
+                        P_CTRL(p_smep_enforce) = 0x0;
+                     }
+                  }
+                  /* smap_validate */
+                  if (!P_CTRL(p_smap_validate)) {
+                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+                        P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
+                        P_CTRL(p_smap_validate) = 0x1;  // Enable
+                     } else {
+                        P_CTRL(p_smap_validate) = 0x0;
+                        P_CTRL(p_smap_enforce) = 0x0;
+                     }
+                  }
+#endif
+                  break;
+
+               case 2:
+                  /* kint_validate */
+                  if (P_CTRL(p_kint_validate) == 0x3)
+                     p_deregister_notifiers();
+                  P_CTRL(p_kint_validate) = 0x2;  // Timer
+                  /* pint_validate */
+                  P_CTRL(p_pint_validate) = 0x2;  // Current + weaking up task
+                  /* pcfi_validate */
+                  P_CTRL(p_pcfi_validate) = 0x1;  // Weak pCFI
+                  /* umh_validate */
+                  P_CTRL(p_umh_validate) = 0x1;   // Whitelist
+                  /* msr_validate */
+                  if (P_CTRL(p_msr_validate)) {
+                     spin_lock(&p_db_lock);
+                     P_CTRL(p_msr_validate) = 0x0; // Disable
+                     p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
+                     spin_unlock(&p_db_lock);
+                  }
+#if defined(CONFIG_X86)
+                  /* smep_validate */
+                  if (!P_CTRL(p_smep_validate)) {
+                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+                        P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
+                        P_CTRL(p_smep_validate) = 0x1;  // Enable
+                     } else {
+                        P_CTRL(p_smep_validate) = 0x0;
+                        P_CTRL(p_smep_enforce) = 0x0;
+                     }
+                  }
+                  /* smap_validate */
+                  if (!P_CTRL(p_smap_validate)) {
+                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+                        P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
+                        P_CTRL(p_smap_validate) = 0x1;  // Enable
+                     } else {
+                        P_CTRL(p_smap_validate) = 0x0;
+                        P_CTRL(p_smap_enforce) = 0x0;
+                     }
+                  }
+#endif
+                  break;
+
+               case 3:
+                  /* kint_validate */
+                  if (P_CTRL(p_kint_validate) < 0x3)
+                     p_register_notifiers();
+                  P_CTRL(p_kint_validate) = 0x3;  // Timer + random events
+                  /* pint_validate */
+                  P_CTRL(p_pint_validate) = 0x2;  // Current + weaking up task
+                  /* pcfi_validate */
+                  P_CTRL(p_pcfi_validate) = 0x2;  // Full pCFI
+                  /* umh_validate */
+                  P_CTRL(p_umh_validate) = 0x1;   // Whitelist
+                  /* msr_validate */
+                  if (!P_CTRL(p_msr_validate)) {
+                     spin_lock(&p_db_lock);
+                     P_CTRL(p_msr_validate) = 0x1; // Enable
+                     memset(p_db.p_CPU_metadata_array,0x0,sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids);
+                     for_each_present_cpu(p_cpu) {
+                        if (cpu_online(p_cpu)) {
+                              smp_call_function_single(p_cpu,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
+                        }
+                     }
+                     p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
+                     spin_unlock(&p_db_lock);
+                  }
+#if defined(CONFIG_X86)
+                  /* smep_validate */
+                  if (!P_CTRL(p_smep_validate)) {
+                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+                        P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
+                        P_CTRL(p_smep_validate) = 0x1;  // Enable
+                     } else {
+                        P_CTRL(p_smep_validate) = 0x0;
+                        P_CTRL(p_smep_enforce) = 0x0;
+                     }
+                  }
+                  /* smap_validate */
+                  if (!P_CTRL(p_smap_validate)) {
+                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+                        P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
+                        P_CTRL(p_smap_validate) = 0x1;  // Enable
+                     } else {
+                        P_CTRL(p_smap_validate) = 0x0;
+                        P_CTRL(p_smap_enforce) = 0x0;
+                     }
+                  }
+#endif
+                  break;
+
+               case 4:
+                  /* kint_validate */
+                  if (P_CTRL(p_kint_validate) < 0x3)
+                     p_register_notifiers();
+                  P_CTRL(p_kint_validate) = 0x3;  // Timer + random events
+                  /* pint_validate */
+                  P_CTRL(p_pint_validate) = 0x3;  // Paranoid()
+                  /* pcfi_validate */
+                  P_CTRL(p_pcfi_validate) = 0x2;  // Full pCFI
+                  /* umh_validate */
+                  P_CTRL(p_umh_validate) = 0x2;   // Full lock-down
+                  /* msr_validate */
+                  if (!P_CTRL(p_msr_validate)) {
+                     spin_lock(&p_db_lock);
+                     P_CTRL(p_msr_validate) = 0x1; // Enable
+                     memset(p_db.p_CPU_metadata_array,0x0,sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids);
+                     for_each_present_cpu(p_cpu) {
+                        if (cpu_online(p_cpu)) {
+                              smp_call_function_single(p_cpu,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
+                        }
+                     }
+                     p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
+                     spin_unlock(&p_db_lock);
+                  }
+#if defined(CONFIG_X86)
+                  /* smep_validate */
+                  if (!P_CTRL(p_smep_validate)) {
+                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+                        P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
+                        P_CTRL(p_smep_validate) = 0x1;  // Enable
+                     } else {
+                        P_CTRL(p_smep_validate) = 0x0;
+                        P_CTRL(p_smep_enforce) = 0x0;
+                     }
+                  }
+                  /* smap_validate */
+                  if (!P_CTRL(p_smap_validate)) {
+                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+                        P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
+                        P_CTRL(p_smap_validate) = 0x1;  // Enable
+                     } else {
+                        P_CTRL(p_smap_validate) = 0x0;
+                        P_CTRL(p_smap_enforce) = 0x0;
+                     }
+                  }
+#endif
+                  break;
+
+               default:
+                  break;
+
+            }
+
+            p_print_log(P_LKRG_CRIT,
+                   "Changing \"profile_validate\" logic. From Old[%d | %s] to new[%d | %s] one.\n",
+                   p_tmp,
+                   (p_tmp != 9) ? p_str[p_tmp] : "Custom",
+                   P_CTRL(p_profile_validate),
+                   (P_CTRL(p_profile_validate) != 9) ? p_str[P_CTRL(p_profile_validate)] : "Custom"
+                   );
+         }
+      }
+   }
+   p_lkrg_close_rw();
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Leaving function <p_sysctl_profile_validate>\n");
+
+   return p_ret;
+}
+
+static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
+                                     void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   unsigned int p_tmp;
+   static const char * const p_str[] = {
+      "Log & Accept",
+      "Balanced (selective panic)",
+      "Moderate (more panic)",
+      "Panic"
+   };
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Entering function <p_sysctl_profile_enforce>\n");
+
+   p_tmp = P_CTRL(p_profile_enforce);
+   p_lkrg_open_rw();
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      if (P_CTRL(p_profile_enforce) != p_tmp) {
+         if (P_CTRL(p_profile_enforce) > 3 && P_CTRL(p_profile_enforce) != 9) {
+            p_print_log(P_LKRG_CRIT, "Invalid \"profile_enforce\" value.\n");
+            P_CTRL(p_profile_enforce) = p_tmp;
+         } else {
+
+            switch (P_CTRL(p_profile_enforce)) {
+
+               case 0:
+                  /* kint_enforce */
+                  P_CTRL(p_kint_enforce) = 0x0;  // Log & accept
+                  /* pint_enforce */
+                  P_CTRL(p_pint_enforce) = 0x0;  // Log & accept
+                  /* pcfi_enforce */
+                  P_CTRL(p_pcfi_enforce) = 0x0;  // Log only
+                  /* umh_enforce */
+                  P_CTRL(p_umh_enforce) = 0x0;   // Log only
+#if defined(CONFIG_X86)
+                  /* smep_enforce */
+                  P_CTRL(p_smep_enforce) = 0x0;  // Log & accept
+                  /* smap_enforce */
+                  P_CTRL(p_smap_enforce) = 0x0;  // Log & accept
+                  break;
+#endif
+
+               case 1:
+                  /* kint_enforce */
+                  P_CTRL(p_kint_enforce) = 0x1;  // Log only
+                  /* pint_enforce */
+                  P_CTRL(p_pint_enforce) = 0x1;  // Kill task
+                  /* pcfi_enforce */
+                  P_CTRL(p_pcfi_enforce) = 0x1;  // Kill task
+                  /* umh_enforce */
+                  P_CTRL(p_umh_enforce) = 0x1;   // Prevent execution
+#if defined(CONFIG_X86)
+                  /* smep_enforce */
+                  if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+                     P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
+                     P_CTRL(p_smep_enforce) = 0x2; // Panic
+                  } else {
+                     P_CTRL(p_smep_enforce) = 0x0;
+                     P_CTRL(p_smep_validate) = 0x0;
+                  }
+                  /* smap_enforce */
+                  if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+                     P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
+                     P_CTRL(p_smap_enforce) = 0x2; // Panic
+                  } else {
+                     P_CTRL(p_smap_enforce) = 0x0;
+                     P_CTRL(p_smap_validate) = 0x0;
+                  }
+#endif
+                  break;
+
+               case 2:
+                  /* kint_enforce */
+                  P_CTRL(p_kint_enforce) = 0x2;  // Panic
+                  /* pint_enforce */
+                  P_CTRL(p_pint_enforce) = 0x1;  // Kill task
+                  /* pcfi_enforce */
+                  P_CTRL(p_pcfi_enforce) = 0x1;  // Kill task
+                  /* umh_enforce */
+                  P_CTRL(p_umh_enforce) = 0x1;   // Prevent execution
+#if defined(CONFIG_X86)
+                  /* smep_enforce */
+                  if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+                     P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
+                     P_CTRL(p_smep_enforce) = 0x2; // Panic
+                  } else {
+                     P_CTRL(p_smep_enforce) = 0x0;
+                     P_CTRL(p_smep_validate) = 0x0;
+                  }
+                  /* smap_enforce */
+                  if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+                     P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
+                     P_CTRL(p_smap_enforce) = 0x2; // Panic
+                  } else {
+                     P_CTRL(p_smap_enforce) = 0x0;
+                     P_CTRL(p_smap_validate) = 0x0;
+                  }
+#endif
+                  break;
+
+               case 3:
+                  /* kint_enforce */
+                  P_CTRL(p_kint_enforce) = 0x2;  // Panic
+                  /* pint_enforce */
+                  P_CTRL(p_pint_enforce) = 0x2;  // Panic
+                  /* pcfi_enforce */
+                  P_CTRL(p_pcfi_enforce) = 0x2;  // Panic
+                  /* umh_enforce */
+                  P_CTRL(p_umh_enforce) = 0x2;   // Panic
+#if defined(CONFIG_X86)
+                  /* smep_enforce */
+                  if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+                     P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
+                     P_CTRL(p_smep_enforce) = 0x2; // Panic
+                  } else {
+                     P_CTRL(p_smep_enforce) = 0x0;
+                     P_CTRL(p_smep_validate) = 0x0;
+                  }
+                  /* smap_enforce */
+                  if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+                     P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
+                     P_CTRL(p_smap_enforce) = 0x2; // Panic
+                  } else {
+                     P_CTRL(p_smap_enforce) = 0x0;
+                     P_CTRL(p_smap_validate) = 0x0;
+                  }
+#endif
+                  break;
+
+               default:
+                  break;
+
+            }
+
+            p_print_log(P_LKRG_CRIT,
+                   "Changing \"profile_enforce\" logic. From Old[%d | %s] to new[%d | %s] one.\n",
+                   p_tmp,
+                   (p_tmp != 9) ? p_str[p_tmp] : "Custom",
+                   P_CTRL(p_profile_enforce),
+                   (P_CTRL(p_profile_enforce) != 9) ? p_str[P_CTRL(p_profile_enforce)] : "Custom"
+                   );
+         }
+      }
+   }
+   p_lkrg_close_rw();
+
+// STRONG_DEBUG
+   p_debug_log(P_LKRG_STRONG_DBG,
+          "Leaving function <p_sysctl_profile_enforce>\n");
 
    return p_ret;
 }

@@ -105,6 +105,9 @@ typedef struct _p_lkrg_global_conf_structure {
    unsigned int p_trigger;
    unsigned int p_hide_lkrg;
    unsigned int p_umh_enforce;
+   /* Profiles */
+   unsigned int p_profile_validate;
+   unsigned int p_profile_enforce;
 
 } p_lkrg_global_conf_struct;
 
