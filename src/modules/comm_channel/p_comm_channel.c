@@ -613,6 +613,7 @@ static int p_sysctl_trigger(struct ctl_table *p_table, int p_write,
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
       if (P_CTRL(p_trigger)) {
+         p_manual = 0x1;
          p_offload_work(0); // run integrity check!
          P_CTRL(p_trigger) = 0x0; // Restore 0 value - user only sees that value!
       }

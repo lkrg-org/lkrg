@@ -46,6 +46,7 @@ int p_offload_cache_init(void);
 void p_offload_cache_delete(void);
 
 extern struct timer_list p_timer;
+extern unsigned int p_manual;
 extern spinlock_t p_db_lock;
 extern unsigned long p_db_flags;
 extern struct kmem_cache *p_offload_cache;

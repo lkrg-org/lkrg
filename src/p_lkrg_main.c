@@ -534,6 +534,9 @@ static int __init p_lkrg_register(void) {
 p_main_error:
 
    if (p_ret != P_LKRG_SUCCESS) {
+      P_CTRL(p_kint_validate) = 0;
+      p_deregister_notifiers();
+      del_timer_sync(&p_timer);
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
       if (p_cpu)
@@ -584,12 +587,15 @@ static void __exit p_lkrg_deregister(void) {
 
    p_uninit_page_attr();
 
+   P_CTRL(p_kint_validate) = 0;
+   p_deregister_notifiers();
+   del_timer_sync(&p_timer);
+
+
    // Freeze all non-kernel processes
    while (P_SYM(p_freeze_processes)())
       schedule();
 
-   del_timer_sync(&p_timer);
-   p_deregister_notifiers();
    p_deregister_comm_channel();
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)

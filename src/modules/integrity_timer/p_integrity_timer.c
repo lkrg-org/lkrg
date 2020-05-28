@@ -26,6 +26,7 @@ unsigned int p_time_stamp = 15; /* timeout in seconds */
 /* God mode variables ;) */
 DEFINE_SPINLOCK(p_db_lock);
 unsigned long p_db_flags;
+unsigned int p_manual = 0x0;
 
 /* kmem_cache for offloding WQ */
 struct kmem_cache *p_offload_cache = NULL;
@@ -166,10 +167,8 @@ void p_check_integrity(struct work_struct *p_work) {
    p_debug_log(P_LKRG_STRONG_DBG,
           "Entering function <p_check_integrity>\n");
 
-
-   if (!P_CTRL(p_kint_validate))
+   if (!P_CTRL(p_kint_validate) || (!p_manual && P_CTRL(p_kint_validate) == 1))
       goto p_check_integrity_tasks;
-
 
    /*
     * First allocate temporary buffer for per CPU data. Number of possible CPUs
@@ -1831,10 +1830,14 @@ p_check_integrity_cancel:
 p_check_integrity_tasks:
 
    if (!p_ed_enforce_validation_paranoid()) {
-      if (P_CTRL(p_heartbeat) && !P_CTRL(p_kint_validate)) {
+      if (P_CTRL(p_heartbeat) && P_CTRL(p_pint_validate) &&
+          (!P_CTRL(p_kint_validate) || (!p_manual && P_CTRL(p_kint_validate) == 1))) {
          p_print_log(P_LKRG_ALIVE,"Tasks are clean!\n");
       }
    }
+
+   if (p_manual)
+      p_manual = 0;
 
    /* Free the worker struct */
    if (p_work) {
