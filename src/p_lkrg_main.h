@@ -80,7 +80,7 @@
  #define P_LKRG_MARKER2 0xdeadbabe
 #endif
 
-#define	nitems(val)	(sizeof(val) / sizeof(val[0]))
+#define nitems(val)      (sizeof(val) / sizeof(val[0]))
 
 typedef struct _p_lkrg_global_conf_structure {
 
@@ -229,7 +229,6 @@ extern p_ro_page p_ro;
  * Exploit Detection
  */
 #include "modules/exploit_detection/p_exploit_detection.h"
-#include "modules/exploit_detection/syscalls/p_install.h"
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 13, 0)
  #define __GFP_REPEAT   ((__force gfp_t)___GFP_RETRY_MAYFAIL)
