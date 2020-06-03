@@ -80,6 +80,8 @@
  #define P_LKRG_MARKER2 0xdeadbabe
 #endif
 
+#define	nitems(val)	(sizeof(val) / sizeof(val[0]))
+
 typedef struct _p_lkrg_global_conf_structure {
 
 #if defined(CONFIG_X86)
