@@ -234,5 +234,26 @@ extern p_ro_page p_ro;
  #define __GFP_REPEAT   ((__force gfp_t)___GFP_RETRY_MAYFAIL)
 #endif
 
+#if !defined(CONFIG_KPROBES)
+ #error "LKRG requires CONFIG_KPROBES"
+#elif !defined(CONFIG_HAVE_KRETPROBES)
+ #error "CONFIG_KPROBES is enabled, however CONFIG_HAVE_KRETPROBES is not found. LKRG requires KRETPROBES"
+#endif
+
+#if !defined(CONFIG_MODULE_UNLOAD)
+ #error "LKRG requires CONFIG_MODULE_UNLOAD"
+#endif
+
+#if !defined(CONFIG_KALLSYMS_ALL)
+ #error "LKRG requires CONFIG_KALLSYMS_ALL"
+#endif
+
+#if !defined(CONFIG_JUMP_LABEL)
+ #error "LKRG requires CONFIG_JUMP_LABEL. However, it is not necessary to run LKRG. If you hit this problem please contact LKRG's developers."
+#endif
+
+#if !defined(CONFIG_STACKTRACE)
+ #warning "LKRG does NOT require CONFIG_STACKTRACE. However, in case of pCFI violation, LKRG won't be able to dump full stack-trace."
+#endif
 
 #endif
