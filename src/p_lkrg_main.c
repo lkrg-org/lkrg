@@ -300,7 +300,7 @@ void p_parse_module_params(void) {
 
 #if defined(CONFIG_X86)
 
-   if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+   if (boot_cpu_has(X86_FEATURE_SMEP)) {
       P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
 
       /* smep_validate */
@@ -323,7 +323,7 @@ void p_parse_module_params(void) {
             "System does NOT support SMEP. LKRG can't enforce SMEP validation :(\n");
    }
 
-   if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+   if (boot_cpu_has(X86_FEATURE_SMAP)) {
       P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
 
       /* smap_validate */

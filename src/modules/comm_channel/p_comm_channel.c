@@ -704,7 +704,7 @@ static int p_sysctl_smep_validate(struct ctl_table *p_table, int p_write,
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
       if (P_CTRL(p_smep_validate) && !p_tmp) {
-         if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+         if (boot_cpu_has(X86_FEATURE_SMEP)) {
             p_print_log(P_LKRG_CRIT,
                    "Enabling SMEP validation feature.\n");
             P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
@@ -758,7 +758,7 @@ static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
                      p_str[P_CTRL(p_smep_enforce)]
                      );
          P_CTRL(p_profile_enforce) = 0x9;
-         if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+         if (boot_cpu_has(X86_FEATURE_SMEP)) {
             P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
          } else {
             p_print_log(P_LKRG_ERR,
@@ -791,7 +791,7 @@ static int p_sysctl_smap_validate(struct ctl_table *p_table, int p_write,
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
       if (P_CTRL(p_smap_validate) && !p_tmp) {
-         if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+         if (boot_cpu_has(X86_FEATURE_SMAP)) {
             p_print_log(P_LKRG_CRIT,
                    "Enabling SMAP validation feature.\n");
             P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
@@ -845,7 +845,7 @@ static int p_sysctl_smap_enforce(struct ctl_table *p_table, int p_write,
                      p_str[P_CTRL(p_smap_enforce)]
                      );
          P_CTRL(p_profile_enforce) = 0x9;
-         if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+         if (boot_cpu_has(X86_FEATURE_SMAP)) {
             P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
          } else {
             p_print_log(P_LKRG_ERR,
@@ -1138,7 +1138,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
 #if defined(CONFIG_X86)
                   /* smep_validate */
                   if (!P_CTRL(p_smep_validate)) {
-                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+                     if (boot_cpu_has(X86_FEATURE_SMEP)) {
                         P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
                         P_CTRL(p_smep_validate) = 0x1;  // Enable
                      } else {
@@ -1148,7 +1148,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
                   }
                   /* smap_validate */
                   if (!P_CTRL(p_smap_validate)) {
-                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+                     if (boot_cpu_has(X86_FEATURE_SMAP)) {
                         P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
                         P_CTRL(p_smap_validate) = 0x1;  // Enable
                      } else {
@@ -1180,7 +1180,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
 #if defined(CONFIG_X86)
                   /* smep_validate */
                   if (!P_CTRL(p_smep_validate)) {
-                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+                     if (boot_cpu_has(X86_FEATURE_SMEP)) {
                         P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
                         P_CTRL(p_smep_validate) = 0x1;  // Enable
                      } else {
@@ -1190,7 +1190,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
                   }
                   /* smap_validate */
                   if (!P_CTRL(p_smap_validate)) {
-                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+                     if (boot_cpu_has(X86_FEATURE_SMAP)) {
                         P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
                         P_CTRL(p_smap_validate) = 0x1;  // Enable
                      } else {
@@ -1228,7 +1228,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
 #if defined(CONFIG_X86)
                   /* smep_validate */
                   if (!P_CTRL(p_smep_validate)) {
-                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+                     if (boot_cpu_has(X86_FEATURE_SMEP)) {
                         P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
                         P_CTRL(p_smep_validate) = 0x1;  // Enable
                      } else {
@@ -1238,7 +1238,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
                   }
                   /* smap_validate */
                   if (!P_CTRL(p_smap_validate)) {
-                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+                     if (boot_cpu_has(X86_FEATURE_SMAP)) {
                         P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
                         P_CTRL(p_smap_validate) = 0x1;  // Enable
                      } else {
@@ -1276,7 +1276,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
 #if defined(CONFIG_X86)
                   /* smep_validate */
                   if (!P_CTRL(p_smep_validate)) {
-                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+                     if (boot_cpu_has(X86_FEATURE_SMEP)) {
                         P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
                         P_CTRL(p_smep_validate) = 0x1;  // Enable
                      } else {
@@ -1286,7 +1286,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
                   }
                   /* smap_validate */
                   if (!P_CTRL(p_smap_validate)) {
-                     if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+                     if (boot_cpu_has(X86_FEATURE_SMAP)) {
                         P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
                         P_CTRL(p_smap_validate) = 0x1;  // Enable
                      } else {
@@ -1376,7 +1376,7 @@ static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
                   P_CTRL(p_umh_enforce) = 0x1;   // Prevent execution
 #if defined(CONFIG_X86)
                   /* smep_enforce */
-                  if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+                  if (boot_cpu_has(X86_FEATURE_SMEP)) {
                      P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
                      P_CTRL(p_smep_enforce) = 0x2; // Panic
                   } else {
@@ -1384,7 +1384,7 @@ static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_smep_validate) = 0x0;
                   }
                   /* smap_enforce */
-                  if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+                  if (boot_cpu_has(X86_FEATURE_SMAP)) {
                      P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
                      P_CTRL(p_smap_enforce) = 0x2; // Panic
                   } else {
@@ -1405,7 +1405,7 @@ static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
                   P_CTRL(p_umh_enforce) = 0x1;   // Prevent execution
 #if defined(CONFIG_X86)
                   /* smep_enforce */
-                  if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+                  if (boot_cpu_has(X86_FEATURE_SMEP)) {
                      P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
                      P_CTRL(p_smep_enforce) = 0x2; // Panic
                   } else {
@@ -1413,7 +1413,7 @@ static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_smep_validate) = 0x0;
                   }
                   /* smap_enforce */
-                  if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+                  if (boot_cpu_has(X86_FEATURE_SMAP)) {
                      P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
                      P_CTRL(p_smap_enforce) = 0x2; // Panic
                   } else {
@@ -1434,7 +1434,7 @@ static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
                   P_CTRL(p_umh_enforce) = 0x2;   // Panic
 #if defined(CONFIG_X86)
                   /* smep_enforce */
-                  if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMEP)) {
+                  if (boot_cpu_has(X86_FEATURE_SMEP)) {
                      P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
                      P_CTRL(p_smep_enforce) = 0x2; // Panic
                   } else {
@@ -1442,7 +1442,7 @@ static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_smep_validate) = 0x0;
                   }
                   /* smap_enforce */
-                  if (cpu_has(&cpu_data(smp_processor_id()), X86_FEATURE_SMAP)) {
+                  if (boot_cpu_has(X86_FEATURE_SMAP)) {
                      P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
                      P_CTRL(p_smap_enforce) = 0x2; // Panic
                   } else {
