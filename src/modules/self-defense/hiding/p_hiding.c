@@ -41,7 +41,7 @@ void p_hide_itself(void) {
    p_find_sect_attrs  = p_find_me->sect_attrs;
    p_find_notes_attrs = p_find_me->notes_attrs;
 */
-   p_text_section_lock();
+
    /* We are heavily consuming module list here - take 'module_mutex' */
    mutex_lock(&module_mutex);
    spin_lock(&p_db_lock);
@@ -69,14 +69,11 @@ void p_hide_itself(void) {
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
    /* We should be fine now! */
 
-   p_lkrg_open_rw();
    P_CTRL(p_hide_lkrg) = 0x1;
-   p_lkrg_close_rw();
 
    spin_unlock(&p_db_lock);
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
-   p_text_section_unlock();
 
 p_hide_itself_out:
 
@@ -105,7 +102,6 @@ void p_unhide_itself(void) {
       goto p_unhide_itself_out;
    }
 
-   p_text_section_lock();
    /* We are heavily consuming module list here - take 'module_mutex' */
    mutex_lock(&module_mutex);
    spin_lock(&p_db_lock);
@@ -133,14 +129,11 @@ void p_unhide_itself(void) {
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
    /* We should be fine now! */
 
-   p_lkrg_open_rw();
    P_CTRL(p_hide_lkrg) = 0x0;
-   p_lkrg_close_rw();
 
    spin_unlock(&p_db_lock);
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
-   p_text_section_unlock();
 
 p_unhide_itself_out:
 
