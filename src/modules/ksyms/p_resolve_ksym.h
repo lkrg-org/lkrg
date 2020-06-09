@@ -19,8 +19,14 @@
 #ifndef P_LKRG_RESOLVE_KSYM_H
 #define P_LKRG_RESOLVE_KSYM_H
 
-//extern unsigned long (*p_kallsyms_lookup_name)(const char *name);
+struct p_isra_argument {
 
+   const char *p_name;
+   char *p_isra_name;
+
+};
+
+int p_try_isra_name(struct p_isra_argument *p_isra_arg);
 long get_kallsyms_address(void);
 
 #endif
