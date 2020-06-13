@@ -33,7 +33,7 @@ static int p_find_isra_name(void *p_isra_argg, const char *name,
    snprintf(p_buf2,0xFF,"%s.constprop.",p_isra_arg->p_name);
    p_buf2[0xFF] = 0x0;
    if (strncmp(p_buf, name, strlen(p_buf)) == 0x0) {
-      p_print_log(P_LKRG_ERR, "Found ISRA version of function <%s>\n", name);
+      p_print_log(P_LKRG_WARN, "Found ISRA version of function <%s>\n", name);
       if ( (p_isra_arg->p_isra_name = kzalloc(strlen(name)+1, GFP_KERNEL)) == NULL) {
          p_print_log(P_LKRG_ERR, "[p_find_isra_name] kzalloc() failed!\n");
          return 0x0;
@@ -41,7 +41,7 @@ static int p_find_isra_name(void *p_isra_argg, const char *name,
       memcpy(p_isra_arg->p_isra_name, name, strlen(name));
       return addr;
    } else if (strncmp(p_buf2, name, strlen(p_buf2)) == 0x0) {
-      p_print_log(P_LKRG_ERR, "Found CONSTPROP version of function <%s>\n", name);
+      p_print_log(P_LKRG_WARN, "Found CONSTPROP version of function <%s>\n", name);
       if ( (p_isra_arg->p_isra_name = kzalloc(strlen(name)+1, GFP_KERNEL)) == NULL) {
          p_print_log(P_LKRG_ERR, "[p_find_isra_name] kzalloc() failed!\n");
          return 0x0;
