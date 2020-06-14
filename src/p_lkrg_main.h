@@ -65,7 +65,7 @@
 #include <linux/stacktrace.h>
 #include <asm/stacktrace.h>
 #include <asm/tlbflush.h>
-#if defined(CONFIG_X86)
+#if defined(CONFIG_X86) && defined(CONFIG_UNWINDER_ORC)
 #include <asm/unwind.h>
 #endif
 
