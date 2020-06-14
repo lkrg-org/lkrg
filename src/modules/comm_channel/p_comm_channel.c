@@ -872,8 +872,8 @@ static int p_sysctl_umh_validate(struct ctl_table *p_table, int p_write,
    unsigned int p_tmp;
    static const char * const p_str[] = {
       "Disable protection",
-      "Whitelist UMH paths",
-      "Completely block UMH"
+      "Allow specific paths",
+      "Completely block usermodehelper"
    };
 
 // STRONG_DEBUG
@@ -1127,7 +1127,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
                   /* pcfi_validate */
                   P_CTRL(p_pcfi_validate) = 0x1;  // Weak pCFI
                   /* umh_validate */
-                  P_CTRL(p_umh_validate) = 0x1;   // Whitelist
+                  P_CTRL(p_umh_validate) = 0x1;   // Allow specific paths
                   /* msr_validate */
                   if (P_CTRL(p_msr_validate)) {
                      spin_lock(&p_db_lock);
@@ -1169,7 +1169,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
                   /* pcfi_validate */
                   P_CTRL(p_pcfi_validate) = 0x1;  // Weak pCFI
                   /* umh_validate */
-                  P_CTRL(p_umh_validate) = 0x1;   // Whitelist
+                  P_CTRL(p_umh_validate) = 0x1;   // Allow specific paths
                   /* msr_validate */
                   if (P_CTRL(p_msr_validate)) {
                      spin_lock(&p_db_lock);
@@ -1211,7 +1211,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
                   /* pcfi_validate */
                   P_CTRL(p_pcfi_validate) = 0x2;  // Full pCFI
                   /* umh_validate */
-                  P_CTRL(p_umh_validate) = 0x1;   // Whitelist
+                  P_CTRL(p_umh_validate) = 0x1;   // Allow specific paths
                   /* msr_validate */
                   if (!P_CTRL(p_msr_validate)) {
                      spin_lock(&p_db_lock);

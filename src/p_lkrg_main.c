@@ -648,7 +648,7 @@ MODULE_PARM_DESC(pint_validate, "pint_validate [2 (current + waking_up) is defau
 module_param(pint_enforce, uint, 0000);
 MODULE_PARM_DESC(pint_enforce, "pint_enforce [1 (kill task) is default]");
 module_param(umh_validate, uint, 0000);
-MODULE_PARM_DESC(umh_validate, "umh_validate [1 (whitelist UMH paths) is default]");
+MODULE_PARM_DESC(umh_validate, "umh_validate [1 (allow specific paths) is default]");
 module_param(umh_enforce, uint, 0000);
 MODULE_PARM_DESC(umh_enforce, "umh_enforce [1 (prevent execution) is default]");
 module_param(pcfi_validate, uint, 0000);
