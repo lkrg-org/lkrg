@@ -1,0 +1,285 @@
+
+BUILDING / INSTALLING LKRG:
+---------------------------
+
+Before LKRG can be installed, first it needs to be gathered and built
+(compiled). The following document describes build process which should work
+on any Linux distribution.
+
+
+GETTING THE SOURCES:
+--------------------
+
+LKRG is hosted on the Bitbucket git repository, which can be cloned to the
+local directory using the following command:
+
+    $ git clone https://bitbucket.org/Adam_pi3/lkrg-main.git
+
+If you do not want to use Git, you can also obtain tarballs from the Openwall
+website and verify the signature of the packages:
+
+    $ wget https://www.openwall.com/signatures/openwall-offline-signatures.asc
+    $ gpg --import openwall-offline-signatures.asc
+    $ wget https://www.openwall.com/lkrg/lkrg-0.8.tar.gz.sign
+    $ wget https://www.openwall.com/lkrg/lkrg-0.8.tar.gz
+    $ gpg --verify lkrg-0.8.tar.gz.sign lkrg-0.8.tar.gz
+
+
+BUILD REQUIREMENTS:
+-------------------
+
+To be able to compile any Linux kernel module you will need the following
+software:
+
+- GNU make
+- A C compiler (the best will be the same which was used to compile kernel
+  itself)
+- A kernel build directory corresponding to the Linux kernel image the module
+  is to run on. Under Debian and Ubuntu, for example, each linux-image package
+  containing a kernel binary has a corresponding linux-headers package with the
+  required build infrastructure. E.g.
+  -> Red Hat'ish (e.g. RHEL, CentOS, Fedora) distribution requires linux-devel
+     package:
+        $ sudo yum install kernel-devel
+  -> Debian-based (e.g. Ubuntu) distribution requires linux-headers package:
+        $ sudo apt-get install linux-headers-$(uname -r)
+
+
+COMPILING:
+----------
+
+If you have correctly set-up kernel build directory then you can easily compile
+LKRG via running 'make' command. It can be done from the normal user (non-root)
+account:
+
+     pi3@pi3-VM:~/lkrg-main$ make -j8
+
+
+INSTALLATION:
+-------------
+
+Installation of LKRG is exactly the same as loading normal kernel module. As
+soon as system is installed it starts the work. Currently, LKRG accepts 17
+parameters. The default values for the arguments can be seen in the module
+description. For more details about each of the argument please refer to the
+"COMMUNICATION CHANNEL" section. Module parameters are matching the same name.
+
+    pi3@pi3-VM:~/lkrg-main$ modinfo output/p_lkrg.ko
+    filename:       /home/pi3/lkrg-main/output/p_lkrg.ko
+    license:        GPL v2
+    description:    pi3's Linux kernel Runtime Guard
+    author:         Adam 'pi3' Zabrocki (http://pi3.com.pl)
+    srcversion:     47DB828A2F5B70B486184AA
+    depends:
+    retpoline:      Y
+    name:           p_lkrg
+    vermagic:       5.7.2-050702-lowlatency SMP preempt mod_unload
+    parm:           log_level:log_level [3 (warn) is default] (uint)
+    parm:           heartbeat:heartbeat [0 (don't print) is default] (uint)
+    parm:           block_modules:block_modules [0 (don't block) is default] (uint)
+    parm:           interval:interval [15 seconds is default] (uint)
+    parm:           kint_validate:kint_validate [3 (periodically + random events) is default] (uint)
+    parm:           kint_enforce:kint_enforce [2 (panic) is default] (uint)
+    parm:           msr_validate:msr_validate [1 (enabled) is default] (uint)
+    parm:           pint_validate:pint_validate [2 (current + waking_up) is default] (uint)
+    parm:           pint_enforce:pint_enforce [1 (kill task) is default] (uint)
+    parm:           umh_validate:umh_validate [1 (allow specific paths) is default] (uint)
+    parm:           umh_enforce:umh_enforce [1 (prevent execution) is default] (uint)
+    parm:           pcfi_validate:pcfi_validate [2 (fully enabled pCFI) is default] (uint)
+    parm:           pcfi_enforce:pcfi_enforce [1 (kill task) is default] (uint)
+    parm:           smep_validate:smep_validate [1 (enabled) is default] (uint)
+    parm:           smep_enforce:smep_enforce [2 (panic) is default] (uint)
+    parm:           smap_validate:smap_validate [1 (enabled) is default] (uint)
+    parm:           smap_enforce:smap_enforce [2 (panic) is default] (uint)
+    pi3@pi3-VM:~/lkrg-main$
+
+We have also prepared early boot systemd unit file. Similar optional
+functionality for other init systems may be added later. You can install LKRG
+using Makefile:
+
+    pi3@pi3-VM:~/lkrg-main$ sudo make install
+
+Please do not forget to run the following command to start LKRG service:
+
+    systemctl start lkrg
+
+You can uninstall LKRG using Makefile as well:
+
+    pi3@pi3-VM:~/lkrg-main$ sudo make uninstall
+
+You can also use the following command to temporarily stop LKRG service without
+uninstalling it:
+
+    systemctl stop lkrg
+
+
+COMMUNICATION CHANNEL:
+----------------------
+
+The project has a built-in sysctl interface, which enables the interaction
+between the administrator and LKRG. The following options are available:
+
+    pi3@pi3-VM:~/lkrg-main$ sudo sysctl -a | grep lkrg
+    lkrg.block_modules = 0
+    lkrg.heartbeat = 0
+    lkrg.hide = 0
+    lkrg.interval = 15
+    lkrg.kint_enforce = 2
+    lkrg.kint_validate = 3
+    lkrg.log_level = 3
+    lkrg.msr_validate = 1
+    lkrg.pcfi_enforce = 1
+    lkrg.pcfi_validate = 2
+    lkrg.pint_enforce = 1
+    lkrg.pint_validate = 2
+    lkrg.profile_enforce = 9
+    lkrg.profile_validate = 9
+    lkrg.smap_enforce = 2
+    lkrg.smap_validate = 1
+    lkrg.smep_enforce = 2
+    lkrg.smep_validate = 1
+    lkrg.trigger = 0
+    lkrg.umh_enforce = 1
+    lkrg.umh_validate = 1
+
+
+ -> lkrg.heartbeat - print heartbeat message ("System is clean!" or "Tasks are
+    clean!") whenever global integrity routine is executed - only two options
+    are available:
+        0 - do NOT print heartbeat message regardless of log_level value
+        1 - if log_level value allows it, print heartbeat message
+ -> lkrg.interval - change how often kernel timer is launched (kernel timer
+    periodically executes global integrity routine). It can NOT be less than 5
+    seconds to not harm the performance neither consume too much system
+    resources. It can NOT be more than 1800 seconds (half an hour) to prevent
+    from not validating the system for too long
+ -> lkrg.trigger - force LKRG to execute global integrity routine right now. It
+    is always visible as 0 number. Nevertheless, if you set it to 1, the
+    global integrity routine is immediately fired and the value restored to 0.
+ -> lkrg.log_level - change the log level. It can be a number between 0-4 or 0-6
+    (on P_LKRG_DEBUG compilation). A strong debug provides very useful data to
+    identify where could be a specific problem with LKRG (if it ever appears).
+    Unfortunately, it produces tons of logs per execution and must be used only
+    for debugging purpose, not as a normal run.
+ -> lkrg.block_modules - block the kernel module loading functionality. Only two
+    options are available:
+        0 - do NOT block the kernel module loading functionality
+        1 - block the kernel module loading functionality
+ -> lkrg.hide - an optional feature available on P_LKRG_UNHIDE built. LKRG can
+    (un)hide itself from the module list and KOBJs. However, it can be detected
+    regardless:
+        0 - unhide LKRG (if it is not already unhidden)
+        1 - hide LKRG (if it is not already hidden)
+ -> lkrg.msr_validate - enforce MSR validation whenever global integrity routine
+    is executed. MSR validation can be enabled on x86/amd64 architectures.
+    However, there might be a situation where it is not desired e.g. you are
+    running LKRG on the host machine which manages VMs. In such case host
+    machine might dynamically reconfigure some of the MSRs which LKRG validates.
+    The following options are available:
+        0 - do not validate MSR
+        1 - enable MSR validation (default)
+ -> lkrg.kint_validate - change LKRG's kernel/system integrity logic:
+        0 - disabled
+        1 - validation is performed only when manually triggered by lkrg.trigger
+        2 - validation is performed periodically by the timer interrupt
+            (controlled by lkrg.interval)
+        3 - validation is performed periodically by the timer interrupt
+            (controlled by lkrg.interval) and on random events
+ -> lkrg.kint_enforce - change LKRG's logic when kernel/system integrity fails:
+        0 - log once & accept corruption (snapshot new state)
+        1 - log only (don't snapshot new state, can be noisy). For SELinux and
+            CR0.WP (on x86) violation log & restore original values.
+        2 - panic() - kill the kernel
+ -> lkrg.pint_validate - change LKRG's task validation logic:
+        0 - disabled
+        1 - validate only currently running tasks
+        2 - validate only currently running tasks + task which changes state to
+            RUNNING
+        3 - validate all tasks in the system (paranoid mode)
+ -> lkrg.pint_enforce - change LKRG's logic when task validation fails:
+        0 - log once & accept corruption (snapshot new state)
+        1 - kill corrupted task
+        2 - panic() - kill the kernel
+ -> lkrg.pcfi_validate - change LKRG's poor's man CFI validation logic:
+        0 - disabled
+        1 - validate only stack page and stack pointer. Do not perform full
+            stackwalk (weak pCFI)
+        2 - fully enable pCFI
+ -> lkrg.pcfi_enforce - change LKRG's logic when pCFI validation fails:
+        0 - log only (don't snapshot new state, can be noisy)
+        1 - kill corrupted task
+        2 - panic() - kill the kernel
+ -> lkrg.umh_validate - change usermodehelper (UMH) validation logic:
+        0 - disable UMH validation
+        1 - only previously allowed programs can be executed via UMH
+        2 - completely block UMH
+ -> lkrg.umh_enforce - change LKRG's logic when UMH validation fails:
+        0 - log only (don't snapshot new state, can be noisy)
+        1 - prevent execution (overwrite the original path)
+        2 - panic() - kill the kernel
+#if defined(CONFIG_X86)
+ -> lkrg.smep_validate - change LKRG's SMEP validation logic:
+        0 - disabled
+        1 - enable
+ -> lkrg.smep_enforce - change LKRG's logic when SMAP validation fails:
+        0 - log once & accept corruption (snapshot new state)
+        1 - log & restore original value
+        2 - panic() - kill the kernel
+-> lkrg.smap_validate - change LKRG's SMEP validation logic:
+        0 - disabled
+        1 - enable
+ -> lkrg.smap_enforce - change LKRG's logic when SMAP validation fails:
+        0 - log once & accept corruption (snapshot new state)
+        1 - log & restore original value
+        2 - panic() - kill the kernel
+#endif
+
+We do understand that we are providing a lot of knobs. To make configuration
+easier and faster, we introduced 'profiles'. 'lkrg.profile_validate' controls
+all '*_validate' knobs and 'lkrg.profile_enforce' controls all '*_enforce'.
+By default 'lkrg.profile_validate' = 9 which means 'custom settings'. However,
+it might take values between 0-4 (or 9).
+By default 'lkrg.profile_enforce' = 9 which means 'custom settings'. However,
+it might take values between 0-3 (or 9).
+
+Profiles:
+
+-> lkrg.profile_validate:
+
+|============================================================================================|
+|          0 (Disabled)           |        1 (Light)         |         2 (Balanced)          |
+|=================================|==========================|===============================|
+| -> kint_validate = 0 (Disabled) | 1 (Manual trigger only)  | 2 (Triggered by timer)        |
+| -> pint_validate = 0 (Disabled) | 1 (Current task only)    | 2 (Current + waking up task)  |
+| -> pcfi_validate = 0 (Disabled) | 1 (Weak pCFI)            | 1 (Weak pCFI)                 |
+| ->  umh_validate = 0 (Disabled) | 1 (Allow specific paths) | 1 (Allow specific paths)      |
+| ->  msr_validate = 0 (Disabled) | 0 (Disabled)             | 0 (Disabled)                  |
+| -> smep_validate = 0 (Disabled) | 1 (Enabled)              | 1 (Enabled)                   |
+| -> smap_validate = 0 (Disabled) | 1 (Enabled)              | 1 (Enabled)                   |
+|============================================================================================|
+|             3 (Moderate)                |                    4 (Heavy)                     |
+|============================================================================================|
+| 3 (Triggered by timer + random events)  | 3 (Triggered by timer + random events)           |
+| 2 (Current + waking up task)            | 3 (Verify all tasks in the system by every hook) |
+| 2 (Full pCFI)                           | 2 (Full pCFI)                                    |
+| 1 (Allow specific paths)                | 2 (Full UMH lock-down)                           |
+| 1 (Enabled)                             | 1 (Enabled)                                      |
+| 1 (Enabled)                             | 1 (Enabled)                                      |
+| 1 (Enabled)                             | 1 (Enabled)                                      |
+|============================================================================================|
+
+-> lkrg.profile_enforce:
+
+|================================================================================|
+|          0 (Log & Accept)          | 1 (Balanced)  | 2 (Moderate)  | 3 (Panic) |
+|====================================|===============|===============|===========|
+| -> kint_enforce = 0 (Log & accept) | 1 (Log only)  | 2 (Panic)     | 2 (Panic) |
+| -> pint_enforce = 0 (Log & accept) | 1 (Kill task) | 1 (Kill task) | 2 (Panic) |
+| -> pcfi_enforce = 0 (Log only)     | 1 (Kill task) | 1 (Kill task) | 2 (Panic) |
+| ->  umh_enforce = 0 (Log only)     | 1 (Prev exec) | 1 (Prev exec) | 2 (Panic) |
+| -> smep_enforce = 0 (Log & accept) | 2 (Panic)     | 2 (Panic)     | 2 (Panic) |
+| -> smap_enforce = 0 (Log & accept) | 2 (Panic)     | 2 (Panic)     | 2 (Panic) |
+|================================================================================|
+
+
+That's all for now. Greetings from the LKRG team :)
