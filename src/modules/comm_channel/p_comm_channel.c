@@ -1362,8 +1362,8 @@ static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
                   P_CTRL(p_smep_enforce) = 0x0;  // Log & accept
                   /* smap_enforce */
                   P_CTRL(p_smap_enforce) = 0x0;  // Log & accept
-                  break;
 #endif
+                  break;
 
                case 1:
                   /* kint_enforce */
