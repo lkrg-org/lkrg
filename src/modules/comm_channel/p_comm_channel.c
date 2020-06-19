@@ -32,8 +32,8 @@ static int p_pint_validate_max = 0x3;
 static int p_pint_enforce_min = 0x0;
 static int p_pint_enforce_max = 0x2;
 
-static int p_interval_min = 0x5;
-static int p_interval_max = 0x708; // 1800
+static int p_interval_min = 5;
+static int p_interval_max = 1800;
 
 static int p_log_level_min = P_LOG_LEVEL_NONE;
 static int p_log_level_max = P_LOG_LEVEL_MAX - 1;
@@ -444,7 +444,7 @@ static int p_sysctl_pint_validate(struct ctl_table *p_table, int p_write,
    char *p_str[] = {
       "DISABLED",
       "CURRENT",
-      "CURRENT + WAKING_UP",
+      "CURRENT + WAKING UP",
       "ALL TASKS"
    };
 
@@ -524,7 +524,7 @@ static int p_sysctl_interval(struct ctl_table *p_table, int p_write,
 
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      p_print_log(P_LKRG_CRIT, "[KINT] New interval => %d\n",P_CTRL(p_interval));
+      p_print_log(P_LKRG_CRIT, "[kINT] New interval => %d\n", P_CTRL(p_interval));
       p_offload_work(0); // run integrity check!
    }
    p_lkrg_close_rw();
@@ -966,14 +966,14 @@ static int p_sysctl_msr_validate(struct ctl_table *p_table, int p_write,
          p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
          spin_unlock(&p_db_lock);
          p_print_log(P_LKRG_CRIT,
-                     "Enabling MSRs verification during Kernel Integrity validation (KINT).\n");
+                     "Enabling MSRs verification during kernel integrity validation (kINT).\n");
          P_CTRL(p_profile_validate) = 0x9;
       } else if (p_tmp && !P_CTRL(p_msr_validate)) {
          spin_lock(&p_db_lock);
          p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
          spin_unlock(&p_db_lock);
          p_print_log(P_LKRG_CRIT,
-                     "Disabling MSRs verification during Kernel Integrity validation (KINT).\n");
+                     "Disabling MSRs verification during kernel integrity validation (kINT).\n");
          P_CTRL(p_profile_validate) = 0x9;
       }
    }
@@ -1165,7 +1165,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
                      p_deregister_notifiers();
                   P_CTRL(p_kint_validate) = 0x2;  // Timer
                   /* pint_validate */
-                  P_CTRL(p_pint_validate) = 0x2;  // Current + weaking up task
+                  P_CTRL(p_pint_validate) = 0x2;  // Current + waking up task
                   /* pcfi_validate */
                   P_CTRL(p_pcfi_validate) = 0x1;  // Weak pCFI
                   /* umh_validate */
@@ -1207,7 +1207,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
                      p_register_notifiers();
                   P_CTRL(p_kint_validate) = 0x3;  // Timer + random events
                   /* pint_validate */
-                  P_CTRL(p_pint_validate) = 0x2;  // Current + weaking up task
+                  P_CTRL(p_pint_validate) = 0x2;  // Current + waking up task
                   /* pcfi_validate */
                   P_CTRL(p_pcfi_validate) = 0x2;  // Full pCFI
                   /* umh_validate */

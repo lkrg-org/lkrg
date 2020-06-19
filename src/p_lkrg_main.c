@@ -204,8 +204,8 @@ void p_uninit_page_attr(void) {
 void p_parse_module_params(void) {
 
    /* Interval */
-   if (interval > 0x708) {
-      P_CTRL(p_interval) = 0x708;      // Max
+   if (interval > 1800) {
+      P_CTRL(p_interval) = 1800;       // Max
    } else if (interval < 5) {
       P_CTRL(p_interval) = 5;          // Min
    } else {
@@ -644,7 +644,7 @@ MODULE_PARM_DESC(kint_enforce, "kint_enforce [2 (panic) is default]");
 module_param(msr_validate, uint, 0000);
 MODULE_PARM_DESC(msr_validate, "msr_validate [1 (enabled) is default]");
 module_param(pint_validate, uint, 0000);
-MODULE_PARM_DESC(pint_validate, "pint_validate [2 (current + waking_up) is default]");
+MODULE_PARM_DESC(pint_validate, "pint_validate [2 (current + waking up) is default]");
 module_param(pint_enforce, uint, 0000);
 MODULE_PARM_DESC(pint_enforce, "pint_enforce [1 (kill task) is default]");
 module_param(umh_validate, uint, 0000);

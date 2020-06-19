@@ -28,10 +28,8 @@ static int p_find_isra_name(void *p_isra_argg, const char *name,
    char p_buf[0x100];
    char p_buf2[0x100];
 
-   snprintf(p_buf,0xFF,"%s.isra.",p_isra_arg->p_name);
-   p_buf[0xFF] = 0x0;
-   snprintf(p_buf2,0xFF,"%s.constprop.",p_isra_arg->p_name);
-   p_buf2[0xFF] = 0x0;
+   snprintf(p_buf, sizeof(p_buf), "%s.isra.", p_isra_arg->p_name);
+   snprintf(p_buf2, sizeof(p_buf2), "%s.constprop.", p_isra_arg->p_name);
    if (strncmp(p_buf, name, strlen(p_buf)) == 0x0) {
       p_print_log(P_LKRG_WARN, "Found ISRA version of function <%s>\n", name);
       if ( (p_isra_arg->p_isra_name = kzalloc(strlen(name)+1, GFP_KERNEL)) == NULL) {
@@ -94,7 +92,11 @@ long get_kallsyms_address(void) {
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,7,0))
 
-   /* "Inspiried" idea from LTTng module */
+   /*
+    * Linux kernel 5.7+ no longer exports the kallsyms_lookup_name symbol for
+    * use from modules.  We reuse the workaround originally introduced in the
+    * LTTng module to access that symbol anyway.
+    */
    memset(&p_kprobe, 0, sizeof(p_kprobe));
    p_kprobe.pre_handler = p_tmp_kprobe_handler;
    p_kprobe.symbol_name = "kallsyms_lookup_name";

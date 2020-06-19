@@ -238,7 +238,7 @@ extern p_ro_page p_ro;
 #if !defined(CONFIG_KPROBES)
  #error "LKRG requires CONFIG_KPROBES"
 #elif !defined(CONFIG_HAVE_KRETPROBES)
- #error "CONFIG_KPROBES is enabled, however CONFIG_HAVE_KRETPROBES is not found. LKRG requires KRETPROBES"
+ #error "CONFIG_KPROBES is enabled, however CONFIG_HAVE_KRETPROBES is not found. LKRG requires both."
 #endif
 
 #if !defined(CONFIG_MODULE_UNLOAD)
@@ -250,11 +250,15 @@ extern p_ro_page p_ro;
 #endif
 
 #if !defined(CONFIG_JUMP_LABEL)
- #error "LKRG requires CONFIG_JUMP_LABEL. However, it is not necessary to run LKRG. If you hit this problem please contact LKRG's developers."
+ #error "LKRG currently requires CONFIG_JUMP_LABEL, but this might change. If you hit this problem please contact LKRG developers."
 #endif
 
 #if !defined(CONFIG_STACKTRACE)
- #warning "LKRG does NOT require CONFIG_STACKTRACE. However, in case of pCFI violation, LKRG won't be able to dump full stack-trace."
+/*
+ * A #warning in this header file would be printed too many times during build,
+ * so let's only do that for something truly important, which the below is not.
+ */
+// #warning "LKRG does NOT require CONFIG_STACKTRACE. However, in case of pCFI violation, LKRG won't be able to dump full stack-trace."
 #endif
 
 #endif

@@ -81,7 +81,7 @@ description. For more details about each of the argument please refer to the
     parm:           kint_validate:kint_validate [3 (periodically + random events) is default] (uint)
     parm:           kint_enforce:kint_enforce [2 (panic) is default] (uint)
     parm:           msr_validate:msr_validate [1 (enabled) is default] (uint)
-    parm:           pint_validate:pint_validate [2 (current + waking_up) is default] (uint)
+    parm:           pint_validate:pint_validate [2 (current + waking up) is default] (uint)
     parm:           pint_enforce:pint_enforce [1 (kill task) is default] (uint)
     parm:           umh_validate:umh_validate [1 (allow specific paths) is default] (uint)
     parm:           umh_enforce:umh_enforce [1 (prevent execution) is default] (uint)
