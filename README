@@ -1,147 +1,190 @@
+Linux Kernel Runtime Guard (LKRG)
+=================================
 
-BUILDING / INSTALLING LKRG:
----------------------------
+LKRG performs runtime integrity checking of the Linux kernel and detection of
+security vulnerability exploits against the kernel.
 
-Before LKRG can be installed, first it needs to be gathered and built
-(compiled). The following document describes build process which should work
-on any Linux distribution.
+Being a kernel module (not a kernel patch), LKRG can be built for and loaded on
+top of a wide range of mainline and distros' kernels, without needing to patch
+those.  We currently support kernel versions ranging from as far back as
+RHEL7's (and its many clones/revisions) and Ubuntu 16.04's to latest mainline
+and distros' kernels.  For this release, we've tested LKRG with Linux kernels
+up to and including 5.7.
 
+Please refer to CONCEPTS for concepts behind LKRG and for information on its
+efficacy, and to PERFORMANCE for information on its performance impact.
 
-GETTING THE SOURCES:
---------------------
-
-LKRG is hosted on the Bitbucket git repository, which can be cloned to the
-local directory using the following command:
-
-    $ git clone https://bitbucket.org/Adam_pi3/lkrg-main.git
-
-If you do not want to use Git, you can also obtain tarballs from the Openwall
-website and verify the signature of the packages:
-
-    $ wget https://www.openwall.com/signatures/openwall-offline-signatures.asc
-    $ gpg --import openwall-offline-signatures.asc
-    $ wget https://www.openwall.com/lkrg/lkrg-0.8.tar.gz.sign
-    $ wget https://www.openwall.com/lkrg/lkrg-0.8.tar.gz
-    $ gpg --verify lkrg-0.8.tar.gz.sign lkrg-0.8.tar.gz
+The following sections describe how to obtain LKRG sources, compile them, test
+LKRG, install it on the system, and customize its configuration.
 
 
-BUILD REQUIREMENTS:
+Getting the sources
 -------------------
 
-To be able to compile any Linux kernel module you will need the following
-software:
+For LKRG releases and latest source code, please refer to its homepage:
+
+	https://www.openwall.com/lkrg/
+
+To download this release from there and verify it, you would have used commands
+like the below:
+
+	wget https://www.openwall.com/signatures/openwall-offline-signatures.asc
+	gpg --import openwall-offline-signatures.asc
+	wget https://www.openwall.com/lkrg/lkrg-0.8.tar.gz.sign
+	wget https://www.openwall.com/lkrg/lkrg-0.8.tar.gz
+	gpg --verify lkrg-0.8.tar.gz.sign lkrg-0.8.tar.gz
+
+Please preserve the GnuPG key above and also use it to verify future releases,
+which will most likely work in a similar manner.
+
+Latest LKRG development source code is hosted on Bitbucket, from where you can
+clone the git repository to a local directory using the following command:
+
+	git clone https://bitbucket.org/Adam_pi3/lkrg-main.git
+
+
+Build requirements
+------------------
+
+To compile LKRG, you will need the following software:
 
 - GNU make
-- A C compiler (the best will be the same which was used to compile kernel
-  itself)
+
+- A C compiler (ideally, the same that was used to compile the kernel itself)
+
 - A kernel build directory corresponding to the Linux kernel image the module
-  is to run on. Under Debian and Ubuntu, for example, each linux-image package
+  is to run on.  For example, under Debian and Ubuntu each linux-image package
   containing a kernel binary has a corresponding linux-headers package with the
-  required build infrastructure. E.g.
-  -> Red Hat'ish (e.g. RHEL, CentOS, Fedora) distribution requires linux-devel
-     package:
-        $ sudo yum install kernel-devel
-  -> Debian-based (e.g. Ubuntu) distribution requires linux-headers package:
-        $ sudo apt-get install linux-headers-$(uname -r)
+  required build infrastructure, which you can install with:
+
+	sudo apt-get install linux-headers-$(uname -r)
+
+  Red Hat'ish (e.g. RHEL, CentOS, Fedora) distributions call this package
+  kernel-devel, which you can install with:
+
+	sudo yum install kernel-devel
+
+(For documentation purposes, we prefix commands requiring root access with
+"sudo", but you may of course run them as root by different means.)
 
 
-COMPILING:
-----------
+Compiling
+---------
 
-If you have correctly set-up kernel build directory then you can easily compile
-LKRG via running 'make' command. It can be done from the normal user (non-root)
-account:
+With the above requirements satisfied, you should be able to easily compile
+LKRG by running "make" when you're in LKRG's top level source code directory.
+Compiling LKRG does not require root, and thus shouldn't be done as root.
 
-     pi3@pi3-VM:~/lkrg-main$ make -j8
+To speed up the building, we recommend specifying a parallel job count matching
+your machine's logical CPU count, e.g. like this:
 
-
-INSTALLATION:
--------------
-
-Installation of LKRG is exactly the same as loading normal kernel module. As
-soon as system is installed it starts the work. Currently, LKRG accepts 17
-parameters. The default values for the arguments can be seen in the module
-description. For more details about each of the argument please refer to the
-"COMMUNICATION CHANNEL" section. Module parameters are matching the same name.
-
-    pi3@pi3-VM:~/lkrg-main$ modinfo output/p_lkrg.ko
-    filename:       /home/pi3/lkrg-main/output/p_lkrg.ko
-    license:        GPL v2
-    description:    pi3's Linux kernel Runtime Guard
-    author:         Adam 'pi3' Zabrocki (http://pi3.com.pl)
-    srcversion:     47DB828A2F5B70B486184AA
-    depends:
-    retpoline:      Y
-    name:           p_lkrg
-    vermagic:       5.7.2-050702-lowlatency SMP preempt mod_unload
-    parm:           log_level:log_level [3 (warn) is default] (uint)
-    parm:           heartbeat:heartbeat [0 (don't print) is default] (uint)
-    parm:           block_modules:block_modules [0 (don't block) is default] (uint)
-    parm:           interval:interval [15 seconds is default] (uint)
-    parm:           kint_validate:kint_validate [3 (periodically + random events) is default] (uint)
-    parm:           kint_enforce:kint_enforce [2 (panic) is default] (uint)
-    parm:           msr_validate:msr_validate [1 (enabled) is default] (uint)
-    parm:           pint_validate:pint_validate [2 (current + waking up) is default] (uint)
-    parm:           pint_enforce:pint_enforce [1 (kill task) is default] (uint)
-    parm:           umh_validate:umh_validate [1 (allow specific paths) is default] (uint)
-    parm:           umh_enforce:umh_enforce [1 (prevent execution) is default] (uint)
-    parm:           pcfi_validate:pcfi_validate [2 (fully enabled pCFI) is default] (uint)
-    parm:           pcfi_enforce:pcfi_enforce [1 (kill task) is default] (uint)
-    parm:           smep_validate:smep_validate [1 (enabled) is default] (uint)
-    parm:           smep_enforce:smep_enforce [2 (panic) is default] (uint)
-    parm:           smap_validate:smap_validate [1 (enabled) is default] (uint)
-    parm:           smap_enforce:smap_enforce [2 (panic) is default] (uint)
-    pi3@pi3-VM:~/lkrg-main$
-
-We have also prepared early boot systemd unit file. Similar optional
-functionality for other init systems may be added later. You can install LKRG
-using Makefile:
-
-    pi3@pi3-VM:~/lkrg-main$ sudo make install
-
-Please do not forget to run the following command to start LKRG service:
-
-    systemctl start lkrg
-
-You can uninstall LKRG using Makefile as well:
-
-    pi3@pi3-VM:~/lkrg-main$ sudo make uninstall
-
-You can also use the following command to temporarily stop LKRG service without
-uninstalling it:
-
-    systemctl stop lkrg
+	make -j8
 
 
-COMMUNICATION CHANNEL:
-----------------------
+Testing
+-------
 
-The project has a built-in sysctl interface, which enables the interaction
-between the administrator and LKRG. The following options are available:
+We recommend that before you install LKRG on the system such that it would be
+started on bootup, you test loading of the LKRG module into the kernel manually
+without making that setup permanent yet.  We also recommend that you keep
+LKRG's detection of kernel integrity violations enabled for this test, yet
+change its enforcement action from kernel panic (the default) to mere logging.
+This way, you can safely detect potential system-specific false positives and
+only proceed with installation if there are none.
 
-    pi3@pi3-VM:~/lkrg-main$ sudo sysctl -a | grep lkrg
-    lkrg.block_modules = 0
-    lkrg.heartbeat = 0
-    lkrg.hide = 0
-    lkrg.interval = 15
-    lkrg.kint_enforce = 2
-    lkrg.kint_validate = 3
-    lkrg.log_level = 3
-    lkrg.msr_validate = 1
-    lkrg.pcfi_enforce = 1
-    lkrg.pcfi_validate = 2
-    lkrg.pint_enforce = 1
-    lkrg.pint_validate = 2
-    lkrg.profile_enforce = 9
-    lkrg.profile_validate = 9
-    lkrg.smap_enforce = 2
-    lkrg.smap_validate = 1
-    lkrg.smep_enforce = 2
-    lkrg.smep_validate = 1
-    lkrg.trigger = 0
-    lkrg.umh_enforce = 1
-    lkrg.umh_validate = 1
+You can do this for a freshly built LKRG (and while you're still in its top
+level source code directory) with the following command:
 
+	sudo insmod output/p_lkrg.ko kint_enforce=1
+
+Then check kernel messages for any potential errors, use the system for a long
+while, and check again:
+
+	sudo dmesg
+
+(Depending on kernel version and system configuration, the "dmesg" command
+might not require root.)
+
+Unload LKRG from the kernel with:
+
+	sudo rmmod p_lkrg
+
+so that it can then be loaded using the same procedure that's used on system
+bootup and without the parameter override.
+
+
+Installation
+------------
+
+If your Linux distribution uses systemd, you can install LKRG with:
+
+	sudo make install
+
+while you're still in its top level source code directory.
+
+Run the following command to start the LKRG service just like it would be
+started on next system bootup:
+
+	sudo systemctl start lkrg
+
+You can uninstall LKRG using "make" as well (still in the same directory):
+
+	sudo make uninstall
+
+In fact, you would need to do this before installing a new version of LKRG.
+
+You can also use the following command to temporarily stop the LKRG service
+without uninstalling it:
+
+	sudo systemctl stop lkrg
+
+We don't in any way favor systemd over other init systems, and would gladly add
+support for those as well if there's demand or especially if we receive such
+contributions.  Meanwhile, you can let "sudo make install" partially complete
+(up to the point where it finds you're not using systemd) and then use:
+
+	sudo modprobe p_lkrg
+
+to load the module.  You can also put the "modprobe p_lkrg" command into a
+system startup script.
+
+
+Module parameters
+-----------------
+
+The LKRG kernel module supports a number of parameters, including kint_enforce
+already mentioned above and many more.
+
+For freshly built LKRG, you may list the parameters with:
+
+	modinfo output/p_lkrg.ko
+
+while you're still in LKRG's top level source code directory.
+
+With LKRG installed on the system, you may list them with:
+
+	sudo modinfo p_lkrg
+
+(Depending on system configuration, "modinfo" might not require root.)
+
+For descriptions of the parameters and their default and possible values,
+please refer to the following section.
+
+
+Runtime configuration
+---------------------
+
+Besides the parameters optionally specified when loading the module into the
+kernel, LKRG also supports a number of sysctl's, which can be used to adjust
+its behavior when it is already loaded into the kernel.  For each feature that
+is configurable at both load time and run time, we have a module parameter and
+a sysctl of the same name, so the below documentation is usable for both.
+
+To list all LKRG sysctl's and their current values, use:
+
+	sudo sysctl -a | grep lkrg
+
+The sysctl's are:
 
  -> lkrg.heartbeat - print heartbeat message ("System is clean!" or "Tasks are
     clean!") whenever global integrity routine is executed - only two options

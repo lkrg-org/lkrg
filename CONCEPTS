@@ -1,0 +1,47 @@
+As controversial as this concept is, LKRG attempts to post-detect and
+hopefully promptly respond to unauthorized modifications to the running Linux
+kernel (integrity checking) or to credentials such as user IDs of the running
+processes (exploit detection).  For process credentials, LKRG attempts to
+detect the exploit and take action before the kernel would grant access (such
+as open a file) based on the unauthorized credentials.
+
+LKRG defeats many pre-existing exploits of Linux kernel vulnerabilities, and
+will likely defeat many future exploits (including of yet unknown
+vulnerabilities) that do not specifically attempt to bypass LKRG.  While LKRG
+is bypassable by design, such bypasses tend to require more complicated and/or
+less reliable exploits.
+
+LKRG also provides security through diversity, much like running an uncommon OS
+kernel would, yet without the usability drawbacks of actually running an
+uncommon OS.  As free LKRG becomes somewhat popular and maybe a target of some
+exploits, we might introduce paid LKRG Pro as a means to fund the project and
+provide further diversity (with Pro's smaller userbase being beneficial), extra
+and specialized functionality, and maybe distro-specific binary builds.
+
+Like any software, LKRG may contain bugs and some of those might even be new
+security vulnerabilities.  You need to weigh the benefits vs. risks of using
+LKRG, considering that LKRG is most useful on systems that realistically,
+despite of this being a best practice for security, won't be promptly rebooted
+into new kernels (nor live-patched) whenever a new kernel vulnerability is
+discovered.
+
+LKRG is currently in an experimental stage.  We expect occasional false
+positives (integrity violations and/or exploits detected when there aren't
+ones), especially with Linux kernel versions or configurations other than those
+we've tested.  Please keep this in mind when configuring LKRG's response to
+detected violations, such as starting with mild enforcement and only enabling
+stricter enforcement once you've confirmed you are not seeing false positives.
+
+To illustrate LKRG's exploit detection capabilities, in our testing on
+vulnerable distro kernels LKRG successfully detected certain pre-existing
+exploits of CVE-2014-9322 (BadIRET), CVE-2017-5123 (waitid(2) missing
+access_ok), CVE-2017-6074 (use-after-free in DCCP protocol).  However, it
+wouldn't be expected to detect exploits of CVE-2016-5195 (Dirty COW) since
+those directly target the userspace even if via the kernel.  While in case of
+Dirty COW the LKRG "bypass" happened due to the nature of the bug and this
+being the way to exploit it, it's also a way for future exploits to bypass LKRG
+by similarly directly targeting userspace.  It remains to be seen whether such
+exploits become common (unlikely unless LKRG or similar become popular?) and
+what (negative?) effect on their reliability this will have (for kernel
+vulnerabilities where directly targeting the userspace isn't essential and
+possibly not straightforward).
