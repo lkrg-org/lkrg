@@ -7,16 +7,18 @@
 
 [Unit]
 Description=Linux Kernel Runtime Guard
-After=basic.target
-Before=network.target
+Documentation=https://bitbucket.org/Adam_pi3/lkrg-main/src/master/README
+DefaultDependencies=no
+After=systemd-modules-load.service
+Before=systemd-sysctl.service
+Before=sysinit.target shutdown.target
+Conflicts=shutdown.target
 
 [Service]
-Type=simple
-ExecStart=/sbin/modprobe p_lkrg
-ExecStop=/sbin/rmmod p_lkrg
+Type=oneshot
+ExecStart=/sbin/modprobe -v p_lkrg
+ExecStop=/sbin/modprobe -v -r p_lkrg
 RemainAfterExit=yes
-Restart=on-failure
 
 [Install]
-WantedBy=multi-user.target
-
+WantedBy=sysinit.target
