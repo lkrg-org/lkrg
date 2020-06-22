@@ -13,6 +13,7 @@ After=systemd-modules-load.service
 Before=systemd-sysctl.service
 Before=sysinit.target shutdown.target
 Conflicts=shutdown.target
+ConditionKernelCommandLine=!nolkrg
 
 [Service]
 Type=oneshot
