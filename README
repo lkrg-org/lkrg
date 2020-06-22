@@ -140,8 +140,9 @@ without uninstalling it:
 
 We don't in any way favor systemd over other init systems, and would gladly add
 support for those as well if there's demand or especially if we receive such
-contributions.  Meanwhile, you can let "sudo make install" partially complete
-(up to the point where it finds you're not using systemd) and then use:
+contributions.  Meanwhile, on a system without systemd you can let "sudo make
+install" partially complete (up to the point where it finds you're not using
+systemd) and then use:
 
 	sudo modprobe p_lkrg
 
@@ -155,17 +156,20 @@ Module parameters
 The LKRG kernel module supports a number of parameters, including kint_enforce
 already mentioned above and many more.
 
-For freshly built LKRG, you may list the parameters with:
+For freshly built LKRG, you can list the parameters with:
 
 	modinfo output/p_lkrg.ko
 
 while you're still in LKRG's top level source code directory.
 
-With LKRG installed on the system, you may list them with:
+With LKRG installed on the system, you can list them with:
 
 	sudo modinfo p_lkrg
 
 (Depending on system configuration, "modinfo" might not require root.)
+
+Parameters can be specified on command-lines of "insmod", "modprobe", or in a
+file in the /etc/modprobe.d directory.
 
 For descriptions of the parameters and their default and possible values,
 please refer to the following section.
@@ -178,104 +182,181 @@ Besides the parameters optionally specified when loading the module into the
 kernel, LKRG also supports a number of sysctl's, which can be used to adjust
 its behavior when it is already loaded into the kernel.  For each feature that
 is configurable at both load time and run time, we have a module parameter and
-a sysctl of the same name, so the below documentation is usable for both.
+a sysctl of similar name (the module parameters lack the "lkrg." prefix, but
+are otherwise the same), so the below documentation is usable for both.
 
 To list all LKRG sysctl's and their current values, use:
 
 	sudo sysctl -a | grep lkrg
 
-The sysctl's are:
+The sysctl's are (with default values specified in braces):
 
- -> lkrg.heartbeat - print heartbeat message ("System is clean!" or "Tasks are
-    clean!") whenever global integrity routine is executed - only two options
-    are available:
-        0 - do NOT print heartbeat message regardless of log_level value
-        1 - if log_level value allows it, print heartbeat message
- -> lkrg.interval - change how often kernel timer is launched (kernel timer
-    periodically executes global integrity routine). It can NOT be less than 5
-    seconds to not harm the performance neither consume too much system
-    resources. It can NOT be more than 1800 seconds (half an hour) to prevent
-    from not validating the system for too long
- -> lkrg.trigger - force LKRG to execute global integrity routine right now. It
-    is always visible as 0 number. Nevertheless, if you set it to 1, the
-    global integrity routine is immediately fired and the value restored to 0.
- -> lkrg.log_level - change the log level. It can be a number between 0-4 or 0-6
-    (on P_LKRG_DEBUG compilation). A strong debug provides very useful data to
-    identify where could be a specific problem with LKRG (if it ever appears).
-    Unfortunately, it produces tons of logs per execution and must be used only
-    for debugging purpose, not as a normal run.
- -> lkrg.block_modules - block the kernel module loading functionality. Only two
-    options are available:
-        0 - do NOT block the kernel module loading functionality
-        1 - block the kernel module loading functionality
- -> lkrg.hide - an optional feature available on P_LKRG_UNHIDE built. LKRG can
-    (un)hide itself from the module list and KOBJs. However, it can be detected
-    regardless:
-        0 - unhide LKRG (if it is not already unhidden)
-        1 - hide LKRG (if it is not already hidden)
- -> lkrg.msr_validate - enforce MSR validation whenever global integrity routine
-    is executed. MSR validation can be enabled on x86/amd64 architectures.
-    However, there might be a situation where it is not desired e.g. you are
-    running LKRG on the host machine which manages VMs. In such case host
-    machine might dynamically reconfigure some of the MSRs which LKRG validates.
-    The following options are available:
-        0 - do not validate MSR
-        1 - enable MSR validation (default)
- -> lkrg.kint_validate - change LKRG's kernel/system integrity logic:
-        0 - disabled
-        1 - validation is performed only when manually triggered by lkrg.trigger
-        2 - validation is performed periodically by the timer interrupt
-            (controlled by lkrg.interval)
-        3 - validation is performed periodically by the timer interrupt
-            (controlled by lkrg.interval) and on random events
- -> lkrg.kint_enforce - change LKRG's logic when kernel/system integrity fails:
-        0 - log once & accept corruption (snapshot new state)
-        1 - log only (don't snapshot new state, can be noisy). For SELinux and
-            CR0.WP (on x86) violation log & restore original values.
-        2 - panic() - kill the kernel
- -> lkrg.pint_validate - change LKRG's task validation logic:
-        0 - disabled
-        1 - validate only currently running tasks
-        2 - validate only currently running tasks + task which changes state to
-            RUNNING
-        3 - validate all tasks in the system (paranoid mode)
- -> lkrg.pint_enforce - change LKRG's logic when task validation fails:
-        0 - log once & accept corruption (snapshot new state)
-        1 - kill corrupted task
-        2 - panic() - kill the kernel
- -> lkrg.pcfi_validate - change LKRG's poor's man CFI validation logic:
-        0 - disabled
-        1 - validate only stack page and stack pointer. Do not perform full
-            stackwalk (weak pCFI)
-        2 - fully enable pCFI
- -> lkrg.pcfi_enforce - change LKRG's logic when pCFI validation fails:
-        0 - log only (don't snapshot new state, can be noisy)
-        1 - kill corrupted task
-        2 - panic() - kill the kernel
- -> lkrg.umh_validate - change usermodehelper (UMH) validation logic:
-        0 - disable UMH validation
-        1 - only previously allowed programs can be executed via UMH
-        2 - completely block UMH
- -> lkrg.umh_enforce - change LKRG's logic when UMH validation fails:
-        0 - log only (don't snapshot new state, can be noisy)
-        1 - prevent execution (overwrite the original path)
-        2 - panic() - kill the kernel
-#if defined(CONFIG_X86)
- -> lkrg.smep_validate - change LKRG's SMEP validation logic:
-        0 - disabled
-        1 - enable
- -> lkrg.smep_enforce - change LKRG's logic when SMAP validation fails:
-        0 - log once & accept corruption (snapshot new state)
-        1 - log & restore original value
-        2 - panic() - kill the kernel
--> lkrg.smap_validate - change LKRG's SMEP validation logic:
-        0 - disabled
-        1 - enable
- -> lkrg.smap_enforce - change LKRG's logic when SMAP validation fails:
-        0 - log once & accept corruption (snapshot new state)
-        1 - log & restore original value
-        2 - panic() - kill the kernel
-#endif
+- lkrg.heartbeat (0)
+  Whether or not to print a heartbeat message ("System is clean!" or "Tasks are
+  clean!" depending on other configuration), if allowed by log_level, whenever
+  the global integrity routine is executed.  Allowed values are 0 (never) and 1
+  (print the message if allowed by log_level).
+
+- lkrg.interval (15)
+  LKRG's timer interval for periodic execution of the global integrity routine,
+  in seconds.  Allowed values are 5 to 1800.
+
+- lkrg.trigger (N/A)
+  Force LKRG to execute the global integrity routine right now.  If you set
+  this to 1, the global integrity routine is immediately run and this sysctl is
+  reset to 0.
+
+- lkrg.log_level (3)
+  LKRG's logging verbosity level.  Allowed values are from 0 to 4 for normal
+  builds or from 0 to 6 for debugging builds.
+
+  Values of 4 and higher are meant for debugging only and produce too verbose
+  logging for production use.  Moreover, some messages logged at those high
+  levels contain information useful for kernel vulnerability exploitation,
+  making those log levels potentially mildly insecure (depending on other
+  system configuration).
+
+- lkrg.block_modules (0)
+  Whether or not to block further loading of kernel modules.  Allowed values
+  are 0 (no) and 1 (yes).
+
+  This feature is meant primarily to prevent unintended user-triggered (or
+  attacker-triggered) auto-loading of maybe-vulnerable modules provided in a
+  distribution after all intended modules have already been loaded.  This
+  feature is not effective (nor is meant to be) against attackers who already
+  have root privileges and try to load a module explicitly (they could simply
+  flip this setting or even unload LKRG first).
+
+  Also relevant is the kernel's kernel.modules_disabled sysctl, which fully
+  disables module loading until the system is rebooted.
+
+- lkrg.hide (0)
+  Whether or not LKRG should hide itself from the lists of loaded modules and
+  KOBJs.  Allowed values are 0 (do not hide LKRG, or unhide it if previously
+  hidden) and 1 (hide LKRG).
+
+  Please note that LKRG can be easily detected by other means anyway, such as
+  through the presence of its sysctl's.
+
+- lkrg.msr_validate (1)
+  Whether or not to validate CPU Model Specific Registers (MSRs) whenever the
+  global integrity routine is executed.  This can only be enabled on x86(-64)
+  CPUs.  Allowed values are 0 (do not validate MSRs) and 1 (validate MSRs).
+
+  There are situations where such validation is undesirable, such as if you run
+  LKRG on a host machine that manages VMs and dynamically reconfigures MSRs.
+  This is known to be the case for KVM, VirtualBox, and VMware hosts, where
+  you'd need to disable this setting.  However, there's no problem with keeping
+  this setting enabled on Linux+LKRG guest systems in VMs on those hosts.
+
+- lkrg.kint_validate (3)
+  Whether and when to validate global kernel integrity.  Allowed values are 0
+  (disabled), 1 (only when manually triggered by lkrg.trigger), 2 (also
+  periodically every lkrg.interval seconds), and 3 (also periodically every
+  lkrg.interval seconds and probabilistically on certain other events).
+
+  This currently applies to kernel and modules code and read-only data, global
+  SELinux settings, and some CPU status registers/bits (MSRs, WP, SMEP, SMAP).
+
+- lkrg.kint_enforce (2)
+  How to act on global kernel integrity violations.  Allowed values are 0 (log
+  once and accept new likely-compromised state as valid), 1 (log only for most
+  violations, log the violation and restore previous state for SELinux and CPU
+  WP bit), and 2 (panic the kernel).
+
+  Note that lkrg.kint_enforce=1 is expected to produce repeated log messages on
+  most kernel integrity violations, which can be noisy.  Also note that
+  lkrg.kint_enforce=2 is unfortunately the only way to make full use of LKRG's
+  global kernel integrity validation.  Running with lkrg.kint_validate=2 or
+  higher but lkrg.kint_enforce set to 0 or 1 wastes CPU time on costly checks
+  without achieving a corresponding security improvement, except that it might
+  provide logs for post-mortem detection and analysis of a security compromise.
+
+  Also relevant is the kernel's kernel.panic sysctl and panic parameter, which
+  makes the system reboot on kernel panic.  For example, kernel.panic=60 in
+  /etc/sysctl.conf or in a file under the /etc/sysctl.d directory, or panic=60
+  on the kernel's command-line, will make the system reboot in 60 seconds after
+  a panic.  This provides a brief opportunity read the panic message on the
+  console yet makes an unattended server try to come back up on its own.
+
+- lkrg.pint_validate (2)
+  Whether and when to validate process credentials integrity.  Allowed values
+  are 0 (disabled), 1 (validate a task's credentials just before it'd make use
+  of the credentials), 2 (also validate a task's credentials when it wakes up
+  from sleep), and 3 (validate credentials of all tasks in the system whenever
+  any task is about to make use of its credentials or wakes up).
+
+  Except with lkrg.pint_validate=0, we also validate the credentials of all
+  tasks as part of LKRG's global integrity routine.
+
+  lkrg.pint_validate=1 is sufficient to provide most of LKRG's potential at
+  timely detection of exploits, with higher settings providing only minuscule
+  improvements.  lkrg.pint_validate=2's additional performance overhead is also
+  minuscule, which is why we enable this by default.  lkrg.pint_validate=3 is a
+  paranoid mode with high performance overhead for little security gain.
+
+- lkrg.pint_enforce (1)
+  How to act on process credentials integrity violations.  Allowed values are 0
+  (log once and accept new likely-compromised state as valid), 1 (kill the
+  task), and 2 (panic the kernel).
+
+  In Linux kernel's terminology, which we also use here, a "task" refers to a
+  thread, and threads of a program may technically have different credentials.
+  Our enforcement of process credentials integrity is thus per-thread, and e.g.
+  it might happen that we kill an individual compromised thread of a program.
+
+- lkrg.pcfi_validate (2)
+  Whether and to what extent to validate Control Flow Integrity (CFI) on kernel
+  functions that we monitor because of their usefulness for exploits' Return
+  Oriented Programming (ROP) chains.  Allowed values are 0 (disabled), 1 (only
+  sanity-check the stack pointer), and 2 (also sanity-check all stack frames).
+
+  Because of the very limited extent of validation performed, we call our CFI
+  mechanism pCFI, for poor man's CFI.
+
+  lkrg.pcfi_validate=2 is incompatible with VirtualBox hosts, where you need to
+  use at most lkrg.pcfi_validate=1.  However, there's no problem with keeping
+  lkrg.pcfi_validate=2 on Linux+LKRG guest systems in VirtualBox VMs.
+
+- lkrg.pcfi_enforce (1)
+  How to act on pCFI violations.  Allowed values are 0 (log only), 1 (kill the
+  task), and 2 (panic the kernel).
+
+  Note that lkrg.pcfi_enforce=0 may produce repeated log messages for the same
+  violation, which might occasionally be noisy.
+
+- lkrg.umh_validate (1)
+  Whether and to what extent to validate uses of usermodehelper (UMH).  Allowed
+  values are 0 (validation disabled), 1 (allow only previously known programs),
+  and 2 (completely block UMH).
+
+  UMH can also be protected with pCFI regardless of this setting.
+
+  UMH is a kernel-internal interface, which the kernel uses to invoke programs
+  such as /sbin/modprobe (to auto-load a module on demand) and many others.
+  When left unrestricted, UMH is convenient for kernel vulnerability exploits.
+
+- lkrg.umh_enforce (1)
+  How to act on UMH usage violations.  Allowed values are 0 (log only), 1
+  (prevent execution), and 2 (panic the kernel).
+
+- lkrg.smep_validate (1)
+  Whether or not to validate the Supervisor Mode Execution Protection (SMEP)
+  bit on supporting x86-64 CPUs.  Allowed values are 0 (no) and 1 (yes).
+
+- lkrg.smep_enforce (2)
+  How to act on unexpected changes of the SMEP bit.  Allowed values are 0 (log
+  once and accept new likely-compromised state as valid), 1 (log the violation
+  and restore original value), and 2 (panic the kernel).
+
+- lkrg.smap_validate (1)
+  Whether or not to validate the Supervisor Mode Access Prevention (SMAP) bit
+  on supporting x86-64 CPUs.  Allowed values are 0 (no) and 1 (yes).
+
+- lkrg.smap_enforce (2)
+  How to act on unexpected changes of the SMAP bit.  Allowed values are 0 (log
+  once and accept new likely-compromised state as valid), 1 (log the violation
+  and restore original value), and 2 (panic the kernel).
 
 We do understand that we are providing a lot of knobs. To make configuration
 easier and faster, we introduced 'profiles'. 'lkrg.profile_validate' controls
