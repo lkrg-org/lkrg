@@ -1213,15 +1213,9 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
                   /* umh_validate */
                   P_CTRL(p_umh_validate) = 0x1;   // Allow specific paths
                   /* msr_validate */
-                  if (!P_CTRL(p_msr_validate)) {
+                  if (P_CTRL(p_msr_validate)) {
                      spin_lock(&p_db_lock);
-                     P_CTRL(p_msr_validate) = 0x1; // Enable
-                     memset(p_db.p_CPU_metadata_array,0x0,sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids);
-                     for_each_present_cpu(p_cpu) {
-                        if (cpu_online(p_cpu)) {
-                              smp_call_function_single(p_cpu,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
-                        }
-                     }
+                     P_CTRL(p_msr_validate) = 0x0; // Disable
                      p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
                      spin_unlock(&p_db_lock);
                   }

@@ -23,7 +23,7 @@ unsigned int block_modules = 0;
 unsigned int interval = 15;
 unsigned int kint_validate = 3;
 unsigned int kint_enforce = 2;
-unsigned int msr_validate = 1;
+unsigned int msr_validate = 0;
 unsigned int pint_validate = 2;
 unsigned int pint_enforce = 1;
 unsigned int pcfi_validate = 2;
@@ -70,7 +70,7 @@ p_ro_page p_ro __p_lkrg_read_only = {
 #endif
       .p_umh_validate = 1,                // umh_validate
       .p_umh_enforce = 1,                 // umh_enforce
-      .p_msr_validate = 1,                // msr_validate
+      .p_msr_validate = 0,                // msr_validate
       .p_pcfi_validate = 2,               // pcfi_validate
       .p_pcfi_enforce = 1,                // pcfi_enforce
       /* Profiles */
@@ -668,7 +668,7 @@ MODULE_PARM_DESC(kint_validate, "kint_validate [3 (periodically + random events)
 module_param(kint_enforce, uint, 0000);
 MODULE_PARM_DESC(kint_enforce, "kint_enforce [2 (panic) is default]");
 module_param(msr_validate, uint, 0000);
-MODULE_PARM_DESC(msr_validate, "msr_validate [1 (enabled) is default]");
+MODULE_PARM_DESC(msr_validate, "msr_validate [0 (disabled) is default]");
 module_param(pint_validate, uint, 0000);
 MODULE_PARM_DESC(pint_validate, "pint_validate [2 (current + waking up) is default]");
 module_param(pint_enforce, uint, 0000);
