@@ -1072,8 +1072,8 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
       "Disabled",
       "Light",
       "Balanced",
-      "Moderate",
-      "Heavy"
+      "Heavy",
+      "Paranoid"
    };
 
 // STRONG_DEBUG
@@ -1322,9 +1322,9 @@ static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
    unsigned int p_tmp;
    static const char * const p_str[] = {
       "Log & Accept",
-      "Balanced (selective panic)",
-      "Moderate (more panic)",
-      "Panic"
+      "Selective",
+      "Strict",
+      "Paranoid"
    };
 
 // STRONG_DEBUG
