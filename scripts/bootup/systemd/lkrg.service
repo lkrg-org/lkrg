@@ -7,7 +7,6 @@
 
 [Unit]
 Description=Linux Kernel Runtime Guard
-Documentation=https://bitbucket.org/Adam_pi3/lkrg-main/src/master/README
 DefaultDependencies=no
 After=systemd-modules-load.service
 Before=systemd-sysctl.service
