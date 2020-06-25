@@ -1,10 +1,35 @@
-The following changes have been made between LKRG 0.7 and 0.8:
+The following major changes have been made between LKRG 0.7 and 0.8:
 
 *) Add support for kernels 5.3+ (JUMP_LABEL batch mode), 5.5+ and 5.6+ (other
-   changes in JUMP_LABEL), 5.7+ (unexported kallsyms_lookup_name symbol)
+   changes in JUMP_LABEL), 5.7+ (non-exported kallsyms_lookup_name symbol)
+*) Add support for kernels built with aggressive GCC optimizations, where LKRG
+   will now hook the GCC-mangled function names (.isra and .constprop)
+*) Add support for kernels lacking functions that LKRG would have hooked but
+   can also reasonably work without, which LKRG will now merely warn about
+*) Add support for kernels built without CONFIG_USB and/or CONFIG_STACKTRACE,
+   and for kernels built with CONFIG_UNWINDER_ORC
+*) Add explicit checking for certain required CONFIG_* options to produce
+   user-friendly error messages instead of confusing build failures
+*) Add support for ACPI S3 (suspend to RAM) and S4 (suspend to disk)
+*) Add support for DKMS to Makefile
 *) Add experimental support for 32-bit ARM, tested on Raspberry Pi 3 Model B
 *) Add experimental support for Raspberry Pi 4, tested on board revision c03112
    (we had already included general support for AArch64 (ARM64) in LKRG 0.7)
+*) Add more hooks, most notably on capable() for more likely timely detection
+   of exploits that mess with capabilities rather than credentials
+*) New logic for detection of namespace escapes (e.g., from Docker containers)
+*) Add x86-64 SMAP bit validation and enforcement (similar to that for SMEP)
+*) Maintain LKRG runtime configuration in a memory page usually kept read-only
+*) Ensure kernel addresses and LKRG's own sensitive information is only logged
+   at log_level 4 or higher (non-default)
+*) Improve scalability of process tracking database: instead of one RB tree
+   guarded by one spinlock, use a 512-entry hash table of RB trees guarded by
+   their corresponding 512 read-write locks
+*) Introduce a mode (enabled by default) where process credentials integrity
+   validation is only frequently performed for the current task (that's about
+   to make use of the credentials) and (optionally yet also enabled by default)
+   for tasks that are waking up, but infrequently for other tasks (sleeping or
+   running without invoking kernel APIs that LKRG knows could use credentials)
 *) Redesign LKRG's presentation of its feature set to the user (sysadmin), no
    longer presenting it as having separate Code Integrity and Exploit Detection
    components, but instead LKRG as a whole working to detect various integrity
@@ -12,24 +37,14 @@ The following changes have been made between LKRG 0.7 and 0.8:
 *) Introduce many separate knobs (each available as a sysctl and a module
    parameter) for fine-grained tuning of LKRG's detection of violations and
    attacks (validation), as well as its response to those (enforcement)
-*) Introduce the notion of LKRG validation and enforcement profiles, which are
-   pre-defined sets of recommended values of the fine-grained tuning knobs.
-   These profiles may be quickly activated via the lkrg.profile_validate and
-   lkrg.profile_enforce sysctl settings.
-*) Change the defaults to achieve a better balance between the likelihood of
-   timely detection of violations and attacks and effective response to those
-   vs. performance impact and risk of false positives.  Most notable for the
-   user (sysadmin) is that we consider LKRG mature enough to respond to kernel
-   integrity violations by triggering a kernel panic (as there's no other
-   effective response), which is now the default, but we recommend initially
-   testing new installs of LKRG with that action temporarily disabled in order
-   to safely detect potential system-specific false positives and only proceed
-   with installation if there are none.
+*) Introduce LKRG validation and enforcement profiles, which are pre-defined
+   sets of recommended values of the fine-grained tuning knobs
+*) Change the defaults to improve the balance between timely detection and
+   effective response vs. performance impact and risk of false positives
 *) Rework the optional systemd unit file so that LKRG is loaded at an earlier
-   stage of system bootup, but can be disabled via the kernel command-line.
-*) Rework the documentation, including to reflect the above changes.  The
-   INSTALL file has been replaced by README, which is now much more extensive.
-   The CONCEPTS file has been added (using content from the LKRG homepage).
+   stage of system bootup, but can be disabled via the kernel command-line
+*) Rework the documentation reflecting the above changes, replacing INSTALL by
+   a much more extensive README, and adding CONCEPTS
 
 
 The following changes have been made between LKRG 0.6 and 0.7:
