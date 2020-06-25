@@ -1,71 +1,592 @@
-============================================
-Project:         john-1.8.0-jumbo-1
-Configuration:   ./configure CFLAGS='-O0'
-Testing:         make clean; time make -j 8
-============================================
+LKRG benchmarks with Phoronix Test Suite
+========================================
 
-######################################################### Test cases #########################################################
+Michael Larabel of Phoronix published an article on his benchmarks of LKRG as
+packaged for Whonix as of February 25, 2020.  This means a development version
+inbetween LKRG 0.7 and 0.8.  The benchmark system was a "Core i9 9900KS desktop
+running an Ubuntu 20.04 snapshot and using the Linux 5.4 Ubuntu kernel":
 
-log_level=0, NO_EVENTS_CI         log_level=0, without_CI           log_level=0, without_ED                 Without LKRG
------------------------           -----------------------           -----------------------           -----------------------
-real    0m22.310s                 real    0m22.299s                 real    0m22.695s                 real    0m22.117s
-user    1m12.828s                 user    1m12.612s                 user    1m12.469s                 user    1m12.534s
-sys     0m11.247s                 sys     0m11.480s                 sys     0m10.827s                 sys     0m10.653s
+https://www.phoronix.com/scan.php?page=article&item=linux-lkrg-performance&num=1
 
-real    0m22.322s                 real    0m22.243s                 real    0m22.590s                 real    0m22.210s
-user    1m12.637s                 user    1m12.507s                 user    1m12.299s                 user    1m12.855s
-sys     0m11.419s                 sys     0m11.412s                 sys     0m10.660s                 sys     0m10.558s
+The raw results are available at:
 
-real    0m22.280s                 real    0m22.255s                 real    0m22.394s                 real    0m22.179s
-user    1m12.757s                 user    1m12.495s                 user    1m12.581s                 user    1m12.819s
-sys     0m11.309s                 sys     0m11.439s                 sys     0m10.553s                 sys     0m10.641s
+https://openbenchmarking.org/result/2002252-PTS-COREI99901
 
-real    0m22.352s                 real    0m22.280s                 real    0m22.681s                 real    0m22.234s
-user    1m12.724s                 user    1m12.613s                 user    1m12.373s                 user    1m12.936s
-sys     0m11.352s                 sys     0m11.347s                 sys     0m10.638s                 sys     0m10.522s
+As LKRG developers, we found most of the results reasonable, but were surprised
+by some.  Anyhow, the overall performance impact of LKRG as seen from the
+geometric mean of all test results was around 4.4%:
 
-real    0m22.299s                 real    0m22.322s                 real    0m22.536s                 real    0m22.172s
-user    1m12.729s                 user    1m12.926s                 user    1m12.628s                 user    1m12.781s
-sys     0m11.290s                 sys     0m11.418s                 sys     0m10.516s                 sys     0m10.637s
+Geometric Mean Of All Test Results: Result Composite 112.550 107.581
 
-real    0m22.204s                 real    0m22.294s                 real    0m22.527s                 real    0m22.141s
-user    1m12.685s                 user    1m12.736s                 user    1m12.900s                 user    1m12.755s
-sys     0m11.207s                 sys     0m11.531s                 sys     0m10.387s                 sys     0m10.387s
+which gives 1-107.581/112.550 = 0.0441.
 
-real    0m22.325s                 real    0m22.266s                 real    0m22.303s                 real    0m22.122s
-user    1m12.617s                 user    1m12.264s                 user    1m12.242s                 user    1m12.588s
-sys     0m11.305s                 sys     0m11.474s                 sys     0m10.638s                 sys     0m10.641s
+Working towards the LKRG 0.8 release, we've made numerous changes to improve
+its performance and scalability, which were not yet included in the development
+version benchmarked above.  We contacted Michael, and he kindly instructed us
+how to rerun the exact same set of 58 tests:
 
-real    0m22.297s                 real    0m22.269s                 real    0m22.451s                 real    0m22.116s
-user    1m12.590s                 user    1m12.593s                 user    1m12.456s                 user    1m12.640s
-sys     0m11.470s                 sys     0m11.422s                 sys     0m10.747s                 sys     0m10.575s
+	sudo apt install php-cli php-xml git-core apt-file
+	git clone https://github.com/phoronix-test-suite/phoronix-test-suite
+	cd phoronix-test-suite
+	./phoronix-test-suite benchmark 2002252-PTS-COREI99901
 
-real    0m22.301s                 real    0m22.286s                 real    0m22.474s                 real    0m22.130s
-user    1m12.637s                 user    1m12.687s                 user    1m12.768s                 user    1m12.998s
-sys     0m11.373s                 sys     0m11.429s                 sys     0m10.467s                 sys     0m10.403s
+which we did (albeit on a somewhat different system configuration), using
+phoronix-test-suite as of commit e7f3a2b7fe083ecce28c7e42b315bd314dfe7070.
 
-real    0m22.344s                 real    0m22.257s                 real    0m22.490s                 real    0m22.129s
-user    1m12.842s                 user    1m12.790s                 user    1m12.641s                 user    1m12.639s
-sys     0m11.334s                 sys     0m11.294s                 sys     0m10.672s                 sys     0m10.686s
----- Avarage ----                 ---- Avarage ----                 ---- Avarage ----                 ---- Avarage ----
-real    0m22.303s                 real    0m22.277s                 real    0m22.514s                 real    0m22.155s
-user    1m12.705s                 user    1m12.622s                 user    1m12.536s                 user    1m12.755s
-sys     0m11.331s                 sys     0m11.425s                 sys     0m10.611s                 sys     0m10.570s
+We ran these tests in June 2020 using LKRG 0.8 with two sets of settings:
+
+"LKRG 0.8" means its default profile (profile_validate=3) with msr_validate=1
+enabled on top of it (which might have added very slight additional overhead).
+
+"LKRG 0.8 light" means the light profile (profile_validate=1).
+
+We also happened to run the tests without LKRG twice (along with each one of
+the two LKRG configurations above), which shows the jitter unrelated to LKRG.
+
+The overall performance impact of LKRG 0.8 as seen from the geometric mean of
+all test results is around 2.5% for LKRG defaults and around 2.0% for "light":
+
+    Geometric Mean Of All Test Results
+    Result Composite
+    Geometric Mean > Higher Is Better
+    LKRG 0.8 ........................................ 79.64 |==============================================================================================
+    LKRG 0.8 light .................................. 80.11 |==============================================================================================
+    Without LKRG 1 .................................. 81.69 |================================================================================================
+    Without LKRG 2 .................................. 81.74 |================================================================================================
+
+which we process as 1-79.64/81.69 = 0.02509 and 1-80.11/81.74 = 0.01994.
 
 
-======================================================= RESULTS ==========================================================
+System configuration:
 
-log_level=0, NO_EVENTS_CI         log_level=0, without_CI           log_level=0, without_ED
------------------------           -----------------------           -----------------------
-real    0m22.303s                 real    0m22.277s                 real    0m22.514s
-user    1m12.705s                 user    1m12.622s                 user    1m12.536s
-sys     0m11.331s                 sys     0m11.425s                 sys     0m10.611s
-~~~~ vs None ~~~~                 ~~~~ vs None ~~~~                 ~~~~ vs None ~~~~
-real    0m22.155s                 real    0m22.155s                 real    0m22.155s
-user    1m12.755s                 user    1m12.755s                 user    1m12.755s
-sys     0m10.570s                 sys     0m10.570s                 sys     0m10.570s
-=================                 =================                 ==================
-real    +00.668%                  real    +00.551%                  real    +01.620%
-user    -00.069%                  user    -00.183%                  user    -00.301%
-sys     +07.200%                  sys     +08.089%                  sys     +00.388%
+	Processor: Intel Xeon E-2176G @ 4.70GHz (6 Cores / 12 Threads), Motherboard: HP 8458 (Q50 Ver. 01.04.01 BIOS), Chipset: Intel Cannon Lake PCH, Memory: 32GB, Disk: 1024GB SAMSUNG MZVLB1T0HALR-000H2, Graphics: NVIDIA Quadro P1000 Mobile 4GB, Audio: Conexant CX20632, Network: Intel I219-LM + Intel-AC 9560
 
+	OS: Ubuntu 18.04, Kernel: 4.15.0-101-generic (x86_64), Desktop: Xfce, Display Server: X Server 1.19.6, OpenCL: OpenCL 1.2 CUDA 10.2.159, Compiler: GCC 7.5.0, File-System: ext4, Screen Resolution: 3840x2160
+
+
+Below are the raw per-test results, including all the curiosities.  (LKRG
+speeds up "Socket Activity" by 30% or 35%?!  We don't think it normally does.
+We also don't think it normally slows down context switches.  This is where the
+science is in CS, with experiments sometimes showing weird results.  Luckily,
+with as many as 58 tests these weird effects mostly cancel out.)
+
+    SQLite 3.30.1
+    Threads / Copies: 1
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 47.50 |==================
+    LKRG 0.8 ........................................ 51.25 |===================
+    LKRG 0.8 light .................................. 50.28 |===================
+    Without LKRG 2 .................................. 49.05 |==================
+
+
+    SQLite 3.30.1
+    Threads / Copies: 8
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 207.52 |==================
+    LKRG 0.8 ........................................ 198.15 |=================
+    LKRG 0.8 light .................................. 192.24 |=================
+    Without LKRG 2 .................................. 207.05 |==================
+
+
+    PostMark 1.51
+    Disk Transaction Performance
+    TPS > Higher Is Better
+    Without LKRG 1 .................................. 6466 |====================
+    LKRG 0.8 ........................................ 5173 |================
+    LKRG 0.8 light .................................. 5725 |==================
+    Without LKRG 2 .................................. 6522 |====================
+
+
+    t-test1 2017-01-13
+    Threads: 1
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 18.33 |===================
+    LKRG 0.8 ........................................ 18.51 |===================
+    LKRG 0.8 light .................................. 18.82 |===================
+    Without LKRG 2 .................................. 18.59 |===================
+
+
+    t-test1 2017-01-13
+    Threads: 2
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 6.094 |===================
+    LKRG 0.8 ........................................ 6.118 |===================
+    LKRG 0.8 light .................................. 6.126 |===================
+    Without LKRG 2 .................................. 6.084 |===================
+
+
+    pmbench
+    Concurrent Worker Threads: 1 - Read-Write Ratio: 100% Reads
+    us - Average Page Latency < Lower Is Better
+    Without LKRG 1 .................................. 0.0259 |==================
+    LKRG 0.8 ........................................ 0.0257 |==================
+    LKRG 0.8 light .................................. 0.0258 |==================
+    Without LKRG 2 .................................. 0.0258 |==================
+
+
+    pmbench
+    Concurrent Worker Threads: 1 - Read-Write Ratio: 100% Writes
+    us - Average Page Latency < Lower Is Better
+    Without LKRG 1 .................................. 0.0289 |==================
+    LKRG 0.8 ........................................ 0.0285 |==================
+    LKRG 0.8 light .................................. 0.0285 |==================
+    Without LKRG 2 .................................. 0.0286 |==================
+
+
+    pmbench
+    Concurrent Worker Threads: 16 - Read-Write Ratio: 100% Reads
+    us - Average Page Latency < Lower Is Better
+    Without LKRG 1 .................................. 0.0690 |==================
+    LKRG 0.8 ........................................ 0.0638 |=================
+    LKRG 0.8 light .................................. 0.0642 |=================
+    Without LKRG 2 .................................. 0.0616 |================
+
+
+    pmbench
+    Concurrent Worker Threads: 16 - Read-Write Ratio: 100% Writes
+    us - Average Page Latency < Lower Is Better
+    Without LKRG 1 .................................. 0.0702 |=================
+    LKRG 0.8 ........................................ 0.0753 |==================
+    LKRG 0.8 light .................................. 0.0744 |==================
+    Without LKRG 2 .................................. 0.0685 |================
+
+
+    pmbench
+    Concurrent Worker Threads: 1 - Read-Write Ratio: 80% Reads 20% Writes
+    us - Average Page Latency < Lower Is Better
+    Without LKRG 1 .................................. 0.0791 |==================
+    LKRG 0.8 ........................................ 0.0783 |==================
+    LKRG 0.8 light .................................. 0.0787 |==================
+    Without LKRG 2 .................................. 0.0785 |==================
+
+
+    pmbench
+    Concurrent Worker Threads: 16 - Read-Write Ratio: 80% Reads 20% Writes
+    us - Average Page Latency < Lower Is Better
+    Without LKRG 1 .................................. 0.1183 |==================
+    LKRG 0.8 ........................................ 0.1197 |==================
+    LKRG 0.8 light .................................. 0.1191 |==================
+    Without LKRG 2 .................................. 0.1104 |=================
+
+
+    Sockperf 3.4
+    Test: Throughput
+    Messages Per Second > Higher Is Better
+    Without LKRG 1 .................................. 528116 |==================
+    LKRG 0.8 ........................................ 480136 |================
+    LKRG 0.8 light .................................. 480136 |================
+    Without LKRG 2 .................................. 523773 |==================
+
+
+    Sockperf 3.4
+    Test: Latency Ping Pong
+    usec < Lower Is Better
+    Without LKRG 1 .................................. 3.545 |=================
+    LKRG 0.8 ........................................ 4.028 |===================
+    LKRG 0.8 light .................................. 3.910 |==================
+    Without LKRG 2 .................................. 3.606 |=================
+
+
+    Sockperf 3.4
+    Test: Latency Under Load
+    usec < Lower Is Better
+    Without LKRG 1 .................................. 12.62 |===============
+    LKRG 0.8 ........................................ 14.13 |=================
+    LKRG 0.8 light .................................. 15.32 |===================
+    Without LKRG 2 .................................. 15.55 |===================
+
+
+    Ethr 2019-01-02
+    Server Address: localhost - Protocol: TCP - Test: Latency - Threads: 1
+    Microseconds < Lower Is Better
+    Without LKRG 1 .................................. 13.40 |==================
+    LKRG 0.8 ........................................ 14.38 |===================
+    LKRG 0.8 light .................................. 13.99 |==================
+    Without LKRG 2 .................................. 13.31 |==================
+
+
+    Ethr 2019-01-02
+    Server Address: localhost - Protocol: TCP - Test: Connections/s - Threads: 1
+    Connections/sec > Higher Is Better
+    Without LKRG 1 .................................. 12483 |===================
+    LKRG 0.8 ........................................ 11357 |=================
+    LKRG 0.8 light .................................. 11627 |==================
+    Without LKRG 2 .................................. 12497 |===================
+
+
+    iPerf 3.7
+    Server Address: localhost - Server Port: 5201 - Duration: 10 Seconds - Test: TCP - Parallel: 1
+    Mbits/sec > Higher Is Better
+    Without LKRG 1 .................................. 87761 |===================
+    LKRG 0.8 ........................................ 83260 |==================
+    LKRG 0.8 light .................................. 82774 |==================
+    Without LKRG 2 .................................. 87674 |===================
+
+
+    iPerf 3.7
+    Server Address: localhost - Server Port: 5201 - Duration: 10 Seconds - Test: UDP - Parallel: 1
+    Mbits/sec > Higher Is Better
+    Without LKRG 1 .................................. 1.05 |====================
+    LKRG 0.8 ........................................ 1.05 |====================
+    LKRG 0.8 light .................................. 1.05 |====================
+    Without LKRG 2 .................................. 1.05 |====================
+
+
+    iPerf 3.7
+    Server Address: localhost - Server Port: 5201 - Duration: 10 Seconds - Test: TCP - Parallel: 10
+    Mbits/sec > Higher Is Better
+    Without LKRG 1 .................................. 102445 |==================
+    LKRG 0.8 ........................................ 100749 |==================
+    LKRG 0.8 light .................................. 100253 |==================
+    Without LKRG 2 .................................. 101773 |==================
+
+
+    iPerf 3.7
+    Server Address: localhost - Server Port: 5201 - Duration: 10 Seconds - Test: UDP - Parallel: 10
+    Mbits/sec > Higher Is Better
+    Without LKRG 1 .................................. 10.5 |====================
+    LKRG 0.8 ........................................ 10.5 |====================
+    LKRG 0.8 light .................................. 10.5 |====================
+    Without LKRG 2 .................................. 10.5 |====================
+
+
+    Java SciMark 2.0
+    Computational Test: Composite
+    Mflops > Higher Is Better
+    Without LKRG 1 .................................. 2560.11 |=================
+    LKRG 0.8 ........................................ 2576.03 |=================
+    LKRG 0.8 light .................................. 2572.08 |=================
+    Without LKRG 2 .................................. 2571.91 |=================
+
+
+    SVT-AV1 0.8
+    Encoder Mode: Enc Mode 8 - Input: 1080p
+    Frames Per Second > Higher Is Better
+    Without LKRG 1 .................................. 19.63 |===================
+    LKRG 0.8 ........................................ 19.60 |===================
+    LKRG 0.8 light .................................. 19.59 |===================
+    Without LKRG 2 .................................. 19.64 |===================
+
+
+    VP9 libvpx Encoding 1.8.2
+    Speed: Speed 5
+    Frames Per Second > Higher Is Better
+    Without LKRG 1 .................................. 25.90 |===================
+    LKRG 0.8 ........................................ 25.96 |===================
+    LKRG 0.8 light .................................. 25.96 |===================
+    Without LKRG 2 .................................. 26.05 |===================
+
+
+    x264 2019-12-17
+    H.264 Video Encoding
+    Frames Per Second > Higher Is Better
+    Without LKRG 1 .................................. 63.15 |===================
+    LKRG 0.8 ........................................ 62.96 |===================
+    LKRG 0.8 light .................................. 63.61 |===================
+    Without LKRG 2 .................................. 63.11 |===================
+
+
+    Coremark 1.0
+    CoreMark Size 666 - Iterations Per Second
+    Iterations/Sec > Higher Is Better
+    Without LKRG 1 .................................. 231557.92 |===============
+    LKRG 0.8 ........................................ 232499.71 |===============
+    LKRG 0.8 light .................................. 232255.06 |===============
+    Without LKRG 2 .................................. 232890.77 |===============
+
+
+    Timed Apache Compilation 2.4.41
+    Time To Compile
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 20.63 |================
+    LKRG 0.8 ........................................ 23.77 |===================
+    LKRG 0.8 light .................................. 23.28 |===================
+    Without LKRG 2 .................................. 20.56 |================
+
+
+    Timed FFmpeg Compilation 4.2.2
+    Time To Compile
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 75.06 |===================
+    LKRG 0.8 ........................................ 76.40 |===================
+    LKRG 0.8 light .................................. 76.10 |===================
+    Without LKRG 2 .................................. 75.03 |===================
+
+
+    Timed GCC Compilation 8.2
+    Time To Compile
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 1058.20 |==============
+    LKRG 0.8 ........................................ 1306.89 |=================
+    LKRG 0.8 light .................................. 1262.02 |================
+    Without LKRG 2 .................................. 1057.01 |==============
+
+
+    Timed GDB GNU Debugger Compilation 9.1
+    Time To Compile
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 117.11 |=================
+    LKRG 0.8 ........................................ 121.68 |==================
+    LKRG 0.8 light .................................. 120.11 |==================
+    Without LKRG 2 .................................. 116.06 |=================
+
+
+    Timed ImageMagick Compilation 6.9.0
+    Time To Compile
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 40.43 |===================
+    LKRG 0.8 ........................................ 41.39 |===================
+    LKRG 0.8 light .................................. 41.13 |===================
+    Without LKRG 2 .................................. 40.27 |==================
+
+
+    Timed Linux Kernel Compilation 5.4
+    Time To Compile
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 107.59 |==================
+    LKRG 0.8 ........................................ 110.36 |==================
+    LKRG 0.8 light .................................. 109.44 |==================
+    Without LKRG 2 .................................. 107.60 |==================
+
+
+    Timed LLVM Compilation 6.0.1
+    Time To Compile
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 571.60 |==================
+    LKRG 0.8 ........................................ 577.02 |==================
+    LKRG 0.8 light .................................. 567.23 |==================
+    Without LKRG 2 .................................. 564.93 |==================
+
+
+    Timed MPlayer Compilation 1.4
+    Time To Compile
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 51.27 |==================
+    LKRG 0.8 ........................................ 52.81 |===================
+    LKRG 0.8 light .................................. 52.34 |===================
+    Without LKRG 2 .................................. 51.18 |==================
+
+
+    Timed PHP Compilation 7.4.2
+    Time To Compile
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 61.86 |==================
+    LKRG 0.8 ........................................ 63.78 |===================
+    LKRG 0.8 light .................................. 63.24 |===================
+    Without LKRG 2 .................................. 61.76 |==================
+
+
+    Build2 0.12
+    Time To Compile
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 135.47 |=================
+    LKRG 0.8 ........................................ 139.57 |==================
+    LKRG 0.8 light .................................. 139.06 |==================
+    Without LKRG 2 .................................. 135.52 |=================
+
+
+    rays1bench 2020-01-09
+    Large Scene
+    mrays/s > Higher Is Better
+    Without LKRG 1 .................................. 33.93 |===================
+    LKRG 0.8 ........................................ 33.18 |===================
+    LKRG 0.8 light .................................. 33.45 |===================
+    Without LKRG 2 .................................. 33.55 |===================
+
+
+    Numpy Benchmark
+
+    Score > Higher Is Better
+    Without LKRG 1 .................................. 373.58 |==================
+    LKRG 0.8 ........................................ 373.55 |==================
+    LKRG 0.8 light .................................. 373.60 |==================
+    Without LKRG 2 .................................. 373.80 |==================
+
+
+    DeepSpeech 0.6
+    Acceleration: CPU
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 72.88 |===================
+    LKRG 0.8 ........................................ 73.01 |===================
+    LKRG 0.8 light .................................. 73.15 |===================
+    Without LKRG 2 .................................. 72.81 |===================
+
+
+    Tachyon 0.99b6
+    Total Time
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 145.07 |==================
+    LKRG 0.8 ........................................ 145.22 |==================
+    LKRG 0.8 light .................................. 144.81 |==================
+    Without LKRG 2 .................................. 145.07 |==================
+
+
+    PostgreSQL pgbench 12.0
+    Scaling: Buffer Test - Test: Normal Load - Mode: Read Only
+    TPS > Higher Is Better
+    Without LKRG 1 .................................. 148168.70 |===============
+    LKRG 0.8 ........................................ 144992.92 |===============
+    LKRG 0.8 light .................................. 145926.02 |===============
+    Without LKRG 2 .................................. 148208.80 |===============
+
+
+    PostgreSQL pgbench 12.0
+    Scaling: Buffer Test - Test: Normal Load - Mode: Read Write
+    TPS > Higher Is Better
+    Without LKRG 1 .................................. 3664.46 |=================
+    LKRG 0.8 ........................................ 3593.93 |================
+    LKRG 0.8 light .................................. 3710.23 |=================
+    Without LKRG 2 .................................. 3701.83 |=================
+
+
+    SQLite Speedtest 3.30
+    Timed Time - Size 1,000
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 63.68 |===================
+    LKRG 0.8 ........................................ 64.52 |===================
+    LKRG 0.8 light .................................. 64.29 |===================
+    Without LKRG 2 .................................. 63.87 |===================
+
+
+    Inkscape
+    Operation: SVG Files To PNG
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 21.58 |=================
+    LKRG 0.8 ........................................ 24.37 |===================
+    LKRG 0.8 light .................................. 23.65 |==================
+    Without LKRG 2 .................................. 21.51 |=================
+
+
+    RawTherapee
+    Total Benchmark Time
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 64.32 |===================
+    LKRG 0.8 ........................................ 64.68 |===================
+    LKRG 0.8 light .................................. 64.66 |===================
+    Without LKRG 2 .................................. 64.33 |===================
+
+
+    BenchmarkMutex
+    Benchmark: Mutex Lock Unlock spinlock
+    ns < Lower Is Better
+    Without LKRG 1 .................................. 38 |=====================
+    LKRG 0.8 ........................................ 39 |======================
+    LKRG 0.8 light .................................. 38 |=====================
+    Without LKRG 2 .................................. 39 |======================
+
+
+    BenchmarkMutex
+    Benchmark: Mutex Lock Unlock std::mutex
+    ns < Lower Is Better
+    Without LKRG 1 .................................. 19 |======================
+    LKRG 0.8 ........................................ 18 |=====================
+    LKRG 0.8 light .................................. 18 |=====================
+    Without LKRG 2 .................................. 19 |======================
+
+
+    Stress-NG 0.07.26
+    Test: Forking
+    Bogo Ops/s > Higher Is Better
+    Without LKRG 1 .................................. 55337.95 |================
+    LKRG 0.8 ........................................ 52709.65 |===============
+    LKRG 0.8 light .................................. 54567.02 |================
+    Without LKRG 2 .................................. 55723.36 |================
+
+
+    Stress-NG 0.07.26
+    Test: Semaphores
+    Bogo Ops/s > Higher Is Better
+    Without LKRG 1 .................................. 4339272.09 |==============
+    LKRG 0.8 ........................................ 4387407.74 |==============
+    LKRG 0.8 light .................................. 4323867.93 |==============
+    Without LKRG 2 .................................. 4388385.72 |==============
+
+
+    Stress-NG 0.07.26
+    Test: Socket Activity
+    Bogo Ops/s > Higher Is Better
+    Without LKRG 1 .................................. 3912.43 |=============
+    LKRG 0.8 ........................................ 5304.83 |=================
+    LKRG 0.8 light .................................. 5144.24 |================
+    Without LKRG 2 .................................. 3935.55 |=============
+
+
+    Stress-NG 0.07.26
+    Test: Context Switching
+    Bogo Ops/s > Higher Is Better
+    Without LKRG 1 .................................. 1917531.34 |==============
+    LKRG 0.8 ........................................ 1523650.72 |===========
+    LKRG 0.8 light .................................. 1541390.37 |===========
+    Without LKRG 2 .................................. 1909769.07 |==============
+
+
+    Stress-NG 0.07.26
+    Test: System V Message Passing
+    Bogo Ops/s > Higher Is Better
+    Without LKRG 1 .................................. 5857712.96 |==============
+    LKRG 0.8 ........................................ 5990669.18 |==============
+    LKRG 0.8 light .................................. 5974934.61 |==============
+    Without LKRG 2 .................................. 5952706.40 |==============
+
+
+    ctx_clock
+    Context Switch Time
+    Clocks < Lower Is Better
+    Without LKRG 1 .................................. 1130 |====================
+    LKRG 0.8 ........................................ 1138 |====================
+    LKRG 0.8 light .................................. 1141 |====================
+    Without LKRG 2 .................................. 1130 |====================
+
+
+    Blender 2.82
+    Blend File: BMW27 - Compute: CPU-Only
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 261.62 |==================
+    LKRG 0.8 ........................................ 262.28 |==================
+    LKRG 0.8 light .................................. 262.44 |==================
+    Without LKRG 2 .................................. 260.84 |==================
+
+
+    PyBench 2018-02-16
+    Total For Average Test Times
+    Milliseconds < Lower Is Better
+    Without LKRG 1 .................................. 973 |=====================
+    LKRG 0.8 ........................................ 983 |=====================
+    LKRG 0.8 light .................................. 975 |=====================
+    Without LKRG 2 .................................. 975 |=====================
+
+
+    PHPBench 0.8.1
+    PHP Benchmark Suite
+    Score > Higher Is Better
+    Without LKRG 1 .................................. 730291 |==================
+    LKRG 0.8 ........................................ 728913 |==================
+    LKRG 0.8 light .................................. 726232 |==================
+    Without LKRG 2 .................................. 729524 |==================
+
+
+    Mlpack Benchmark
+    Benchmark: scikit_svm
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 15.30 |===================
+    LKRG 0.8 ........................................ 15.22 |===================
+    LKRG 0.8 light .................................. 15.22 |===================
+    Without LKRG 2 .................................. 15.23 |===================
+
+
+    Mlpack Benchmark
+    Benchmark: scikit_linearridgeregression
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 236.57 |==================
+    LKRG 0.8 ........................................ 236.30 |==================
+    LKRG 0.8 light .................................. 236.68 |==================
+    Without LKRG 2 .................................. 237.05 |==================
+
+
+    Sunflow Rendering System 0.07.2
+    Global Illumination + Image Synthesis
+    Seconds < Lower Is Better
+    Without LKRG 1 .................................. 1.638 |===================
+    LKRG 0.8 ........................................ 1.617 |===================
+    LKRG 0.8 light .................................. 1.653 |===================
+    Without LKRG 2 .................................. 1.626 |===================

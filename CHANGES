@@ -44,7 +44,8 @@ The following major changes have been made between LKRG 0.7 and 0.8:
 *) Rework the optional systemd unit file so that LKRG is loaded at an earlier
    stage of system bootup, but can be disabled via the kernel command-line
 *) Rework the documentation reflecting the above changes, replacing INSTALL by
-   a much more extensive README, and adding CONCEPTS
+   a much more extensive README, adding CONCEPTS, and replacing the contents of
+   PERFORMANCE with up-to-date Phoronix Test Suite benchmarks
 
 
 The following changes have been made between LKRG 0.6 and 0.7:
