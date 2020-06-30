@@ -123,6 +123,7 @@ p_module_event_notifier_going_retry:
 //      mutex_lock(&module_mutex);
       while (!mutex_trylock(&module_mutex)) {
          p_text_section_unlock();
+         schedule();
          goto  p_module_event_notifier_going_retry;
       }
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
@@ -209,6 +210,7 @@ p_module_event_notifier_live_retry:
          //mutex_lock(&module_mutex);
          while (!mutex_trylock(&module_mutex)) {
             p_text_section_unlock();
+            schedule();
             goto  p_module_event_notifier_live_retry;
          }
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
