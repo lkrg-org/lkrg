@@ -64,7 +64,7 @@ System configuration:
 	OS: Ubuntu 18.04, Kernel: 4.15.0-101-generic (x86_64), Desktop: Xfce, Display Server: X Server 1.19.6, OpenCL: OpenCL 1.2 CUDA 10.2.159, Compiler: GCC 7.5.0, File-System: ext4, Screen Resolution: 3840x2160
 
 
-Below are the raw per-test results, including all the curiosities.  (LKRG
+Below are our raw per-test results, including all the curiosities.  (LKRG
 speeds up "Socket Activity" by 30% or 35%?!  We don't think it normally does.
 We also don't think it normally slows down context switches.  This is where the
 science is in CS, with experiments sometimes showing weird results.  Luckily,
@@ -590,3 +590,16 @@ with as many as 58 tests these weird effects mostly cancel out.)
     LKRG 0.8 ........................................ 1.617 |===================
     LKRG 0.8 light .................................. 1.653 |===================
     Without LKRG 2 .................................. 1.626 |===================
+
+
+Shortly after the LKRG 0.8 release, Michael himself ran different benchmarks of
+it (as many as 119 tests) and published an article and the raw results here:
+
+https://www.phoronix.com/scan.php?page=article&item=lkrg-08-linux&num=1
+https://openbenchmarking.org/result/2006277-NE-LKRG08BEN46
+
+Once again, we found most of the results reasonable, but were surprised by
+some, which we'll be looking into.  Unfortunately, automated analytics of the raw
+results above show inconsistent geometric means in two places (a bug, which
+Michael acknowledged), so we cannot easily and confidently state LKRG's overall
+performance impact as seen there, but the individual test results are usable.

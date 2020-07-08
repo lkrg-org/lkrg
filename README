@@ -33,9 +33,9 @@ like the below:
 
 	wget https://www.openwall.com/signatures/openwall-offline-signatures.asc
 	gpg --import openwall-offline-signatures.asc
-	wget https://www.openwall.com/lkrg/lkrg-0.8.tar.gz.sign
-	wget https://www.openwall.com/lkrg/lkrg-0.8.tar.gz
-	gpg --verify lkrg-0.8.tar.gz.sign lkrg-0.8.tar.gz
+	wget https://www.openwall.com/lkrg/lkrg-0.8.1.tar.gz.sign
+	wget https://www.openwall.com/lkrg/lkrg-0.8.1.tar.gz
+	gpg --verify lkrg-0.8.1.tar.gz.sign lkrg-0.8.1.tar.gz
 
 Please preserve the GnuPG key above and also use it to verify future releases,
 which will most likely work in a similar manner.
@@ -389,7 +389,7 @@ The sysctl's are (with default values specified in braces):
   Whether and to what extent to validate Control Flow Integrity (CFI) on kernel
   functions that we monitor because of their usefulness for exploits' Return
   Oriented Programming (ROP) chains.  Allowed values are 0 (disabled), 1 (only
-  sanity-check the stack pointer), and 2 (also sanity-check all stack frames).
+  validate the stack pointer), and 2 (also validate all stack frames).
 
   Because of the very limited extent of validation performed, we call our CFI
   mechanism pCFI, for poor man's CFI.

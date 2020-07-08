@@ -13,17 +13,21 @@ less reliable exploits.
 
 LKRG also provides security through diversity, much like running an uncommon OS
 kernel would, yet without the usability drawbacks of actually running an
-uncommon OS.  As free LKRG becomes somewhat popular and maybe a target of some
-exploits, we might introduce paid LKRG Pro as a means to fund the project and
-provide further diversity (with Pro's smaller userbase being beneficial), extra
-and specialized functionality, and maybe distro-specific binary builds.
+uncommon OS.  As free LKRG becomes somewhat popular and possibly starts being
+deliberately bypassed by some exploits, we might introduce paid LKRG Pro as a
+means to fund the project and provide further diversity (with Pro's smaller
+userbase being beneficial), extra and specialized functionality, and maybe
+distro-specific binary builds.
 
 Like any software, LKRG may contain bugs and some of those might even be new
-security vulnerabilities.  You need to weigh the benefits vs. risks of using
-LKRG, considering that LKRG is most useful on systems that realistically,
-despite of this being a best practice for security, won't be promptly rebooted
-into new kernels (nor live-patched) whenever a new kernel vulnerability is
-discovered.
+security vulnerabilities.  Moreover, usage of any out-of-tree kernel module
+involves risk of incompatibilities with the specific kernel version/build, and
+LKRG is no exception.  We test LKRG across a wide range of kernel versions, but
+obviously not with future kernel versions, with which LKRG might or might not
+work right.  You need to weigh the benefits vs. risks of using LKRG,
+considering that LKRG is most useful on systems that realistically, despite of
+this being a best practice for security, won't be promptly rebooted into new
+kernels (nor live-patched) whenever a new kernel vulnerability is discovered.
 
 LKRG is currently in an experimental stage.  We expect occasional false
 positives (integrity violations and/or exploits detected when there aren't

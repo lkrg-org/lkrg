@@ -1,3 +1,13 @@
+The following major changes have been made between LKRG 0.8 and 0.8.1:
+
+*) Drop init_module() and delete_module() syscall hooks, which were no longer
+   justified now that we hook capable() yet contained a nasty bug (first
+   reported by Jason A. Donenfeld) allowing a user to trigger an Oops (read via
+   a near-NULL pointer) on 64-bit Linux 4.17+
+*) Update CONCEPTS to note the risk of running with untested kernel versions
+*) Update PERFORMANCE to refer to Phoronix article and raw results on 0.8
+
+
 The following major changes have been made between LKRG 0.7 and 0.8:
 
 *) Add support for kernels 5.3+ (JUMP_LABEL batch mode), 5.5+ and 5.6+ (other
@@ -129,7 +139,7 @@ The following changes have been made between LKRG 0.4 and 0.5:
 The following changes have been made between LKRG 0.3 and 0.4:
 
 *) [ED] Fix a potential kretprobe glitch that could happen in a very rare
-corner case on heavily loaded SMP machines (resulting in a false positive)
+   corner case on heavily loaded SMP machines (resulting in a false positive)
 *) [ED] Change some of the printed messages for log_level=4
 *) [ED] Add support for 4.17+ kernels. This is a pretty big change addressing:
       a) New logic of how syscall stubs are created; CONFIG_X32_X86 and
