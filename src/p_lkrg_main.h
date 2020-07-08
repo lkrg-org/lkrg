@@ -250,7 +250,7 @@ extern p_ro_page p_ro;
 #endif
 
 #if !defined(CONFIG_JUMP_LABEL)
- #error "LKRG currently requires CONFIG_JUMP_LABEL, but this might change. If you hit this problem please contact LKRG developers."
+ #error "LKRG requires CONFIG_JUMP_LABEL"
 #endif
 
 #if !defined(CONFIG_STACKTRACE)
