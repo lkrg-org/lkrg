@@ -56,9 +56,6 @@ p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
                src/modules/exploit_detection/syscalls/p_sys_setresgid/p_sys_setresgid.o \
                src/modules/exploit_detection/syscalls/p_sys_setfsgid/p_sys_setfsgid.o \
                src/modules/exploit_detection/syscalls/p_set_current_groups/p_set_current_groups.o \
-               src/modules/exploit_detection/syscalls/p_do_init_module/p_do_init_module.o \
-               src/modules/exploit_detection/syscalls/p_sys_finit_module/p_sys_finit_module.o \
-               src/modules/exploit_detection/syscalls/p_sys_delete_module/p_sys_delete_module.o \
                src/modules/exploit_detection/syscalls/p_generic_permission/p_generic_permission.o \
                src/modules/exploit_detection/syscalls/p_sel_write_enforce/p_sel_write_enforce.o \
                src/modules/exploit_detection/syscalls/p_seccomp/p_seccomp.o \
@@ -75,7 +72,6 @@ p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \
                src/modules/exploit_detection/syscalls/compat/p_compat_sys_execveat/p_compat_sys_execveat.o \
                src/modules/exploit_detection/syscalls/compat/p_compat_sys_keyctl/p_compat_sys_keyctl.o \
                src/modules/exploit_detection/syscalls/compat/p_compat_sys_ptrace/p_compat_sys_ptrace.o \
-               src/modules/exploit_detection/syscalls/compat/p_compat_sys_delete_module/p_compat_sys_delete_module.o \
                src/modules/exploit_detection/syscalls/compat/p_compat_sys_capset/p_compat_sys_capset.o \
                src/modules/exploit_detection/syscalls/compat/p_compat_sys_add_key/p_compat_sys_add_key.o \
                src/modules/exploit_detection/syscalls/compat/p_compat_sys_request_key/p_compat_sys_request_key.o \
