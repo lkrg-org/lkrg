@@ -60,7 +60,14 @@
 
 #include <linux/signal.h>
 #include <linux/timex.h>
+
+#if ( (LINUX_VERSION_CODE < KERNEL_VERSION(4,4,72)) && \
+      (!(defined(RHEL_RELEASE_CODE)) || \
+         RHEL_RELEASE_CODE < RHEL_RELEASE_VERSION(7, 4)))
+#define P_LKRG_CUSTOM_GET_RANDOM_LONG
+/* We use md5_transform() in our custom get_random_long() */
 #include <linux/cryptohash.h>
+#endif
 
 #include <linux/stacktrace.h>
 #include <asm/stacktrace.h>
