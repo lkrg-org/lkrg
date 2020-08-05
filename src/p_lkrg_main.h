@@ -61,6 +61,10 @@
 #include <linux/signal.h>
 #include <linux/timex.h>
 
+#ifndef RHEL_RELEASE_VERSION
+#define RHEL_RELEASE_VERSION(a, b) (((a) << 8) + (b))
+#endif
+
 #if ( (LINUX_VERSION_CODE < KERNEL_VERSION(4,4,72)) && \
       (!(defined(RHEL_RELEASE_CODE)) || \
          RHEL_RELEASE_CODE < RHEL_RELEASE_VERSION(7, 4)))
@@ -211,13 +215,6 @@ extern p_ro_page p_ro;
 #define P_SYM(p_field) p_ro.p_lkrg_global_ctrl.syms.p_field
 #define P_CTRL(p_field) p_ro.p_lkrg_global_ctrl.ctrl.p_field
 #define P_CTRL_ADDR &p_ro.p_lkrg_global_ctrl
-
-/*
- * RHEL support
- */
-#ifndef RHEL_RELEASE_VERSION
-#define RHEL_RELEASE_VERSION(a, b) (((a) << 8) + (b))
-#endif
 
 /*
  * p_lkrg modules
