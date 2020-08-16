@@ -174,6 +174,9 @@ typedef struct _p_lkrg_global_symbols_structure {
    struct mutex *p_kernfs_mutex;
 #endif
    struct kset **p_module_kset;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,8,0)
+   void (*p_native_write_cr4)(unsigned long p_val);
+#endif
    int (*p_kallsyms_on_each_symbol)(int (*)(void *, const char *, struct module *, unsigned long), void *);
    struct module *p_find_me;
 

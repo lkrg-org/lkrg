@@ -428,6 +428,17 @@ static int __init p_lkrg_register(void) {
       goto p_main_error;
    }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,8,0)
+   P_SYM(p_native_write_cr4) = (void (*)(unsigned long))P_SYM(p_kallsyms_lookup_name)("native_write_cr4");
+
+   if (!P_SYM(p_native_write_cr4)) {
+      p_print_log(P_LKRG_ERR,
+             "ERROR: Can't find 'native_write_cr4' function :( Exiting...\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_main_error;
+   }
+#endif
+
    // Freeze all non-kernel processes
    while (P_SYM(p_freeze_processes)())
       schedule();
