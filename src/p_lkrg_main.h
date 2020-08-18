@@ -79,6 +79,9 @@
 #if defined(CONFIG_X86) && defined(CONFIG_UNWINDER_ORC)
 #include <asm/unwind.h>
 #endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0)
+#include <linux/sched/task_stack.h>
+#endif
 
 //#define p_lkrg_read_only __attribute__((__section__(".data..p_lkrg_read_only"),aligned(PAGE_SIZE)))
 #define __p_lkrg_read_only __attribute__((__section__(".p_lkrg_read_only")))
