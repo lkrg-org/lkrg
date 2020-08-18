@@ -6,9 +6,9 @@
  *   => submodule for checking system configuration regarding CPUs
  *
  * Notes:
- *  - Some of the critical data may exists per logical CPU (core)
+ *  - Some of the critical data may exist per logical CPU (core)
  *    and need to be independently verified / checked.
- *    Additionally, it is strongly dependend from the architecture.
+ *    Additionally, it is strongly dependent on the architecture.
  *    Linux kernel defines different types of CPUs:
  *     => online CPUs
  *     => possible CPUs
@@ -16,20 +16,20 @@
  *     => active CPUs
  *
  *    This module will keep information about how many 'active CPUs',
- *    'online CPUs' and 'present CPUs' exists in the current system.
- *    Additionally Linux kernel exports global CPU id count ('nr_cpu_ids')
+ *    'online CPUs' and 'present CPUs' exist in the current system.
+ *    Additionally, Linux kernel exports global CPU id count ('nr_cpu_ids'),
  *    which is initialized per boot time. If over the time any of the
  *    CPU will be hot plugged / activated this information will be
  *    visible for us!
  *
- *  - x86 (and amd64) arch: following informations are critical and need
- *    to be verified (checking integrity):
+ *  - x86 (and amd64) arch: the following pieces of information are
+ *    critical and need to be verified (checking integrity):
  *     => IDT base and/or entire table
  *     => MSRs
  *
  *  - Since Linux 4.10 there isn't CPU_[ONLINE/DEAD] notifiers :(
- *    Hot CPU plug[in/out] notification logic has completaly changed. More information
- *    Can be found here:
+ *    Hot CPU plug[in/out] notification logic has completely changed.
+ *    More information can be found here:
  *     => https://patchwork.kernel.org/patch/9448577/
  *    On new kernel (4.10.+) we use modern hot CPU plug[in/out] logic.
  *

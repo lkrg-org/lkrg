@@ -252,7 +252,7 @@ The sysctl's are (with default values specified in braces):
   (potentially deviating from any of the profiles).
 
   Higher-numbered enforcement profiles provide higher likelihood of mitigating
-  a compromise or stopping an attack, but also a higher risk of interferring
+  a compromise or stopping an attack, but also a higher risk of interfering
   with normal system behavior and to a worse extent in case of false positives.
 
   lkrg.profile_enforce=0 can be used for safe testing of LKRG, where any

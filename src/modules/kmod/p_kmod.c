@@ -475,7 +475,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
     * Allocation logic should be changed! Should preallocate memory once, and if there
     * there is not enough space, reallocate it multiplying the size, and so on... At some
     * point allocation won't happen at all since we will have enough room to always store
-    * all necessary informations.
+    * all necessary information.
     */
 
    if (!p_flag || 1 == p_flag) {
