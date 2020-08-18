@@ -1676,7 +1676,7 @@ void p_check_integrity(struct work_struct *p_work) {
 /*   if ( (p_module_list_nr_tmp != p_module_kobj_nr_tmp) || (p_module_list_nr_tmp != p_db.p_module_list_nr)
         || (p_module_kobj_nr_tmp != p_db.p_module_kobj_nr) ) {
       printk(P_LKRG_PRINT P_LKRG_SIGNATURE
-             "ALERT !!! MODULES NUMBER ARE INCONSISTENT! IN DB: LIST[%d] KOBJ[%d], found LIST[%d], KOBJ[%d]\n",
+             "ALERT !!! MODULE NUMBERS ARE INCONSISTENT! IN DB: LIST[%d] KOBJ[%d], found LIST[%d], KOBJ[%d]\n",
              p_db.p_module_list_nr,p_db.p_module_kobj_nr,p_module_list_nr_tmp,p_module_kobj_nr_tmp);
       p_hack_check++;
 
