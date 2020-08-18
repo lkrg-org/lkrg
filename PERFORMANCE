@@ -3,7 +3,7 @@ LKRG benchmarks with Phoronix Test Suite
 
 Michael Larabel of Phoronix published an article on his benchmarks of LKRG as
 packaged for Whonix as of February 25, 2020.  This means a development version
-in between LKRG 0.7 and 0.8.  The benchmark system was a "Core i9 9900KS desktop
+between LKRG 0.7 and 0.8.  The benchmark system was a "Core i9 9900KS desktop
 running an Ubuntu 20.04 snapshot and using the Linux 5.4 Ubuntu kernel":
 
 https://www.phoronix.com/scan.php?page=article&item=linux-lkrg-performance&num=1
