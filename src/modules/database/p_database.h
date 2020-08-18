@@ -45,7 +45,7 @@ typedef struct p_cpu_info {
    int online_CPUs;   // Might be active (because it's online) but it is NOT
                       // yet, so does NOT execute any task
    int possible_CPUs; // Physically possible CPUs handled by this kernel
-   int present_CPUs;  // Currently availble CPUs, but doesn't need to be used
+   int present_CPUs;  // Currently available CPUs, but doesn't need to be used
                       // by kernel at this time. Value is dynamically updated
                       // when CPU is hotplug
    int active_CPUs;   // Currently active CPUs - can execute tasks
@@ -108,7 +108,7 @@ struct p_jump_label {
 };
 
 /*
- * Main database structure conatining:
+ * Main database structure containing:
  * - memory hashes
  * - Critical addresses
  * - CPU specific information

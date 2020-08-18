@@ -173,7 +173,7 @@ void p_check_integrity(struct work_struct *p_work) {
    /*
     * First allocate temporary buffer for per CPU data. Number of possible CPUs
     * is per kernel compilation. Hot plug-in/off won't change that value so it is
-    * safe to prealocate buffer here - before lock and before recounting CPUs info.
+    * safe to preallocate buffer here - before lock and before recounting CPUs info.
     */
 
    /*
@@ -244,7 +244,7 @@ void p_check_integrity(struct work_struct *p_work) {
    *  *) http://blog.pi3.com.pl/?p=549
    *  *) http://lists.openwall.net/linux-kernel/2016/09/21/68
    *
-   * on_each_cpu() might mitigate this problem a bit becuase has extra
+   * on_each_cpu() might mitigate this problem a bit because has extra
    * self-balancing code for performance reasons.
    */
    on_each_cpu(p_dump_CPU_metadata,p_tmp_cpus,true);
@@ -855,7 +855,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
    /*
     * We found as many modules in module list as in sysfs
-    * Let's validate if our databse has the same information as we gathered now
+    * Let's validate if our database has the same information as we gathered now
     *
     */
 
@@ -905,7 +905,7 @@ void p_check_integrity(struct work_struct *p_work) {
                /* OK we found which module is in DB module list but not in current module list... */
                p_tmp_flag_cnt++;
 
-               // TODO: Module dissapeared and we didn't notice it! We shouldn't dump it becuase
+               // TODO: Module disappeared and we didn't notice it! We shouldn't dump it because
                // most likely module doesn't exists anymore...
                // But we can try to poke that page where modules used to be to find out scratches
                // of information about it (e.g. name? symbols table?)
@@ -1323,7 +1323,7 @@ void p_check_integrity(struct work_struct *p_work) {
                /* OK we found which module is in KOBJ DB but not in the current KOBJ list... */
                p_tmp_flag_cnt++;
 
-               // TODO: Module dissapeared and we didn't notice it! We shouldn't dump it becuase
+               // TODO: Module disappeared and we didn't notice it! We shouldn't dump it because
                // most likely module doesn't exists anymore...
                // But we can try to poke that page where modules used to be to find out scratches
                // of information about it (e.g. name? symbols table?)
@@ -1676,7 +1676,7 @@ void p_check_integrity(struct work_struct *p_work) {
 /*   if ( (p_module_list_nr_tmp != p_module_kobj_nr_tmp) || (p_module_list_nr_tmp != p_db.p_module_list_nr)
         || (p_module_kobj_nr_tmp != p_db.p_module_kobj_nr) ) {
       printk(P_LKRG_PRINT P_LKRG_SIGNATURE
-             "ALERT !!! MODULES NUMBER ARE INCONSISTEN! IN DB: LIST[%d] KOBJ[%d], found LIST[%d], KOBJ[%d]\n",
+             "ALERT !!! MODULES NUMBER ARE INCONSISTENT! IN DB: LIST[%d] KOBJ[%d], found LIST[%d], KOBJ[%d]\n",
              p_db.p_module_list_nr,p_db.p_module_kobj_nr,p_module_list_nr_tmp,p_module_kobj_nr_tmp);
       p_hack_check++;
 

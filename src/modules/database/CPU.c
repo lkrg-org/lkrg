@@ -8,7 +8,7 @@
  * Notes:
  *  - Some of the critical data may exists per logical CPU (core)
  *    and need to be independently verified / checked.
- *    Additionally, it is strongly dependend from the architecture.
+ *    Additionally, it is strongly dependent from the architecture.
  *    Linux kernel defines different types of CPUs:
  *     => online CPUs
  *     => possible CPUs
@@ -22,7 +22,7 @@
  *    CPU will be hot plugged / activated this information will be
  *    visible for us!
  *
- *  - x86 (and amd64) arch: following informations are critical and need
+ *  - x86 (and amd64) arch: following information are critical and need
  *    to be verified (checking integrity):
  *     => IDT base and/or entire table
  *     => MSRs
