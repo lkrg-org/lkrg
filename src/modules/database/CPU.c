@@ -6,9 +6,9 @@
  *   => submodule for checking system configuration regarding CPUs
  *
  * Notes:
- *  - Some of the critical data may exists per logical CPU (core)
+ *  - Some of the critical data may exist per logical CPU (core)
  *    and need to be independently verified / checked.
- *    Additionally, it is strongly dependent from the architecture.
+ *    Additionally, it is strongly dependent on the architecture.
  *    Linux kernel defines different types of CPUs:
  *     => online CPUs
  *     => possible CPUs
