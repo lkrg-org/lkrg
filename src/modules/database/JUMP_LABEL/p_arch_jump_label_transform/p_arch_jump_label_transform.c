@@ -60,8 +60,6 @@ int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, struct pt
                p_jump_entry_target(p_tmp),
                (unsigned long)p_jump_entry_key(p_tmp));
 
-   spin_lock(&p_db.p_jump_label.p_jl_lock);
-
    if (P_SYM(p_core_kernel_text)(p_addr)) {
       /*
        * OK, *_JUMP_LABEL tries to modify kernel core .text section
@@ -180,8 +178,6 @@ int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_reg
    }
 
    p_db.p_jump_label.p_state = P_JUMP_LABEL_NONE;
-
-   spin_unlock(&p_db.p_jump_label.p_jl_lock);
 
    p_debug_kprobe_log(
           "Entering function <p_arch_jump_label_transform_ret>\n");

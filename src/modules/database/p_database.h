@@ -103,7 +103,6 @@ struct p_jump_label {
    enum p_jump_label_state p_state;
    struct module *p_mod;
    unsigned long *p_mod_mask;
-   spinlock_t p_jl_lock;
 
 };
 

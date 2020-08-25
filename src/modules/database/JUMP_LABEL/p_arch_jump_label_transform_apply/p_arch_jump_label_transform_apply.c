@@ -61,8 +61,6 @@ int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, str
    p_print_log(P_LKRG_INFO,
                "[JUMP_LABEL <batch mode>] New modifications => %d\n",p_nr);
 
-   spin_lock(&p_db.p_jump_label.p_jl_lock);
-
    for (p_jl_batch_nr = 0; p_cnt < p_nr; p_cnt++) {
       p_tmp = (p_text_poke_loc *)&P_SYM(p_tp_vec)[p_jl_batch_nr*sizeof(p_text_poke_loc)];
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
@@ -209,8 +207,6 @@ int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct 
    }
 
    p_db.p_jump_label.p_state = P_JUMP_LABEL_NONE;
-
-   spin_unlock(&p_db.p_jump_label.p_jl_lock);
 
    p_debug_kprobe_log(
           "Entering function <p_arch_jump_label_transform_apply_ret>\n");

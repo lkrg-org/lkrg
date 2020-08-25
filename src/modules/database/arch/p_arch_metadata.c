@@ -72,7 +72,6 @@ int p_register_arch_metadata(void) {
 
 #endif
 
-   spin_lock_init(&p_db.p_jump_label.p_jl_lock);
    /*
     * This is not an arch specific hook, but it's a good place to register it
     */

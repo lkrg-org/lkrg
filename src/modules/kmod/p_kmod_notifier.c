@@ -152,14 +152,10 @@ p_module_event_notifier_going_retry:
 //      spin_lock_irqsave(&p_db_lock,p_db_flags);
       spin_lock(&p_db_lock);
 
-      spin_lock(&p_db.p_jump_label.p_jl_lock);
-
       /* OK, now recalculate hashes again! */
       while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
                         &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x2) != P_LKRG_SUCCESS)
          schedule();
-
-      spin_unlock(&p_db.p_jump_label.p_jl_lock);
 
       /* Update global module list/kobj hash */
       p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
@@ -237,14 +233,10 @@ p_module_event_notifier_live_retry:
 //         spin_lock_irqsave(&p_db_lock,p_db_flags);
          spin_lock(&p_db_lock);
 
-         spin_lock(&p_db.p_jump_label.p_jl_lock);
-
          /* OK, now recalculate hashes again! */
          while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
                            &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x2) != P_LKRG_SUCCESS)
             schedule();
-
-         spin_unlock(&p_db.p_jump_label.p_jl_lock);
 
          /* Update global module list/kobj hash */
          p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
