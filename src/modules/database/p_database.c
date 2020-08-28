@@ -76,6 +76,23 @@ int hash_from_kernel_stext(void) {
    p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext.p_addr,
                                                (unsigned int)p_db.kernel_stext.p_size);
 
+
+#if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
+   if (!p_db.kernel_stext_copy) {
+      if ( (p_db.kernel_stext_copy = vmalloc(p_db.kernel_stext.p_size+1)) == NULL) {
+         /*
+          * I should NEVER be here!
+          */
+         p_print_log(P_LKRG_CRIT,
+                "CREATING DATABASE: kzalloc() error! Can't allocate memory - copy stext ;[\n");
+         p_ret = P_LKRG_GENERAL_ERROR;
+         goto hash_from_kernel_stext_out;
+      }
+   }
+   memcpy(p_db.kernel_stext_copy,p_db.kernel_stext.p_addr,p_db.kernel_stext.p_size);
+   p_db.kernel_stext_copy[p_db.kernel_stext.p_size] = 0x0;
+#endif
+
    p_debug_log(P_LKRG_DBG,
           "hash [0x%llx] _stext start [0x%lx] size [0x%lx]\n",p_db.kernel_stext.p_hash,
                                                               (long)p_db.kernel_stext.p_addr,

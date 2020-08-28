@@ -573,7 +573,8 @@ p_main_error:
    if (p_ret != P_LKRG_SUCCESS) {
       P_CTRL(p_kint_validate) = 0;
       p_deregister_notifiers();
-      del_timer_sync(&p_timer);
+      if (p_timer.function)
+         del_timer_sync(&p_timer);
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
       if (p_cpu)
@@ -599,6 +600,10 @@ p_main_error:
          p_db.p_CPU_metadata_array = NULL;
       }
       p_uninit_page_attr();
+#if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
+      if (p_db.kernel_stext_copy)
+         vfree(p_db.kernel_stext_copy);
+#endif
    }
 
    if (p_freeze) {
@@ -626,7 +631,8 @@ static void __exit p_lkrg_deregister(void) {
 
    P_CTRL(p_kint_validate) = 0;
    p_deregister_notifiers();
-   del_timer_sync(&p_timer);
+   if (p_timer.function)
+      del_timer_sync(&p_timer);
 
 
    // Freeze all non-kernel processes
@@ -655,6 +661,11 @@ static void __exit p_lkrg_deregister(void) {
 
    if (p_db.p_CPU_metadata_array)
       kzfree(p_db.p_CPU_metadata_array);
+
+#if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
+   if (p_db.kernel_stext_copy)
+      vfree(p_db.kernel_stext_copy);
+#endif
 
    // Thaw all non-kernel processes
    P_SYM(p_thaw_processes)();

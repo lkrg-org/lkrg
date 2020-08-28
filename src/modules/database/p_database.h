@@ -150,6 +150,9 @@ typedef struct p_hash_database {
    uint64_t p_module_kobj_hash;
 
    p_hash_mem_block kernel_stext;         // .text
+#if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
+   char *kernel_stext_copy;               // copy of .text
+#endif
    p_hash_mem_block kernel_rodata;        // .rodata
    p_hash_mem_block kernel_iommu_table;   // IOMMU table
    p_hash_mem_block kernel_ex_table;      // Exception tale

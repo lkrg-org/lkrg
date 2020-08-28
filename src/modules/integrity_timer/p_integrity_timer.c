@@ -337,11 +337,29 @@ void p_check_integrity(struct work_struct *p_work) {
                                  (unsigned int)p_db.kernel_stext.p_size);
 
    if (p_db.kernel_stext.p_hash != p_tmp_hash) {
+#if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
+      char *p_str1 = (unsigned char *)p_db.kernel_stext.p_addr;
+      char *p_str2 = (unsigned char *)p_db.kernel_stext_copy;
+      char p_eh_buf[0x100];
+#endif
       /* We detected core kernel .text corruption - we are hacked and can't recover */
       /* I'm hacked! ;( */
       p_print_log(P_LKRG_CRIT,
              "ALERT !!! _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                             p_tmp_hash,p_db.kernel_stext.p_hash);
+#if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
+      for (p_tmp = 0x0; p_tmp < p_db.kernel_stext.p_size; p_tmp++) {
+         if (p_str2[p_tmp] != p_str1[p_tmp]) {
+            sprint_symbol_no_offset(p_eh_buf,(unsigned long)((unsigned long)p_db.kernel_stext.p_addr+(unsigned long)p_tmp));
+            printk(KERN_CRIT "copy[0x%x] vs now[0x%x] offset[%d | 0x%x] symbol[%s]\n",
+                   p_str2[p_tmp],
+                   p_str1[p_tmp],
+                   p_tmp,
+                   p_tmp,
+                   p_eh_buf);
+         }
+      }
+#endif
       P_KINT_IF_ACCEPT(p_db.kernel_stext.p_hash,
                        p_tmp_hash,
                        p_hack_check);

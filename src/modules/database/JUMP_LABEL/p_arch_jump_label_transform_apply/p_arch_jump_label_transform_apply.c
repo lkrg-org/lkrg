@@ -144,6 +144,11 @@ int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct 
       p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext.p_addr,
                                                   (unsigned int)p_db.kernel_stext.p_size);
 
+#if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
+         memcpy(p_db.kernel_stext_copy,p_db.kernel_stext.p_addr,p_db.kernel_stext.p_size);
+         p_db.kernel_stext_copy[p_db.kernel_stext.p_size] = 0x0;
+#endif
+
       p_print_log(P_LKRG_INFO,
                   "[JUMP_LABEL <batch mode>] Updating kernel core .text section hash!\n");
    }
