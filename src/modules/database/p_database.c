@@ -414,6 +414,8 @@ int p_create_database(void) {
       p_print_log(P_LKRG_CRIT,
          "CREATING DATABASE ERROR: HASH FROM _STEXT!\n");
       p_ret = P_LKRG_GENERAL_ERROR;
+      p_text_section_unlock();
+      goto p_create_database_out;
    } else {
       p_ret = P_LKRG_SUCCESS;
    }
