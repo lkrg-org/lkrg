@@ -340,7 +340,7 @@ static inline void p_lkrg_close_rw_x86(void) {
 static inline void p_lkrg_open_rw(void) {
 
    p_text_section_lock();
-   preempt_disable();
+//   preempt_disable();
    barrier();
    p_set_memory_rw((unsigned long)P_CTRL_ADDR,1);
    barrier();
@@ -351,7 +351,7 @@ static inline void p_lkrg_close_rw(void) {
    barrier();
    p_set_memory_ro((unsigned long)P_CTRL_ADDR,1);
    barrier();
-   preempt_enable(); //_no_resched();
+//   preempt_enable(); //_no_resched();
    p_text_section_unlock();
 }
 
