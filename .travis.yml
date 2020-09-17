@@ -1,0 +1,37 @@
+language: c
+compiler: gcc
+os: linux
+
+addons:
+  apt:
+    update: true
+    packages:
+      - module-assistant
+
+jobs:
+  include:
+    - dist: xenial
+      arch: amd64
+
+#    - dist: xenial
+#      arch: arm64
+
+    - dist: bionic
+      arch: amd64
+
+    - dist: bionic
+      arch: arm64
+      virt: lxd
+
+    - dist: focal
+      arch: amd64
+      virt: lxd
+
+#    - dist: focal
+#      arch: arm64
+
+install:
+  - set -x; sudo m-a prepare
+
+script:
+  - set -x; make -j2 && sudo make install
