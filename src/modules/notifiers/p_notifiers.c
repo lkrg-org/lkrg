@@ -106,10 +106,6 @@ static struct notifier_block p_acpi_notifier_nb = {
 
 void p_register_notifiers(void) {
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_register_notifiers>\n");
-
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0) &&  defined(_ASM_X86_IDLE_H)
    idle_notifier_register(&p_idle_notifier_nb);
 #endif
@@ -132,26 +128,13 @@ void p_register_notifiers(void) {
 #if defined(CONFIG_ACPI)
    register_acpi_notifier(&p_acpi_notifier_nb);
 #endif
-
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_register_notifiers>\n");
 }
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0) && defined(_ASM_X86_IDLE_H)
 static int p_idle_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Entering function <p_idle_notifier>\n");
-
    /* 0.005% */
    P_TRY_OFFLOAD_NOTIFIER(P_M_SS_MORE_OFTEN_RATE, "<p_idle_notifier> Offloading integrity check\n");
-
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Leaving function <p_idle_notifier>\n");
 
    return 0x0;
 }
@@ -160,18 +143,10 @@ static int p_idle_notifier(struct notifier_block *p_nb, unsigned long p_val, voi
 #ifdef CONFIG_CPU_FREQ
 static int p_freq_transition_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Entering function <p_freq_transition_notifier>\n");
-
    /* 10% */
 //   P_TRY_OFFLOAD_NOTIFIER(P_RARE_RATE, "<p_freq_transition_notifier> Offloading integrity check\n");
    /* 1%% */
    P_TRY_OFFLOAD_NOTIFIER(P_OFTEN_RATE, "<p_freq_transition_notifier> Offloading integrity check\n");
-
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Leaving function <p_freq_transition_notifier>\n");
 
    return 0x0;
 }
@@ -179,48 +154,24 @@ static int p_freq_transition_notifier(struct notifier_block *p_nb, unsigned long
 
 static int p_cpu_pm_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Entering function <p_cpu_pm_notifier>\n");
-
    /* 10% */
    P_TRY_OFFLOAD_NOTIFIER(P_RARE_RATE, "<p_cpu_pm_notifier> Offloading integrity check\n");
-
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Leaving function <p_cpu_pm_notifier>\n");
 
    return 0x0;
 }
 
 static int p_netdevice_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Entering function <p_netdevice_notifier>\n");
-
    /* 1% */
    P_TRY_OFFLOAD_NOTIFIER(P_OFTEN_RATE, "<p_netdevice_notifier> Offloading integrity check\n");
-
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Leaving function <p_netdevice_notifier>\n");
 
    return 0x0;
 }
 
 static int p_netevent_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Entering function <p_netevent_notifier>\n");
-
    /* 5% */
    P_TRY_OFFLOAD_NOTIFIER(P_LESS_RARE_RATE, "<p_netevent_notifier> Offloading integrity check\n");
-
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Leaving function <p_netevent_notifier>\n");
 
    return 0x0;
 }
@@ -228,16 +179,8 @@ static int p_netevent_notifier(struct notifier_block *p_nb, unsigned long p_val,
 #if IS_ENABLED(CONFIG_IPV6)
 static int p_inet6addr_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Entering function <p_inet6addr_notifier>\n");
-
    /* 100% */
    P_TRY_OFFLOAD_NOTIFIER_ALWAYS("<p_inet6addr_notifier> Offloading integrity check\n");
-
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Leaving function <p_inet6addr_notifier>\n");
 
    return 0x0;
 }
@@ -245,64 +188,32 @@ static int p_inet6addr_notifier(struct notifier_block *p_nb, unsigned long p_val
 
 static int p_inetaddr_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Entering function <p_inetaddr_notifier>\n");
-
    /* 100% */
    P_TRY_OFFLOAD_NOTIFIER_ALWAYS("<p_inetaddr_notifier> Offloading integrity check\n");
-
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Leaving function <p_inetaddr_notifier>\n");
 
    return 0x0;
 }
 
 static int p_taskfree_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Entering function <p_taskfree_notifier>\n");
-
    /* 0.01% */
    P_TRY_OFFLOAD_NOTIFIER(P_SS_MORE_OFTEN_RATE, "<p_taskfree_notifier> Offloading integrity check\n");
-
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Leaving function <p_taskfree_notifier>\n");
 
    return 0x0;
 }
 
 static int p_profile_event_exit_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Entering function <p_profile_event_exit_notifier>\n");
-
    /* 0.01% */
    P_TRY_OFFLOAD_NOTIFIER(P_SS_MORE_OFTEN_RATE, "<p_profile_event_exit_notifier> Offloading integrity check\n");
-
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Leaving function <p_profile_event_exit_notifier>\n");
 
    return 0x0;
 }
 
 static int p_profile_event_munmap_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Entering function <p_profile_event_munmap_notifier>\n");
-
    /* 0.005%*/
    P_TRY_OFFLOAD_NOTIFIER(P_M_SS_MORE_OFTEN_RATE, "<p_profile_event_munmap_notifier> Offloading integrity check\n");
-
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Leaving function <p_profile_event_munmap_notifier>\n");
 
    return 0x0;
 }
@@ -310,16 +221,8 @@ static int p_profile_event_munmap_notifier(struct notifier_block *p_nb, unsigned
 #if defined(CONFIG_USB)
 static int p_usb_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Entering function <p_usb_notifier>\n");
-
    /* 100% */
    P_TRY_OFFLOAD_NOTIFIER_ALWAYS("<p_usb_notifier> Offloading integrity check\n");
-
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Leaving function <p_usb_notifier>\n");
 
    return 0x0;
 }
@@ -328,16 +231,8 @@ static int p_usb_notifier(struct notifier_block *p_nb, unsigned long p_val, void
 #if defined(CONFIG_ACPI)
 static int p_acpi_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Entering function <p_acpi_notifier>\n");
-
    /* 100% */
    P_TRY_OFFLOAD_NOTIFIER_ALWAYS("<p_acpi_notifier> Offloading integrity check\n");
-
-// STRONG_DEBUG
-   p_debug_notifier_log(
-          "Leaving function <p_acpi_notifier>\n");
 
    return 0x0;
 }
@@ -345,10 +240,6 @@ static int p_acpi_notifier(struct notifier_block *p_nb, unsigned long p_val, voi
 
 
 void p_deregister_notifiers(void) {
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_deregister_notifiers>\n");
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0) && defined(_ASM_X86_IDLE_H)
    idle_notifier_unregister(&p_idle_notifier_nb);
@@ -372,9 +263,4 @@ void p_deregister_notifiers(void) {
 #if defined(CONFIG_ACPI)
    unregister_acpi_notifier(&p_acpi_notifier_nb);
 #endif
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_deregister_notifiers>\n");
-
 }

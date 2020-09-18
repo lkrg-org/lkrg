@@ -27,12 +27,6 @@
 
 int p_kmod_init(void) {
 
-   int p_ret = P_LKRG_SUCCESS;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_kmod_init>\n");
-
 #if defined(CONFIG_DYNAMIC_DEBUG)
    P_SYM(p_ddebug_tables)    = (struct list_head *)P_SYM(p_kallsyms_lookup_name)("ddebug_tables");
    P_SYM(p_ddebug_lock)      = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("ddebug_lock");
@@ -80,8 +74,7 @@ int p_kmod_init(void) {
    if (!P_SYM(p_global_modules)) {
       p_print_log(P_LKRG_ERR,
              "KMOD error! Can't initialize global modules variable :( Exiting...\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_kmod_init_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 
 #if defined(CONFIG_DYNAMIC_DEBUG)
@@ -89,8 +82,7 @@ int p_kmod_init(void) {
    if (!P_SYM(p_ddebug_remove_module_ptr)) {
       p_print_log(P_LKRG_ERR,
              "KMOD error! Can't find 'ddebug_remove_module' function :( Exiting...\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_kmod_init_out;
+      return P_LKRG_GENERAL_ERROR;
    }
  #endif
 #endif
@@ -99,39 +91,26 @@ int p_kmod_init(void) {
    if (!P_SYM(p_kernfs_mutex)) {
       p_print_log(P_LKRG_ERR,
              "KMOD error! Can't find 'kernfs_mutex' variable :( Exiting...\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_kmod_init_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 #endif
 
    if (!P_SYM(p_module_kset)) {
       p_print_log(P_LKRG_ERR,
              "KMOD error! Can't find 'module_kset' variable :( Exiting...\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_kmod_init_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 
-
-p_kmod_init_out:
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_kmod_init> (p_ret => %d)\n",p_ret);
-
-   return p_ret;
+   return P_LKRG_SUCCESS;
 }
 
 /*
  * 'module_lock' must be taken by calling function!
  */
-unsigned int p_count_modules_from_module_list(void) {
+static unsigned int p_count_modules_from_module_list(void) {
 
    unsigned int p_cnt = 0x0;
    struct module *p_mod;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_count_modules_from_module_list>\n");
 
 //   mutex_lock(&module_mutex);
    list_for_each_entry(p_mod, P_SYM(p_global_modules), list) {
@@ -156,11 +135,6 @@ unsigned int p_count_modules_from_module_list(void) {
    }
 //   mutex_unlock(&module_mutex);
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-//   p_print_log(P_LKRG_CRIT,
-          "Leaving function <p_count_modules_from_module_list> (p_cnt => %d)\n",p_cnt);
-
    return p_cnt;
 }
 
@@ -169,15 +143,10 @@ unsigned int p_count_modules_from_module_list(void) {
  *
  * 'module_lock' must be taken by calling function!
  */
-int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
+static int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
 
    struct module *p_mod;
-   int p_ret = P_LKRG_SUCCESS;
    unsigned int p_cnt = 0x0;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_list_from_module_list>\n");
 
 //   mutex_lock(&module_mutex);
    list_for_each_entry(p_mod, P_SYM(p_global_modules), list) {
@@ -224,12 +193,7 @@ int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
    }
 //   mutex_unlock(&module_mutex);
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-//   p_print_log(P_LKRG_CRIT,
-          "Leaving function <p_list_from_module_list> (p_ret => %d | p_cnt => %d)\n",p_ret, p_cnt);
-
-   return p_ret;
+   return P_LKRG_SUCCESS;
 }
 
 /*
@@ -242,10 +206,6 @@ unsigned int p_count_modules_from_sysfs_kobj(void) {
    struct kobject *p_kobj = NULL, *p_tmp_safe = NULL;
    struct module_kobject *p_mk = NULL;
    unsigned int p_cnt = 0x0;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_count_modules_from_sysfs_kobj>\n");
 
    kset_get(p_kset);
    spin_lock(&p_kset->list_lock);
@@ -297,29 +257,19 @@ unsigned int p_count_modules_from_sysfs_kobj(void) {
    spin_unlock(&p_kset->list_lock);
    kset_put(p_kset);
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-//   p_print_log(P_LKRG_CRIT,
-          "Leaving function <p_count_modules_from_sysfs_kobj> (p_cnt => %d)\n",p_cnt);
-
    return p_cnt;
 }
 
 /*
  * 'module_lock' must be taken by calling function!
  */
-int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
+static int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
 
    struct module *p_mod = NULL;
    struct kset *p_kset = *P_SYM(p_module_kset);
    struct kobject *p_kobj = NULL, *p_tmp_safe = NULL;
    struct module_kobject *p_mk = NULL;
-   int p_ret = P_LKRG_SUCCESS;
    unsigned int p_cnt = 0x0;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_list_from_sysfs_kobj>\n");
 
    kset_get(p_kset);
    spin_lock(&p_kset->list_lock);
@@ -417,12 +367,7 @@ int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
    spin_unlock(&p_kset->list_lock);
    kset_put(p_kset);
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-//   p_print_log(P_LKRG_CRIT,
-          "Leaving function <p_list_from_sysfs_kobj> (p_cnt => %d)\n",p_cnt);
-
-   return p_ret;
+   return P_LKRG_SUCCESS;
 }
 
 /*
@@ -434,10 +379,6 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
    int p_ret = P_LKRG_GENERAL_ERROR;
    unsigned int p_module_list_cnt_arg_old = *p_module_list_cnt_arg;
    unsigned int p_module_kobj_cnt_arg_old = *p_module_kobj_cnt_arg;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_kmod_hash>\n");
 
    /*
     * Originally this mutex was taken here. Unfortunately some use cases of this function
@@ -718,10 +659,6 @@ p_kmod_hash_err:
     * 'module_mutex'
     */
 //   mutex_unlock(&module_mutex);
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_kmod_hash> (%s)\n",(p_ret == P_LKRG_SUCCESS) ? "SUCCESS" : "ERROR");
 
    return p_ret;
 }

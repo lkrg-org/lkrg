@@ -2,7 +2,7 @@
  * pi3's Linux kernel Runtime Guard
  *
  * Component:
- *  - Kernel's modules module notifier 
+ *  - Kernel's modules module notifier
  *
  * Notes:
  *  - Register notifier function whenever there is any kernel module load/unload activity
@@ -34,17 +34,9 @@ static struct notifier_block p_module_block_notifier = {
 static void p_module_notifier_wrapper(unsigned long p_event, struct module *p_kmod) {
 
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_module_notifier_wrapper>\n");
-
    if (P_CTRL(p_block_modules)) {
       p_kmod->init = p_block_always;
    }
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_module_notifier_wrapper>\n");
 
    return;
 }
@@ -278,10 +270,6 @@ p_module_event_notifier_activity_out:
 
    /* Inform validation routine about active module activities... */
    mutex_unlock(&p_module_activity);
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_module_event_notifier>\n");
 
    return NOTIFY_DONE;
 }

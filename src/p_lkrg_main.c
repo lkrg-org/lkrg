@@ -86,16 +86,12 @@ p_ro_page p_ro __p_lkrg_read_only = {
 };
 
 
-void p_init_page_attr(void) {
+static void p_init_page_attr(void) {
 
    unsigned long *p_long_tmp = 0x0;
 #if !defined(CONFIG_ARM)
    unsigned long p_long_offset = PAGE_SIZE/sizeof(p_long_tmp); // On purpose sizeof pointer
 #endif
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_init_page_attr>\n");
 
    p_long_tmp = (unsigned long *)P_CTRL_ADDR;
 
@@ -148,23 +144,14 @@ void p_init_page_attr(void) {
                   *(p_long_tmp+3*p_long_offset));
    }
 #endif
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_init_page_attr>\n");
-
 }
 
-void p_uninit_page_attr(void) {
+static void p_uninit_page_attr(void) {
 
    unsigned long *p_long_tmp = 0x0;
 #if !defined(CONFIG_ARM)
    unsigned long p_long_offset = PAGE_SIZE/sizeof(p_long_tmp); // On purpose sizeof pointer
 #endif
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_uninit_page_attr>\n");
 
    if (p_attr_init) {
       p_long_tmp = (unsigned long *)P_CTRL_ADDR;
@@ -194,11 +181,6 @@ void p_uninit_page_attr(void) {
    }
 
    p_attr_init ^= p_attr_init;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_uninit_page_attr>\n");
-
 }
 
 void p_parse_module_params(void) {
