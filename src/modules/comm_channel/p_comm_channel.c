@@ -356,10 +356,6 @@ static int p_sysctl_kint_validate(struct ctl_table *p_table, int p_write,
       "PERIODICALLY + RANDOM EVENTS"
    };
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_kint_validate>\n");
-
    p_tmp = P_CTRL(p_kint_validate);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
@@ -382,10 +378,6 @@ static int p_sysctl_kint_validate(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_kint_validate>\n");
-
    return p_ret;
 }
 
@@ -403,10 +395,6 @@ static int p_sysctl_kint_enforce(struct ctl_table *p_table, int p_write,
 #endif
       "PANIC"
    };
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_kint_enforce>\n");
 
    p_tmp = P_CTRL(p_kint_enforce);
    p_lkrg_open_rw();
@@ -429,10 +417,6 @@ static int p_sysctl_kint_enforce(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_kint_enforce>\n");
-
    return p_ret;
 }
 
@@ -447,10 +431,6 @@ static int p_sysctl_pint_validate(struct ctl_table *p_table, int p_write,
       "CURRENT + WAKING UP",
       "ALL TASKS"
    };
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_pint_validate>\n");
 
    p_tmp = P_CTRL(p_pint_validate);
    p_lkrg_open_rw();
@@ -468,10 +448,6 @@ static int p_sysctl_pint_validate(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_pint_validate>\n");
-
    return p_ret;
 }
 
@@ -485,10 +461,6 @@ static int p_sysctl_pint_enforce(struct ctl_table *p_table, int p_write,
       "KILL TASK",
       "PANIC"
    };
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_pint_enforce>\n");
 
    p_tmp = P_CTRL(p_pint_enforce);
    p_lkrg_open_rw();
@@ -506,10 +478,6 @@ static int p_sysctl_pint_enforce(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_pint_enforce>\n");
-
    return p_ret;
 }
 
@@ -518,20 +486,12 @@ static int p_sysctl_interval(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
    int p_ret;
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_interval>\n");
-
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
       p_print_log(P_LKRG_CRIT, "[kINT] New interval => %d\n", P_CTRL(p_interval));
       p_offload_work(0); // run integrity check!
    }
    p_lkrg_close_rw();
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_interval>\n");
 
    return p_ret;
 }
@@ -541,10 +501,6 @@ static int p_sysctl_block_modules(struct ctl_table *p_table, int p_write,
 
    int p_ret;
    unsigned int p_tmp;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_block_modules>\n");
 
    p_tmp = P_CTRL(p_block_modules);
    p_lkrg_open_rw();
@@ -558,10 +514,6 @@ static int p_sysctl_block_modules(struct ctl_table *p_table, int p_write,
       }
    }
    p_lkrg_close_rw();
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_block_modules>\n");
 
    return p_ret;
 }
@@ -581,10 +533,6 @@ static int p_sysctl_log_level(struct ctl_table *p_table, int p_write,
 #endif
    };
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_log_level>\n");
-
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
       p_print_log(P_LKRG_CRIT, "New log level => %d (%s)\n",
@@ -592,10 +540,6 @@ static int p_sysctl_log_level(struct ctl_table *p_table, int p_write,
                   p_log_level_string[P_CTRL(p_log_level]));
    }
    p_lkrg_close_rw();
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_log_level>\n");
 
    return p_ret;
 }
@@ -605,10 +549,6 @@ static int p_sysctl_trigger(struct ctl_table *p_table, int p_write,
                             void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_trigger>\n");
 
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
@@ -620,10 +560,6 @@ static int p_sysctl_trigger(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_trigger>\n");
-
    return p_ret;
 }
 
@@ -633,10 +569,6 @@ static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
 
    int p_ret;
    unsigned int p_tmp;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_hide>\n");
 
    p_tmp = P_CTRL(p_hide_lkrg);
    p_lkrg_open_rw();
@@ -651,10 +583,6 @@ static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_hide>\n");
-
    return p_ret;
 }
 #endif
@@ -664,10 +592,6 @@ static int p_sysctl_heartbeat(struct ctl_table *p_table, int p_write,
 
    int p_ret;
    unsigned int p_tmp;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_heartbeat>\n");
 
    p_tmp = P_CTRL(p_heartbeat);
    p_lkrg_open_rw();
@@ -682,10 +606,6 @@ static int p_sysctl_heartbeat(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_heartbeat>\n");
-
    return p_ret;
 }
 
@@ -695,10 +615,6 @@ static int p_sysctl_smep_validate(struct ctl_table *p_table, int p_write,
 
    int p_ret;
    unsigned int p_tmp;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_smep_validate>\n");
 
    p_tmp = P_CTRL(p_smep_validate);
    p_lkrg_open_rw();
@@ -724,10 +640,6 @@ static int p_sysctl_smep_validate(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_smep_validate>\n");
-
    return p_ret;
 }
 
@@ -741,10 +653,6 @@ static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
       "LOG & RESTORE",
       "PANIC"
    };
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_smep_enforce>\n");
 
    p_tmp = P_CTRL(p_smep_enforce);
    p_lkrg_open_rw();
@@ -770,10 +678,6 @@ static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_smep_enforce>\n");
-
    return p_ret;
 }
 
@@ -782,10 +686,6 @@ static int p_sysctl_smap_validate(struct ctl_table *p_table, int p_write,
 
    int p_ret;
    unsigned int p_tmp;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_smap_validate>\n");
 
    p_tmp = P_CTRL(p_smap_validate);
    p_lkrg_open_rw();
@@ -811,10 +711,6 @@ static int p_sysctl_smap_validate(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_smap_validate>\n");
-
    return p_ret;
 }
 
@@ -828,10 +724,6 @@ static int p_sysctl_smap_enforce(struct ctl_table *p_table, int p_write,
       "LOG & RESTORE",
       "PANIC"
    };
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_smap_enforce>\n");
 
    p_tmp = P_CTRL(p_smap_enforce);
    p_lkrg_open_rw();
@@ -857,10 +749,6 @@ static int p_sysctl_smap_enforce(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_smap_enforce>\n");
-
    return p_ret;
 }
 #endif
@@ -875,10 +763,6 @@ static int p_sysctl_umh_validate(struct ctl_table *p_table, int p_write,
       "Allow specific paths",
       "Completely block usermodehelper"
    };
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_umh_validate>\n");
 
    p_tmp = P_CTRL(p_umh_validate);
    p_lkrg_open_rw();
@@ -896,10 +780,6 @@ static int p_sysctl_umh_validate(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_umh_validate>\n");
-
    return p_ret;
 }
 
@@ -913,10 +793,6 @@ static int p_sysctl_umh_enforce(struct ctl_table *p_table, int p_write,
       "PREVENT EXECUTION",
       "PANIC"
    };
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_umh_enforce>\n");
 
    p_tmp = P_CTRL(p_umh_enforce);
    p_lkrg_open_rw();
@@ -934,10 +810,6 @@ static int p_sysctl_umh_enforce(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_umh_enforce>\n");
-
    return p_ret;
 }
 
@@ -947,10 +819,6 @@ static int p_sysctl_msr_validate(struct ctl_table *p_table, int p_write,
    int p_ret;
    int p_cpu;
    unsigned int p_tmp;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_msr_validate>\n");
 
    p_tmp = P_CTRL(p_msr_validate);
    p_lkrg_open_rw();
@@ -979,10 +847,6 @@ static int p_sysctl_msr_validate(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_msr_validate>\n");
-
    return p_ret;
 }
 
@@ -996,10 +860,6 @@ static int p_sysctl_pcfi_validate(struct ctl_table *p_table, int p_write,
       "No stackwalk (weak)",
       "Fully enabled"
    };
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_pcfi_validate>\n");
 
    p_tmp = P_CTRL(p_pcfi_validate);
    p_lkrg_open_rw();
@@ -1017,10 +877,6 @@ static int p_sysctl_pcfi_validate(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_pcfi_validate>\n");
-
    return p_ret;
 }
 
@@ -1034,10 +890,6 @@ static int p_sysctl_pcfi_enforce(struct ctl_table *p_table, int p_write,
       "KILL TASK",
       "PANIC"
    };
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_pcfi_enforce>\n");
 
    p_tmp = P_CTRL(p_pcfi_enforce);
    p_lkrg_open_rw();
@@ -1055,10 +907,6 @@ static int p_sysctl_pcfi_enforce(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_pcfi_enforce>\n");
-
    return p_ret;
 }
 
@@ -1075,10 +923,6 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
       "Heavy",
       "Paranoid"
    };
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_profile_validate>\n");
 
    p_tmp = P_CTRL(p_profile_validate);
    p_lkrg_open_rw();
@@ -1308,10 +1152,6 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_profile_validate>\n");
-
    return p_ret;
 }
 
@@ -1326,10 +1166,6 @@ static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
       "Strict",
       "Paranoid"
    };
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_sysctl_profile_enforce>\n");
 
    p_tmp = P_CTRL(p_profile_enforce);
    p_lkrg_open_rw();
@@ -1463,49 +1299,22 @@ static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
    }
    p_lkrg_close_rw();
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_sysctl_profile_enforce>\n");
-
    return p_ret;
 }
 
 
 int p_register_comm_channel(void) {
 
-   int p_ret = P_LKRG_SUCCESS;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_register_comm_channel>\n");
-
    if ( (p_sysctl_handle = register_sysctl_table(p_lkrg_sysctl_base)) == NULL) {
       p_print_log(P_LKRG_ERR,
              "Communication channel error! Can't register 'sysctl' table :( Exiting...\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_register_comm_channel_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 
-
-p_register_comm_channel_out:
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_register_comm_channel>\n");
-
-   return p_ret;
+   return P_LKRG_SUCCESS;
 }
 
 void p_deregister_comm_channel(void) {
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_deregister_comm_channel>\n");
-
    unregister_sysctl_table(p_sysctl_handle);
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_deregister_comm_channel>\n");
-
 }

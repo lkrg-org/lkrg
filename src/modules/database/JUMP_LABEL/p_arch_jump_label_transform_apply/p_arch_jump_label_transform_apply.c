@@ -54,8 +54,6 @@ int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, str
    p_text_poke_loc *p_tmp;
 
    p_debug_kprobe_log(
-          "Entering function <p_arch_jump_label_transform_apply_entry>\n");
-   p_debug_kprobe_log(
           "p_arch_jump_label_transform_apply_entry: comm[%s] Pid:%d\n",current->comm,current->pid);
 
    p_print_log(P_LKRG_INFO,
@@ -86,9 +84,6 @@ int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, str
       }
    }
 
-   p_debug_kprobe_log(
-          "Leaving function <p_arch_jump_label_transform_apply_entry>\n");
-
    /* A dump_stack() here will give a stack backtrace */
    return 0x0;
 }
@@ -103,9 +98,6 @@ int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct 
    unsigned int p_text = 0x0;
    unsigned int p_mod = 0x0;
 //   DECLARE_BITMAP(p_mod_mask, p_db.p_module_list_nr);
-
-   p_debug_kprobe_log(
-          "Entering function <p_arch_jump_label_transform_apply_ret>\n");
 
    bitmap_zero(p_db.p_jump_label.p_mod_mask, p_db.p_module_list_nr);
 
@@ -217,9 +209,6 @@ int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct 
 
    p_db.p_jump_label.p_state = P_JUMP_LABEL_NONE;
 
-   p_debug_kprobe_log(
-          "Entering function <p_arch_jump_label_transform_apply_ret>\n");
-
    return 0x0;
 }
 
@@ -227,10 +216,6 @@ int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct 
 int p_install_arch_jump_label_transform_apply_hook(void) {
 
    int p_ret;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_install_arch_jump_label_transform_apply_hook>\n");
 
    P_SYM(p_tp_vec) = (struct text_poke_loc **)P_SYM(p_kallsyms_lookup_name)("tp_vec");
    P_SYM(p_tp_vec_nr) = (int *)P_SYM(p_kallsyms_lookup_name)("tp_vec_nr");
@@ -245,38 +230,25 @@ int p_install_arch_jump_label_transform_apply_hook(void) {
       p_print_log(P_LKRG_ERR,
              "<p_install_arch_jump_label_transform_apply_hook> "
              "Can't find 'tp_vec' / 'tp_vec_nr' variable :( Exiting...\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_install_arch_jump_label_transform_apply_hook_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 
    if ( (p_ret = register_kretprobe(&p_arch_jump_label_transform_apply_kretprobe)) < 0) {
       p_print_log(P_LKRG_ERR, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]\n",
                   p_arch_jump_label_transform_apply_kretprobe.kp.symbol_name,
                   p_ret);
-      goto p_install_arch_jump_label_transform_apply_hook_out;
+      return p_ret;
    }
    p_print_log(P_LKRG_INFO, "Planted [kretprobe] <%s> at: 0x%lx\n",
                p_arch_jump_label_transform_apply_kretprobe.kp.symbol_name,
                (unsigned long)p_arch_jump_label_transform_apply_kretprobe.kp.addr);
    p_arch_jump_label_transform_apply_kretprobe_state = 0x1;
 
-//   p_ret = 0x0; <- should be 0x0 anyway...
-
-p_install_arch_jump_label_transform_apply_hook_out:
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_install_arch_jump_label_transform_apply_hook> (p_ret => %d)\n",p_ret);
-
    return p_ret;
 }
 
 
 void p_uninstall_arch_jump_label_transform_apply_hook(void) {
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_uninstall_arch_jump_label_transform_apply_hook>\n");
 
    if (!p_arch_jump_label_transform_apply_kretprobe_state) {
       p_print_log(P_LKRG_INFO, "[kretprobe] <%s> at 0x%lx is NOT installed\n",
@@ -290,10 +262,6 @@ void p_uninstall_arch_jump_label_transform_apply_hook(void) {
                   p_arch_jump_label_transform_apply_kretprobe.nmissed);
       p_arch_jump_label_transform_apply_kretprobe_state = 0x0;
    }
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_uninstall_arch_jump_label_transform_apply_hook>\n");
 }
 
 #endif

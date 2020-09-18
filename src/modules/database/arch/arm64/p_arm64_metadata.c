@@ -38,10 +38,6 @@ void p_dump_arm64_metadata(void *_p_arg) {
    p_CPU_metadata_hash_mem *p_arg = _p_arg;
    int p_curr_cpu = 0xFFFFFFFF;
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_dump_arm64_metadata>\n");
-
    /*
     * Get ID and lock - no preemtion.
     */
@@ -59,10 +55,6 @@ void p_dump_arm64_metadata(void *_p_arg) {
     */
     p_arg[p_curr_cpu].p_cpu_id = p_curr_cpu;
     p_arg[p_curr_cpu].p_cpu_online = P_CPU_ONLINE;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_dump_arm64_metadata>\n");
 }
 
 #endif

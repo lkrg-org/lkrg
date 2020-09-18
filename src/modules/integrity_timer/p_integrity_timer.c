@@ -36,62 +36,30 @@ static void p_offload_cache_zero(void *p_arg) {
 
    struct work_struct *p_struct = p_arg;
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_offload_cache_zero>\n");
-
    memset(p_struct, 0x0, sizeof(struct work_struct));
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_offload_cache_zero>\n");
-
 }
 
 int p_offload_cache_init(void) {
 
-   int p_ret = P_LKRG_SUCCESS;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_offload_cache_init>\n");
-
    if ( (p_offload_cache = kmem_cache_create("p_offload_cache", sizeof(struct work_struct),
                                              0x0, SLAB_HWCACHE_ALIGN, p_offload_cache_zero)) == NULL) {
       p_print_log(P_LKRG_ERR, "kmem_cache_create() for offloading error! :(\n");
-      p_ret = -ENOMEM;
+      return -ENOMEM;
    }
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_offload_cache_init> (p_ret => %d)\n",p_ret);
-
-   return p_ret;
+   return P_LKRG_SUCCESS;
 }
 
 void p_offload_cache_delete(void) {
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_offload_cache_delete>\n");
 
    flush_workqueue(system_unbound_wq);
    if (p_offload_cache) {
       kmem_cache_destroy(p_offload_cache);
       p_offload_cache = NULL;
    }
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_offload_cache_delete>\n");
-
 }
 
 void p_integrity_timer(void) {
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_integrity_timer>\n");
 
    p_timer.expires    = jiffies + P_CTRL(p_interval)*HZ;
 
@@ -103,11 +71,6 @@ void p_integrity_timer(void) {
    timer_setup(&p_timer, p_offload_work, 0);
 #endif
    add_timer(&p_timer);
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_integrity_timer>\n");
-
 }
 
 
@@ -119,9 +82,6 @@ void p_offload_work(struct timer_list *p_timer) {
 
    struct work_struct *p_worker;
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_offload_work>\n");
    p_debug_log(P_LKRG_STRONG_DBG,
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0)
           "p_timer => %ld\n",p_timer);
@@ -135,11 +95,6 @@ void p_offload_work(struct timer_list *p_timer) {
    queue_work(system_unbound_wq, p_worker);
    if (p_timer)
       p_integrity_timer();
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_offload_work>\n");
-
 }
 
 
@@ -162,10 +117,6 @@ void p_check_integrity(struct work_struct *p_work) {
    struct module *p_tmp_mod;
    unsigned int p_tmp = 0x0;
    int p_ret;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_check_integrity>\n");
 
    if (!P_CTRL(p_kint_validate) || (!p_manual && P_CTRL(p_kint_validate) == 1))
       goto p_check_integrity_tasks;
@@ -1861,9 +1812,4 @@ p_check_integrity_tasks:
    if (p_work) {
       p_free_offload(p_work);
    }
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_check_integrity>\n");
-
 }

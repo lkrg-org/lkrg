@@ -22,18 +22,12 @@ p_hash_database p_db;
 int hash_from_ex_table(void) {
 
    unsigned long p_tmp = 0x0;
-   int p_ret = P_LKRG_SUCCESS;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <hash_from_ex_table>\n");
 
    p_db.kernel_ex_table.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("__start___ex_table");
    p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("__stop___ex_table");
 
    if (!p_db.kernel_ex_table.p_addr || !p_tmp || p_tmp < (unsigned long)p_db.kernel_ex_table.p_addr) {
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto hash_from_ex_table_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 
    p_db.kernel_ex_table.p_size = (unsigned long)(p_tmp - (unsigned long)p_db.kernel_ex_table.p_addr);
@@ -46,30 +40,18 @@ int hash_from_ex_table(void) {
                                                                    (long)p_db.kernel_ex_table.p_addr,
                                                                    (long)p_db.kernel_ex_table.p_size);
 
-hash_from_ex_table_out:
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <hash_from_ex_table> (p_ret => %d)\n",p_ret);
-
-   return p_ret;
+   return P_LKRG_SUCCESS;
 }
 
 int hash_from_kernel_stext(void) {
 
    unsigned long p_tmp = 0x0;
-   int p_ret = P_LKRG_SUCCESS;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <hash_from_kernel_stext>\n");
 
    p_db.kernel_stext.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("_stext");
    p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("_etext");
 
    if (!p_db.kernel_stext.p_addr || !p_tmp || p_tmp < (unsigned long)p_db.kernel_stext.p_addr) {
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto hash_from_kernel_stext_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 
    p_db.kernel_stext.p_size = (unsigned long)(p_tmp - (unsigned long)p_db.kernel_stext.p_addr);
@@ -97,31 +79,18 @@ int hash_from_kernel_stext(void) {
           "hash [0x%llx] _stext start [0x%lx] size [0x%lx]\n",p_db.kernel_stext.p_hash,
                                                               (long)p_db.kernel_stext.p_addr,
                                                               (long)p_db.kernel_stext.p_size);
-
-hash_from_kernel_stext_out:
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <hash_from_kernel_stext> (p_ret => %d)\n",p_ret);
-
-   return p_ret;
+   return P_LKRG_SUCCESS;
 }
 
 int hash_from_kernel_rodata(void) {
 
    unsigned long p_tmp = 0x0;
-   int p_ret = P_LKRG_SUCCESS;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <hash_from_kernel_rodata>\n");
 
    p_db.kernel_rodata.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("__start_rodata");
    p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("__end_rodata");
 
    if (!p_db.kernel_rodata.p_addr || !p_tmp || p_tmp < (unsigned long)p_db.kernel_rodata.p_addr) {
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto hash_from_kernel_rodata_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 
    p_db.kernel_rodata.p_size = (unsigned long)(p_tmp - (unsigned long)p_db.kernel_rodata.p_addr);
@@ -141,14 +110,7 @@ int hash_from_kernel_rodata(void) {
           "hash [0x%llx] _rodata start [0x%lx] size [0x%lx]\n",p_db.kernel_rodata.p_hash,
                                                                (long)p_db.kernel_rodata.p_addr,
                                                                (long)p_db.kernel_rodata.p_size);
-
-hash_from_kernel_rodata_out:
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <hash_from_kernel_rodata> (p_ret => %d)\n",p_ret);
-
-   return p_ret;
+   return P_LKRG_SUCCESS;
 }
 
 int hash_from_iommu_table(void) {
@@ -156,11 +118,6 @@ int hash_from_iommu_table(void) {
 #ifdef CONFIG_X86
    unsigned long p_tmp = 0x0;
 #endif
-   int p_ret = P_LKRG_SUCCESS;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <hash_from_iommu_table>\n");
 
 #ifdef CONFIG_X86
 
@@ -168,8 +125,7 @@ int hash_from_iommu_table(void) {
    p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("__iommu_table_end");
 
    if (!p_db.kernel_iommu_table.p_addr || !p_tmp || p_tmp < (unsigned long)p_db.kernel_iommu_table.p_addr) {
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto hash_from_iommu_table_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 
    p_db.kernel_iommu_table.p_size = (unsigned long)(p_tmp - (unsigned long)p_db.kernel_iommu_table.p_addr);
@@ -188,8 +144,6 @@ int hash_from_iommu_table(void) {
                                                                      (long)p_db.kernel_iommu_table.p_addr,
                                                                      (long)p_db.kernel_iommu_table.p_size);
 
-hash_from_iommu_table_out:
-
 #else
 
 // Static value - might change in normal system...
@@ -197,21 +151,13 @@ hash_from_iommu_table_out:
 
 #endif
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <hash_from_iommu_table> (p_ret => %d)\n",p_ret);
-
-   return p_ret;
+   return P_LKRG_SUCCESS;
 }
 
 uint64_t hash_from_CPU_data(p_CPU_metadata_hash_mem *p_arg) {
 
    int p_tmp = 0x0;
    uint64_t p_hash = 0x0;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <hash_from_CPU_data>\n");
 
    for_each_present_cpu(p_tmp) {
       if (p_arg[p_tmp].p_cpu_online == P_CPU_ONLINE) {
@@ -237,10 +183,6 @@ uint64_t hash_from_CPU_data(p_CPU_metadata_hash_mem *p_arg) {
       }
    }
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <hash_from_CPU_data>\n");
-
    return p_hash;
 }
 
@@ -248,19 +190,13 @@ int p_create_database(void) {
 
    int p_tmp;
 //   int p_tmp_cpu;
-   int p_ret;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_create_database>\n");
 
    memset(&p_db,0x0,sizeof(p_hash_database));
 
    if ( (P_SYM(p_text_mutex) = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("text_mutex")) == NULL) {
       p_print_log(P_LKRG_ERR,
              "CREATING DATABASE: error! Can't find 'text_mutex' variable :( Exiting...\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_create_database_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 
    /*
@@ -286,8 +222,7 @@ int p_create_database(void) {
        */
       p_print_log(P_LKRG_CRIT,
              "CREATING DATABASE: kzalloc() error! Can't allocate memory ;[\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_create_database_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 // STRONG_DEBUG
      else {
@@ -344,8 +279,7 @@ int p_create_database(void) {
    if (p_register_arch_metadata() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_ERR,
              "CREATING DATABASE: error! Can't register CPU architecture specific metadata :( Exiting...\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_create_database_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 
 
@@ -401,15 +335,13 @@ int p_create_database(void) {
    if (p_install_arch_jump_label_transform_hook()) {
       p_print_log(P_LKRG_ERR,
              "ERROR: Can't hook arch_jump_label_transform function :(\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_create_database_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 
    if (p_install_arch_jump_label_transform_static_hook()) {
       p_print_log(P_LKRG_ERR,
              "ERROR: Can't hook arch_jump_label_transform_static function :(\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_create_database_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 */
 
@@ -423,23 +355,11 @@ int p_create_database(void) {
    if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
          "CREATING DATABASE ERROR: HASH FROM _STEXT!\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
       p_text_section_unlock();
-      goto p_create_database_out;
-   } else {
-      p_ret = P_LKRG_SUCCESS;
+      return P_LKRG_GENERAL_ERROR;
    }
    p_text_section_unlock();
 #endif
 
-
-   p_ret = P_LKRG_SUCCESS;
-
-p_create_database_out:
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_create_database> (p_ret => %d)\n",p_ret);
-
-   return p_ret;
+   return P_LKRG_SUCCESS;
 }

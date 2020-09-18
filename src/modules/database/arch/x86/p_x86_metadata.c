@@ -37,10 +37,6 @@ u64 p_read_msr(/*int p_cpu, */u32 p_arg) {
     u64 p_val;
 //    int p_err;
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_read_msr>\n");
-
    p_low = p_high = p_val = 0x0;
 
     __asm__("rdmsr": P_MSR_ASM_READ(p_val,p_low,p_high)
@@ -63,10 +59,6 @@ u64 p_read_msr(/*int p_cpu, */u32 p_arg) {
    p_debug_log(P_LKRG_DBG,
           "<p_read_msr[%d]> MSR arg[0x%x] value[%llx]\n",smp_processor_id(),p_arg,p_val);
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_read_msr>\n");
-
     return p_val;
 }
 
@@ -87,10 +79,6 @@ void p_dump_x86_metadata(void *_p_arg) {
 #endif
 
    int p_curr_cpu = 0xFFFFFFFF;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_dump_x86_metadata>\n");
 
    /*
     * Get ID and lock - no preemtion.
@@ -386,11 +374,6 @@ void p_dump_x86_metadata(void *_p_arg) {
     * Unlock preemtion.
     */
 //   put_cpu();
-
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_dump_x86_metadata>\n");
 
 }
 

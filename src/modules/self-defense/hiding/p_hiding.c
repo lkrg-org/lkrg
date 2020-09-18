@@ -26,14 +26,10 @@ struct module_notes_attrs *p_find_notes_attrs;
 
 void p_hide_itself(void) {
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_hide_itself>\n");
-
    if (P_CTRL(p_hide_lkrg)) {
       p_print_log(P_LKRG_WARN,
              "Module is already hidden!\n");
-      goto p_hide_itself_out;
+      return;
    }
 
 /*
@@ -70,14 +66,6 @@ void p_hide_itself(void) {
    spin_unlock(&p_db_lock);
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
-
-p_hide_itself_out:
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_hide_itself>\n");
-
-   return;
 }
 
 #ifdef P_LKRG_UNHIDE
@@ -88,14 +76,10 @@ void p_unhide_itself(void) {
    struct kset       *p_tmp_kset   = p_tmp_mod->mkobj.kobj.kset;
    struct kobj_type  *p_tmp_ktype  = p_tmp_mod->mkobj.kobj.ktype;
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_unhide_itself>\n");
-
    if (!P_CTRL(p_hide_lkrg)) {
       p_print_log(P_LKRG_WARN,
              "Module is already unhidden (visible)!\n");
-      goto p_unhide_itself_out;
+      return;
    }
 
    /* We are heavily consuming module list here - take 'module_mutex' */
@@ -126,13 +110,5 @@ void p_unhide_itself(void) {
    spin_unlock(&p_db_lock);
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
-
-p_unhide_itself_out:
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_unhide_itself>\n");
-
-   return;
 }
 #endif

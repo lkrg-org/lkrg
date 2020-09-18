@@ -40,19 +40,12 @@ void p_dump_CPU_metadata(void *_p_arg) {
 
 int p_register_arch_metadata(void) {
 
-   int p_ret = P_LKRG_SUCCESS;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_register_arch_metadata>\n");
-
    P_SYM(p_core_kernel_text) = (int (*)(unsigned long))P_SYM(p_kallsyms_lookup_name)("core_kernel_text");
 
    if (!P_SYM(p_core_kernel_text)) {
       p_print_log(P_LKRG_ERR,
              "[ED] ERROR: Can't find 'core_kernel_text' function :( Exiting...\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_register_arch_metadata_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 
 #ifdef P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
@@ -78,8 +71,7 @@ int p_register_arch_metadata(void) {
    if (p_install_arch_jump_label_transform_hook()) {
       p_print_log(P_LKRG_ERR,
              "ERROR: Can't hook arch_jump_label_transform function :(\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_register_arch_metadata_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 
 #ifdef P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_APPLY_H
@@ -89,28 +81,15 @@ int p_register_arch_metadata(void) {
    if (p_install_arch_jump_label_transform_apply_hook()) {
       p_print_log(P_LKRG_ERR,
              "ERROR: Can't hook arch_jump_label_transform_apply function :(\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_register_arch_metadata_out;
+      return P_LKRG_GENERAL_ERROR;
    }
 #endif
 
-p_register_arch_metadata_out:
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_register_arch_metadata> (p_ret => %d)\n",p_ret);
-
-   return p_ret;
+   return P_LKRG_SUCCESS;
 }
 
 
 int p_unregister_arch_metadata(void) {
-
-   int p_ret = P_LKRG_SUCCESS;
-
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Entering function <p_register_arch_metadata>\n");
 
 #ifdef P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
    p_uninstall_switch_idt_hook();
@@ -124,9 +103,5 @@ int p_unregister_arch_metadata(void) {
    p_uninstall_arch_jump_label_transform_apply_hook();
 #endif
 
-// STRONG_DEBUG
-   p_debug_log(P_LKRG_STRONG_DBG,
-          "Leaving function <p_register_arch_metadata> (p_ret => %d)\n",p_ret);
-
-   return p_ret;
+   return P_LKRG_SUCCESS;
 }
