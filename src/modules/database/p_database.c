@@ -263,13 +263,6 @@ int p_create_database(void) {
       goto p_create_database_out;
    }
 
-   if ( (P_SYM(p_jump_label_mutex) = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("jump_label_mutex")) == NULL) {
-      p_print_log(P_LKRG_ERR,
-             "CREATING DATABASE: error! Can't find 'jump_label_mutex' variable :( Exiting...\n");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_create_database_out;
-   }
-
    /*
     * First gather information about CPUs in the system - CRITICAL !!!
     */

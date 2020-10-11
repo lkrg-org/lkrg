@@ -172,23 +172,12 @@ int hash_from_iommu_table(void);
 
 static inline void p_text_section_lock(void) {
 
-   //jump_label_lock();
-/*
-   mutex_lock(P_SYM(p_jump_label_mutex));
-   mutex_lock(P_SYM(p_text_mutex));
-*/
-
-   while (!mutex_trylock(P_SYM(p_jump_label_mutex)))
-      schedule();
    mutex_lock(P_SYM(p_text_mutex));
 }
 
 static inline void p_text_section_unlock(void) {
 
    mutex_unlock(P_SYM(p_text_mutex));
-   mutex_unlock(P_SYM(p_jump_label_mutex));
-
-//   jump_label_unlock();
 }
 
 int p_create_database(void);
