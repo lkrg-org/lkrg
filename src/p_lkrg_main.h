@@ -146,7 +146,11 @@ typedef struct _p_lkrg_global_symbols_structure {
 #endif
    int (*p_is_kernel_text_address)(unsigned long p_addr);
    void (*p_get_seccomp_filter)(struct task_struct *p_task);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0)
+   void (*p_put_seccomp_filter)(struct seccomp_filter *p_filter);
+#else
    void (*p_put_seccomp_filter)(struct task_struct *p_task);
+#endif
 #ifdef CONFIG_SECURITY_SELINUX
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
    int *p_selinux_enabled;
