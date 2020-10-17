@@ -439,6 +439,26 @@ static int __init p_lkrg_register(void) {
    }
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0)
+   P_SYM(p_module_address) = (struct module* (*)(unsigned long))P_SYM(p_kallsyms_lookup_name)("__module_address");
+
+   if (!P_SYM(p_module_address)) {
+      p_print_log(P_LKRG_ERR,
+             "ERROR: Can't find '__module_address' function :( Exiting...\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_main_error;
+   }
+
+   P_SYM(p_module_text_address) = (struct module* (*)(unsigned long))P_SYM(p_kallsyms_lookup_name)("__module_text_address");
+
+   if (!P_SYM(p_module_text_address)) {
+      p_print_log(P_LKRG_ERR,
+             "ERROR: Can't find '__module_text_address' function :( Exiting...\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_main_error;
+   }
+#endif
+
    // Freeze all non-kernel processes
    while (P_SYM(p_freeze_processes)())
       schedule();

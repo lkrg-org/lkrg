@@ -115,7 +115,11 @@ int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct 
 
          p_text++;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0)
+      } else if ( (p_module = P_SYM(p_module_text_address)(p_jl_batch_addr[p_cnt])) != NULL) {
+#else
       } else if ( (p_module = __module_text_address(p_jl_batch_addr[p_cnt])) != NULL) {
+#endif
 
          for (p_tmp = 0x0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
             if (p_db.p_module_list_array[p_tmp].p_mod == p_module) {
