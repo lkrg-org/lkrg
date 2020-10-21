@@ -215,7 +215,7 @@ int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct 
 
 int p_install_arch_jump_label_transform_apply_hook(void) {
 
-   int p_ret;
+   int p_tmp;
 
    P_SYM(p_tp_vec) = (struct text_poke_loc **)P_SYM(p_kallsyms_lookup_name)("tp_vec");
    P_SYM(p_tp_vec_nr) = (int *)P_SYM(p_kallsyms_lookup_name)("tp_vec_nr");
@@ -233,18 +233,18 @@ int p_install_arch_jump_label_transform_apply_hook(void) {
       return P_LKRG_GENERAL_ERROR;
    }
 
-   if ( (p_ret = register_kretprobe(&p_arch_jump_label_transform_apply_kretprobe)) < 0) {
+   if ( (p_tmp = register_kretprobe(&p_arch_jump_label_transform_apply_kretprobe)) != 0) {
       p_print_log(P_LKRG_ERR, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]\n",
                   p_arch_jump_label_transform_apply_kretprobe.kp.symbol_name,
-                  p_ret);
-      return p_ret;
+                  p_tmp);
+      return P_LKRG_GENERAL_ERROR;
    }
    p_print_log(P_LKRG_INFO, "Planted [kretprobe] <%s> at: 0x%lx\n",
                p_arch_jump_label_transform_apply_kretprobe.kp.symbol_name,
                (unsigned long)p_arch_jump_label_transform_apply_kretprobe.kp.addr);
    p_arch_jump_label_transform_apply_kretprobe_state = 0x1;
 
-   return p_ret;
+   return P_LKRG_SUCCESS;
 }
 
 
