@@ -63,20 +63,20 @@ int p_switch_idt_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
 
 int p_install_switch_idt_hook(void) {
 
-   int p_ret;
+   int p_tmp;
 
-   if ( (p_ret = register_kretprobe(&p_switch_idt_kretprobe)) < 0) {
+   if ( (p_tmp = register_kretprobe(&p_switch_idt_kretprobe)) != 0) {
       p_print_log(P_LKRG_ERR, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]\n",
                   p_switch_idt_kretprobe.kp.symbol_name,
-                  p_ret);
-      return p_ret;
+                  p_tmp);
+      return P_LKRG_GENERAL_ERROR;
    }
    p_print_log(P_LKRG_INFO, "Planted [kretprobe] <%s> at: 0x%lx\n",
                p_switch_idt_kretprobe.kp.symbol_name,
                (unsigned long)p_switch_idt_kretprobe.kp.addr);
    p_switch_idt_kretprobe_state = 0x1;
 
-   return p_ret;
+   return P_LKRG_SUCCESS;
 }
 
 
