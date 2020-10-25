@@ -230,6 +230,61 @@ extern p_ro_page p_ro;
 #define P_CTRL_ADDR &p_ro.p_lkrg_global_ctrl
 
 /*
+ * LKRG counter lock
+ */
+typedef struct p_lkrg_counter_lock {
+
+   atomic_t p_counter;
+   spinlock_t p_lock;
+
+} p_lkrg_counter_lock;
+
+/* Counter lock API */
+static inline void p_lkrg_counter_lock_init(p_lkrg_counter_lock *p_arg) {
+
+   spin_lock_init(&p_arg->p_lock);
+   smp_mb();
+   atomic_set(&p_arg->p_counter, 0);
+   smp_mb();
+}
+
+static inline void p_lkrg_counter_lock_lock(p_lkrg_counter_lock *p_arg, unsigned long *p_flags) {
+
+   spin_lock_irqsave(&p_arg->p_lock, *p_flags);
+}
+
+static inline void p_lkrg_counter_lock_unlock(p_lkrg_counter_lock *p_arg, unsigned long *p_flags) {
+
+   spin_unlock_irqrestore(&p_arg->p_lock, *p_flags);
+}
+
+static inline void p_lkrg_counter_lock_val_inc(p_lkrg_counter_lock *p_arg) {
+
+   smp_mb();
+   atomic_inc(&p_arg->p_counter);
+   smp_mb();
+}
+
+static inline void p_lkrg_counter_lock_val_dec(p_lkrg_counter_lock *p_arg) {
+
+   smp_mb();
+   atomic_dec(&p_arg->p_counter);
+   smp_mb();
+}
+
+static inline int p_lkrg_counter_lock_val_read(p_lkrg_counter_lock *p_arg) {
+
+   register int p_ret;
+
+   smp_mb();
+   p_ret = atomic_read(&p_arg->p_counter);
+   smp_mb();
+
+   return p_ret;
+}
+/* End */
+
+/*
  * p_lkrg modules
  */
 #include "modules/print_log/p_lkrg_print_log.h"               // printing, error and debug module
