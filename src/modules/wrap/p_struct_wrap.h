@@ -317,7 +317,6 @@ static inline void p_lkrg_open_rw_x86(void) {
 
    register unsigned long p_cr0;
 
-   p_text_section_lock();
    preempt_disable();
    barrier();
    p_cr0 = read_cr0() ^ X86_CR0_WP;
@@ -334,12 +333,10 @@ static inline void p_lkrg_close_rw_x86(void) {
    write_cr0(p_cr0);
    barrier();
    preempt_enable(); //_no_resched();
-   p_text_section_unlock();
 }
 
 static inline void p_lkrg_open_rw(void) {
 
-   p_text_section_lock();
 //   preempt_disable();
    barrier();
    p_set_memory_rw((unsigned long)P_CTRL_ADDR,1);
@@ -352,7 +349,6 @@ static inline void p_lkrg_close_rw(void) {
    p_set_memory_ro((unsigned long)P_CTRL_ADDR,1);
    barrier();
 //   preempt_enable(); //_no_resched();
-   p_text_section_unlock();
 }
 
 /* ARM */
@@ -458,7 +454,6 @@ static inline int p_set_memory_ro(unsigned long p_addr, int p_numpages) {
 
 static inline void p_lkrg_open_rw(void) {
 
-   p_text_section_lock();
    preempt_disable();
    barrier();
    p_set_memory_rw((unsigned long)P_CTRL_ADDR,1);
@@ -471,7 +466,6 @@ static inline void p_lkrg_close_rw(void) {
    p_set_memory_ro((unsigned long)P_CTRL_ADDR,1);
    barrier();
    preempt_enable(); //_no_resched();
-   p_text_section_unlock();
 }
 
 /* ARM64 */
@@ -591,7 +585,6 @@ static inline int p_set_memory_p(unsigned long p_addr, int p_numpages) {
 
 static inline void p_lkrg_open_rw(void) {
 
-   p_text_section_lock();
    preempt_disable();
    barrier();
    p_set_memory_rw((unsigned long)P_CTRL_ADDR,1);
@@ -604,7 +597,6 @@ static inline void p_lkrg_close_rw(void) {
    p_set_memory_ro((unsigned long)P_CTRL_ADDR,1);
    barrier();
    preempt_enable(); //_no_resched();
-   p_text_section_unlock();
 }
 
 #endif
