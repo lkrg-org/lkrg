@@ -36,9 +36,6 @@ int p_kmod_init(void) {
 #endif
 
    P_SYM(p_global_modules)   = (struct list_head *)P_SYM(p_kallsyms_lookup_name)("modules");
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-   P_SYM(p_kernfs_mutex)     = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("kernfs_mutex");
-#endif
    P_SYM(p_module_kset)      = (struct kset **)P_SYM(p_kallsyms_lookup_name)("module_kset");
 
 
@@ -52,11 +49,7 @@ int p_kmod_init(void) {
  #endif
 #endif
                         "module_mutex[0x%lx] p_global_modules[0x%lx] "
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-                        "p_kernfs_mutex[0x%lx] p_module_kset[0x%lx]\n",
-#else
                         "p_module_kset[0x%lx]\n",
-#endif
 #if defined(CONFIG_DYNAMIC_DEBUG)
                                                             (unsigned long)P_SYM(p_ddebug_tables),
                                                             (unsigned long)P_SYM(p_ddebug_lock),
@@ -66,9 +59,6 @@ int p_kmod_init(void) {
 #endif
                                                             (long)&module_mutex,
                                                             (unsigned long)P_SYM(p_global_modules),
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-                                                            (unsigned long)P_SYM(p_kernfs_mutex),
-#endif
                                                             (unsigned long)P_SYM(p_module_kset));
 
    if (!P_SYM(p_global_modules)) {
@@ -85,14 +75,6 @@ int p_kmod_init(void) {
       return P_LKRG_GENERAL_ERROR;
    }
  #endif
-#endif
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-   if (!P_SYM(p_kernfs_mutex)) {
-      p_print_log(P_LKRG_ERR,
-             "KMOD error! Can't find 'kernfs_mutex' variable :( Exiting...\n");
-      return P_LKRG_GENERAL_ERROR;
-   }
 #endif
 
    if (!P_SYM(p_module_kset)) {

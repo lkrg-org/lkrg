@@ -118,10 +118,6 @@ p_module_event_notifier_going_retry:
          schedule();
          goto  p_module_event_notifier_going_retry;
       }
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-      /* Hacky way of 'stopping' KOBJs activities */
-      mutex_lock(P_SYM(p_kernfs_mutex));
-#endif
 
       /*
        * First, synchronize possible database changes with other LKRG components...
@@ -201,10 +197,6 @@ p_module_event_notifier_live_retry:
             schedule();
             goto  p_module_event_notifier_live_retry;
          }
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-         /* Hacky way of 'stopping' KOBJs activities */
-         mutex_lock(P_SYM(p_kernfs_mutex));
-#endif
 
          /*
           * First, synchronize possible database changes with other LKRG components...
@@ -258,10 +250,6 @@ p_module_event_notifier_unlock_out:
    /* God mode off ;) */
 //   spin_unlock_irqrestore(&p_db_lock,p_db_flags);
    spin_unlock(&p_db_lock);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-   /* unlock KOBJ activities */
-   mutex_unlock(P_SYM(p_kernfs_mutex));
-#endif
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
    p_text_section_unlock();

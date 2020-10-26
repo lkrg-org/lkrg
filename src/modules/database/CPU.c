@@ -142,10 +142,6 @@ int p_cpu_online_action(unsigned int p_cpu) {
    p_text_section_lock();
    /* We are heavily consuming module list here - take 'module_mutex' */
    mutex_lock(&module_mutex);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-   /* Hacky way of 'stopping' KOBJs activities */
-   mutex_lock(P_SYM(p_kernfs_mutex));
-#endif
 
    spin_lock(&p_db_lock);
 
@@ -202,10 +198,6 @@ int p_cpu_online_action(unsigned int p_cpu) {
    /* God mode off ;) */
 //   spin_unlock_irqrestore(&p_db_lock,p_db_flags);
    spin_unlock(&p_db_lock);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-   /* unlock KOBJ activities */
-   mutex_unlock(P_SYM(p_kernfs_mutex));
-#endif
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
    p_text_section_unlock();
@@ -220,10 +212,6 @@ int p_cpu_dead_action(unsigned int p_cpu) {
    p_text_section_lock();
    /* We are heavily consuming module list here - take 'module_mutex' */
    mutex_lock(&module_mutex);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-   /* Hacky way of 'stopping' KOBJs activities */
-   mutex_lock(P_SYM(p_kernfs_mutex));
-#endif
 
    spin_lock(&p_db_lock);
 
@@ -288,10 +276,6 @@ int p_cpu_dead_action(unsigned int p_cpu) {
    /* God mode off ;) */
 //   spin_unlock_irqrestore(&p_db_lock,p_db_flags);
    spin_unlock(&p_db_lock);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
-   /* unlock KOBJ activities */
-   mutex_unlock(P_SYM(p_kernfs_mutex));
-#endif
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
    p_text_section_unlock();
