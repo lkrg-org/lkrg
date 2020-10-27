@@ -26,7 +26,7 @@ unsigned int p_time_stamp = 15; /* timeout in seconds */
 /* God mode variables ;) */
 DEFINE_SPINLOCK(p_db_lock);
 unsigned long p_db_flags;
-unsigned int p_manual = 0x0;
+unsigned int p_manual = 0;
 
 /* kmem_cache for offloding WQ */
 struct kmem_cache *p_offload_cache = NULL;
@@ -64,7 +64,7 @@ void p_integrity_timer(void) {
    p_timer.expires    = jiffies + P_CTRL(p_interval)*HZ;
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0)
-   p_timer.data       = 0x1;
+   p_timer.data       = 1;
    p_timer.function   = p_offload_work;
    init_timer(&p_timer);
 #else
@@ -110,12 +110,12 @@ void p_check_integrity(struct work_struct *p_work) {
    unsigned int p_module_kobj_nr_tmp; // Count by walk through the list first
    p_module_list_mem *p_module_list_tmp = NULL;
    p_module_kobj_mem *p_module_kobj_tmp = NULL;
-   char p_mod_bad_nr = 0x0;
+   char p_mod_bad_nr = 0;
    /* Are we compromised ? */
-   unsigned int p_hack_check = 0x0;
+   unsigned int p_hack_check = 0;
    /* Module syncing temporary pointer */
    struct module *p_tmp_mod;
-   unsigned int p_tmp = 0x0;
+   unsigned int p_tmp = 0;
    int p_ret;
 
    if (!P_CTRL(p_kint_validate) || (!p_manual && P_CTRL(p_kint_validate) == 1))
@@ -286,7 +286,7 @@ void p_check_integrity(struct work_struct *p_work) {
              "ALERT !!! _STEXT MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                             p_tmp_hash,p_db.kernel_stext.p_hash);
 #if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
-      for (p_tmp = 0x0; p_tmp < p_db.kernel_stext.p_size; p_tmp++) {
+      for (p_tmp = 0; p_tmp < p_db.kernel_stext.p_size; p_tmp++) {
          if (p_str2[p_tmp] != p_str1[p_tmp]) {
             sprint_symbol_no_offset(p_eh_buf,(unsigned long)((unsigned long)p_db.kernel_stext.p_addr+(unsigned long)p_tmp));
             printk(KERN_CRIT "copy[0x%x] vs now[0x%x] offset[%d | 0x%x] symbol[%s]\n",
@@ -390,8 +390,8 @@ void p_check_integrity(struct work_struct *p_work) {
     * core-dump image, ddebug_table information, symbol table, etc.
     */
    if (p_module_list_nr_tmp != p_module_kobj_nr_tmp) {
-      unsigned int p_tmp_cnt,p_tmp_diff = 0x0;
-      char p_tmp_flag,p_tmp_flag_cnt = 0x0;
+      unsigned int p_tmp_cnt,p_tmp_diff = 0;
+      char p_tmp_flag,p_tmp_flag_cnt = 0;
 
       p_mod_bad_nr++;
       if (p_module_list_nr_tmp < p_module_kobj_nr_tmp) {
@@ -407,12 +407,12 @@ void p_check_integrity(struct work_struct *p_work) {
 
          p_tmp_diff = p_module_kobj_nr_tmp - p_module_list_nr_tmp;
 
-         for (p_tmp_flag = 0x0, p_tmp_hash = 0x0; p_tmp_hash < p_module_kobj_nr_tmp;
+         for (p_tmp_flag = 0x0, p_tmp_hash = 0; p_tmp_hash < p_module_kobj_nr_tmp;
                                                                p_tmp_flag = 0x0, p_tmp_hash++) {
-            for (p_tmp_cnt = 0x0; p_tmp_cnt < p_module_list_nr_tmp; p_tmp_cnt++) {
+            for (p_tmp_cnt = 0; p_tmp_cnt < p_module_list_nr_tmp; p_tmp_cnt++) {
                /* Is module on both lists? */
                if (p_module_kobj_tmp[p_tmp_hash].p_mod == p_module_list_tmp[p_tmp_cnt].p_mod) {
-                  p_tmp_flag = 0x1;
+                  p_tmp_flag = 1;
                   break;
                }
             }
@@ -613,12 +613,12 @@ void p_check_integrity(struct work_struct *p_work) {
 
          p_tmp_diff = p_module_list_nr_tmp - p_module_kobj_nr_tmp;
 
-         for (p_tmp_flag = 0x0, p_tmp_hash = 0x0; p_tmp_hash < p_module_list_nr_tmp;
+         for (p_tmp_flag = 0x0, p_tmp_hash = 0; p_tmp_hash < p_module_list_nr_tmp;
                                                                p_tmp_flag = 0x0, p_tmp_hash++) {
-            for (p_tmp_cnt = 0x0; p_tmp_cnt < p_module_kobj_nr_tmp; p_tmp_cnt++) {
+            for (p_tmp_cnt = 0; p_tmp_cnt < p_module_kobj_nr_tmp; p_tmp_cnt++) {
                /* Is module on both lists? */
                if (p_module_list_tmp[p_tmp_hash].p_mod == p_module_kobj_tmp[p_tmp_cnt].p_mod) {
-                  p_tmp_flag = 0x1;
+                  p_tmp_flag = 1;
                   break;
                }
             }
@@ -826,8 +826,8 @@ void p_check_integrity(struct work_struct *p_work) {
     * core-dump image, ddebug_table information, symbol table, etc.
     */
    if (p_module_list_nr_tmp != p_db.p_module_list_nr) {
-      unsigned int p_tmp_cnt,p_tmp_diff = 0x0;
-      char p_tmp_flag,p_tmp_flag_cnt = 0x0;
+      unsigned int p_tmp_cnt,p_tmp_diff = 0;
+      char p_tmp_flag,p_tmp_flag_cnt = 0;
 
       p_mod_bad_nr++;
       if (p_module_list_nr_tmp < p_db.p_module_list_nr) {
@@ -847,12 +847,12 @@ void p_check_integrity(struct work_struct *p_work) {
 
          p_tmp_diff = p_db.p_module_list_nr - p_module_list_nr_tmp;
 
-         for (p_tmp_flag = 0x0, p_tmp_hash = 0x0; p_tmp_hash < p_db.p_module_list_nr;
+         for (p_tmp_flag = 0x0, p_tmp_hash = 0; p_tmp_hash < p_db.p_module_list_nr;
                                                                p_tmp_flag = 0x0, p_tmp_hash++) {
-            for (p_tmp_cnt = 0x0; p_tmp_cnt < p_module_list_nr_tmp; p_tmp_cnt++) {
+            for (p_tmp_cnt = 0; p_tmp_cnt < p_module_list_nr_tmp; p_tmp_cnt++) {
                /* Is module on both lists? */
                if (p_db.p_module_list_array[p_tmp_hash].p_mod == p_module_list_tmp[p_tmp_cnt].p_mod) {
-                  p_tmp_flag = 0x1;
+                  p_tmp_flag = 1;
                   break;
                }
             }
@@ -1035,12 +1035,12 @@ void p_check_integrity(struct work_struct *p_work) {
 
          p_tmp_diff = p_module_list_nr_tmp - p_db.p_module_list_nr;
 
-         for (p_tmp_flag = 0x0, p_tmp_hash = 0x0; p_tmp_hash < p_module_list_nr_tmp;
+         for (p_tmp_flag = 0x0, p_tmp_hash = 0; p_tmp_hash < p_module_list_nr_tmp;
                                                                p_tmp_flag = 0x0, p_tmp_hash++) {
-            for (p_tmp_cnt = 0x0; p_tmp_cnt < p_db.p_module_list_nr; p_tmp_cnt++) {
+            for (p_tmp_cnt = 0; p_tmp_cnt < p_db.p_module_list_nr; p_tmp_cnt++) {
                /* Is module on both lists? */
                if (p_module_list_tmp[p_tmp_hash].p_mod == p_db.p_module_list_array[p_tmp_cnt].p_mod) {
-                  p_tmp_flag = 0x1;
+                  p_tmp_flag = 1;
                   break;
                }
             }
@@ -1245,8 +1245,8 @@ void p_check_integrity(struct work_struct *p_work) {
     * core-dump image, ddebug_table information, symbol table, etc.
     */
    if (p_module_kobj_nr_tmp != p_db.p_module_kobj_nr) {
-      unsigned int p_tmp_cnt,p_tmp_diff = 0x0;
-      char p_tmp_flag,p_tmp_flag_cnt = 0x0;
+      unsigned int p_tmp_cnt,p_tmp_diff = 0;
+      char p_tmp_flag,p_tmp_flag_cnt = 0;
 
       p_mod_bad_nr++;
       if (p_module_kobj_nr_tmp < p_db.p_module_kobj_nr) {
@@ -1265,12 +1265,12 @@ void p_check_integrity(struct work_struct *p_work) {
 
          p_tmp_diff = p_db.p_module_kobj_nr - p_module_kobj_nr_tmp;
 
-         for (p_tmp_flag = 0x0, p_tmp_hash = 0x0; p_tmp_hash < p_db.p_module_kobj_nr;
+         for (p_tmp_flag = 0x0, p_tmp_hash = 0; p_tmp_hash < p_db.p_module_kobj_nr;
                                                                p_tmp_flag = 0x0, p_tmp_hash++) {
-            for (p_tmp_cnt = 0x0; p_tmp_cnt < p_module_kobj_nr_tmp; p_tmp_cnt++) {
+            for (p_tmp_cnt = 0; p_tmp_cnt < p_module_kobj_nr_tmp; p_tmp_cnt++) {
                /* Is module on both lists? */
                if (p_db.p_module_kobj_array[p_tmp_hash].p_mod == p_module_kobj_tmp[p_tmp_cnt].p_mod) {
-                  p_tmp_flag = 0x1;
+                  p_tmp_flag = 1;
                   break;
                }
             }
@@ -1451,12 +1451,12 @@ void p_check_integrity(struct work_struct *p_work) {
 
          p_tmp_diff = p_module_kobj_nr_tmp - p_db.p_module_kobj_nr;
 
-         for (p_tmp_flag = 0x0, p_tmp_hash = 0x0; p_tmp_hash < p_module_kobj_nr_tmp;
+         for (p_tmp_flag = 0x0, p_tmp_hash = 0; p_tmp_hash < p_module_kobj_nr_tmp;
                                                                p_tmp_flag = 0x0, p_tmp_hash++) {
-            for (p_tmp_cnt = 0x0; p_tmp_cnt < p_db.p_module_kobj_nr; p_tmp_cnt++) {
+            for (p_tmp_cnt = 0; p_tmp_cnt < p_db.p_module_kobj_nr; p_tmp_cnt++) {
                /* Is module on both lists? */
                if (p_module_kobj_tmp[p_tmp_hash].p_mod == p_db.p_module_kobj_array[p_tmp_cnt].p_mod) {
-                  p_tmp_flag = 0x1;
+                  p_tmp_flag = 1;
                   break;
                }
             }
@@ -1648,10 +1648,10 @@ void p_check_integrity(struct work_struct *p_work) {
    p_print_log(P_LKRG_INFO,"Hash from 'module list' => [0x%llx]\n",p_tmp_hash);
 
    if (p_tmp_hash != p_db.p_module_list_hash) {
-      unsigned int p_tmp_cnt,p_local_hack_check = 0x0;
+      unsigned int p_tmp_cnt,p_local_hack_check = 0;
 
-      for (p_tmp = 0x0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
-         for (p_tmp_cnt = 0x0; p_tmp_cnt < p_module_list_nr_tmp; p_tmp_cnt++) {
+      for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
+         for (p_tmp_cnt = 0; p_tmp_cnt < p_module_list_nr_tmp; p_tmp_cnt++) {
             if (p_db.p_module_list_array[p_tmp].p_mod == p_module_list_tmp[p_tmp_cnt].p_mod) {
                if (p_db.p_module_list_array[p_tmp].p_mod_core_text_hash != p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash) {
                   /* I'm hacked! ;( */
@@ -1674,7 +1674,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                                     (unsigned int)p_db.p_module_list_nr * sizeof(p_module_list_mem));
 
          if (p_tmp_hash != p_db.p_module_list_hash) {
-            p_local_hack_check = 0x1;
+            p_local_hack_check = 1;
          }
       }
 */
@@ -1727,9 +1727,9 @@ void p_check_integrity(struct work_struct *p_work) {
          }
       }
 
-      for (p_tmp_hash = 0x0; p_tmp_hash < p_db.p_module_kobj_nr; p_tmp_hash++) {
+      for (p_tmp_hash = 0; p_tmp_hash < p_db.p_module_kobj_nr; p_tmp_hash++) {
          unsigned int p_tmp_cnt;
-         for (p_tmp_cnt = 0x0; p_tmp_cnt < p_module_kobj_nr_tmp; p_tmp_cnt++) {
+         for (p_tmp_cnt = 0; p_tmp_cnt < p_module_kobj_nr_tmp; p_tmp_cnt++) {
             if (p_db.p_module_kobj_array[p_tmp_hash].p_mod == p_module_kobj_tmp[p_tmp_cnt].p_mod)
                if (p_db.p_module_kobj_array[p_tmp_hash].p_mod_core_text_hash != p_module_kobj_tmp[p_tmp_cnt].p_mod_core_text_hash) {
                   p_print_log(P_LKRG_CRIT,

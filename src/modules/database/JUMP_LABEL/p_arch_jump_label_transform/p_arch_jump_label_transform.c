@@ -28,7 +28,7 @@
 #include "../../../../p_lkrg_main.h"
 
 
-char p_arch_jump_label_transform_kretprobe_state = 0x0;
+char p_arch_jump_label_transform_kretprobe_state = 0;
 
 static struct kretprobe p_arch_jump_label_transform_kretprobe = {
     .kp.symbol_name = "arch_jump_label_transform",
@@ -83,14 +83,14 @@ int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, struct pt
    }
 
    /* A dump_stack() here will give a stack backtrace */
-   return 0x0;
+   return 0;
 }
 
 
 int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
 
    unsigned int p_tmp,p_tmp2;
-   unsigned char p_flag = 0x0;
+   unsigned char p_flag = 0;
 
    switch (p_db.p_jump_label.p_state) {
 
@@ -105,7 +105,7 @@ int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_reg
 
 #if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
          memcpy(p_db.kernel_stext_copy,p_db.kernel_stext.p_addr,p_db.kernel_stext.p_size);
-         p_db.kernel_stext_copy[p_db.kernel_stext.p_size] = 0x0;
+         p_db.kernel_stext_copy[p_db.kernel_stext.p_size] = 0;
 #endif
 
          p_print_log(P_LKRG_INFO,
@@ -115,7 +115,7 @@ int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_reg
 
       case P_JUMP_LABEL_MODULE_TEXT:
 
-         for (p_tmp = 0x0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
+         for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
             if (p_db.p_module_list_array[p_tmp].p_mod == p_db.p_jump_label.p_mod) {
                /*
                 * OK, we found this module on our internal tracking list.
@@ -140,11 +140,11 @@ int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_reg
                /*
                 * Because we update module's .text section hash we need to update KOBJs as well.
                 */
-               for (p_tmp2 = 0x0; p_tmp2 < p_db.p_module_kobj_nr; p_tmp2++) {
+               for (p_tmp2 = 0; p_tmp2 < p_db.p_module_kobj_nr; p_tmp2++) {
                   if (p_db.p_module_kobj_array[p_tmp2].p_mod == p_db.p_jump_label.p_mod) {
                      p_db.p_module_kobj_array[p_tmp2].p_mod_core_text_hash =
                                       p_db.p_module_list_array[p_tmp].p_mod_core_text_hash;
-                     p_flag = 0x1;
+                     p_flag = 1;
                      break;
                   }
                }
@@ -179,7 +179,7 @@ int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_reg
 
    p_db.p_jump_label.p_state = P_JUMP_LABEL_NONE;
 
-   return 0x0;
+   return 0;
 }
 
 
@@ -196,7 +196,7 @@ int p_install_arch_jump_label_transform_hook(void) {
    p_print_log(P_LKRG_INFO, "Planted [kretprobe] <%s> at: 0x%lx\n",
                p_arch_jump_label_transform_kretprobe.kp.symbol_name,
                (unsigned long)p_arch_jump_label_transform_kretprobe.kp.addr);
-   p_arch_jump_label_transform_kretprobe_state = 0x1;
+   p_arch_jump_label_transform_kretprobe_state = 1;
 
    return P_LKRG_SUCCESS;
 }
@@ -214,6 +214,6 @@ void p_uninstall_arch_jump_label_transform_hook(void) {
                   p_arch_jump_label_transform_kretprobe.kp.symbol_name,
                   (unsigned long)p_arch_jump_label_transform_kretprobe.kp.addr,
                   p_arch_jump_label_transform_kretprobe.nmissed);
-      p_arch_jump_label_transform_kretprobe_state = 0x0;
+      p_arch_jump_label_transform_kretprobe_state = 0;
    }
 }

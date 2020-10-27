@@ -25,7 +25,7 @@
 
 #ifdef P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
 
-char p_switch_idt_kretprobe_state = 0x0;
+char p_switch_idt_kretprobe_state = 0;
 
 static struct kretprobe p_switch_idt_kretprobe = {
     .kp.symbol_name = "switch_idt",
@@ -42,7 +42,7 @@ int p_switch_idt_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) 
    spin_lock(&p_db_lock);
 
    /* A dump_stack() here will give a stack backtrace */
-   return 0x0;
+   return 0;
 }
 
 
@@ -57,7 +57,7 @@ int p_switch_idt_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
 
    spin_unlock(&p_db_lock);
 
-   return 0x0;
+   return 0;
 }
 
 
@@ -74,7 +74,7 @@ int p_install_switch_idt_hook(void) {
    p_print_log(P_LKRG_INFO, "Planted [kretprobe] <%s> at: 0x%lx\n",
                p_switch_idt_kretprobe.kp.symbol_name,
                (unsigned long)p_switch_idt_kretprobe.kp.addr);
-   p_switch_idt_kretprobe_state = 0x1;
+   p_switch_idt_kretprobe_state = 1;
 
    return P_LKRG_SUCCESS;
 }
@@ -92,7 +92,7 @@ void p_uninstall_switch_idt_hook(void) {
                   p_switch_idt_kretprobe.kp.symbol_name,
                   (unsigned long)p_switch_idt_kretprobe.kp.addr,
                   p_switch_idt_kretprobe.nmissed);
-      p_switch_idt_kretprobe_state = 0x0;
+      p_switch_idt_kretprobe_state = 0;
    }
 }
 
