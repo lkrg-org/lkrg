@@ -108,17 +108,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
        * We must keep in track that information ;)
        */
 
-p_module_event_notifier_going_retry:
-
       p_text_section_lock();
-      /* We are heavily consuming module list here - take 'module_mutex' */
-//      mutex_lock(&module_mutex);
-      while (!mutex_trylock(&module_mutex)) {
-         p_text_section_unlock();
-         schedule();
-         goto  p_module_event_notifier_going_retry;
-      }
-
       /*
        * First, synchronize possible database changes with other LKRG components...
        * We want to be as fast as possible to get this lock! :)
@@ -187,16 +177,7 @@ p_module_event_notifier_going_retry:
           * and recalculate global module hashes...
           */
 
-p_module_event_notifier_live_retry:
-
          p_text_section_lock();
-         /* We are heavily consuming module list here - take 'module_mutex' */
-         //mutex_lock(&module_mutex);
-         while (!mutex_trylock(&module_mutex)) {
-            p_text_section_unlock();
-            schedule();
-            goto  p_module_event_notifier_live_retry;
-         }
 
          /*
           * First, synchronize possible database changes with other LKRG components...
@@ -250,8 +231,6 @@ p_module_event_notifier_unlock_out:
    /* God mode off ;) */
 //   spin_unlock_irqrestore(&p_db_lock,p_db_flags);
    spin_unlock(&p_db_lock);
-   /* Release the 'module_mutex' */
-   mutex_unlock(&module_mutex);
    p_text_section_unlock();
 
 p_module_event_notifier_activity_out:

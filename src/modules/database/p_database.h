@@ -173,10 +173,14 @@ int hash_from_iommu_table(void);
 static inline void p_text_section_lock(void) {
 
    mutex_lock(P_SYM(p_text_mutex));
+   /* We are heavily consuming module list here - take 'module_mutex' */
+   mutex_lock(&module_mutex);
 }
 
 static inline void p_text_section_unlock(void) {
 
+   /* Release the 'module_mutex' */
+   mutex_unlock(&module_mutex);
    mutex_unlock(P_SYM(p_text_mutex));
 }
 

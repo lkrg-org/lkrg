@@ -140,9 +140,6 @@ int p_cpu_online_action(unsigned int p_cpu) {
    int tmp_online_CPUs = p_db.p_cpu.online_CPUs;
 
    p_text_section_lock();
-   /* We are heavily consuming module list here - take 'module_mutex' */
-   mutex_lock(&module_mutex);
-
    spin_lock(&p_db_lock);
 
    smp_call_function_single(p_cpu,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
@@ -198,8 +195,6 @@ int p_cpu_online_action(unsigned int p_cpu) {
    /* God mode off ;) */
 //   spin_unlock_irqrestore(&p_db_lock,p_db_flags);
    spin_unlock(&p_db_lock);
-   /* Release the 'module_mutex' */
-   mutex_unlock(&module_mutex);
    p_text_section_unlock();
 
    return 0x0;
@@ -210,9 +205,6 @@ int p_cpu_dead_action(unsigned int p_cpu) {
    int tmp_online_CPUs = p_db.p_cpu.online_CPUs;
 
    p_text_section_lock();
-   /* We are heavily consuming module list here - take 'module_mutex' */
-   mutex_lock(&module_mutex);
-
    spin_lock(&p_db_lock);
 
    p_db.p_CPU_metadata_array[p_cpu].p_cpu_online = P_CPU_OFFLINE;
@@ -276,8 +268,6 @@ int p_cpu_dead_action(unsigned int p_cpu) {
    /* God mode off ;) */
 //   spin_unlock_irqrestore(&p_db_lock,p_db_flags);
    spin_unlock(&p_db_lock);
-   /* Release the 'module_mutex' */
-   mutex_unlock(&module_mutex);
    p_text_section_unlock();
 
    return 0x0;

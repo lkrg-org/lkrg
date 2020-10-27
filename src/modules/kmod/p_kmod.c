@@ -94,7 +94,6 @@ static unsigned int p_count_modules_from_module_list(void) {
    unsigned int p_cnt = 0x0;
    struct module *p_mod;
 
-//   mutex_lock(&module_mutex);
    list_for_each_entry(p_mod, P_SYM(p_global_modules), list) {
 
 /*
@@ -115,7 +114,6 @@ static unsigned int p_count_modules_from_module_list(void) {
 
       p_cnt++;
    }
-//   mutex_unlock(&module_mutex);
 
    return p_cnt;
 }
@@ -130,7 +128,6 @@ static int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
    struct module *p_mod;
    unsigned int p_cnt = 0x0;
 
-//   mutex_lock(&module_mutex);
    list_for_each_entry(p_mod, P_SYM(p_global_modules), list) {
 /*
       if (p_mod->state >= MODULE_STATE_UNFORMED ||
@@ -173,7 +170,6 @@ static int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
 
       p_cnt++;
    }
-//   mutex_unlock(&module_mutex);
 
    return P_LKRG_SUCCESS;
 }

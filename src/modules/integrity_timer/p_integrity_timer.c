@@ -213,9 +213,6 @@ void p_check_integrity(struct work_struct *p_work) {
 
    p_text_section_lock();
 
-   /* We are heavily consuming module list here - take 'module_mutex' */
-   mutex_lock(&module_mutex);
-
    /*
     * Memory allocation may fail... let's loop here!
     */
@@ -231,8 +228,6 @@ void p_check_integrity(struct work_struct *p_work) {
       schedule();
    }
 /*
-   * Release the 'module_mutex' *
-   mutex_unlock(&module_mutex);
    p_text_section_unlock();
 */
 
@@ -1776,8 +1771,6 @@ void p_check_integrity(struct work_struct *p_work) {
 
 p_check_integrity_cancel:
 
-   /* Release the 'module_mutex' */
-   mutex_unlock(&module_mutex);
    p_text_section_unlock();
    if (p_tmp_cpus) {
       kzfree(p_tmp_cpus);
