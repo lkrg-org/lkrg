@@ -61,7 +61,7 @@ void p_hide_itself(void) {
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
    /* We should be fine now! */
 
-   P_CTRL(p_hide_lkrg) = 0x1;
+   P_CTRL(p_hide_lkrg) = 1;
 
    spin_unlock(&p_db_lock);
    /* Release the 'module_mutex' */
@@ -105,7 +105,7 @@ void p_unhide_itself(void) {
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
    /* We should be fine now! */
 
-   P_CTRL(p_hide_lkrg) = 0x0;
+   P_CTRL(p_hide_lkrg) = 0;
 
    spin_unlock(&p_db_lock);
    /* Release the 'module_mutex' */

@@ -37,7 +37,7 @@ u64 p_read_msr(/*int p_cpu, */u32 p_arg) {
     u64 p_val;
 //    int p_err;
 
-   p_low = p_high = p_val = 0x0;
+   p_low = p_high = p_val = 0;
 
     __asm__("rdmsr": P_MSR_ASM_READ(p_val,p_low,p_high)
                    : "c"(p_arg)
@@ -48,7 +48,7 @@ u64 p_read_msr(/*int p_cpu, */u32 p_arg) {
    if ( (p_err = rdmsr_safe_on_cpu(p_cpu,p_arg,&p_low,&p_high))) {
       p_debug_log(P_LKRG_STRONG_DBG,
              "<p_read_msr> rdmsr_safe_on_cpu() error! - shouldn't happen [err=0x%x]!\n",p_err);
-      return 0x0;
+      return 0;
    }
    p_val = (u64 )p_high << 32 | p_low;
 */

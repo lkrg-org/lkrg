@@ -43,7 +43,7 @@ unsigned int profile_enforce = 2;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
 static enum cpuhp_state p_hot_cpus;
 #endif
-unsigned int p_attr_init = 0x0;
+unsigned int p_attr_init = 0;
 
 p_ro_page p_ro __p_lkrg_read_only = {
 
@@ -88,7 +88,7 @@ p_ro_page p_ro __p_lkrg_read_only = {
 
 static void p_init_page_attr(void) {
 
-   unsigned long *p_long_tmp = 0x0;
+   unsigned long *p_long_tmp = 0;
 #if !defined(CONFIG_ARM)
    unsigned long p_long_offset = PAGE_SIZE/sizeof(p_long_tmp); // On purpose sizeof pointer
 #endif
@@ -148,7 +148,7 @@ static void p_init_page_attr(void) {
 
 static void p_uninit_page_attr(void) {
 
-   unsigned long *p_long_tmp = 0x0;
+   unsigned long *p_long_tmp = 0;
 #if !defined(CONFIG_ARM)
    unsigned long p_long_offset = PAGE_SIZE/sizeof(p_long_tmp); // On purpose sizeof pointer
 #endif
@@ -296,7 +296,7 @@ void p_parse_module_params(void) {
       P_CTRL(p_profile_enforce) = 0x9;
    }
 
-   p_pcfi_CPU_flags = 0x0;
+   p_pcfi_CPU_flags = 0;
 
 #if defined(CONFIG_X86)
 
@@ -321,8 +321,8 @@ void p_parse_module_params(void) {
          P_CTRL(p_profile_enforce) = 0x9;
       }
    } else {
-      P_CTRL(p_smep_validate) = 0x0;
-      P_CTRL(p_smep_enforce) = 0x0;
+      P_CTRL(p_smep_validate) = 0;
+      P_CTRL(p_smep_enforce) = 0;
       p_print_log(P_LKRG_ERR,
             "System does NOT support SMEP. LKRG can't enforce SMEP validation :(\n");
    }
@@ -348,8 +348,8 @@ void p_parse_module_params(void) {
          P_CTRL(p_profile_enforce) = 0x9;
       }
    } else {
-      P_CTRL(p_smap_validate) = 0x0;
-      P_CTRL(p_smap_enforce) = 0x0;
+      P_CTRL(p_smap_validate) = 0;
+      P_CTRL(p_smap_enforce) = 0;
       p_print_log(P_LKRG_ERR,
             "System does NOT support SMAP. LKRG can't enforce SMAP validation :(\n");
    }
@@ -366,8 +366,8 @@ void p_parse_module_params(void) {
 static int __init p_lkrg_register(void) {
 
    int p_ret = P_LKRG_SUCCESS;
-   char p_cpu = 0x0;
-   char p_freeze = 0x0;
+   char p_cpu = 0;
+   char p_freeze = 0;
 
    p_print_log(P_LKRG_CRIT, "Loading LKRG...\n");
 
@@ -445,7 +445,7 @@ static int __init p_lkrg_register(void) {
    while (P_SYM(p_freeze_processes)())
       schedule();
 
-   p_freeze = 0x1;
+   p_freeze = 1;
 
    /*
     * First, we need to plant *kprobes... Before DB is created!
@@ -500,7 +500,7 @@ static int __init p_lkrg_register(void) {
       goto p_main_error;
    }
 #endif
-   p_cpu = 0x1;
+   p_cpu = 1;
 
 #if !defined(CONFIG_ARM64)
 
@@ -611,7 +611,7 @@ p_main_error:
    if (p_freeze) {
       // Thaw all non-kernel processes
       P_SYM(p_thaw_processes)();
-      p_freeze = 0x0;
+      p_freeze = 0;
    }
 
    return p_ret;

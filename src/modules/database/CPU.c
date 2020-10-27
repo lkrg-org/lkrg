@@ -68,7 +68,7 @@ void p_get_cpus(p_cpu_info *p_arg) {
 
 int p_cmp_cpus(p_cpu_info *p_arg1, p_cpu_info *p_arg2) {
 
-   int p_flag = 0x0;
+   int p_flag = 0;
 
    if (p_arg1->online_CPUs != p_arg2->online_CPUs) {
       p_print_log(P_LKRG_CRIT,
@@ -197,7 +197,7 @@ int p_cpu_online_action(unsigned int p_cpu) {
    spin_unlock(&p_db_lock);
    p_text_section_unlock();
 
-   return 0x0;
+   return 0;
 }
 
 int p_cpu_dead_action(unsigned int p_cpu) {
@@ -270,7 +270,7 @@ int p_cpu_dead_action(unsigned int p_cpu) {
    spin_unlock(&p_db_lock);
    p_text_section_unlock();
 
-   return 0x0;
+   return 0;
 }
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)

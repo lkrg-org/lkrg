@@ -21,7 +21,7 @@ p_hash_database p_db;
 
 int hash_from_ex_table(void) {
 
-   unsigned long p_tmp = 0x0;
+   unsigned long p_tmp = 0;
 
    p_db.kernel_ex_table.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("__start___ex_table");
    p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("__stop___ex_table");
@@ -45,7 +45,7 @@ int hash_from_ex_table(void) {
 
 int hash_from_kernel_stext(void) {
 
-   unsigned long p_tmp = 0x0;
+   unsigned long p_tmp = 0;
 
    p_db.kernel_stext.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("_stext");
    p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("_etext");
@@ -72,7 +72,7 @@ int hash_from_kernel_stext(void) {
       }
    }
    memcpy(p_db.kernel_stext_copy,p_db.kernel_stext.p_addr,p_db.kernel_stext.p_size);
-   p_db.kernel_stext_copy[p_db.kernel_stext.p_size] = 0x0;
+   p_db.kernel_stext_copy[p_db.kernel_stext.p_size] = 0;
 #endif
 
    p_debug_log(P_LKRG_DBG,
@@ -84,7 +84,7 @@ int hash_from_kernel_stext(void) {
 
 int hash_from_kernel_rodata(void) {
 
-   unsigned long p_tmp = 0x0;
+   unsigned long p_tmp = 0;
 
    p_db.kernel_rodata.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("__start_rodata");
    p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("__end_rodata");
@@ -116,7 +116,7 @@ int hash_from_kernel_rodata(void) {
 int hash_from_iommu_table(void) {
 
 #ifdef CONFIG_X86
-   unsigned long p_tmp = 0x0;
+   unsigned long p_tmp = 0;
 #endif
 
 #ifdef CONFIG_X86
@@ -156,8 +156,8 @@ int hash_from_iommu_table(void) {
 
 uint64_t hash_from_CPU_data(p_CPU_metadata_hash_mem *p_arg) {
 
-   int p_tmp = 0x0;
-   uint64_t p_hash = 0x0;
+   int p_tmp = 0;
+   uint64_t p_hash = 0;
 
    for_each_present_cpu(p_tmp) {
       if (p_arg[p_tmp].p_cpu_online == P_CPU_ONLINE) {
@@ -286,7 +286,7 @@ int p_create_database(void) {
    if (hash_from_ex_table() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
          "CREATING DATABASE ERROR: EXCEPTION TABLE CAN'T BE FOUND (skipping it)!\n");
-      p_db.kernel_ex_table.p_hash = p_db.kernel_ex_table.p_size = 0x0;
+      p_db.kernel_ex_table.p_hash = p_db.kernel_ex_table.p_size = 0;
       p_db.kernel_ex_table.p_addr = NULL;
    }
 
@@ -294,14 +294,14 @@ int p_create_database(void) {
    if (hash_from_kernel_rodata() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
          "CREATING DATABASE ERROR: _RODATA CAN'T BE FOUND (skipping it)!\n");
-      p_db.kernel_rodata.p_hash = p_db.kernel_rodata.p_size = 0x0;
+      p_db.kernel_rodata.p_hash = p_db.kernel_rodata.p_size = 0;
       p_db.kernel_rodata.p_addr = NULL;
    }
 
    if (hash_from_iommu_table() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
          "CREATING DATABASE ERROR: IOMMU TABLE CAN'T BE FOUND (skipping it)!\n");
-      p_db.kernel_iommu_table.p_hash = p_db.kernel_iommu_table.p_size = 0x0;
+      p_db.kernel_iommu_table.p_hash = p_db.kernel_iommu_table.p_size = 0;
       p_db.kernel_iommu_table.p_addr = NULL;
    }
 

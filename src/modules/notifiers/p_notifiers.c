@@ -136,7 +136,7 @@ static int p_idle_notifier(struct notifier_block *p_nb, unsigned long p_val, voi
    /* 0.005% */
    P_TRY_OFFLOAD_NOTIFIER(P_M_SS_MORE_OFTEN_RATE, "<p_idle_notifier> Offloading integrity check\n");
 
-   return 0x0;
+   return 0;
 }
 #endif
 
@@ -148,7 +148,7 @@ static int p_freq_transition_notifier(struct notifier_block *p_nb, unsigned long
    /* 1%% */
    P_TRY_OFFLOAD_NOTIFIER(P_OFTEN_RATE, "<p_freq_transition_notifier> Offloading integrity check\n");
 
-   return 0x0;
+   return 0;
 }
 #endif
 
@@ -157,7 +157,7 @@ static int p_cpu_pm_notifier(struct notifier_block *p_nb, unsigned long p_val, v
    /* 10% */
    P_TRY_OFFLOAD_NOTIFIER(P_RARE_RATE, "<p_cpu_pm_notifier> Offloading integrity check\n");
 
-   return 0x0;
+   return 0;
 }
 
 static int p_netdevice_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
@@ -165,7 +165,7 @@ static int p_netdevice_notifier(struct notifier_block *p_nb, unsigned long p_val
    /* 1% */
    P_TRY_OFFLOAD_NOTIFIER(P_OFTEN_RATE, "<p_netdevice_notifier> Offloading integrity check\n");
 
-   return 0x0;
+   return 0;
 }
 
 static int p_netevent_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
@@ -173,7 +173,7 @@ static int p_netevent_notifier(struct notifier_block *p_nb, unsigned long p_val,
    /* 5% */
    P_TRY_OFFLOAD_NOTIFIER(P_LESS_RARE_RATE, "<p_netevent_notifier> Offloading integrity check\n");
 
-   return 0x0;
+   return 0;
 }
 
 #if IS_ENABLED(CONFIG_IPV6)
@@ -182,7 +182,7 @@ static int p_inet6addr_notifier(struct notifier_block *p_nb, unsigned long p_val
    /* 100% */
    P_TRY_OFFLOAD_NOTIFIER_ALWAYS("<p_inet6addr_notifier> Offloading integrity check\n");
 
-   return 0x0;
+   return 0;
 }
 #endif
 
@@ -191,7 +191,7 @@ static int p_inetaddr_notifier(struct notifier_block *p_nb, unsigned long p_val,
    /* 100% */
    P_TRY_OFFLOAD_NOTIFIER_ALWAYS("<p_inetaddr_notifier> Offloading integrity check\n");
 
-   return 0x0;
+   return 0;
 }
 
 static int p_taskfree_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
@@ -199,7 +199,7 @@ static int p_taskfree_notifier(struct notifier_block *p_nb, unsigned long p_val,
    /* 0.01% */
    P_TRY_OFFLOAD_NOTIFIER(P_SS_MORE_OFTEN_RATE, "<p_taskfree_notifier> Offloading integrity check\n");
 
-   return 0x0;
+   return 0;
 }
 
 static int p_profile_event_exit_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
@@ -207,7 +207,7 @@ static int p_profile_event_exit_notifier(struct notifier_block *p_nb, unsigned l
    /* 0.01% */
    P_TRY_OFFLOAD_NOTIFIER(P_SS_MORE_OFTEN_RATE, "<p_profile_event_exit_notifier> Offloading integrity check\n");
 
-   return 0x0;
+   return 0;
 }
 
 static int p_profile_event_munmap_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
@@ -215,7 +215,7 @@ static int p_profile_event_munmap_notifier(struct notifier_block *p_nb, unsigned
    /* 0.005%*/
    P_TRY_OFFLOAD_NOTIFIER(P_M_SS_MORE_OFTEN_RATE, "<p_profile_event_munmap_notifier> Offloading integrity check\n");
 
-   return 0x0;
+   return 0;
 }
 
 #if defined(CONFIG_USB)
@@ -224,7 +224,7 @@ static int p_usb_notifier(struct notifier_block *p_nb, unsigned long p_val, void
    /* 100% */
    P_TRY_OFFLOAD_NOTIFIER_ALWAYS("<p_usb_notifier> Offloading integrity check\n");
 
-   return 0x0;
+   return 0;
 }
 #endif
 
@@ -234,7 +234,7 @@ static int p_acpi_notifier(struct notifier_block *p_nb, unsigned long p_val, voi
    /* 100% */
    P_TRY_OFFLOAD_NOTIFIER_ALWAYS("<p_acpi_notifier> Offloading integrity check\n");
 
-   return 0x0;
+   return 0;
 }
 #endif
 

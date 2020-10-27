@@ -18,7 +18,7 @@
 
 #include "../../p_lkrg_main.h"
 
-//unsigned long (*p_kallsyms_lookup_name)(const char *name) = 0x0;
+//unsigned long (*p_kallsyms_lookup_name)(const char *name) = 0;
 
 
 static int p_find_isra_name(void *p_isra_argg, const char *name,
@@ -34,7 +34,7 @@ static int p_find_isra_name(void *p_isra_argg, const char *name,
       p_print_log(P_LKRG_WARN, "Found ISRA version of function <%s>\n", name);
       if ( (p_isra_arg->p_isra_name = kzalloc(strlen(name)+1, GFP_KERNEL)) == NULL) {
          p_print_log(P_LKRG_ERR, "[p_find_isra_name] kzalloc() failed!\n");
-         return 0x0;
+         return 0;
       }
       memcpy(p_isra_arg->p_isra_name, name, strlen(name));
       return addr;
@@ -42,13 +42,13 @@ static int p_find_isra_name(void *p_isra_argg, const char *name,
       p_print_log(P_LKRG_WARN, "Found CONSTPROP version of function <%s>\n", name);
       if ( (p_isra_arg->p_isra_name = kzalloc(strlen(name)+1, GFP_KERNEL)) == NULL) {
          p_print_log(P_LKRG_ERR, "[p_find_isra_name] kzalloc() failed!\n");
-         return 0x0;
+         return 0;
       }
       memcpy(p_isra_arg->p_isra_name, name, strlen(name));
       return addr;
    }
 
-   return 0x0;
+   return 0;
 }
 
 int p_try_isra_name(struct p_isra_argument *p_isra_arg) {
@@ -59,7 +59,7 @@ int p_try_isra_name(struct p_isra_argument *p_isra_arg) {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,7,0))
 
 static int p_tmp_kprobe_handler(struct kprobe *p_ri, struct pt_regs *p_regs) {
-   return 0x0;
+   return 0;
 }
 
 #else
@@ -72,7 +72,7 @@ static int p_lookup_syms_hack(void *unused, const char *name,
       return addr;
    }
 
-   return 0x0;
+   return 0;
 }
 
 #endif

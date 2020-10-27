@@ -91,7 +91,7 @@ int p_kmod_init(void) {
  */
 static unsigned int p_count_modules_from_module_list(void) {
 
-   unsigned int p_cnt = 0x0;
+   unsigned int p_cnt = 0;
    struct module *p_mod;
 
    list_for_each_entry(p_mod, P_SYM(p_global_modules), list) {
@@ -126,7 +126,7 @@ static unsigned int p_count_modules_from_module_list(void) {
 static int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
 
    struct module *p_mod;
-   unsigned int p_cnt = 0x0;
+   unsigned int p_cnt = 0;
 
    list_for_each_entry(p_mod, P_SYM(p_global_modules), list) {
 /*
@@ -149,7 +149,7 @@ static int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
       p_arg[p_cnt].p_mod = p_mod;
       /* Save module name for that pointer */
       memcpy(p_arg[p_cnt].p_name,p_mod->name,MODULE_NAME_LEN);
-      p_arg[p_cnt].p_name[MODULE_NAME_LEN] = 0x0;
+      p_arg[p_cnt].p_name[MODULE_NAME_LEN] = 0;
       /* Pointer to the module core */
       p_arg[p_cnt].p_module_core = p_module_core(p_mod);
       /* Size of the module core text section */
@@ -183,7 +183,7 @@ unsigned int p_count_modules_from_sysfs_kobj(void) {
    struct kset *p_kset = *P_SYM(p_module_kset);
    struct kobject *p_kobj = NULL, *p_tmp_safe = NULL;
    struct module_kobject *p_mk = NULL;
-   unsigned int p_cnt = 0x0;
+   unsigned int p_cnt = 0;
 
    kset_get(p_kset);
    spin_lock(&p_kset->list_lock);
@@ -247,7 +247,7 @@ static int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
    struct kset *p_kset = *P_SYM(p_module_kset);
    struct kobject *p_kobj = NULL, *p_tmp_safe = NULL;
    struct module_kobject *p_mk = NULL;
-   unsigned int p_cnt = 0x0;
+   unsigned int p_cnt = 0;
 
    kset_get(p_kset);
    spin_lock(&p_kset->list_lock);
@@ -307,7 +307,7 @@ static int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
       p_arg[p_cnt].p_mod = p_mod;
       /* Save module name for that pointer */
       memcpy(p_arg[p_cnt].p_name,p_mod->name,MODULE_NAME_LEN);
-      p_arg[p_cnt].p_name[MODULE_NAME_LEN] = 0x0;
+      p_arg[p_cnt].p_name[MODULE_NAME_LEN] = 0;
       /* Pointer to the module core */
       p_arg[p_cnt].p_module_core = p_module_core(p_mod);
       /* Size of the module core text section */
