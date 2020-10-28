@@ -23,9 +23,9 @@ jobs:
       arch: arm64
       virt: lxd
 
-    - dist: focal
-      arch: amd64
-      virt: lxd
+#    - dist: focal
+#      arch: amd64
+#      virt: lxd
 
 #    - dist: focal
 #      arch: arm64
