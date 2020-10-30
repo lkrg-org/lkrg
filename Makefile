@@ -19,9 +19,9 @@ endif
 #
 # Uncomment for debug compilation
 #
-#ccflags-m := -ggdb -DP_LKRG_DEBUG_BUILD -finstrument-functions
-#ccflags-y := ${ccflags-m}
-#p_lkrg-objs += src/modules/print_log/p_lkrg_debug_log.o
+# ccflags-m := -ggdb -DP_LKRG_DEBUG_BUILD -finstrument-functions
+# ccflags-y := ${ccflags-m}
+# p_lkrg-objs += src/modules/print_log/p_lkrg_debug_log.o
 
 obj-m += p_lkrg.o
 p_lkrg-objs += src/modules/ksyms/p_resolve_ksym.o \

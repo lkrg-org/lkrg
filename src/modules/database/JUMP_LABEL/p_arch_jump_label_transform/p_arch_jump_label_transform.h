@@ -33,6 +33,7 @@ struct p_arch_jump_label_transform_data {
     ktime_t entry_stamp;
 };
 
+extern p_lkrg_counter_lock p_jl_lock;
 
 int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs);
 int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs);

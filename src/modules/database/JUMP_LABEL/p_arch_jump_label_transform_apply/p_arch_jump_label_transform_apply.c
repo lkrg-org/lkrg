@@ -47,14 +47,19 @@ static struct kretprobe p_arch_jump_label_transform_apply_kretprobe = {
 };
 
 
-int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
+notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
    int p_nr = *P_SYM(p_tp_vec_nr);
    int p_cnt = 0;
    p_text_poke_loc *p_tmp;
+   unsigned long p_flags;
 
    p_debug_kprobe_log(
           "p_arch_jump_label_transform_apply_entry: comm[%s] Pid:%d\n",current->comm,current->pid);
+
+   p_lkrg_counter_lock_lock(&p_jl_lock, &p_flags);
+   p_lkrg_counter_lock_val_inc(&p_jl_lock);
+   p_lkrg_counter_lock_unlock(&p_jl_lock, &p_flags);
 
    p_print_log(P_LKRG_INFO,
                "[JUMP_LABEL <batch mode>] New modifications => %d\n",p_nr);
@@ -89,7 +94,7 @@ int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, str
 }
 
 
-int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
+notrace int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
 
    struct module *p_module = NULL;
    unsigned int p_cnt;
@@ -208,6 +213,8 @@ int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct 
    }
 
    p_db.p_jump_label.p_state = P_JUMP_LABEL_NONE;
+
+   p_lkrg_counter_lock_val_dec(&p_jl_lock);
 
    return 0;
 }

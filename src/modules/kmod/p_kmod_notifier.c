@@ -57,6 +57,7 @@ static void p_module_notifier_wrapper(unsigned long p_event, struct module *p_km
 static int p_module_event_notifier(struct notifier_block *p_this, unsigned long p_event, void *p_kmod) {
 
    struct module *p_tmp = p_kmod;
+   unsigned long p_flags;
 
 // STRONG_DEBUG
 #ifdef P_LKRG_DEBUG
@@ -68,9 +69,10 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
-               "[%ld | %s] Entering function <p_module_event_notifier> m[0x%lx] hd[0x%lx] s[0x%lx] n[0x%lx]\n",
+               "[%ld | %s | %s] Entering function <p_module_event_notifier> m[0x%lx] hd[0x%lx] s[0x%lx] n[0x%lx]\n",
                p_event,
                p_mod_strings[p_event],
+               p_tmp->name,
                (unsigned long)p_tmp,
                (unsigned long)p_tmp->holders_dir,
                (unsigned long)p_tmp->sect_attrs,
@@ -108,7 +110,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
        * We must keep in track that information ;)
        */
 
-      p_text_section_lock();
+      p_text_section_lock(&p_flags);
       /*
        * First, synchronize possible database changes with other LKRG components...
        * We want to be as fast as possible to get this lock! :)
@@ -177,7 +179,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
           * and recalculate global module hashes...
           */
 
-         p_text_section_lock();
+         p_text_section_lock(&p_flags);
 
          /*
           * First, synchronize possible database changes with other LKRG components...
@@ -231,7 +233,7 @@ p_module_event_notifier_unlock_out:
    /* God mode off ;) */
 //   spin_unlock_irqrestore(&p_db_lock,p_db_flags);
    spin_unlock(&p_db_lock);
-   p_text_section_unlock();
+   p_text_section_unlock(&p_flags);
 
 p_module_event_notifier_activity_out:
 

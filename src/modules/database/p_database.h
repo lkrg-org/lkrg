@@ -170,18 +170,30 @@ int hash_from_kernel_stext(void);
 int hash_from_kernel_rodata(void);
 int hash_from_iommu_table(void);
 
-static inline void p_text_section_lock(void) {
+static inline void p_text_section_lock(unsigned long *p_arg) {
 
+   do {
+      while (!p_lkrg_counter_lock_trylock(&p_jl_lock, p_arg))
+         schedule();
+      if (p_lkrg_counter_lock_val_read(&p_jl_lock)) {
+         p_lkrg_counter_lock_unlock(&p_jl_lock, p_arg);
+         schedule();
+         continue;
+      } else {
+         break;
+      }
+   } while(1);
    mutex_lock(P_SYM(p_text_mutex));
    /* We are heavily consuming module list here - take 'module_mutex' */
    mutex_lock(&module_mutex);
 }
 
-static inline void p_text_section_unlock(void) {
+static inline void p_text_section_unlock(unsigned long *p_arg) {
 
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
    mutex_unlock(P_SYM(p_text_mutex));
+   p_lkrg_counter_lock_unlock(&p_jl_lock, p_arg);
 }
 
 int p_create_database(void);

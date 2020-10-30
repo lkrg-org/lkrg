@@ -117,6 +117,7 @@ void p_check_integrity(struct work_struct *p_work) {
    struct module *p_tmp_mod;
    unsigned int p_tmp = 0;
    int p_ret;
+   unsigned long p_flags;
 
    if (!P_CTRL(p_kint_validate) || (!p_manual && P_CTRL(p_kint_validate) == 1))
       goto p_check_integrity_tasks;
@@ -211,7 +212,7 @@ void p_check_integrity(struct work_struct *p_work) {
    p_tmp_hash = hash_from_CPU_data(p_tmp_cpus);
    put_online_cpus();
 
-   p_text_section_lock();
+   p_text_section_lock(&p_flags);
 
    /*
     * Memory allocation may fail... let's loop here!
@@ -228,7 +229,7 @@ void p_check_integrity(struct work_struct *p_work) {
       schedule();
    }
 /*
-   p_text_section_unlock();
+   p_text_section_unlock(&p_flags);
 */
 
    spin_lock_irqsave(&p_db_lock,p_db_flags);
@@ -1771,7 +1772,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
 p_check_integrity_cancel:
 
-   p_text_section_unlock();
+   p_text_section_unlock(&p_flags);
    if (p_tmp_cpus) {
       kzfree(p_tmp_cpus);
       p_tmp_cpus = NULL;

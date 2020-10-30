@@ -245,6 +245,17 @@ static inline void p_lkrg_counter_lock_init(p_lkrg_counter_lock *p_arg) {
    smp_mb();
 }
 
+static inline unsigned long p_lkrg_counter_lock_trylock(p_lkrg_counter_lock *p_arg, unsigned long *p_flags) {
+
+   local_irq_save(*p_flags);
+   preempt_disable();
+   if (!spin_trylock(&p_arg->p_lock)) {
+      local_irq_restore(*p_flags);
+      return 0;
+   }
+   return 1;
+}
+
 static inline void p_lkrg_counter_lock_lock(p_lkrg_counter_lock *p_arg, unsigned long *p_flags) {
 
    spin_lock_irqsave(&p_arg->p_lock, *p_flags);

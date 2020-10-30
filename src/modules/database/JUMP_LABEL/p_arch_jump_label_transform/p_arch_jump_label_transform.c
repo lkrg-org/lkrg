@@ -29,6 +29,7 @@
 
 
 char p_arch_jump_label_transform_kretprobe_state = 0;
+p_lkrg_counter_lock p_jl_lock;
 
 static struct kretprobe p_arch_jump_label_transform_kretprobe = {
     .kp.symbol_name = "arch_jump_label_transform",
@@ -40,14 +41,19 @@ static struct kretprobe p_arch_jump_label_transform_kretprobe = {
 };
 
 
-int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
+notrace int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
    struct jump_entry *p_tmp = (struct jump_entry *)p_regs_get_arg1(p_regs);
    unsigned long p_addr = p_jump_entry_code(p_tmp);
    struct module *p_module = NULL;
+   unsigned long p_flags;
 
    p_debug_kprobe_log(
           "p_arch_jump_label_transform_entry: comm[%s] Pid:%d\n",current->comm,current->pid);
+
+   p_lkrg_counter_lock_lock(&p_jl_lock, &p_flags);
+   p_lkrg_counter_lock_val_inc(&p_jl_lock);
+   p_lkrg_counter_lock_unlock(&p_jl_lock, &p_flags);
 
    p_print_log(P_LKRG_INFO,
                "[JUMP_LABEL] New modification: type[%s] code[0x%llx] target[0x%llx] key[0x%lx]!\n",
@@ -87,7 +93,7 @@ int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, struct pt
 }
 
 
-int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
+notrace int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
 
    unsigned int p_tmp,p_tmp2;
    unsigned char p_flag = 0;
@@ -179,6 +185,8 @@ int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_reg
 
    p_db.p_jump_label.p_state = P_JUMP_LABEL_NONE;
 
+   p_lkrg_counter_lock_val_dec(&p_jl_lock);
+
    return 0;
 }
 
@@ -186,6 +194,8 @@ int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_reg
 int p_install_arch_jump_label_transform_hook(void) {
 
    int p_tmp;
+
+   p_lkrg_counter_lock_init(&p_jl_lock);
 
    if ( (p_tmp = register_kretprobe(&p_arch_jump_label_transform_kretprobe)) != 0) {
       p_print_log(P_LKRG_ERR, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]\n",
