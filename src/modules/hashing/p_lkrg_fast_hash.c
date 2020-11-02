@@ -26,7 +26,7 @@ uint128_t p_global_siphash_key;
 inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const uint8_t *k,
                            uint8_t *out, const size_t outlen);
 
-uint64_t p_lkrg_fast_hash(const char *p_data, unsigned int p_len) {
+notrace uint64_t p_lkrg_fast_hash(const char *p_data, unsigned int p_len) {
 
    uint64_t p_tmp = 0;
 
@@ -34,8 +34,8 @@ uint64_t p_lkrg_fast_hash(const char *p_data, unsigned int p_len) {
    return p_tmp;
 }
 
-inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const uint8_t *k,
-                    uint8_t *out, const size_t outlen) {
+notrace inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const uint8_t *k,
+                                   uint8_t *out, const size_t outlen) {
 
    uint64_t v0 = 0x736f6d6570736575ULL;
    uint64_t v1 = 0x646f72616e646f6dULL;

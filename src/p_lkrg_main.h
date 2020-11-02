@@ -61,6 +61,9 @@
 #include <linux/signal.h>
 #include <linux/timex.h>
 
+#include <linux/vmalloc.h>
+#include <linux/ftrace.h>
+
 #ifndef RHEL_RELEASE_VERSION
 #define RHEL_RELEASE_VERSION(a, b) (((a) << 8) + (b))
 #endif
@@ -185,7 +188,14 @@ typedef struct _p_lkrg_global_symbols_structure {
    struct module* (*p_module_text_address)(unsigned long p_val);
 #endif
    int (*p_kallsyms_on_each_symbol)(int (*)(void *, const char *, struct module *, unsigned long), void *);
+#if defined(CONFIG_FUNCTION_TRACER)
+   struct ftrace_rec_iter *(*p_ftrace_rec_iter_start)(void);
+   struct ftrace_rec_iter *(*p_ftrace_rec_iter_next)(struct ftrace_rec_iter *iter);
+   struct dyn_ftrace *(*p_ftrace_rec_iter_record)(struct ftrace_rec_iter *iter);
+   struct mutex *p_ftrace_lock;
+#endif
    struct module *p_find_me;
+   unsigned int p_state_init;
 
 } p_lkrg_global_syms;
 

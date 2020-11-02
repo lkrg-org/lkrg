@@ -70,7 +70,7 @@ int p_register_arch_metadata(void) {
     */
    if (p_install_arch_jump_label_transform_hook()) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't hook arch_jump_label_transform function :(\n");
+             "ERROR: Can't hook 'arch_jump_label_transform' function :(\n");
       return P_LKRG_GENERAL_ERROR;
    }
 
@@ -80,7 +80,24 @@ int p_register_arch_metadata(void) {
     */
    if (p_install_arch_jump_label_transform_apply_hook()) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't hook arch_jump_label_transform_apply function :(\n");
+             "ERROR: Can't hook 'arch_jump_label_transform_apply' function :(\n");
+      return P_LKRG_GENERAL_ERROR;
+   }
+#endif
+
+#if defined(CONFIG_FUNCTION_TRACER)
+   /*
+    * Same for FTRACE
+    */
+   if (p_install_ftrace_modify_all_code_hook()) {
+      p_print_log(P_LKRG_ERR,
+             "ERROR: Can't hook 'ftrace_modify_all_code' function :(\n");
+      return P_LKRG_GENERAL_ERROR;
+   }
+
+   if (p_install_ftrace_enable_sysctl_hook()) {
+      p_print_log(P_LKRG_ERR,
+             "ERROR: Can't hook 'ftrace_enable_sysctl' function :(\n");
       return P_LKRG_GENERAL_ERROR;
    }
 #endif
@@ -101,6 +118,10 @@ int p_unregister_arch_metadata(void) {
    p_uninstall_arch_jump_label_transform_hook();
 #ifdef P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_APPLY_H
    p_uninstall_arch_jump_label_transform_apply_hook();
+#endif
+#if defined(CONFIG_FUNCTION_TRACER)
+   p_uninstall_ftrace_modify_all_code_hook();
+   p_uninstall_ftrace_enable_sysctl_hook();
 #endif
 
    return P_LKRG_SUCCESS;

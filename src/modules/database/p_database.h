@@ -86,6 +86,14 @@ typedef struct p_cpu_info {
 #include "JUMP_LABEL/p_arch_jump_label_transform/p_arch_jump_label_transform.h"
 #include "JUMP_LABEL/p_arch_jump_label_transform_apply/p_arch_jump_label_transform_apply.h"
 
+#if defined(CONFIG_FUNCTION_TRACER)
+/*
+ * FTRACE
+ */
+#include "FTRACE/p_ftrace_modify_all_code/p_ftrace_modify_all_code.h"
+#include "FTRACE/p_ftrace_enable_sysctl/p_ftrace_enable_sysctl.h"
+#endif
+
 enum p_jump_label_state {
 
    P_JUMP_LABEL_NONE,
@@ -172,6 +180,9 @@ int hash_from_iommu_table(void);
 
 static inline void p_text_section_lock(unsigned long *p_arg) {
 
+#if defined(CONFIG_FUNCTION_TRACER)
+   mutex_lock(P_SYM(p_ftrace_lock));
+#endif
    do {
       while (!p_lkrg_counter_lock_trylock(&p_jl_lock, p_arg))
          schedule();
@@ -194,6 +205,9 @@ static inline void p_text_section_unlock(unsigned long *p_arg) {
    mutex_unlock(&module_mutex);
    mutex_unlock(P_SYM(p_text_mutex));
    p_lkrg_counter_lock_unlock(&p_jl_lock, p_arg);
+#if defined(CONFIG_FUNCTION_TRACER)
+   mutex_unlock(P_SYM(p_ftrace_lock));
+#endif
 }
 
 int p_create_database(void);

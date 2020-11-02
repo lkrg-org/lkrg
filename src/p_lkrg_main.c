@@ -101,6 +101,7 @@ static void p_init_page_attr(void) {
       if (*(p_long_tmp+p_long_offset) == P_LKRG_MARKER1) {
          p_print_log(P_LKRG_INFO, "Found marker after configuration page.\n");
 #endif
+         P_SYM(p_state_init) = 1;
          p_set_memory_ro((unsigned long)p_long_tmp,1);
          p_print_log(P_LKRG_INFO, "Configuration page marked read-only.\n");
          p_attr_init++;
@@ -370,6 +371,7 @@ static int __init p_lkrg_register(void) {
    char p_freeze = 0;
 
    p_print_log(P_LKRG_CRIT, "Loading LKRG...\n");
+   P_SYM(p_state_init) = 0;
 
    /*
     * Generate random SipHash key
