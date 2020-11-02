@@ -258,7 +258,6 @@ static inline void p_lkrg_counter_lock_init(p_lkrg_counter_lock *p_arg) {
 static inline unsigned long p_lkrg_counter_lock_trylock(p_lkrg_counter_lock *p_arg, unsigned long *p_flags) {
 
    local_irq_save(*p_flags);
-   preempt_disable();
    if (!spin_trylock(&p_arg->p_lock)) {
       local_irq_restore(*p_flags);
       return 0;
