@@ -81,11 +81,12 @@ notrace int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, s
       p_db.p_jump_label.p_mod = p_module;
    } else {
       /*
-       * I should NEVER be here...
+       * FTRACE might generate dynamic trampoline which is not part of .text section.
+       * This is not abnormal situation anymore.
        */
+      p_print_log(P_LKRG_INFO,
+                  "[JUMP_LABEL] Not a .text section! [0x%lx]\n",p_addr);
       p_db.p_jump_label.p_state = P_JUMP_LABEL_WTF_STATE;
-      p_print_log(P_LKRG_ERR,
-                  "[JUMP_LABEL] <Entry> I should never be here!\n");
    }
 
    /* A dump_stack() here will give a stack backtrace */
@@ -178,8 +179,10 @@ notrace int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struc
 
       case P_JUMP_LABEL_WTF_STATE:
       default:
-         p_print_log(P_LKRG_ERR,
-                     "[JUMP_LABEL] <Exit> I should never be here!\n");
+         /*
+          * FTRACE might generate dynamic trampoline which is not part of .text section.
+          * This is not abnormal situation anymore.
+          */
          break;
    }
 

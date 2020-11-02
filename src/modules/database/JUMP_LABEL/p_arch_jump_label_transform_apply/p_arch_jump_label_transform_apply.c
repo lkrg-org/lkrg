@@ -132,8 +132,12 @@ notrace int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri,
          }
 
       } else {
-         p_print_log(P_LKRG_ERR,
-                     "[JUMP_LABEL <batch mode>] <Exit> I should never be here! [0x%lx]\n",p_jl_batch_addr[p_cnt]);
+         /*
+          * FTRACE might generate dynamic trampoline which is not part of .text section.
+          * This is not abnormal situation anymore.
+          */
+         p_print_log(P_LKRG_INFO,
+                     "[JUMP_LABEL <batch mode>] Not a .text section! [0x%lx]\n",p_jl_batch_addr[p_cnt]);
       }
    }
 

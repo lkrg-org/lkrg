@@ -99,10 +99,12 @@ notrace int p_ftrace_modify_all_code_entry(struct kretprobe_instance *p_ri, stru
          }
 
       } else {
-         p_print_log(P_LKRG_WARN,
-               "[FTRACE] <Exit> Instruction Pointer does not belong to the kernel core neither module\n");
+         /*
+          * FTRACE might generate dynamic trampoline which is not part of .text section.
+          * This is not abnormal situation anymore.
+          */
          p_print_log(P_LKRG_INFO,
-               "Address: [0x%lx]\n",p_rec->ip);
+                     "[FTRACE] Not a .text section! [0x%lx]\n",p_rec->ip);
       }
    }
 
