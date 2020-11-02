@@ -138,9 +138,8 @@ int p_cpu_callback(struct notifier_block *p_block, unsigned long p_action, void 
 int p_cpu_online_action(unsigned int p_cpu) {
 
    int tmp_online_CPUs = p_db.p_cpu.online_CPUs;
-   unsigned long p_flags;
 
-   p_text_section_lock(&p_flags);
+   p_text_section_lock();
    spin_lock(&p_db_lock);
 
    smp_call_function_single(p_cpu,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
@@ -196,7 +195,7 @@ int p_cpu_online_action(unsigned int p_cpu) {
    /* God mode off ;) */
 //   spin_unlock_irqrestore(&p_db_lock,p_db_flags);
    spin_unlock(&p_db_lock);
-   p_text_section_unlock(&p_flags);
+   p_text_section_unlock();
 
    return 0;
 }
@@ -204,9 +203,8 @@ int p_cpu_online_action(unsigned int p_cpu) {
 int p_cpu_dead_action(unsigned int p_cpu) {
 
    int tmp_online_CPUs = p_db.p_cpu.online_CPUs;
-   unsigned long p_flags;
 
-   p_text_section_lock(&p_flags);
+   p_text_section_lock();
    spin_lock(&p_db_lock);
 
    p_db.p_CPU_metadata_array[p_cpu].p_cpu_online = P_CPU_OFFLINE;
@@ -270,7 +268,7 @@ int p_cpu_dead_action(unsigned int p_cpu) {
    /* God mode off ;) */
 //   spin_unlock_irqrestore(&p_db_lock,p_db_flags);
    spin_unlock(&p_db_lock);
-   p_text_section_unlock(&p_flags);
+   p_text_section_unlock();
 
    return 0;
 }

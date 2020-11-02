@@ -168,6 +168,7 @@ typedef struct _p_lkrg_global_symbols_structure {
 #endif
    int (*p_core_kernel_text)(unsigned long p_addr);
    pmd_t *(*p_mm_find_pmd)(struct mm_struct *mm, unsigned long address);
+   struct mutex *p_jump_label_mutex;
    struct mutex *p_text_mutex;
    struct text_poke_loc **p_tp_vec;
    int *p_tp_vec_nr;

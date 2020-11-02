@@ -190,9 +190,14 @@ int p_create_database(void) {
 
    int p_tmp;
 //   int p_tmp_cpu;
-   unsigned long p_flags;
 
    memset(&p_db,0x0,sizeof(p_hash_database));
+
+   if ( (P_SYM(p_jump_label_mutex) = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("jump_label_mutex")) == NULL) {
+      p_print_log(P_LKRG_ERR,
+             "CREATING DATABASE: error! Can't find 'jump_label_mutex' variable :( Exiting...\n");
+      return P_LKRG_GENERAL_ERROR;
+   }
 
    if ( (P_SYM(p_text_mutex) = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("text_mutex")) == NULL) {
       p_print_log(P_LKRG_ERR,
@@ -307,7 +312,7 @@ int p_create_database(void) {
    }
 
 
-   p_text_section_lock(&p_flags);
+   p_text_section_lock();
 
    /*
     * Memory allocation may fail... let's loop here!
@@ -327,7 +332,7 @@ int p_create_database(void) {
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
 */
 
-   p_text_section_unlock(&p_flags);
+   p_text_section_unlock();
 
    /* Register module notification routine - must be outside p_text_section_(un)lock */
    p_register_module_notifier();
@@ -352,14 +357,14 @@ int p_create_database(void) {
 
 
 #if !defined(CONFIG_GRKERNSEC)
-   p_text_section_lock(&p_flags);
+   p_text_section_lock();
    if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
          "CREATING DATABASE ERROR: HASH FROM _STEXT!\n");
-      p_text_section_unlock(&p_flags);
+      p_text_section_unlock();
       return P_LKRG_GENERAL_ERROR;
    }
-   p_text_section_unlock(&p_flags);
+   p_text_section_unlock();
 #endif
 
    return P_LKRG_SUCCESS;
