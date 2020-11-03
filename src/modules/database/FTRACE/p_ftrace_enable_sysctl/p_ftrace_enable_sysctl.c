@@ -29,7 +29,7 @@
 
 #if defined(P_LKRG_FTRACE_ENABLE_SYSCTL_H)
 
-char p_ftrace_enable_sysctl_kretprobe_state = 0x0;
+char p_ftrace_enable_sysctl_kretprobe_state = 0;
 
 static struct kretprobe p_ftrace_enable_sysctl_kretprobe = {
     .kp.symbol_name = "ftrace_enable_sysctl",
@@ -44,17 +44,16 @@ notrace int p_ftrace_enable_sysctl_entry(struct kretprobe_instance *p_ri, struct
 
    int p_write = (int)p_regs_get_arg2(p_regs);
 
-   if (p_write) {
+   if (p_write)
       p_regs_set_arg2(p_regs, 0x0);
-   }
 
-   return 0x0;
+   return 0;
 }
 
 
 notrace int p_ftrace_enable_sysctl_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
 
-   return 0x0;
+   return 0;
 }
 
 
@@ -71,7 +70,7 @@ int p_install_ftrace_enable_sysctl_hook(void) {
    p_print_log(P_LKRG_INFO, "Planted [kretprobe] <%s> at: 0x%lx\n",
                p_ftrace_enable_sysctl_kretprobe.kp.symbol_name,
                (unsigned long)p_ftrace_enable_sysctl_kretprobe.kp.addr);
-   p_ftrace_enable_sysctl_kretprobe_state = 0x1;
+   p_ftrace_enable_sysctl_kretprobe_state = 1;
 
    return P_LKRG_SUCCESS;
 }
@@ -89,7 +88,7 @@ void p_uninstall_ftrace_enable_sysctl_hook(void) {
                   p_ftrace_enable_sysctl_kretprobe.kp.symbol_name,
                   (unsigned long)p_ftrace_enable_sysctl_kretprobe.kp.addr,
                   p_ftrace_enable_sysctl_kretprobe.nmissed);
-      p_ftrace_enable_sysctl_kretprobe_state = 0x0;
+      p_ftrace_enable_sysctl_kretprobe_state = 0;
    }
 }
 

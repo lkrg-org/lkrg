@@ -367,11 +367,11 @@ static int p_sysctl_kint_validate(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_kint_validate),
                      p_str[P_CTRL(p_kint_validate)]
                      );
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
          /* Random events */
-         if (p_tmp < 0x3 && P_CTRL(p_kint_validate) == 0x3) {
+         if (p_tmp < 3 && P_CTRL(p_kint_validate) == 3) {
             p_register_notifiers();
-         } else if (p_tmp == 0x3 && P_CTRL(p_kint_validate) < 0x3) {
+         } else if (p_tmp == 3 && P_CTRL(p_kint_validate) < 3) {
             p_deregister_notifiers();
          }
       }
@@ -407,7 +407,7 @@ static int p_sysctl_kint_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_kint_enforce),
                      p_str[P_CTRL(p_kint_enforce)]
                      );
-         P_CTRL(p_profile_enforce) = 0x9;
+         P_CTRL(p_profile_enforce) = 9;
 #if defined(CONFIG_X86)
          if (P_CTRL(p_kint_enforce)) {
             P_ENABLE_WP_FLAG(p_pcfi_CPU_flags);
@@ -443,7 +443,7 @@ static int p_sysctl_pint_validate(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_pint_validate),
                      p_str[P_CTRL(p_pint_validate)]
                      );
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
       }
    }
    p_lkrg_close_rw();
@@ -473,7 +473,7 @@ static int p_sysctl_pint_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_pint_enforce),
                      p_str[P_CTRL(p_pint_enforce)]
                      );
-         P_CTRL(p_profile_enforce) = 0x9;
+         P_CTRL(p_profile_enforce) = 9;
       }
    }
    p_lkrg_close_rw();
@@ -630,11 +630,11 @@ static int p_sysctl_smep_validate(struct ctl_table *p_table, int p_write,
             P_CTRL(p_smep_validate) = 0;
             P_CTRL(p_smep_enforce) = 0;
          }
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
       } else if (p_tmp && !P_CTRL(p_smep_validate)) {
          p_print_log(P_LKRG_CRIT,
                      "Disabling SMEP validation feature.\n");
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
       }
 
    }
@@ -665,7 +665,7 @@ static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_smep_enforce),
                      p_str[P_CTRL(p_smep_enforce)]
                      );
-         P_CTRL(p_profile_enforce) = 0x9;
+         P_CTRL(p_profile_enforce) = 9;
          if (boot_cpu_has(X86_FEATURE_SMEP)) {
             P_ENABLE_SMEP_FLAG(p_pcfi_CPU_flags);
          } else {
@@ -701,11 +701,11 @@ static int p_sysctl_smap_validate(struct ctl_table *p_table, int p_write,
             P_CTRL(p_smap_validate) = 0;
             P_CTRL(p_smap_enforce) = 0;
          }
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
       } else if (p_tmp && !P_CTRL(p_smap_validate)) {
          p_print_log(P_LKRG_CRIT,
                      "Disabling SMAP validation feature.\n");
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
       }
 
    }
@@ -736,7 +736,7 @@ static int p_sysctl_smap_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_smap_enforce),
                      p_str[P_CTRL(p_smap_enforce)]
                      );
-         P_CTRL(p_profile_enforce) = 0x9;
+         P_CTRL(p_profile_enforce) = 9;
          if (boot_cpu_has(X86_FEATURE_SMAP)) {
             P_ENABLE_SMAP_FLAG(p_pcfi_CPU_flags);
          } else {
@@ -775,7 +775,7 @@ static int p_sysctl_umh_validate(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_umh_validate),
                      p_str[P_CTRL(p_umh_validate)]
                      );
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
       }
    }
    p_lkrg_close_rw();
@@ -805,7 +805,7 @@ static int p_sysctl_umh_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_umh_enforce),
                      p_str[P_CTRL(p_umh_enforce)]
                      );
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
       }
    }
    p_lkrg_close_rw();
@@ -825,7 +825,7 @@ static int p_sysctl_msr_validate(struct ctl_table *p_table, int p_write,
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
       if (P_CTRL(p_msr_validate) && !p_tmp) {
          spin_lock(&p_db_lock);
-         memset(p_db.p_CPU_metadata_array,0x0,sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids);
+         memset(p_db.p_CPU_metadata_array,0,sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids);
          for_each_present_cpu(p_cpu) {
             if (cpu_online(p_cpu)) {
                   smp_call_function_single(p_cpu,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
@@ -835,14 +835,14 @@ static int p_sysctl_msr_validate(struct ctl_table *p_table, int p_write,
          spin_unlock(&p_db_lock);
          p_print_log(P_LKRG_CRIT,
                      "Enabling MSRs verification during kernel integrity validation (kINT).\n");
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
       } else if (p_tmp && !P_CTRL(p_msr_validate)) {
          spin_lock(&p_db_lock);
          p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
          spin_unlock(&p_db_lock);
          p_print_log(P_LKRG_CRIT,
                      "Disabling MSRs verification during kernel integrity validation (kINT).\n");
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
       }
    }
    p_lkrg_close_rw();
@@ -872,7 +872,7 @@ static int p_sysctl_pcfi_validate(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_pcfi_validate),
                      p_str[P_CTRL(p_pcfi_validate)]
                      );
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
       }
    }
    p_lkrg_close_rw();
@@ -902,7 +902,7 @@ static int p_sysctl_pcfi_enforce(struct ctl_table *p_table, int p_write,
                      P_CTRL(p_pcfi_enforce),
                      p_str[P_CTRL(p_pcfi_enforce)]
                      );
-         P_CTRL(p_profile_enforce) = 0x9;
+         P_CTRL(p_profile_enforce) = 9;
       }
    }
    p_lkrg_close_rw();
@@ -937,7 +937,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
 
                case 0:
                   /* kint_validate */
-                  if (P_CTRL(p_kint_validate) == 0x3)
+                  if (P_CTRL(p_kint_validate) == 3)
                      p_deregister_notifiers();
                   P_CTRL(p_kint_validate) = 0;  // Disabled
                   /* pint_validate */
@@ -963,7 +963,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
 
                case 1:
                   /* kint_validate */
-                  if (P_CTRL(p_kint_validate) == 0x3)
+                  if (P_CTRL(p_kint_validate) == 3)
                      p_deregister_notifiers();
                   P_CTRL(p_kint_validate) = 1;  // Manual trigger only
                   /* pint_validate */
@@ -1005,7 +1005,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
 
                case 2:
                   /* kint_validate */
-                  if (P_CTRL(p_kint_validate) == 0x3)
+                  if (P_CTRL(p_kint_validate) == 3)
                      p_deregister_notifiers();
                   P_CTRL(p_kint_validate) = 2;  // Timer
                   /* pint_validate */
@@ -1047,7 +1047,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
 
                case 3:
                   /* kint_validate */
-                  if (P_CTRL(p_kint_validate) < 0x3)
+                  if (P_CTRL(p_kint_validate) < 3)
                      p_register_notifiers();
                   P_CTRL(p_kint_validate) = 3;  // Timer + random events
                   /* pint_validate */
@@ -1089,7 +1089,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
 
                case 4:
                   /* kint_validate */
-                  if (P_CTRL(p_kint_validate) < 0x3)
+                  if (P_CTRL(p_kint_validate) < 3)
                      p_register_notifiers();
                   P_CTRL(p_kint_validate) = 3;  // Timer + random events
                   /* pint_validate */
@@ -1102,7 +1102,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
                   if (!P_CTRL(p_msr_validate)) {
                      spin_lock(&p_db_lock);
                      P_CTRL(p_msr_validate) = 1; // Enable
-                     memset(p_db.p_CPU_metadata_array,0x0,sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids);
+                     memset(p_db.p_CPU_metadata_array,0,sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids);
                      for_each_present_cpu(p_cpu) {
                         if (cpu_online(p_cpu)) {
                               smp_call_function_single(p_cpu,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);

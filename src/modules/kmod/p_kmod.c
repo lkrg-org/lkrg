@@ -299,8 +299,8 @@ static int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
       /* Save entire 'kobject' for this module */
       memcpy(&p_arg[p_cnt].kobj,p_kobj,sizeof(struct kobject));
       /* Exception */
-      memset(&p_arg[p_cnt].kobj.entry,0x0,sizeof(struct list_head)); // module GOING_AWAY trobules ;(
-      memset(&p_arg[p_cnt].kobj.kref,0x0,sizeof(struct kref)); // module GOING_AWAY trobules ;(
+      memset(&p_arg[p_cnt].kobj.entry,0,sizeof(struct list_head)); // module GOING_AWAY trobules ;(
+      memset(&p_arg[p_cnt].kobj.kref,0,sizeof(struct kref)); // module GOING_AWAY trobules ;(
 
 
       /* Pointer to THIS_MODULE per module */
@@ -541,7 +541,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
       } else {
 //         printk(KERN_CRIT "p_module_list_cnt_arg_old[%d] *p_module_list_cnt_arg[%d] *p_mlm_tmp[0x%lx]\n",
 //                          p_module_list_cnt_arg_old, *p_module_list_cnt_arg, (unsigned long)*p_mlm_tmp);
-         memset(*p_mlm_tmp,0x0,sizeof(p_module_list_mem) * *p_module_list_cnt_arg);
+         memset(*p_mlm_tmp,0,sizeof(p_module_list_mem) * *p_module_list_cnt_arg);
       }
 
       if (p_module_kobj_cnt_arg_old < *p_module_kobj_cnt_arg) {
@@ -582,7 +582,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
          }
 
       } else {
-         memset(*p_mkm_tmp,0x0,sizeof(p_module_kobj_mem) * *p_module_kobj_cnt_arg);
+         memset(*p_mkm_tmp,0,sizeof(p_module_kobj_mem) * *p_module_kobj_cnt_arg);
       }
    } else {
 
