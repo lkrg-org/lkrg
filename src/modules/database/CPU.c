@@ -50,7 +50,7 @@
 
 void p_get_cpus(p_cpu_info *p_arg) {
 
-   memset(p_arg,0x0,sizeof(p_cpu_info));
+   memset(p_arg,0,sizeof(p_cpu_info));
 
    p_arg->online_CPUs = num_online_cpus();
    p_arg->possible_CPUs = num_possible_cpus();

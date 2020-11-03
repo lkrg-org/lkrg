@@ -90,7 +90,7 @@ void p_dump_x86_metadata(void *_p_arg) {
     * To avoid multpile access to the same page from all CPUs
     * memory will be already zero'd
     */
-//   memset(&p_arg[p_curr_cpu],0x0,sizeof(p_CPU_metadata_hash_mem));
+//   memset(&p_arg[p_curr_cpu],0,sizeof(p_CPU_metadata_hash_mem));
 
    /*
     * First fill information about current CPU

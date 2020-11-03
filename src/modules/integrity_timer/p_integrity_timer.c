@@ -36,13 +36,13 @@ static void p_offload_cache_zero(void *p_arg) {
 
    struct work_struct *p_struct = p_arg;
 
-   memset(p_struct, 0x0, sizeof(struct work_struct));
+   memset(p_struct, 0, sizeof(struct work_struct));
 }
 
 int p_offload_cache_init(void) {
 
    if ( (p_offload_cache = kmem_cache_create("p_offload_cache", sizeof(struct work_struct),
-                                             0x0, SLAB_HWCACHE_ALIGN, p_offload_cache_zero)) == NULL) {
+                                             0, SLAB_HWCACHE_ALIGN, p_offload_cache_zero)) == NULL) {
       p_print_log(P_LKRG_ERR, "kmem_cache_create() for offloading error! :(\n");
       return -ENOMEM;
    }
@@ -407,8 +407,8 @@ void p_check_integrity(struct work_struct *p_work) {
 
          p_tmp_diff = p_module_kobj_nr_tmp - p_module_list_nr_tmp;
 
-         for (p_tmp_flag = 0x0, p_tmp_hash = 0; p_tmp_hash < p_module_kobj_nr_tmp;
-                                                               p_tmp_flag = 0x0, p_tmp_hash++) {
+         for (p_tmp_flag = 0, p_tmp_hash = 0; p_tmp_hash < p_module_kobj_nr_tmp;
+                                                               p_tmp_flag = 0, p_tmp_hash++) {
             for (p_tmp_cnt = 0; p_tmp_cnt < p_module_list_nr_tmp; p_tmp_cnt++) {
                /* Is module on both lists? */
                if (p_module_kobj_tmp[p_tmp_hash].p_mod == p_module_list_tmp[p_tmp_cnt].p_mod) {
@@ -613,8 +613,8 @@ void p_check_integrity(struct work_struct *p_work) {
 
          p_tmp_diff = p_module_list_nr_tmp - p_module_kobj_nr_tmp;
 
-         for (p_tmp_flag = 0x0, p_tmp_hash = 0; p_tmp_hash < p_module_list_nr_tmp;
-                                                               p_tmp_flag = 0x0, p_tmp_hash++) {
+         for (p_tmp_flag = 0, p_tmp_hash = 0; p_tmp_hash < p_module_list_nr_tmp;
+                                                               p_tmp_flag = 0, p_tmp_hash++) {
             for (p_tmp_cnt = 0; p_tmp_cnt < p_module_kobj_nr_tmp; p_tmp_cnt++) {
                /* Is module on both lists? */
                if (p_module_list_tmp[p_tmp_hash].p_mod == p_module_kobj_tmp[p_tmp_cnt].p_mod) {
@@ -847,8 +847,8 @@ void p_check_integrity(struct work_struct *p_work) {
 
          p_tmp_diff = p_db.p_module_list_nr - p_module_list_nr_tmp;
 
-         for (p_tmp_flag = 0x0, p_tmp_hash = 0; p_tmp_hash < p_db.p_module_list_nr;
-                                                               p_tmp_flag = 0x0, p_tmp_hash++) {
+         for (p_tmp_flag = 0, p_tmp_hash = 0; p_tmp_hash < p_db.p_module_list_nr;
+                                                               p_tmp_flag = 0, p_tmp_hash++) {
             for (p_tmp_cnt = 0; p_tmp_cnt < p_module_list_nr_tmp; p_tmp_cnt++) {
                /* Is module on both lists? */
                if (p_db.p_module_list_array[p_tmp_hash].p_mod == p_module_list_tmp[p_tmp_cnt].p_mod) {
@@ -1035,8 +1035,8 @@ void p_check_integrity(struct work_struct *p_work) {
 
          p_tmp_diff = p_module_list_nr_tmp - p_db.p_module_list_nr;
 
-         for (p_tmp_flag = 0x0, p_tmp_hash = 0; p_tmp_hash < p_module_list_nr_tmp;
-                                                               p_tmp_flag = 0x0, p_tmp_hash++) {
+         for (p_tmp_flag = 0, p_tmp_hash = 0; p_tmp_hash < p_module_list_nr_tmp;
+                                                               p_tmp_flag = 0, p_tmp_hash++) {
             for (p_tmp_cnt = 0; p_tmp_cnt < p_db.p_module_list_nr; p_tmp_cnt++) {
                /* Is module on both lists? */
                if (p_module_list_tmp[p_tmp_hash].p_mod == p_db.p_module_list_array[p_tmp_cnt].p_mod) {
@@ -1265,8 +1265,8 @@ void p_check_integrity(struct work_struct *p_work) {
 
          p_tmp_diff = p_db.p_module_kobj_nr - p_module_kobj_nr_tmp;
 
-         for (p_tmp_flag = 0x0, p_tmp_hash = 0; p_tmp_hash < p_db.p_module_kobj_nr;
-                                                               p_tmp_flag = 0x0, p_tmp_hash++) {
+         for (p_tmp_flag = 0, p_tmp_hash = 0; p_tmp_hash < p_db.p_module_kobj_nr;
+                                                               p_tmp_flag = 0, p_tmp_hash++) {
             for (p_tmp_cnt = 0; p_tmp_cnt < p_module_kobj_nr_tmp; p_tmp_cnt++) {
                /* Is module on both lists? */
                if (p_db.p_module_kobj_array[p_tmp_hash].p_mod == p_module_kobj_tmp[p_tmp_cnt].p_mod) {
@@ -1451,8 +1451,8 @@ void p_check_integrity(struct work_struct *p_work) {
 
          p_tmp_diff = p_module_kobj_nr_tmp - p_db.p_module_kobj_nr;
 
-         for (p_tmp_flag = 0x0, p_tmp_hash = 0; p_tmp_hash < p_module_kobj_nr_tmp;
-                                                               p_tmp_flag = 0x0, p_tmp_hash++) {
+         for (p_tmp_flag = 0, p_tmp_hash = 0; p_tmp_hash < p_module_kobj_nr_tmp;
+                                                               p_tmp_flag = 0, p_tmp_hash++) {
             for (p_tmp_cnt = 0; p_tmp_cnt < p_db.p_module_kobj_nr; p_tmp_cnt++) {
                /* Is module on both lists? */
                if (p_module_kobj_tmp[p_tmp_hash].p_mod == p_db.p_module_kobj_array[p_tmp_cnt].p_mod) {
@@ -1748,7 +1748,7 @@ void p_check_integrity(struct work_struct *p_work) {
    if (p_hack_check) {
       p_print_log(P_LKRG_CRIT,
              "ALERT !!! SYSTEM HAS BEEN COMPROMISED - DETECTED DIFFERENT %u CHECKSUMS !!!\n",p_hack_check);
-      if (P_CTRL(p_kint_enforce == 0x2)) {
+      if (P_CTRL(p_kint_enforce == 2)) {
          // OK, we need to crash the kernel now
          panic(P_LKRG_SIGNATURE "Kernel Integrity verification failed! Killing the kernel...\n");
       }

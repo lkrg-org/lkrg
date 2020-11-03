@@ -219,82 +219,82 @@ void p_parse_module_params(void) {
    /* kint_validate */
    if (kint_validate > 3) {
       P_CTRL(p_kint_validate) = 3;
-      P_CTRL(p_profile_validate) = 0x9;
+      P_CTRL(p_profile_validate) = 9;
    } else if (P_CTRL(p_kint_validate) != kint_validate) {
       P_CTRL(p_kint_validate) = kint_validate;
-      P_CTRL(p_profile_validate) = 0x9;
+      P_CTRL(p_profile_validate) = 9;
    }
 
    /* kint_enforce */
    if (kint_enforce > 2) {
       P_CTRL(p_kint_enforce) = 2;
-      P_CTRL(p_profile_enforce) = 0x9;
+      P_CTRL(p_profile_enforce) = 9;
    } else if (P_CTRL(p_kint_enforce) != kint_enforce) {
       P_CTRL(p_kint_enforce) = kint_enforce;
-      P_CTRL(p_profile_enforce) = 0x9;
+      P_CTRL(p_profile_enforce) = 9;
    }
 
    /* msr_validate */
    if (msr_validate > 1) {
       P_CTRL(p_msr_validate) = 1;
-      P_CTRL(p_profile_validate) = 0x9;
+      P_CTRL(p_profile_validate) = 9;
    } else if (P_CTRL(p_msr_validate) != msr_validate) {
       P_CTRL(p_msr_validate) = msr_validate;
-      P_CTRL(p_profile_validate) = 0x9;
+      P_CTRL(p_profile_validate) = 9;
    }
 
    /* pint_validate */
    if (pint_validate > 3) {
       P_CTRL(p_pint_validate) = 3;
-      P_CTRL(p_profile_validate) = 0x9;
+      P_CTRL(p_profile_validate) = 9;
    } else if (P_CTRL(p_pint_validate) != pint_validate) {
       P_CTRL(p_pint_validate) = pint_validate;
-      P_CTRL(p_profile_validate) = 0x9;
+      P_CTRL(p_profile_validate) = 9;
    }
 
    /* pint_enforce */
    if (pint_enforce > 2) {
       P_CTRL(p_pint_enforce) = 2;
-      P_CTRL(p_profile_enforce) = 0x9;
+      P_CTRL(p_profile_enforce) = 9;
    } else if (P_CTRL(p_pint_enforce) != pint_enforce) {
       P_CTRL(p_pint_enforce) = pint_enforce;
-      P_CTRL(p_profile_enforce) = 0x9;
+      P_CTRL(p_profile_enforce) = 9;
    }
 
    /* umh_validate */
    if (umh_validate > 2) {
       P_CTRL(p_umh_validate) = 2;
-      P_CTRL(p_profile_validate) = 0x9;
+      P_CTRL(p_profile_validate) = 9;
    } else if (P_CTRL(p_umh_validate) != umh_validate) {
       P_CTRL(p_umh_validate) = umh_validate;
-      P_CTRL(p_profile_validate) = 0x9;
+      P_CTRL(p_profile_validate) = 9;
    }
 
    /* umh_enforce */
    if (umh_enforce > 2) {
       P_CTRL(p_umh_enforce) = 2;
-      P_CTRL(p_profile_enforce) = 0x9;
+      P_CTRL(p_profile_enforce) = 9;
    } else if (P_CTRL(p_umh_enforce) != umh_enforce) {
       P_CTRL(p_umh_enforce) = umh_enforce;
-      P_CTRL(p_profile_enforce) = 0x9;
+      P_CTRL(p_profile_enforce) = 9;
    }
 
    /* pcfi_validate */
    if (pcfi_validate > 2) {
       P_CTRL(p_pcfi_validate) = 2;
-      P_CTRL(p_profile_validate) = 0x9;
+      P_CTRL(p_profile_validate) = 9;
    } else if (P_CTRL(p_pcfi_validate) != pcfi_validate) {
       P_CTRL(p_pcfi_validate) = pcfi_validate;
-      P_CTRL(p_profile_validate) = 0x9;
+      P_CTRL(p_profile_validate) = 9;
    }
 
    /* pcfi_enforce */
    if (pcfi_enforce > 2) {
       P_CTRL(p_pcfi_enforce) = 2;
-      P_CTRL(p_profile_enforce) = 0x9;
+      P_CTRL(p_profile_enforce) = 9;
    } else if (P_CTRL(p_pcfi_enforce) != pcfi_enforce) {
       P_CTRL(p_pcfi_enforce) = pcfi_enforce;
-      P_CTRL(p_profile_enforce) = 0x9;
+      P_CTRL(p_profile_enforce) = 9;
    }
 
    p_pcfi_CPU_flags = 0;
@@ -307,19 +307,19 @@ void p_parse_module_params(void) {
       /* smep_validate */
       if (smep_validate > 1) {
          P_CTRL(p_smep_validate) = 1;
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
       } else if (P_CTRL(p_smep_validate) != smep_validate) {
          P_CTRL(p_smep_validate) = smep_validate;
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
       }
 
       /* smep_enforce */
       if (smep_enforce > 2) {
          P_CTRL(p_smep_enforce) = 2;
-         P_CTRL(p_profile_enforce) = 0x9;
+         P_CTRL(p_profile_enforce) = 9;
       } else if (P_CTRL(p_smep_enforce) != smep_enforce) {
          P_CTRL(p_smep_enforce) = smep_enforce;
-         P_CTRL(p_profile_enforce) = 0x9;
+         P_CTRL(p_profile_enforce) = 9;
       }
    } else {
       P_CTRL(p_smep_validate) = 0;
@@ -334,19 +334,19 @@ void p_parse_module_params(void) {
       /* smap_validate */
       if (smap_validate > 1) {
          P_CTRL(p_smap_validate) = 1;
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
       } else if (P_CTRL(p_smap_validate) != smap_validate) {
          P_CTRL(p_smap_validate) = smap_validate;
-         P_CTRL(p_profile_validate) = 0x9;
+         P_CTRL(p_profile_validate) = 9;
       }
 
       /* smap_enforce */
       if (smap_enforce > 2) {
          P_CTRL(p_smap_enforce) = 2;
-         P_CTRL(p_profile_enforce) = 0x9;
+         P_CTRL(p_profile_enforce) = 9;
       } else if (P_CTRL(p_smap_enforce) != smap_enforce) {
          P_CTRL(p_smap_enforce) = smap_enforce;
-         P_CTRL(p_profile_enforce) = 0x9;
+         P_CTRL(p_profile_enforce) = 9;
       }
    } else {
       P_CTRL(p_smap_validate) = 0;

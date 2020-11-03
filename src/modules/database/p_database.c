@@ -191,7 +191,7 @@ int p_create_database(void) {
    int p_tmp;
 //   int p_tmp_cpu;
 
-   memset(&p_db,0x0,sizeof(p_hash_database));
+   memset(&p_db,0,sizeof(p_hash_database));
 
    if ( (P_SYM(p_jump_label_mutex) = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("jump_label_mutex")) == NULL) {
       p_print_log(P_LKRG_ERR,
