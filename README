@@ -43,7 +43,7 @@ which will most likely work in a similar manner.
 Latest LKRG development source code is hosted on Bitbucket, from where you can
 clone the git repository to a local directory using the following command:
 
-	git clone https://bitbucket.org/Adam_pi3/lkrg-main.git
+	git clone https://github.com/openwall/lkrg.git
 
 
 Build requirements
