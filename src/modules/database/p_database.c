@@ -67,8 +67,7 @@ int hash_from_kernel_stext(void) {
           */
          p_print_log(P_LKRG_CRIT,
                 "CREATING DATABASE: kzalloc() error! Can't allocate memory - copy stext ;[\n");
-         p_ret = P_LKRG_GENERAL_ERROR;
-         goto hash_from_kernel_stext_out;
+         return P_LKRG_GENERAL_ERROR;
       }
    }
    memcpy(p_db.kernel_stext_copy,p_db.kernel_stext.p_addr,p_db.kernel_stext.p_size);
