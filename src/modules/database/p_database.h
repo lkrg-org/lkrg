@@ -183,18 +183,18 @@ static inline void p_text_section_lock(void) {
 #if defined(CONFIG_FUNCTION_TRACER)
    mutex_lock(P_SYM(p_ftrace_lock));
 #endif
+   /* We are heavily consuming module list here - take 'module_mutex' */
+   mutex_lock(&module_mutex);
    while (mutex_is_locked(P_SYM(p_jump_label_mutex)))
       schedule();
    mutex_lock(P_SYM(p_text_mutex));
-   /* We are heavily consuming module list here - take 'module_mutex' */
-   mutex_lock(&module_mutex);
 }
 
 static inline void p_text_section_unlock(void) {
 
+   mutex_unlock(P_SYM(p_text_mutex));
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
-   mutex_unlock(P_SYM(p_text_mutex));
 #if defined(CONFIG_FUNCTION_TRACER)
    mutex_unlock(P_SYM(p_ftrace_lock));
 #endif
