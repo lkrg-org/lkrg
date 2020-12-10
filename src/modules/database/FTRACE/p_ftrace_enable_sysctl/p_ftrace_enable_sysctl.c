@@ -42,10 +42,7 @@ static struct kretprobe p_ftrace_enable_sysctl_kretprobe = {
 
 notrace int p_ftrace_enable_sysctl_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
-   int p_write = (int)p_regs_get_arg2(p_regs);
-
-   if (p_write)
-      p_regs_set_arg2(p_regs, 0x0);
+   p_regs_set_arg2(p_regs, 0x0);
 
    return 0;
 }
