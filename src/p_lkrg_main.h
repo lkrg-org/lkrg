@@ -76,6 +76,12 @@
 #include <linux/cryptohash.h>
 #endif
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)
+#define p_kzfree kzfree
+#else
+#define p_kzfree kfree_sensitive
+#endif
+
 #include <linux/stacktrace.h>
 #include <asm/stacktrace.h>
 #include <asm/tlbflush.h>

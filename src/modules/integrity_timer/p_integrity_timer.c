@@ -1757,11 +1757,11 @@ void p_check_integrity(struct work_struct *p_work) {
    }
 
    if (p_module_list_tmp) {
-      kzfree(p_module_list_tmp);
+      p_kzfree(p_module_list_tmp);
       p_module_list_tmp = NULL;
    }
    if (p_module_kobj_tmp) {
-      kzfree(p_module_kobj_tmp);
+      p_kzfree(p_module_kobj_tmp);
       p_module_kobj_tmp = NULL;
    }
 
@@ -1773,7 +1773,7 @@ p_check_integrity_cancel:
 
    p_text_section_unlock();
    if (p_tmp_cpus) {
-      kzfree(p_tmp_cpus);
+      p_kzfree(p_tmp_cpus);
       p_tmp_cpus = NULL;
    }
 
