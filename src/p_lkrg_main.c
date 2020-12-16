@@ -600,7 +600,7 @@ p_main_error:
       p_offload_cache_delete();
       p_deregister_module_notifier();
       if (p_db.p_CPU_metadata_array) {
-         kzfree(p_db.p_CPU_metadata_array);
+         p_kzfree(p_db.p_CPU_metadata_array);
          p_db.p_CPU_metadata_array = NULL;
       }
       p_uninit_page_attr();
@@ -664,7 +664,7 @@ static void __exit p_lkrg_deregister(void) {
 
 
    if (p_db.p_CPU_metadata_array)
-      kzfree(p_db.p_CPU_metadata_array);
+      p_kzfree(p_db.p_CPU_metadata_array);
 
 #if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
    if (p_db.kernel_stext_copy)

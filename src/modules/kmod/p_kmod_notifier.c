@@ -266,11 +266,11 @@ void p_deregister_module_notifier(void) {
    unregister_module_notifier(&p_module_block_notifier);
 
    if (p_db.p_module_list_array) {
-      kzfree(p_db.p_module_list_array);
+      p_kzfree(p_db.p_module_list_array);
       p_db.p_module_list_array = NULL;
    }
    if (p_db.p_module_kobj_array) {
-      kzfree(p_db.p_module_kobj_array);
+      p_kzfree(p_db.p_module_kobj_array);
       p_db.p_module_kobj_array = NULL;
    }
    if (p_db.p_jump_label.p_mod_mask) {
