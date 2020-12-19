@@ -678,7 +678,7 @@ static void __exit p_lkrg_deregister(void) {
 }
 
 
-module_init(p_lkrg_register);
+late_initcall_sync(p_lkrg_register);
 module_exit(p_lkrg_deregister);
 
 module_param(log_level, uint, 0000);
