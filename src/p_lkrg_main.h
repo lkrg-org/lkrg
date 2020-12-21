@@ -319,13 +319,10 @@ static inline int p_lkrg_counter_lock_val_read(p_lkrg_counter_lock *p_arg) {
 #include "modules/kmod/p_kmod.h"                              // Kernel's modules module
 #include "modules/notifiers/p_notifiers.h"                    // Notifiers module
 #include "modules/self-defense/hiding/p_hiding.h"             // Hiding module
+#include "modules/exploit_detection/p_exploit_detection.h"    // Exploit Detection
 #include "modules/wrap/p_struct_wrap.h"                       // Wrapping module
 #include "modules/comm_channel/p_comm_channel.h"              // Communication channel (sysctl) module
 
-/*
- * Exploit Detection
- */
-#include "modules/exploit_detection/p_exploit_detection.h"
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 13, 0)
  #define __GFP_REPEAT   ((__force gfp_t)___GFP_RETRY_MAYFAIL)
