@@ -108,6 +108,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
        * Because some module is going to be unloaded from the kernel
        * We must keep in track that information ;)
        */
+      p_verify_module_going(p_tmp);
 
       p_text_section_lock();
       /*
@@ -177,9 +178,9 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
           * every new module must be add to the internal database, hash from .text section calculated
           * and recalculate global module hashes...
           */
+         p_verify_module_live(p_tmp);
 
          p_text_section_lock();
-
          /*
           * First, synchronize possible database changes with other LKRG components...
           * We want to be as fast as possible to get this lock! :)
@@ -249,6 +250,95 @@ int p_block_always(void) {
 
    return P_LKRG_GENERAL_ERROR;
 
+}
+
+#define P_KMOD_OVERLAY_STRLEN 7
+
+void p_verify_module_live(struct module *p_mod) {
+
+   unsigned int p_len = strlen(p_mod->name);
+   int p_flag = 0;
+   unsigned int p_tmp_val;
+
+   if (p_ovl_create_or_link_kretprobe_state) {
+      /* We do not need to do anything for now */
+      return;
+   }
+
+   if (p_len == P_KMOD_OVERLAY_STRLEN) {
+      if (!strncmp(p_mod->name,"overlay",P_KMOD_OVERLAY_STRLEN)) {
+         p_flag = 1;
+      }
+   } else if (p_len == P_KMOD_OVERLAY_STRLEN+1) {
+      if (!strncmp(p_mod->name,"overlay2",P_KMOD_OVERLAY_STRLEN+1)) {
+         p_flag = 1;
+      }
+   }
+
+   if (p_flag) {
+      /*
+       * OK, we must try to hook 'ovl_create_or_link' function.
+       * Otherwise LKRG will be incompatible with docker.
+       *
+       * First, we would need to synchronize with LKRG integrity feature.
+       */
+      p_tmp_val = P_CTRL(p_kint_validate);
+      p_lkrg_open_rw();
+      P_CTRL(p_kint_validate) = 0;
+      p_lkrg_close_rw();
+      /* Try to install the hook */
+      if (p_install_ovl_create_or_link_hook(1)) {
+         p_print_log(P_LKRG_ERR,
+                "OverlayFS is being loaded but LKRG can't hook 'ovl_create_or_link' function. "
+                "It is very likely that LKRG will produce False Positives :(\n");
+         p_print_log(P_LKRG_ERR,"It is recomended to reload LKRG module!\n");
+      }
+      /* Done */
+      p_lkrg_open_rw();
+      P_CTRL(p_kint_validate) = p_tmp_val;
+      p_lkrg_close_rw();
+   }
+}
+
+void p_verify_module_going(struct module *p_kmod) {
+
+   unsigned int p_len = strlen(p_kmod->name);
+   int p_flag = 0;
+   unsigned int p_tmp_val;
+
+   if (!p_ovl_create_or_link_kretprobe_state) {
+      /* We do not need to do anything for now */
+      return;
+   }
+
+   if (p_len == P_KMOD_OVERLAY_STRLEN) {
+      if (!strncmp(p_kmod->name,"overlay",P_KMOD_OVERLAY_STRLEN)) {
+         p_flag = 1;
+      }
+   } else if (p_len == P_KMOD_OVERLAY_STRLEN+1) {
+      if (!strncmp(p_kmod->name,"overlay2",P_KMOD_OVERLAY_STRLEN+1)) {
+         p_flag = 1;
+      }
+   }
+
+   if (p_flag) {
+      /*
+       * OK, we must try to remove our hook @ 'ovl_create_or_link' function.
+       *
+       * First, we would need to synchronize with LKRG integrity feature.
+       */
+      p_tmp_val = P_CTRL(p_kint_validate);
+      p_lkrg_open_rw();
+      P_CTRL(p_kint_validate) = 0;
+      p_lkrg_close_rw();
+      /* Try to uninstall the hook */
+      p_uninstall_ovl_create_or_link_hook();
+      p_reinit_ovl_create_or_link_kretprobe();
+      /* Done */
+      p_lkrg_open_rw();
+      P_CTRL(p_kint_validate) = p_tmp_val;
+      p_lkrg_close_rw();
+   }
 }
 
 void p_register_module_notifier(void) {
