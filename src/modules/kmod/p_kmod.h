@@ -59,8 +59,8 @@ extern struct mutex p_module_activity;
 extern struct module *p_module_activity_ptr;
 
 int p_block_always(void);
-void p_verify_module_live(struct module *p_kmod);
-void p_verify_module_going(struct module *p_kmod);
+void p_verify_module_live(struct module *p_mod);
+void p_verify_module_going(struct module *p_mod);
 
 int p_kmod_init(void);
 int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_tmp,

@@ -252,30 +252,16 @@ int p_block_always(void) {
 
 }
 
-#define P_KMOD_OVERLAY_STRLEN 7
-
 void p_verify_module_live(struct module *p_mod) {
-
-   unsigned int p_len = strlen(p_mod->name);
-   int p_flag = 0;
-   unsigned int p_tmp_val;
 
    if (p_ovl_create_or_link_kretprobe_state) {
       /* We do not need to do anything for now */
       return;
    }
 
-   if (p_len == P_KMOD_OVERLAY_STRLEN) {
-      if (!strncmp(p_mod->name,"overlay",P_KMOD_OVERLAY_STRLEN)) {
-         p_flag = 1;
-      }
-   } else if (p_len == P_KMOD_OVERLAY_STRLEN+1) {
-      if (!strncmp(p_mod->name,"overlay2",P_KMOD_OVERLAY_STRLEN+1)) {
-         p_flag = 1;
-      }
-   }
+   if (!strcmp(p_mod->name,"overlay") || !strcmp(p_mod->name,"overlay2")) {
+      unsigned int p_tmp_val;
 
-   if (p_flag) {
       /*
        * OK, we must try to hook 'ovl_create_or_link' function.
        * Otherwise LKRG will be incompatible with docker.
@@ -300,28 +286,16 @@ void p_verify_module_live(struct module *p_mod) {
    }
 }
 
-void p_verify_module_going(struct module *p_kmod) {
-
-   unsigned int p_len = strlen(p_kmod->name);
-   int p_flag = 0;
-   unsigned int p_tmp_val;
+void p_verify_module_going(struct module *p_mod) {
 
    if (!p_ovl_create_or_link_kretprobe_state) {
       /* We do not need to do anything for now */
       return;
    }
 
-   if (p_len == P_KMOD_OVERLAY_STRLEN) {
-      if (!strncmp(p_kmod->name,"overlay",P_KMOD_OVERLAY_STRLEN)) {
-         p_flag = 1;
-      }
-   } else if (p_len == P_KMOD_OVERLAY_STRLEN+1) {
-      if (!strncmp(p_kmod->name,"overlay2",P_KMOD_OVERLAY_STRLEN+1)) {
-         p_flag = 1;
-      }
-   }
+   if (!strcmp(p_mod->name,"overlay") || !strcmp(p_mod->name,"overlay2")) {
+      unsigned int p_tmp_val;
 
-   if (p_flag) {
       /*
        * OK, we must try to remove our hook @ 'ovl_create_or_link' function.
        *
