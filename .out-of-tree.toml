@@ -1,0 +1,13 @@
+name = "p_lkrg"
+type = "module"
+
+[[supported_kernels]]
+distro_type = "Ubuntu"
+distro_release = "18.04"
+release_mask = ".*"
+
+[docker]
+timeout = "3m"
+
+[qemu]
+timeout = "3m"
