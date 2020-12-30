@@ -45,8 +45,7 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/modules/self-defense/hiding/p_hiding.o \
                   src/modules/exploit_detection/p_rb_ed_trees/p_rb_ed_pids/p_rb_ed_pids_tree.o \
                   src/modules/exploit_detection/syscalls/p_install.o \
-                  src/modules/exploit_detection/syscalls/p_sys_execve/p_sys_execve.o \
-                  src/modules/exploit_detection/syscalls/p_sys_execveat/p_sys_execveat.o \
+                  src/modules/exploit_detection/syscalls/p_search_binary_handler/p_search_binary_handler.o \
                   src/modules/exploit_detection/syscalls/p_call_usermodehelper/p_call_usermodehelper.o \
                   src/modules/exploit_detection/syscalls/p_call_usermodehelper_exec/p_call_usermodehelper_exec.o \
                   src/modules/exploit_detection/syscalls/p_do_exit/p_do_exit.o \
@@ -72,14 +71,10 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/modules/exploit_detection/syscalls/keyring/p_sys_request_key/p_sys_request_key.o \
                   src/modules/exploit_detection/syscalls/keyring/p_sys_keyctl/p_sys_keyctl.o \
                   src/modules/exploit_detection/syscalls/p_security_ptrace_access/p_security_ptrace_access.o \
-                  src/modules/exploit_detection/syscalls/compat/p_compat_sys_execve/p_compat_sys_execve.o \
-                  src/modules/exploit_detection/syscalls/compat/p_compat_sys_execveat/p_compat_sys_execveat.o \
                   src/modules/exploit_detection/syscalls/compat/p_compat_sys_keyctl/p_compat_sys_keyctl.o \
                   src/modules/exploit_detection/syscalls/compat/p_compat_sys_capset/p_compat_sys_capset.o \
                   src/modules/exploit_detection/syscalls/compat/p_compat_sys_add_key/p_compat_sys_add_key.o \
                   src/modules/exploit_detection/syscalls/compat/p_compat_sys_request_key/p_compat_sys_request_key.o \
-                  src/modules/exploit_detection/syscalls/__x32/p_x32_sys_execve/p_x32_sys_execve.o \
-                  src/modules/exploit_detection/syscalls/__x32/p_x32_sys_execveat/p_x32_sys_execveat.o \
                   src/modules/exploit_detection/syscalls/__x32/p_x32_sys_keyctl/p_x32_sys_keyctl.o \
                   src/modules/exploit_detection/syscalls/override/p_override_creds/p_override_creds.o \
                   src/modules/exploit_detection/syscalls/override/p_revert_creds/p_revert_creds.o \
