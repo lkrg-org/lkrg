@@ -26,7 +26,7 @@ MAKEFILE=$(cat <<EOC
 # SPDX-License-Identifier: GPL-2.0-only
 
 obj-\$(CONFIG_SECURITY_LKRG) := p_lkrg.o
-$(awk '/^p_lkrg-objs/,/^$/' "$BASEDIR/../Makefile"|sed -e 's|src/||')
+$(awk '/^\$\(TARGET\)-objs/,/^$/' "$BASEDIR/../Makefile"|sed -e 's|src/||; s|$(TARGET)-objs|p_lkrg-objs|')
  
 EOC
 )
