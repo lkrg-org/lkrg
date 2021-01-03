@@ -45,7 +45,8 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/modules/self-defense/hiding/p_hiding.o \
                   src/modules/exploit_detection/p_rb_ed_trees/p_rb_ed_pids/p_rb_ed_pids_tree.o \
                   src/modules/exploit_detection/syscalls/p_install.o \
-                  src/modules/exploit_detection/syscalls/p_search_binary_handler/p_search_binary_handler.o \
+                  src/modules/exploit_detection/syscalls/p_security_bprm_check/p_security_bprm_check.o \
+                  src/modules/exploit_detection/syscalls/p_proc_exec_connector/p_proc_exec_connector.o \
                   src/modules/exploit_detection/syscalls/p_call_usermodehelper/p_call_usermodehelper.o \
                   src/modules/exploit_detection/syscalls/p_call_usermodehelper_exec/p_call_usermodehelper_exec.o \
                   src/modules/exploit_detection/syscalls/p_do_exit/p_do_exit.o \
