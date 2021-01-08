@@ -362,9 +362,9 @@ The sysctl's are (with default values specified in braces):
 - lkrg.pint_validate (2)
   Whether and when to validate process credentials integrity.  Allowed values
   are 0 (disabled), 1 (validate a task's credentials just before it'd make use
-  of the credentials), 2 (also validate a task's credentials when it wakes up
-  from sleep), and 3 (validate credentials of all tasks in the system whenever
-  any task is about to make use of its credentials or wakes up).
+  of the credentials), 2 (currently, it has the same meaning as 1), and 3
+  (validate credentials of all tasks in the system whenever any task is about
+  to make use of its credentials or wakes up).
 
   Except with lkrg.pint_validate=0, we also validate the credentials of all
   tasks as part of LKRG's global integrity checking routine.
