@@ -428,7 +428,7 @@ static int p_sysctl_pint_validate(struct ctl_table *p_table, int p_write,
    char *p_str[] = {
       "DISABLED",
       "CURRENT",
-      "CURRENT + WAKING UP",
+      "CURRENT",
       "ALL TASKS"
    };
 
@@ -1009,7 +1009,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
                      p_deregister_notifiers();
                   P_CTRL(p_kint_validate) = 2;  // Timer
                   /* pint_validate */
-                  P_CTRL(p_pint_validate) = 2;  // Current + waking up task
+                  P_CTRL(p_pint_validate) = 1;  // Current
                   /* pcfi_validate */
                   P_CTRL(p_pcfi_validate) = 1;  // Weak pCFI
                   /* umh_validate */
@@ -1051,7 +1051,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
                      p_register_notifiers();
                   P_CTRL(p_kint_validate) = 3;  // Timer + random events
                   /* pint_validate */
-                  P_CTRL(p_pint_validate) = 2;  // Current + waking up task
+                  P_CTRL(p_pint_validate) = 1;  // Current
                   /* pcfi_validate */
                   P_CTRL(p_pcfi_validate) = 2;  // Full pCFI
                   /* umh_validate */

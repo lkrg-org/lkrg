@@ -139,7 +139,6 @@ static struct p_addr_name {
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setreuid),
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setgid),
    P_LKRG_DEBUG_RULE_KPROBE(p_call_usermodehelper),
-   P_LKRG_DEBUG_RULE_KPROBE(p_ttwu_do_wakeup),
    P_LKRG_DEBUG_RULE_KPROBE(p_x32_sys_keyctl),
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setfsuid),
    P_LKRG_DEBUG_RULE_KPROBE(p_do_exit),

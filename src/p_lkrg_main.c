@@ -24,7 +24,7 @@ unsigned int interval = 15;
 unsigned int kint_validate = 3;
 unsigned int kint_enforce = 2;
 unsigned int msr_validate = 0;
-unsigned int pint_validate = 2;
+unsigned int pint_validate = 1;
 unsigned int pint_enforce = 1;
 unsigned int pcfi_validate = 2;
 unsigned int pcfi_enforce = 1;
@@ -54,7 +54,7 @@ p_ro_page p_ro __p_lkrg_read_only = {
    .p_lkrg_global_ctrl.ctrl = {
       .p_kint_validate = 3,               // kint_validate
       .p_kint_enforce = 2,                // kint_enforce
-      .p_pint_validate = 2,               // pint_validate
+      .p_pint_validate = 1,               // pint_validate
       .p_pint_enforce = 1,                // pint_enforce
       .p_interval = 15,                   // interval
       .p_log_level = 3,                   // log_level
@@ -696,7 +696,7 @@ MODULE_PARM_DESC(kint_enforce, "kint_enforce [2 (panic) is default]");
 module_param(msr_validate, uint, 0000);
 MODULE_PARM_DESC(msr_validate, "msr_validate [0 (disabled) is default]");
 module_param(pint_validate, uint, 0000);
-MODULE_PARM_DESC(pint_validate, "pint_validate [2 (current + waking up) is default]");
+MODULE_PARM_DESC(pint_validate, "pint_validate [1 (current) is default]");
 module_param(pint_enforce, uint, 0000);
 MODULE_PARM_DESC(pint_enforce, "pint_enforce [1 (kill task) is default]");
 module_param(umh_validate, uint, 0000);

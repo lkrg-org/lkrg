@@ -83,7 +83,6 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/modules/exploit_detection/syscalls/pCFI/p_schedule/p_schedule.o \
                   src/modules/exploit_detection/syscalls/pCFI/p___queue_work/p___queue_work.o \
                   src/modules/exploit_detection/syscalls/pCFI/p_lookup_fast/p_lookup_fast.o \
-                  src/modules/exploit_detection/syscalls/p_ttwu_do_wakeup/p_ttwu_do_wakeup.o \
                   src/modules/exploit_detection/syscalls/p_capable/p_capable.o \
                   src/modules/exploit_detection/syscalls/p_scm_send/p_scm_send.o \
                   src/modules/exploit_detection/p_exploit_detection.o \
