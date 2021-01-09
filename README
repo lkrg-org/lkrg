@@ -370,10 +370,8 @@ The sysctl's are (with default values specified in braces):
   tasks as part of LKRG's global integrity checking routine.
 
   lkrg.pint_validate=1 is sufficient to provide most of LKRG's potential at
-  timely detection of exploits, with higher settings providing only minuscule
-  improvements.  lkrg.pint_validate=2's additional performance overhead is also
-  minuscule, which is why we enable this by default.  lkrg.pint_validate=3 is a
-  paranoid mode with high performance overhead for little security gain.
+  timely detection of exploits.  lkrg.pint_validate=3 is a paranoid mode with
+  high performance overhead yet likely a minuscule gain in security.
 
 - lkrg.pint_enforce (1)
   How to act on process credentials integrity violations.  Allowed values are 0
