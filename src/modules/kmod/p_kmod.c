@@ -300,8 +300,18 @@ static int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
       memcpy(&p_arg[p_cnt].kobj,p_kobj,sizeof(struct kobject));
       /* Exception */
       memset(&p_arg[p_cnt].kobj.entry,0,sizeof(struct list_head)); // module GOING_AWAY trobules ;(
-      memset(&p_arg[p_cnt].kobj.kref,0,sizeof(struct kref)); // module GOING_AWAY trobules ;(
-
+      memset(&p_arg[p_cnt].kobj.kref,0,sizeof(struct kref));       // module GOING_AWAY trobules ;(
+      /*
+       * Commit 38dc717e9715 ("module: delay kobject uevent until after module init call")
+       * delayed the kobject uevent unnecessarily too far to until after sending a
+       * MODULE_STATE_LIVE notification. As the uevent modifies internal state of the KOBJ
+       * itself, this violated the assumption that the KOBJ remains consistent and can be
+       * integrity-checked as soon as the module is LIVE.
+       * To be able to correctly handle this situation, unstable attributes are not verified.
+       */
+      p_arg[p_cnt].kobj.state_add_uevent_sent = 0;
+      p_arg[p_cnt].kobj.state_remove_uevent_sent = 0;
+      p_arg[p_cnt].kobj.uevent_suppress = 0;
 
       /* Pointer to THIS_MODULE per module */
       p_arg[p_cnt].p_mod = p_mod;
