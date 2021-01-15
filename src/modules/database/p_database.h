@@ -180,7 +180,7 @@ int hash_from_iommu_table(void);
 
 static inline void p_text_section_lock(void) {
 
-#if defined(CONFIG_FUNCTION_TRACER)
+#if defined(CONFIG_DYNAMIC_FTRACE)
    mutex_lock(P_SYM(p_ftrace_lock));
 #endif
    /* We are heavily consuming module list here - take 'module_mutex' */
@@ -195,7 +195,7 @@ static inline void p_text_section_unlock(void) {
    mutex_unlock(P_SYM(p_text_mutex));
    /* Release the 'module_mutex' */
    mutex_unlock(&module_mutex);
-#if defined(CONFIG_FUNCTION_TRACER)
+#if defined(CONFIG_DYNAMIC_FTRACE)
    mutex_unlock(P_SYM(p_ftrace_lock));
 #endif
 }

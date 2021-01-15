@@ -85,7 +85,7 @@ int p_register_arch_metadata(void) {
    }
 #endif
 
-#if defined(CONFIG_FUNCTION_TRACER)
+#if defined(CONFIG_DYNAMIC_FTRACE)
    /*
     * Same for FTRACE
     */
@@ -94,7 +94,9 @@ int p_register_arch_metadata(void) {
              "ERROR: Can't hook 'ftrace_modify_all_code' function :(\n");
       return P_LKRG_GENERAL_ERROR;
    }
+#endif
 
+#if defined(CONFIG_FUNCTION_TRACER)
    if (p_install_ftrace_enable_sysctl_hook()) {
       p_print_log(P_LKRG_ERR,
              "ERROR: Can't hook 'ftrace_enable_sysctl' function :(\n");
@@ -119,8 +121,10 @@ int p_unregister_arch_metadata(void) {
 #ifdef P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_APPLY_H
    p_uninstall_arch_jump_label_transform_apply_hook();
 #endif
-#if defined(CONFIG_FUNCTION_TRACER)
+#if defined(CONFIG_DYNAMIC_FTRACE)
    p_uninstall_ftrace_modify_all_code_hook();
+#endif
+#if defined(CONFIG_FUNCTION_TRACER)
    p_uninstall_ftrace_enable_sysctl_hook();
 #endif
 
