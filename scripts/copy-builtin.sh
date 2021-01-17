@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 # Build simple variables
@@ -12,7 +12,7 @@ KCONFIG=$( cat <<EOC
 # SPDX-License-Identifier: GPL-2.0-only
 config SECURITY_LKRG
 	tristate "LKRG support"
-	depends on SECURITY
+	depends on SECURITY && KPROBES && MODULE_UNLOAD && KALLSYMS_ALL
 	default m
 	help
 	  This selects LKRG - Linux Kernel Runtime Guard, which provides
