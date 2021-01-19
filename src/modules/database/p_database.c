@@ -355,6 +355,7 @@ int p_create_database(void) {
           p_db.p_module_list_hash,p_db.p_module_kobj_hash);
 
    P_SYM(p_state_init) = 1;
+   P_SYM(p_wait_for_kprobe_optimizer)();
 
 #if !defined(CONFIG_GRKERNSEC)
    p_text_section_lock();
