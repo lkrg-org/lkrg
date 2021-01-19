@@ -354,6 +354,7 @@ int p_create_database(void) {
           "p_module_list_hash => [0x%llx]\np_module_kobj_hash => [0x%llx]\n",
           p_db.p_module_list_hash,p_db.p_module_kobj_hash);
 
+   P_SYM(p_state_init) = 1;
 
 #if !defined(CONFIG_GRKERNSEC)
    p_text_section_lock();

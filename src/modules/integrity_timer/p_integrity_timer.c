@@ -118,7 +118,9 @@ void p_check_integrity(struct work_struct *p_work) {
    unsigned int p_tmp = 0;
    int p_ret;
 
-   if (!P_CTRL(p_kint_validate) || (!p_manual && P_CTRL(p_kint_validate) == 1))
+   if (unlikely(!P_CTRL(p_kint_validate)) ||
+       unlikely(!p_manual && P_CTRL(p_kint_validate) == 1) ||
+       unlikely(!(P_SYM(p_state_init) & 0x2)))
       goto p_check_integrity_tasks;
 
    /*

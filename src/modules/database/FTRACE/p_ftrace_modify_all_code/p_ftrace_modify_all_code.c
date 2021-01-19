@@ -63,7 +63,7 @@ notrace int p_ftrace_modify_all_code_entry(struct kretprobe_instance *p_ri, stru
    unsigned int p_tmp;
    int p_command = p_regs_get_arg1(p_regs);
 
-   if (!P_SYM(p_state_init))
+   if (unlikely(!P_SYM(p_state_init)))
       return 0;
 
    spin_lock(&p_db_lock);
@@ -124,7 +124,7 @@ notrace int p_ftrace_modify_all_code_ret(struct kretprobe_instance *ri, struct p
    /*
     * Are we initialized?
     */
-   if (!P_SYM(p_state_init))
+   if (unlikely(!P_SYM(p_state_init)))
       return 0;
 
    if (p_ftrace_tmp_text) {
