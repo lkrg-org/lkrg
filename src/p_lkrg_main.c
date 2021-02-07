@@ -47,7 +47,7 @@ unsigned int p_attr_init = 0;
 
 p_ro_page p_ro __p_lkrg_read_only = {
 
-#if !defined(CONFIG_ARM)
+#if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
    .p_marker_np1 = P_LKRG_MARKER1,
 #endif
 
@@ -78,7 +78,7 @@ p_ro_page p_ro __p_lkrg_read_only = {
       .p_profile_enforce = 2              // profile_enforce
    },
 
-#if !defined(CONFIG_ARM)
+#if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
    .p_marker_np2 = P_LKRG_MARKER1,
    .p_marker_np3 = P_LKRG_MARKER2
 #endif
@@ -89,13 +89,13 @@ p_ro_page p_ro __p_lkrg_read_only = {
 static void p_init_page_attr(void) {
 
    unsigned long *p_long_tmp = 0;
-#if !defined(CONFIG_ARM)
+#if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
    unsigned long p_long_offset = PAGE_SIZE/sizeof(p_long_tmp); // On purpose sizeof pointer
 #endif
 
    p_long_tmp = (unsigned long *)P_CTRL_ADDR;
 
-#if !defined(CONFIG_ARM)
+#if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
    if (*(p_long_tmp-p_long_offset) == P_LKRG_MARKER1) {
       p_print_log(P_LKRG_INFO, "Found marker before configuration page.\n");
       if (*(p_long_tmp+p_long_offset) == P_LKRG_MARKER1) {
@@ -105,7 +105,7 @@ static void p_init_page_attr(void) {
          p_set_memory_ro((unsigned long)p_long_tmp,1);
          p_print_log(P_LKRG_INFO, "Configuration page marked read-only.\n");
          p_attr_init++;
-#if !defined(CONFIG_ARM)
+#if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
          p_set_memory_np((unsigned long)(p_long_tmp-p_long_offset),1);
          p_print_log(P_LKRG_INFO, "Setup guard page before configuration page.\n");
          if (*(p_long_tmp+p_long_offset*2) == P_LKRG_MARKER2) {
@@ -122,7 +122,7 @@ static void p_init_page_attr(void) {
          flush_tlb_all();
 #endif
 
-#if !defined(CONFIG_ARM)
+#if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
       }
    } else {
       p_print_log(P_LKRG_CRIT,
@@ -150,7 +150,7 @@ static void p_init_page_attr(void) {
 static void p_uninit_page_attr(void) {
 
    unsigned long *p_long_tmp = 0;
-#if !defined(CONFIG_ARM)
+#if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
    unsigned long p_long_offset = PAGE_SIZE/sizeof(p_long_tmp); // On purpose sizeof pointer
 #endif
 
@@ -158,7 +158,7 @@ static void p_uninit_page_attr(void) {
       p_long_tmp = (unsigned long *)P_CTRL_ADDR;
       p_set_memory_rw((unsigned long)p_long_tmp,1);
       p_print_log(P_LKRG_INFO, "Configuration page marked read-write.\n");
-#if !defined(CONFIG_ARM)
+#if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
       p_set_memory_p((unsigned long)(p_long_tmp-p_long_offset),1);
       p_print_log(P_LKRG_INFO, "Disabled guard page before configuration page.\n");
       p_set_memory_rw((unsigned long)(p_long_tmp-p_long_offset),1);
@@ -527,8 +527,51 @@ static int __init p_lkrg_register(void) {
 #endif
 
 
-#if defined(CONFIG_X86)
+#if defined(P_KERNEL_AGGRESSIVE_INLINING)
 
+   P_SYM(p_kernel_set_memory_ro) = (int (*)(unsigned long, int))
+                            P_SYM(p_kallsyms_lookup_name)("set_memory_ro");
+   if (!P_SYM(p_kernel_set_memory_ro)) {
+      p_print_log(P_LKRG_ERR,
+             "ERROR: Can't find 'set_memory_ro' function :( Exiting...\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_main_error;
+   }
+
+   P_SYM(p_kernel_set_memory_rw) = (int (*)(unsigned long, int))
+                            P_SYM(p_kallsyms_lookup_name)("set_memory_rw");
+   if (!P_SYM(p_kernel_set_memory_rw)) {
+      p_print_log(P_LKRG_ERR,
+             "ERROR: Can't find 'set_memory_rw' function :( Exiting...\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_main_error;
+   }
+
+ #if defined(CONFIG_X86)
+   ;
+/*
+   P_SYM(p_kernel_set_memory_np) = (int (*)(unsigned long, int))
+                            P_SYM(p_kallsyms_lookup_name)("set_memory_np");
+   if (!P_SYM(p_kernel_set_memory_np)) {
+      p_print_log(P_LKRG_ERR,
+             "ERROR: Can't find 'set_memory_np' function :( Exiting...\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_main_error;
+   }
+*/
+ #elif defined(CONFIG_ARM64)
+   P_SYM(p_kernel_set_memory_valid) = (int (*)(unsigned long, int, int))
+                               P_SYM(p_kallsyms_lookup_name)("set_memory_valid");
+   if (!P_SYM(p_kernel_set_memory_valid)) {
+      p_print_log(P_LKRG_ERR,
+             "ERROR: Can't find 'set_memory_valid' function :( Exiting...\n");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_main_error;
+   }
+ #endif
+
+#else
+ #if defined(CONFIG_X86)
    P_SYM(p_change_page_attr_set_clr) =
           (int (*)(unsigned long *, int, pgprot_t, pgprot_t, int, int, struct page **))
           P_SYM(p_kallsyms_lookup_name)("change_page_attr_set_clr");
@@ -539,9 +582,7 @@ static int __init p_lkrg_register(void) {
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
-
-#elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)
-
+ #elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)
    P_SYM(p_change_memory_common) =
           (int (*)(unsigned long, int, pgprot_t, pgprot_t))
           P_SYM(p_kallsyms_lookup_name)("change_memory_common");
@@ -552,13 +593,11 @@ static int __init p_lkrg_register(void) {
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
-
-#else
-
+ #else
    p_print_log(P_LKRG_CRIT, "UNSUPPORTED PLATFORM! Exiting...\n");
    p_ret = P_LKRG_GENERAL_ERROR;
    goto p_main_error;
-
+ #endif
 #endif
 
    if (p_register_comm_channel()) {

@@ -283,34 +283,51 @@ static inline void p_syscall_set_arg2(struct pt_regs *p_regs, unsigned long p_va
 
 static inline int p_set_memory_rw(unsigned long p_addr, int p_numpages) {
 
+#if defined(P_KERNEL_AGGRESSIVE_INLINING)
+   return P_SYM(p_kernel_set_memory_rw)(p_addr, p_numpages);
+#else
    return P_SYM(p_change_page_attr_set_clr)(&p_addr, p_numpages,
                                             __pgprot(_PAGE_RW),
                                             __pgprot(0),
                                             0, 0, NULL);
+#endif
 }
 
 static inline int p_set_memory_ro(unsigned long p_addr, int p_numpages) {
 
+#if defined(P_KERNEL_AGGRESSIVE_INLINING)
+   return P_SYM(p_kernel_set_memory_ro)(p_addr, p_numpages);
+#else
    return P_SYM(p_change_page_attr_set_clr)(&p_addr, p_numpages,
                                             __pgprot(0),
                                             __pgprot(_PAGE_RW),
                                             0, 0, NULL);
+#endif
 }
 
 static inline int p_set_memory_np(unsigned long p_addr, int p_numpages) {
 
+#if defined(P_KERNEL_AGGRESSIVE_INLINING)
+   return 0x0;
+//   return P_SYM(p_kernel_set_memory_np)(p_addr, p_numpages);
+#else
    return P_SYM(p_change_page_attr_set_clr)(&p_addr, p_numpages,
                                             __pgprot(0),
                                             __pgprot(_PAGE_PRESENT),
                                             0, 0, NULL);
+#endif
 }
 
 static inline int p_set_memory_p(unsigned long p_addr, int p_numpages) {
 
+#if defined(P_KERNEL_AGGRESSIVE_INLINING)
+   return 0x0;
+#else
    return P_SYM(p_change_page_attr_set_clr)(&p_addr, p_numpages,
                                             __pgprot(_PAGE_PRESENT),
                                             __pgprot(0),
                                             0, 0, NULL);
+#endif
 }
 
 static inline void p_lkrg_open_rw_x86(void) {
@@ -447,16 +464,24 @@ static inline void p_syscall_set_arg2(struct pt_regs *p_regs, unsigned long p_va
 
 static inline int p_set_memory_rw(unsigned long p_addr, int p_numpages) {
 
+#if defined(P_KERNEL_AGGRESSIVE_INLINING)
+   return P_SYM(p_kernel_set_memory_rw)(p_addr, p_numpages);
+#else
    return P_SYM(p_change_memory_common)(p_addr, p_numpages,
                                         __pgprot(0),
                                         __pgprot(L_PTE_RDONLY));
+#endif
 }
 
 static inline int p_set_memory_ro(unsigned long p_addr, int p_numpages) {
 
+#if defined(P_KERNEL_AGGRESSIVE_INLINING)
+   return P_SYM(p_kernel_set_memory_ro)(p_addr, p_numpages);
+#else
    return P_SYM(p_change_memory_common)(p_addr, p_numpages,
                                         __pgprot(L_PTE_RDONLY),
                                         __pgprot(0));
+#endif
 }
 
 static inline void p_lkrg_open_rw(void) {
@@ -571,30 +596,46 @@ static inline void p_syscall_set_arg2(struct pt_regs *p_regs, unsigned long p_va
 
 static inline int p_set_memory_rw(unsigned long p_addr, int p_numpages) {
 
+#if defined(P_KERNEL_AGGRESSIVE_INLINING)
+   return P_SYM(p_kernel_set_memory_rw)(p_addr, p_numpages);
+#else
    return P_SYM(p_change_memory_common)(p_addr, p_numpages,
                                         __pgprot(PTE_WRITE),
                                         __pgprot(PTE_RDONLY));
+#endif
 }
 
 static inline int p_set_memory_ro(unsigned long p_addr, int p_numpages) {
 
+#if defined(P_KERNEL_AGGRESSIVE_INLINING)
+   return P_SYM(p_kernel_set_memory_ro)(p_addr, p_numpages);
+#else
    return P_SYM(p_change_memory_common)(p_addr, p_numpages,
                                         __pgprot(PTE_RDONLY),
                                         __pgprot(PTE_WRITE));
+#endif
 }
 
 static inline int p_set_memory_np(unsigned long p_addr, int p_numpages) {
 
+#if defined(P_KERNEL_AGGRESSIVE_INLINING)
+   return P_SYM(p_kernel_set_memory_valid)(p_addr, p_numpages, 0);
+#else
    return P_SYM(p_change_memory_common)(p_addr, p_numpages,
                                         __pgprot(0),
                                         __pgprot(PTE_VALID));
+#endif
 }
 
 static inline int p_set_memory_p(unsigned long p_addr, int p_numpages) {
 
+#if defined(P_KERNEL_AGGRESSIVE_INLINING)
+   return P_SYM(p_kernel_set_memory_valid)(p_addr, p_numpages, 1);
+#else
    return P_SYM(p_change_memory_common)(p_addr, p_numpages,
                                         __pgprot(PTE_VALID),
                                         __pgprot(0));
+#endif
 }
 
 static inline void p_lkrg_open_rw(void) {

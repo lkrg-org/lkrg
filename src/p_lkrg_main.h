@@ -92,6 +92,15 @@
 #include <linux/sched/task_stack.h>
 #endif
 
+/*
+ * Some custom compilation of the kernel might aggresively inline
+ * critical functions (from LKRG perspective). That's problematic
+ * for the project. However, some of the problems *might* be solved
+ * by uncommenting following definition. However, not all of them
+ * so you need to experiment.
+ */
+//#define P_KERNEL_AGGRESSIVE_INLINING 1
+
 //#define p_lkrg_read_only __attribute__((__section__(".data..p_lkrg_read_only"),aligned(PAGE_SIZE)))
 #define __p_lkrg_read_only __attribute__((__section__(".p_lkrg_read_only")))
 
@@ -144,14 +153,26 @@ typedef struct _p_lkrg_global_symbols_structure {
 #if !defined(CONFIG_ARM64)
    void (*p_flush_tlb_all)(void);
 #endif
-#if defined(CONFIG_X86)
+
+#if defined(P_KERNEL_AGGRESSIVE_INLINING)
+   int (*p_kernel_set_memory_ro)(unsigned long addr, int numpages);
+   int (*p_kernel_set_memory_rw)(unsigned long addr, int numpages);
+ #if defined(CONFIG_X86)
+   ;
+//   int (*p_kernel_set_memory_np)(unsigned long addr, int numpages);
+ #elif defined(CONFIG_ARM64)
+   int (*p_kernel_set_memory_valid)(unsigned long addr, int numpages, int enable);
+ #endif
+#else
+ #if defined(CONFIG_X86)
    int (*p_change_page_attr_set_clr)(unsigned long *addr, int numpages,
                                      pgprot_t mask_set, pgprot_t mask_clr,
                                      int force_split, int in_flag,
                                      struct page **pages);
-#elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)
+ #elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)
    int (*p_change_memory_common)(unsigned long addr, int numpages,
                                  pgprot_t set_mask, pgprot_t clear_mask);
+ #endif
 #endif
    int (*p_is_kernel_text_address)(unsigned long p_addr);
    void (*p_get_seccomp_filter)(struct task_struct *p_task);
@@ -223,13 +244,13 @@ typedef struct _p2_lkrg_global_ctrl_structure {
 
 typedef struct _p_lkrg_ro_page {
 
-#if !defined(CONFIG_ARM)
+#if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
    unsigned long p_marker_np1 __attribute__((aligned(PAGE_SIZE)));
 #endif
 
    p_lkrg_global_ctrl_struct p_lkrg_global_ctrl;
 
-#if !defined(CONFIG_ARM)
+#if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
    unsigned long p_marker_np2 __attribute__((aligned(PAGE_SIZE)));
    unsigned long p_marker_np3 __attribute__((aligned(PAGE_SIZE)));
 #endif
