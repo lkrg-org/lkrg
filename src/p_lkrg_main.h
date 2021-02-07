@@ -222,7 +222,9 @@ typedef struct _p_lkrg_global_symbols_structure {
    struct dyn_ftrace *(*p_ftrace_rec_iter_record)(struct ftrace_rec_iter *iter);
    struct mutex *p_ftrace_lock;
 #endif
+#if defined(CONFIG_OPTPROBES)
    void (*p_wait_for_kprobe_optimizer)(void);
+#endif
    struct module *p_find_me;
    unsigned int p_state_init;
 

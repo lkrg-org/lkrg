@@ -443,6 +443,7 @@ static int __init p_lkrg_register(void) {
    }
 #endif
 
+#if defined(CONFIG_OPTPROBES)
    P_SYM(p_wait_for_kprobe_optimizer) = (void (*)(void))P_SYM(p_kallsyms_lookup_name)("wait_for_kprobe_optimizer");
 
    if (!P_SYM(p_wait_for_kprobe_optimizer)) {
@@ -451,6 +452,7 @@ static int __init p_lkrg_register(void) {
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
+#endif
 
    // Freeze all non-kernel processes
    while (P_SYM(p_freeze_processes)())
