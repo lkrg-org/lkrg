@@ -19,9 +19,9 @@ jobs:
     - dist: bionic
       arch: amd64
 
-    - dist: bionic
-      arch: arm64
-      virt: lxd
+#    - dist: bionic
+#      arch: arm64
+#      virt: lxd
 
 #    - dist: focal
 #      arch: amd64
