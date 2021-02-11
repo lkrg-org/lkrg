@@ -311,6 +311,11 @@ int p_create_database(void) {
    }
 
 
+#if defined(CONFIG_OPTPROBES)
+   P_SYM(p_wait_for_kprobe_optimizer)();
+#endif
+   smp_mb();
+
    p_text_section_lock();
 
    /*
@@ -358,6 +363,7 @@ int p_create_database(void) {
 #if defined(CONFIG_OPTPROBES)
    P_SYM(p_wait_for_kprobe_optimizer)();
 #endif
+   smp_mb();
 
 #if !defined(CONFIG_GRKERNSEC)
    p_text_section_lock();
