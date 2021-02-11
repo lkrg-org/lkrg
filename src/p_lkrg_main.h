@@ -208,8 +208,10 @@ typedef struct _p_lkrg_global_symbols_structure {
 #endif
    struct list_head *p_global_modules;
    struct kset **p_module_kset;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,8,0)
+#if defined(CONFIG_X86)
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,8,0)
    void (*p_native_write_cr4)(unsigned long p_val);
+ #endif
 #endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0)
    struct module* (*p_module_address)(unsigned long p_val);
