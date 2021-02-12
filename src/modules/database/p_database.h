@@ -180,6 +180,9 @@ int hash_from_iommu_table(void);
 
 static inline void p_text_section_lock(void) {
 
+#if !defined(P_LKRG_DEBUG_BUILD)
+   lockdep_off();
+#endif
 #if defined(CONFIG_DYNAMIC_FTRACE)
    mutex_lock(P_SYM(p_ftrace_lock));
 #endif
@@ -198,6 +201,10 @@ static inline void p_text_section_unlock(void) {
 #if defined(CONFIG_DYNAMIC_FTRACE)
    mutex_unlock(P_SYM(p_ftrace_lock));
 #endif
+#if !defined(P_LKRG_DEBUG_BUILD)
+   lockdep_on();
+#endif
+
 }
 
 int p_create_database(void);
