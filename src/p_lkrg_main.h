@@ -380,4 +380,12 @@ static inline int p_lkrg_counter_lock_val_read(p_lkrg_counter_lock *p_arg) {
 // #warning "LKRG does NOT require CONFIG_STACKTRACE. However, in case of pCFI violation, LKRG won't be able to dump full stack-trace."
 #endif
 
+#if defined(CONFIG_PREEMPT_RT)
+ #error "LKRG does not support RT kernels (PREEMPT_RT is enabled)"
+#endif
+
+#if defined(CONFIG_RT_MUTEXES)
+ #error "LKRG does not support RT kernels (RT_MUTEXES is enabled)"
+#endif
+
 #endif
