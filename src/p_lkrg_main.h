@@ -384,8 +384,4 @@ static inline int p_lkrg_counter_lock_val_read(p_lkrg_counter_lock *p_arg) {
  #error "LKRG does not support RT kernels (PREEMPT_RT is enabled)"
 #endif
 
-#if defined(CONFIG_RT_MUTEXES)
- #error "LKRG does not support RT kernels (RT_MUTEXES is enabled)"
-#endif
-
 #endif
