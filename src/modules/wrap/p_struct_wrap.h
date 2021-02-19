@@ -142,12 +142,12 @@ static inline unsigned int p_core_size(struct module *p_mod) {
 
 #ifdef CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE
 
-static inline unsigned long long p_jump_entry_code(const struct jump_entry *entry) {
-    return (unsigned long long)((unsigned long)&entry->code + entry->code);
+static inline unsigned long p_jump_entry_code(const struct jump_entry *entry) {
+    return (unsigned long)((unsigned long)&entry->code + entry->code);
 }
 
-static inline unsigned long long p_jump_entry_target(const struct jump_entry *entry) {
-    return (unsigned long long)((unsigned long)&entry->target) + entry->target;
+static inline unsigned long p_jump_entry_target(const struct jump_entry *entry) {
+    return (unsigned long)((unsigned long)&entry->target) + entry->target;
 }
 
 static inline struct static_key *p_jump_entry_key(const struct jump_entry *entry) {
@@ -158,12 +158,12 @@ static inline struct static_key *p_jump_entry_key(const struct jump_entry *entry
 
 #else
 
-static inline unsigned long long p_jump_entry_code(const struct jump_entry *entry) {
-    return (unsigned long long)entry->code;
+static inline unsigned long p_jump_entry_code(const struct jump_entry *entry) {
+    return (unsigned long)entry->code;
 }
 
-static inline unsigned long long p_jump_entry_target(const struct jump_entry *entry) {
-    return (unsigned long long)entry->target;
+static inline unsigned long p_jump_entry_target(const struct jump_entry *entry) {
+    return (unsigned long)entry->target;
 }
 
 static inline struct static_key *p_jump_entry_key(const struct jump_entry *entry)  {

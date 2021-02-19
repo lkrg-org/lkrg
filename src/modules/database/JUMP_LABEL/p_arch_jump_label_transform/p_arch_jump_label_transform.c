@@ -56,7 +56,7 @@ notrace int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, s
    p_lkrg_counter_lock_unlock(&p_jl_lock, &p_flags);
 
    p_print_log(P_LKRG_INFO,
-               "[JUMP_LABEL] New modification: type[%s] code[0x%llx] target[0x%llx] key[0x%lx]!\n",
+               "[JUMP_LABEL] New modification: type[%s] code[0x%lx] target[0x%lx] key[0x%lx]!\n",
                (p_regs_get_arg2(p_regs) == 1) ? "JUMP_LABEL_JMP" :
                                                 (p_regs_get_arg2(p_regs) == 0) ? "JUMP_LABEL_NOP" :
                                                                                  "UNKNOWN",
