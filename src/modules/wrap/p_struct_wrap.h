@@ -143,11 +143,11 @@ static inline unsigned int p_core_size(struct module *p_mod) {
 #ifdef CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE
 
 static inline unsigned long long p_jump_entry_code(const struct jump_entry *entry) {
-    return (unsigned long long)&entry->code + entry->code;
+    return (unsigned long long)((unsigned long)&entry->code + entry->code);
 }
 
 static inline unsigned long long p_jump_entry_target(const struct jump_entry *entry) {
-    return (unsigned long long)&entry->target + entry->target;
+    return (unsigned long long)((unsigned long)&entry->target) + entry->target;
 }
 
 static inline struct static_key *p_jump_entry_key(const struct jump_entry *entry) {
@@ -200,6 +200,7 @@ static inline int p_ddebug_remove_module(const char *p_name) {
 /*
  * Get
  */
+ #if defined(CONFIG_X86_64)
 static inline unsigned long p_regs_get_arg1(struct pt_regs *p_regs) {
    return p_regs->di;
 }
@@ -247,9 +248,67 @@ static inline unsigned long p_syscall_get_arg2(struct pt_regs *p_regs) {
 #endif
 }
 
+ #else
+
+static inline unsigned long p_regs_get_arg1(struct pt_regs *p_regs) {
+   return p_regs->ax;
+}
+
+static inline unsigned long p_regs_get_arg2(struct pt_regs *p_regs) {
+   return p_regs->dx;
+}
+
+static inline unsigned long p_regs_get_arg3(struct pt_regs *p_regs) {
+   return p_regs->cx;
+}
+
+static inline unsigned long p_regs_get_fp(struct pt_regs *p_regs) {
+   return p_regs->bp;
+}
+
+static inline unsigned long p_regs_get_sp(struct pt_regs *p_regs) {
+   return p_regs->sp;
+}
+
+static inline unsigned long p_regs_get_ip(struct pt_regs *p_regs) {
+   return p_regs->ip;
+}
+
+static inline unsigned long p_regs_get_ret(struct pt_regs *p_regs) {
+   return p_regs->ax;
+}
+
+static inline unsigned long p_get_thread_sp(struct task_struct *p_arg) {
+   return p_arg->thread.sp;
+}
+
+/*
+ * Syscalls
+ */
+static inline unsigned long p_syscall_get_arg1(struct pt_regs *p_regs) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,17,0) && defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER)
+   return p_regs_get_arg2((struct pt_regs *)p_regs_get_arg1(p_regs));
+#else
+   return p_regs_get_arg2(p_regs);
+#endif
+}
+
+static inline unsigned long p_syscall_get_arg2(struct pt_regs *p_regs) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,17,0) && defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER)
+   return p_regs_get_arg3((struct pt_regs *)p_regs_get_arg1(p_regs));
+#else
+   return p_regs_get_arg3(p_regs);
+#endif
+}
+
+ #endif
+
+
 /*
  * Set
  */
+ #if defined(CONFIG_X86_64)
+
 static inline void p_regs_set_arg1(struct pt_regs *p_regs, unsigned long p_val) {
    p_regs->di = p_val;
 }
@@ -280,6 +339,46 @@ static inline void p_syscall_set_arg2(struct pt_regs *p_regs, unsigned long p_va
    p_regs_set_arg2(p_regs, p_val);
 #endif
 }
+
+ #else
+
+static inline void p_regs_set_arg1(struct pt_regs *p_regs, unsigned long p_val) {
+   p_regs->ax = p_val;
+}
+
+static inline void p_regs_set_arg2(struct pt_regs *p_regs, unsigned long p_val) {
+   p_regs->dx = p_val;
+}
+
+static inline void p_regs_set_arg3(struct pt_regs *p_regs, unsigned long p_val) {
+   p_regs->cx = p_val;
+}
+
+static inline void p_regs_set_ip(struct pt_regs *p_regs, unsigned long p_val) {
+   p_regs->ip = p_val;
+}
+
+/*
+ * Syscalls
+ */
+static inline void p_syscall_set_arg1(struct pt_regs *p_regs, unsigned long p_val) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,17,0) && defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER)
+   p_regs_set_arg2((struct pt_regs *)p_regs_get_arg1(p_regs), p_val);
+#else
+   p_regs_set_arg2(p_regs, p_val);
+#endif
+}
+
+static inline void p_syscall_set_arg2(struct pt_regs *p_regs, unsigned long p_val) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,17,0) && defined(CONFIG_ARCH_HAS_SYSCALL_WRAPPER)
+   p_regs_set_arg3((struct pt_regs *)p_regs_get_arg1(p_regs), p_val);
+#else
+   p_regs_set_arg3(p_regs, p_val);
+#endif
+}
+
+ #endif
+
 
 static inline int p_set_memory_rw(unsigned long p_addr, int p_numpages) {
 
