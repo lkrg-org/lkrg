@@ -6,8 +6,10 @@ KDIR="${KDIR:="/usr/src/linux"}"
 LDIR="$KDIR/security/lkrg"
 BASEDIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 SDIR="$BASEDIR/../src"
-if [ git rev-parse --git-dir &>/dev/null ]; then
+if [ -n "$LKRG_USE_GIT" && git rev-parse --git-dir &>/dev/null ]; then
     COMMIT="LKRG in-tree @ $(git log|head -1|cut -d' ' -f2|cut -c 1-24)"
+else
+    COMMIT="LKRG in-tree @ $(date +%Y%m%d%H%M)"
 fi
 # Build heredoc variables
 KCONFIG=$( cat <<EOC
@@ -46,9 +48,7 @@ echo "$KCONFIG"
 echo
 echo "and Makefile"
 echo "$MAKEFILE"
-if [ git rev-parse --git-dir &>/dev/null ]; then
-    echo "Commit msg: $COMMIT"
-fi
+echo "Commit msg: $COMMIT"
 echo "Ctrl+c to quit, any other key to continue"
 read CANCEL
 # Execute copy
@@ -63,7 +63,7 @@ cd "$KDIR"
 sed -i '/source "security\/integrity\/Kconfig"/asource "security/lkrg/Kconfig"' security/Kconfig
 echo "$MAKEADD" >> security/Makefile
 # Commit the changes
-if [ git rev-parse --git-dir &>/dev/null ]; then
+if [ -n "$LKRG_USE_GIT" && git rev-parse --git-dir &>/dev/null ]; then
     git add "security/lkrg"
     git commit -am "$COMMIT"
 fi
