@@ -6,7 +6,7 @@ KDIR="${KDIR:="/usr/src/linux"}"
 LDIR="$KDIR/security/lkrg"
 BASEDIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 SDIR="$BASEDIR/../src"
-if [ -n "$LKRG_USE_GIT" && git rev-parse --git-dir &>/dev/null ]; then
+if [ -n "$LKRG_USE_GIT" ] && git rev-parse --git-dir &>/dev/null; then
     COMMIT="LKRG in-tree @ $(git log|head -1|cut -d' ' -f2|cut -c 1-24)"
 else
     COMMIT="LKRG in-tree @ $(date +%Y%m%d%H%M)"
@@ -63,7 +63,7 @@ cd "$KDIR"
 sed -i '/source "security\/integrity\/Kconfig"/asource "security/lkrg/Kconfig"' security/Kconfig
 echo "$MAKEADD" >> security/Makefile
 # Commit the changes
-if [ -n "$LKRG_USE_GIT" && git rev-parse --git-dir &>/dev/null ]; then
+if [ -n "$LKRG_USE_GIT" ] && git rev-parse --git-dir &>/dev/null; then
     git add "security/lkrg"
     git commit -am "$COMMIT"
 fi
