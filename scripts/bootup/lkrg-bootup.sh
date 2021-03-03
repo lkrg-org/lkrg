@@ -16,7 +16,7 @@ P_NC='\033[0m' # No Color
 
 echo -e " ${P_GREEN}[*] ${P_WHITE}Executing LKRG's bootup installation script${P_NC}"
 
-case "`readlink /proc/1/exe`" in
+case "`readlink -e /proc/1/exe`" in
 	/usr/lib/systemd/systemd | \
 	/lib/systemd/systemd)
 		"$P_PWD/$P_LKRG_SYSTEMD" "$@"
