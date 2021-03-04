@@ -18,7 +18,7 @@ echo -e " ${P_GREEN}[*] ${P_WHITE}Executing LKRG's bootup installation script${P
 case "`readlink -e /proc/1/exe`" in
 	/usr/lib/systemd/systemd | \
 	/lib/systemd/systemd)
-		"$P_LKRG_SYSTEMD" "$@"
+		exec "$P_LKRG_SYSTEMD" "$@"
 		;;
 	*)
 		echo -e "  ${P_RED}[-] Unsupported init system: not systemd or not running as root?${P_NC}"
