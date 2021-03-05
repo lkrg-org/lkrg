@@ -72,7 +72,8 @@ notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p
 #else
       if (p_tmp->len == JUMP_LABEL_NOP_SIZE &&
           p_tmp->addr
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 5, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 5, 0) || \
+   (defined(RHEL_RELEASE_CODE) && RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8, 3))
           && p_tmp->opcode) {
 #else
           && p_tmp->detour) {
