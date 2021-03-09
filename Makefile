@@ -86,6 +86,7 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/modules/exploit_detection/syscalls/pCFI/p_lookup_fast/p_lookup_fast.o \
                   src/modules/exploit_detection/syscalls/p_capable/p_capable.o \
                   src/modules/exploit_detection/syscalls/p_scm_send/p_scm_send.o \
+                  src/modules/exploit_detection/p_selinux_state.o \
                   src/modules/exploit_detection/p_exploit_detection.o \
                   src/p_lkrg_main.o
 
