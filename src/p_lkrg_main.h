@@ -112,6 +112,10 @@
  #define P_LKRG_MARKER2 0xdeadbabe
 #endif
 
+#if defined(CONFIG_SECURITY_SELINUX_DEVELOP) && !defined(CONFIG_GCC_PLUGIN_RANDSTRUCT)
+#define P_SELINUX_VERIFY
+#endif
+
 #define nitems(val)      (sizeof(val) / sizeof(val[0]))
 
 typedef struct _p_lkrg_global_conf_structure {
@@ -185,7 +189,7 @@ typedef struct _p_lkrg_global_symbols_structure {
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
    int *p_selinux_enabled;
 #endif
-#ifdef CONFIG_SECURITY_SELINUX_DEVELOP
+#ifdef P_SELINUX_VERIFY
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,17,0)
    struct p_selinux_state *p_selinux_state;
 #else
