@@ -88,7 +88,7 @@ Testing
 -------
 
 We recommend that before you install LKRG on the system such that it would be
-started on bootup, you test loading of the LKRG module into the kernel manually
+started on bootup, you manually test loading the LKRG module into the kernel
 without making that setup permanent yet.  We also recommend that you keep
 LKRG's detection of kernel integrity violations enabled for this test, yet
 change its enforcement action from kernel panic (the default) to mere logging.
