@@ -39,7 +39,7 @@ void p_hide_itself(void) {
 */
 
    /* We are heavily consuming module list here - take 'module_mutex' */
-   mutex_lock(&module_mutex);
+   mutex_lock(P_SYM(p_module_mutex));
    spin_lock(&p_db_lock);
 
    P_HIDE_FROM_MODULE_LIST(P_SYM(p_find_me));
@@ -65,7 +65,7 @@ void p_hide_itself(void) {
 
    spin_unlock(&p_db_lock);
    /* Release the 'module_mutex' */
-   mutex_unlock(&module_mutex);
+   mutex_unlock(P_SYM(p_module_mutex));
 }
 
 #ifdef P_LKRG_UNHIDE
@@ -83,7 +83,7 @@ void p_unhide_itself(void) {
    }
 
    /* We are heavily consuming module list here - take 'module_mutex' */
-   mutex_lock(&module_mutex);
+   mutex_lock(P_SYM(p_module_mutex));
    spin_lock(&p_db_lock);
 
    P_UNHIDE_FROM_MODULE_LIST(P_SYM(p_find_me),P_SYM(p_global_modules));
@@ -109,6 +109,6 @@ void p_unhide_itself(void) {
 
    spin_unlock(&p_db_lock);
    /* Release the 'module_mutex' */
-   mutex_unlock(&module_mutex);
+   mutex_unlock(P_SYM(p_module_mutex));
 }
 #endif

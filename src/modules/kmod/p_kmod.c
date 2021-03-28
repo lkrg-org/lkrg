@@ -38,7 +38,13 @@ int p_kmod_init(void) {
    P_SYM(p_global_modules)   = (struct list_head *)P_SYM(p_kallsyms_lookup_name)("modules");
    P_SYM(p_module_kset)      = (struct kset **)P_SYM(p_kallsyms_lookup_name)("module_kset");
 
-
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,12,0)
+   P_SYM(p_module_mutex)     = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("module_mutex");
+   P_SYM(p_find_module)      = (struct module* (*)(const char *))P_SYM(p_kallsyms_lookup_name)("find_module");
+#else
+   P_SYM(p_module_mutex)     = (struct mutex *)&module_mutex;
+   P_SYM(p_find_module)      = (struct module* (*)(const char *))find_module;
+#endif
 
    // DEBUG
    p_debug_log(P_LKRG_DBG, "<p_kmod_init> "
@@ -57,7 +63,7 @@ int p_kmod_init(void) {
                                                             (unsigned long)P_SYM(p_ddebug_remove_module_ptr),
  #endif
 #endif
-                                                            (long)&module_mutex,
+                                                            (unsigned long)P_SYM(p_module_mutex),
                                                             (unsigned long)P_SYM(p_global_modules),
                                                             (unsigned long)P_SYM(p_module_kset));
 
@@ -80,6 +86,18 @@ int p_kmod_init(void) {
    if (!P_SYM(p_module_kset)) {
       p_print_log(P_LKRG_ERR,
              "KMOD error! Can't find 'module_kset' variable :( Exiting...\n");
+      return P_LKRG_GENERAL_ERROR;
+   }
+
+   if (!P_SYM(p_module_mutex)) {
+      p_print_log(P_LKRG_ERR,
+             "KMOD error! Can't find 'module_mutex' variable :( Exiting...\n");
+      return P_LKRG_GENERAL_ERROR;
+   }
+
+   if (!P_SYM(p_find_module)) {
+      p_print_log(P_LKRG_ERR,
+             "KMOD error! Can't find 'find_module' function :( Exiting...\n");
       return P_LKRG_GENERAL_ERROR;
    }
 

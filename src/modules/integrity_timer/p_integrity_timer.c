@@ -448,7 +448,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         p_print_log(P_LKRG_INFO,
                                     "Lost module is the same as on-going module activity events (system is stable).\n");
                      } else {
-                        p_tmp_mod = find_module(p_module_kobj_tmp[p_tmp_hash].p_name);
+                        p_tmp_mod = P_SYM(p_find_module(p_module_kobj_tmp[p_tmp_hash].p_name));
                         if (p_tmp_mod) {
                            if (p_tmp_mod->state != MODULE_STATE_LIVE) {
                               P_KINT_HACK_D(p_hack_check);
@@ -512,7 +512,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         }
                      }
                   } else {
-                     p_tmp_mod = find_module(p_module_kobj_tmp[p_tmp_hash].p_name);
+                     p_tmp_mod = P_SYM(p_find_module(p_module_kobj_tmp[p_tmp_hash].p_name));
                      if (p_tmp_mod) {
                         if (p_tmp_mod->state != MODULE_STATE_LIVE) {
                            P_KINT_HACK_D(p_hack_check);
@@ -653,7 +653,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         p_print_log(P_LKRG_INFO,
                                     "Lost module is the same as on-going module activity events (system is stable).\n");
                      } else {
-                        p_tmp_mod = find_module(p_module_list_tmp[p_tmp_hash].p_name);
+                        p_tmp_mod = P_SYM(p_find_module(p_module_list_tmp[p_tmp_hash].p_name));
                         if (p_tmp_mod) {
                            if (p_tmp_mod->state != MODULE_STATE_LIVE) {
                               p_print_log(P_LKRG_INFO,
@@ -713,7 +713,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         }
                      }
                   } else {
-                     p_tmp_mod = find_module(p_module_list_tmp[p_tmp_hash].p_name);
+                     p_tmp_mod = P_SYM(p_find_module(p_module_list_tmp[p_tmp_hash].p_name));
                      if (p_tmp_mod) {
                         if (p_tmp_mod->state != MODULE_STATE_LIVE) {
                            p_print_log(P_LKRG_INFO,
@@ -892,7 +892,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         p_print_log(P_LKRG_INFO,
                                     "Lost module is the same as on-going module activity events (system is stable).\n");
                      } else {
-                        p_tmp_mod = find_module(p_db.p_module_list_array[p_tmp_hash].p_name);
+                        p_tmp_mod = P_SYM(p_find_module(p_db.p_module_list_array[p_tmp_hash].p_name));
                         if (p_tmp_mod) {
                            if (p_tmp_mod->state != MODULE_STATE_LIVE) {
                               p_print_log(P_LKRG_INFO,
@@ -953,7 +953,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         }
                      }
                   } else {
-                     p_tmp_mod = find_module(p_db.p_module_list_array[p_tmp_hash].p_name);
+                     p_tmp_mod = P_SYM(p_find_module(p_db.p_module_list_array[p_tmp_hash].p_name));
                      if (p_tmp_mod) {
                         if (p_tmp_mod->state != MODULE_STATE_LIVE) {
                            p_print_log(P_LKRG_INFO,
@@ -1077,7 +1077,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         p_print_log(P_LKRG_INFO,
                                     "Extra module is the same as on-going module activity events (system is stable).\n");
                      } else {
-                        p_tmp_mod = find_module(p_module_list_tmp[p_tmp_hash].p_name);
+                        p_tmp_mod = P_SYM(p_find_module(p_module_list_tmp[p_tmp_hash].p_name));
                         if (p_tmp_mod) {
                            if (p_tmp_mod->state != MODULE_STATE_LIVE) {
                               p_print_log(P_LKRG_INFO,
@@ -1140,7 +1140,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         }
                      }
                   } else {
-                     p_tmp_mod = find_module(p_module_list_tmp[p_tmp_hash].p_name);
+                     p_tmp_mod = P_SYM(p_find_module(p_module_list_tmp[p_tmp_hash].p_name));
                      if (p_tmp_mod) {
                         if (p_tmp_mod->state != MODULE_STATE_LIVE) {
                            p_print_log(P_LKRG_INFO,
@@ -1310,7 +1310,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         p_print_log(P_LKRG_INFO,
                                     "Lost module is the same as on-going module activity events (system is stable).\n");
                      } else {
-                        p_tmp_mod = find_module(p_db.p_module_kobj_array[p_tmp_hash].p_name);
+                        p_tmp_mod = P_SYM(p_find_module(p_db.p_module_kobj_array[p_tmp_hash].p_name));
                         if (p_tmp_mod) {
                            if (p_tmp_mod->state != MODULE_STATE_LIVE) {
                               p_print_log(P_LKRG_INFO,
@@ -1370,7 +1370,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         }
                      }
                   } else {
-                     p_tmp_mod = find_module(p_db.p_module_kobj_array[p_tmp_hash].p_name);
+                     p_tmp_mod = P_SYM(p_find_module(p_db.p_module_kobj_array[p_tmp_hash].p_name));
                      if (p_tmp_mod) {
                         if (p_tmp_mod->state != MODULE_STATE_LIVE) {
                            p_print_log(P_LKRG_INFO,
@@ -1493,7 +1493,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         p_print_log(P_LKRG_INFO,
                                     "Extra module is the same as on-going module activity events (system is stable).\n");
                      } else {
-                        p_tmp_mod = find_module(p_module_kobj_tmp[p_tmp_hash].p_name);
+                        p_tmp_mod = P_SYM(p_find_module(p_module_kobj_tmp[p_tmp_hash].p_name));
                         if (p_tmp_mod) {
                            if (p_tmp_mod->state != MODULE_STATE_LIVE) {
                               p_print_log(P_LKRG_INFO,
@@ -1554,7 +1554,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         }
                      }
                   } else {
-                     p_tmp_mod = find_module(p_module_kobj_tmp[p_tmp_hash].p_name);
+                     p_tmp_mod = P_SYM(p_find_module(p_module_kobj_tmp[p_tmp_hash].p_name));
                      if (p_tmp_mod) {
                         if (p_tmp_mod->state != MODULE_STATE_LIVE) {
                            p_print_log(P_LKRG_INFO,

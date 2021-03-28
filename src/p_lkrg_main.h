@@ -221,6 +221,8 @@ typedef struct _p_lkrg_global_symbols_structure {
    struct module* (*p_module_address)(unsigned long p_val);
    struct module* (*p_module_text_address)(unsigned long p_val);
 #endif
+   struct module* (*p_find_module)(const char *name);
+   struct mutex *p_module_mutex;
    int (*p_kallsyms_on_each_symbol)(int (*)(void *, const char *, struct module *, unsigned long), void *);
 #if defined(CONFIG_FUNCTION_TRACER)
    struct ftrace_rec_iter *(*p_ftrace_rec_iter_start)(void);
