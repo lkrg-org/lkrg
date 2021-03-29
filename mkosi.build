@@ -1,0 +1,10 @@
+#!/bin/bash -eu
+
+KERNELRELEASE=$(ls -d /lib/modules/*)
+KERNELRELEASE=${KERNELRELEASE##/lib/modules/}
+export KERNELRELEASE
+
+banner build
+set -x
+make -j$(nproc)
+install -Dpm 644 p_lkrg.ko $DESTDIR/lib/modules/$KERNELRELEASE/extra/p_lkrg.ko

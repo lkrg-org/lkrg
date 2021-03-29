@@ -18,3 +18,7 @@ modules.order
 GPATH
 GRTAGS
 GTAGS
+
+# mkosi
+mkosi.cache
+image.raw*
