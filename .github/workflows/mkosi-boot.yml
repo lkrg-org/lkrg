@@ -1,0 +1,47 @@
+name: mkosi boot (ubuntu)
+
+on: [push, pull_request]
+
+jobs:
+    mkosi-boot:
+        runs-on: ubuntu-20.04
+        strategy:
+            fail-fast: false
+            matrix:
+                release:
+                    - focal
+                    - groovy
+        steps:
+            - uses: actions/checkout@v2
+            - run: sudo apt-get update
+            - run: sudo apt-get install -y debootstrap qemu-system-x86 systemd-container expect
+            - name: Install mkosi from git
+              # Native focal package seems to be too old (v5) and not even
+              # able to build images properly.
+              run: |
+                  sudo python3 -m pip install git+https://github.com/systemd/mkosi.git
+                  echo /usr/local/bin >> $GITHUB_PATH
+
+            - name: Create bootable image using mkosi
+              run: sudo mkosi -r ${{ matrix.release }}
+
+            - name: Boot image using on qemu
+              run: |
+                  sudo expect <<- EOF | tr -d '\r' | tee boot.log
+                  proc abort {} { send_error "ABORT"; exit 1 }
+                  spawn mkosi qemu
+                  expect "Booting" { send "\r" }
+                  set timeout 120
+                  expect "login: " {} default abort
+                  set timeout 60
+                  expect "# " { send "systemctl poweroff\r" } default abort
+                  expect timeout abort eof { exit 0 }
+                  EOF
+              shell: bash -eo pipefail {0}
+
+            - name: Check boot.log for 'LKRG initialized successfully'
+              run: grep 'LKRG initialized successfully' boot.log
+            - name: Check that boot.log does not contain problems
+              run: egrep 'Panic|BUG:|WARNING:|Oops|Call Trace' boot.log && false || true
+
+# vim: sw=4
