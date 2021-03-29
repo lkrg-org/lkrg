@@ -1,0 +1,18 @@
+#!/bin/bash -exu
+
+KERNELRELEASE=$(ls -d /lib/modules/*)
+KERNELRELEASE=${KERNELRELEASE##/lib/modules/}
+
+# mkosi phase 2
+#(We only support bios i.e. grub boot here).
+if test -x /usr/bin/dracut; then
+	banner postinst
+	# Register our module in kmod database.
+	depmod -a $KERNELRELEASE
+	# Install module into (and force load early in) initrd.
+	dracut --force --force-drivers p_lkrg /boot/initrd.img-$KERNELRELEASE $KERNELRELEASE
+	# Delete default cmdline which contains 'quiet splash' to see full boot log.
+	sed -i /GRUB_CMDLINE_LINUX_DEFAULT/d /etc/default/grub
+	update-grub
+fi
+exit 0
