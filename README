@@ -56,7 +56,7 @@ To build LKRG, you will need the following software:
 - A C compiler (ideally, the same that was used to build the kernel itself)
 
 - A kernel build directory corresponding to the Linux kernel image the module
-  is to run on.  For example, under Debian and Ubuntu each linux-image package
+  is to run on.  For example, under Debian and Ubuntu, each linux-image package
   containing a kernel binary has a corresponding linux-headers package with the
   required build infrastructure, which you can install with:
 
@@ -89,9 +89,9 @@ Testing
 
 We recommend that before you install LKRG on the system such that it would be
 started on bootup, you manually test loading the LKRG module into the kernel
-without making that setup permanent yet.  We also recommend that you keep
-LKRG's detection of kernel integrity violations enabled for this test, yet
-change its enforcement action from kernel panic (the default) to mere logging.
+without making the setup permanent.  We also recommend that you keep LKRG's
+detection of kernel integrity violations enabled for this test, yet change
+its enforcement action from kernel panic (the default) to mere logging.
 This way, you can safely detect potential system-specific false positives and
 only proceed with installation if there are none.
 
@@ -140,7 +140,7 @@ without uninstalling it:
 	sudo systemctl stop lkrg
 
 We don't in any way favor systemd over other init systems, and would gladly add
-support for those as well if there's demand or especially if we receive such
+support for those as well if there's demand, or especially if we receive such
 contributions.  Meanwhile, on a system without systemd you can let "sudo make
 install" partially complete (up to the point where it finds you're not using
 systemd) and then use:
@@ -160,7 +160,7 @@ which you can do with:
 	sudo make uninstall
 
 from the top level source code directory of that old version (doing so using
-the source code tree of the new version might or might not work correctly).
+the source code tree of the new version may or may not work correctly).
 
 You can then follow the Testing and Installation steps for the new version.
 
@@ -168,9 +168,9 @@ You can then follow the Testing and Installation steps for the new version.
 Recovery
 --------
 
-To account for the hopefully unlikely but really unfortunate event that some
+To account for the hopefully unlikely, but really unfortunate event that some
 incompatibility between the Linux kernel or other components of the system and
-LKRG isn't detected prior to LKRG installation yet leads to system crash on
+LKRG isn't detected prior to LKRG installation, yet leads to system crash on
 bootup, we've included support for the "nolkrg" kernel parameter in the systemd
 unit file for LKRG.  Thus, if you've followed the above installation procedure
 for LKRG with systemd, you may disable LKRG by specifying "nolkrg" on the
