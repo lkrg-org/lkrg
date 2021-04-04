@@ -1,9 +1,11 @@
+# mkosi.default - Another way to run a test system with LKRG module.
+
 [Distribution]
 Distribution=ubuntu
 # Linux version per release:
 #   focal  - v5.4
 #   groovy - v5.8
-Release=focal
+Release=groovy
 
 [Output]
 Bootable=yes
@@ -15,16 +17,19 @@ WithUnifiedKernelImages=no
 BootProtocols=bios
 
 [Partitions]
-RootSize=2G
+# 2G was not enough for build with mainline kernels installs.
+RootSize=3G
 
 [Packages]
 BuildPackages=
 	diffutils
 	gcc
 	make
+	linux-base
 	linux-virtual
 Packages=
 	sysvbanner
+	kmod
 
 [Host]
 QemuHeadless=yes

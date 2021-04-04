@@ -1,10 +1,10 @@
-#!/bin/bash -eu
+#!/bin/bash -eux
+# mkosi.build - Compile and install module into DESTDIR.
 
-KERNELRELEASE=$(ls -d /lib/modules/*)
+KERNELRELEASE=$(ls -d /lib/modules/* | sort -V | tail -1)
 KERNELRELEASE=${KERNELRELEASE##/lib/modules/}
 export KERNELRELEASE
 
-banner build
-set -x
+banner build $KERNELRELEASE >&2
 make -j$(nproc)
 install -Dpm 644 p_lkrg.ko $DESTDIR/lib/modules/$KERNELRELEASE/extra/p_lkrg.ko
