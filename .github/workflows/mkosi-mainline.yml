@@ -1,20 +1,18 @@
-name: mkosi boot (ubuntu)
+name: mkosi boot (mainline)
 
-on: [push, pull_request]
+on:
+    push:
+    pull_request:
+    schedule:
+        - cron: '0 10 * * *'
 
 jobs:
-    mkosi-boot:
+    mkosi-mainline:
         runs-on: ubuntu-20.04
-        strategy:
-            fail-fast: false
-            matrix:
-                release:
-                    - focal
-                    - groovy
         steps:
             - uses: actions/checkout@v2
             - run: sudo apt-get update
-            - run: sudo apt-get install -y debootstrap qemu-system-x86 systemd-container expect
+            - run: sudo apt-get install -y debootstrap qemu-system-x86 systemd-container expect sysvbanner
             - name: Install mkosi from git
               # Native focal package seems to be too old (v5) and not even
               # able to build images properly.
@@ -23,7 +21,9 @@ jobs:
                   echo /usr/local/bin >> $GITHUB_PATH
 
             - name: Create bootable image using mkosi
-              run: sudo mkosi -r ${{ matrix.release }} --cache=mkosi.cache
+              run: |
+                  .github/workflows/ubuntu-kernel-daily.sh
+                  sudo mkosi -r groovy -p '!linux-virtual' --cache=mkosi.cache --prepare-script=.github/workflows/dpkg-i.sh
 
             - name: Boot image on qemu
               run: |
@@ -44,7 +44,7 @@ jobs:
                   grep 'Linux version' boot.log
                   grep 'LKRG initialized successfully' boot.log
             - name: Check that boot.log does not contain problems
-              run: egrep 'Panic|BUG:|WARNING:|Oops|Call Trace' boot.log && false || true
+              run: "! egrep 'Panic|BUG:|WARNING:|Oops|Call Trace' boot.log"
             - name: Check that boot.log contains shutdown sequence
               run: |
                   grep 'Reached target.*Power-Off' boot.log

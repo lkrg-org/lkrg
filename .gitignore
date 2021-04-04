@@ -20,5 +20,6 @@ GRTAGS
 GTAGS
 
 # mkosi
+.mkosi-*
 mkosi.cache
 image.raw*

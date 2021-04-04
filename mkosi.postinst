@@ -1,12 +1,14 @@
 #!/bin/bash -exu
+# mkosi.postinst - Install compiled module into initramfs and fix grub.
 
-KERNELRELEASE=$(ls -d /lib/modules/*)
+# Use kernel with highest version.
+KERNELRELEASE=$(ls -d /lib/modules/* | sort -V | tail -1)
 KERNELRELEASE=${KERNELRELEASE##/lib/modules/}
 
 # mkosi phase 2
 #(We only support bios i.e. grub boot here).
 if test -x /usr/bin/dracut; then
-	banner postinst
+	banner postinst >&2
 	# Register our module in kmod database.
 	depmod -a $KERNELRELEASE
 	# Install module into (and force load early in) initrd.
