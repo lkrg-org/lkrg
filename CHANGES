@@ -11,10 +11,13 @@ The following major changes have been made between LKRG 0.8.1 and current:
     overlayfs[2] module had to be loaded before LKRG for Docker to work)
  *) "Support" CONFIG_GCC_PLUGIN_RANDSTRUCT (don't monitor SELinux if enabled)
  *) Explicitly do not support RT kernels
- *) Fix support for 32-bit x86 (was unintentionally broken in LKRG for ages)
+ *) Fix support for 32-bit x86 (was unintentionally broken in LKRG for ages,
+    but could mostly work on many pre-5.7 kernel and LKRG builds by "luck")
  *) Fix detection of process user/group ID corruption to cover any unexpected
     changes (previously, only numerically lower new IDs, as exploits normally
     use, would be detected - a limitation left over from early LKRG testing)
+ *) Fix logging of WP/SMEP/SMAP violations on systems with SMAP in the "log and
+    accept" mode (previously, one such violation could mute logging of others)
  *) Add detection of ADDR_LIMIT corruption attacks
  *) Remove validation of waking-up tasks (drop pint_validate=2)
  *) Replace execve(2) hooks (instead hook security_bprm_committing_creds and
