@@ -33,9 +33,9 @@ like the below:
 
 	wget https://www.openwall.com/signatures/openwall-offline-signatures.asc
 	gpg --import openwall-offline-signatures.asc
-	wget https://www.openwall.com/lkrg/lkrg-0.8.1.tar.gz.sign
-	wget https://www.openwall.com/lkrg/lkrg-0.8.1.tar.gz
-	gpg --verify lkrg-0.8.1.tar.gz.sign lkrg-0.8.1.tar.gz
+	wget https://www.openwall.com/lkrg/lkrg-0.9.0.tar.gz.sign
+	wget https://www.openwall.com/lkrg/lkrg-0.9.0.tar.gz
+	gpg --verify lkrg-0.9.0.tar.gz.sign lkrg-0.9.0.tar.gz
 
 Please preserve the GnuPG key above and also use it to verify future releases,
 which will most likely work in a similar manner.
@@ -43,7 +43,7 @@ which will most likely work in a similar manner.
 Latest LKRG development source code is hosted on Bitbucket, from where you can
 clone the git repository to a local directory using the following command:
 
-	git clone https://github.com/openwall/lkrg.git
+	git clone https://github.com/openwall/lkrg
 
 
 Build requirements
