@@ -1,0 +1,22 @@
+#lkrg.profile_validate = 3
+#lkrg.profile_enforce = 2
+
+#lkrg.block_modules = 0
+#lkrg.heartbeat = 0
+#lkrg.interval = 15
+#lkrg.log_level = 3
+#lkrg.hide = 0
+#lkrg.kint_validate = 3
+#lkrg.kint_enforce = 2
+#lkrg.pint_validate = 2
+#lkrg.pint_enforce = 1
+#lkrg.msr_validate = 0
+#lkrg.trigger = 0
+#lkrg.smep_validate = 1
+#lkrg.smep_enforce = 2
+#lkrg.smap_validate = 0
+#lkrg.smap_enforce = 0
+#lkrg.umh_validate = 1
+#lkrg.umh_enforce = 1
+#lkrg.pcfi_validate = 2
+#lkrg.pcfi_enforce = 1

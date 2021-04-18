@@ -1,0 +1,58 @@
+Source: lkrg
+Section: kernel
+Priority: optional
+Maintainer: Mikhail Morfikov <mmorfikov@gmail.com>
+Homepage: https://www.openwall.com/lkrg/
+Vcs-Browser: https://github.com/openwall/lkrg/
+Vcs-Git: https://github.com/openwall/lkrg.git
+Standards-Version: 4.5.1.1
+Rules-Requires-Root: no
+Build-Depends: debhelper-compat (= 13),
+ dkms
+
+Package: lkrg
+Architecture: all
+Depends: ${misc:Depends},
+ lkrg-dkms (= ${source:Version})
+Recommends: lkrg-systemd (= ${source:Version})
+Description: Linux Kernel Runtime Guard (LKRG)
+ LKRG performs runtime integrity checking of the Linux kernel and detection of
+ security vulnerability exploits against the kernel.
+ .
+ LKRG is a kernel module (not a kernel patch), so it can be built for and loaded
+ on top of a wide range of mainline and distros' kernels, without needing to
+ patch those.
+ .
+ That is only a dependency package to install the LKRG kernel module and also
+ some systemd service in order to help to manage loading/unloading the module at
+ system boot/shutdown.
+
+Package: lkrg-dkms
+Architecture: all
+Depends: ${misc:Depends},
+ dkms
+Recommends: lkrg-systemd (= ${source:Version})
+Description: Linux Kernel Runtime Guard (LKRG) Source Code and DKMS
+ LKRG performs runtime integrity checking of the Linux kernel and detection of
+ security vulnerability exploits against the kernel.
+ .
+ LKRG is a kernel module (not a kernel patch), so it can be built for and loaded
+ on top of a wide range of mainline and distros' kernels, without needing to
+ patch those.
+ .
+ This package uses DKMS to automatically build the LKRG kernel module.
+
+Package: lkrg-systemd
+Architecture: all
+Depends: ${misc:Depends},
+ lkrg-dkms (= ${source:Version}),
+ systemd
+Description: Systemd integration for Linux Kernel Runtime Guard (LKRG)
+ LKRG performs runtime integrity checking of the Linux kernel and detection of
+ security vulnerability exploits against the kernel.
+ .
+ LKRG is a kernel module (not a kernel patch), so it can be built for and loaded
+ on top of a wide range of mainline and distros' kernels, without needing to
+ patch those.
+ .
+ This package provides systemd integration for the LKRG kernel module.
