@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE=1
+export DH_OPTIONS = -v
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
+include /usr/share/dpkg/pkg-info.mk
+
+%:
+	dh $@ --with dkms
+
+override_dh_install:
+	dh_install -p lkrg-dkms    scripts/ usr/src/$(DEB_SOURCE)-$(DEB_VERSION_UPSTREAM)
+	dh_install -p lkrg-dkms    src/ usr/src/$(DEB_SOURCE)-$(DEB_VERSION_UPSTREAM)
+	dh_install -p lkrg-dkms    Makefile usr/src/$(DEB_SOURCE)-$(DEB_VERSION_UPSTREAM)
+	dh_install -p lkrg-systemd scripts/bootup/systemd/lkrg.service lib/systemd/system
+	mkdir -p debian/tmp/etc/sysctl.d
+	mkdir -p debian/tmp/etc/modules-load.d
+	cp debian/lkrg-dkms.sysctl debian/tmp/etc/sysctl.d/30-lkrg-dkms.conf
+	cp debian/lkrg-dkms.modules debian/tmp/etc/modules-load.d/lkrg-dkms.conf
+	dh_install -p lkrg-dkms    debian/tmp/etc/sysctl.d/30-lkrg-dkms.conf etc/sysctl.d
+	dh_install -p lkrg-dkms    debian/tmp/etc/modules-load.d/lkrg-dkms.conf etc/modules-load.d
+
+override_dh_dkms:
+	dh_dkms -V $(DEB_VERSION_UPSTREAM)
+
+override_dh_auto_configure:
+override_dh_auto_build:
+override_dh_auto_test:
+override_dh_auto_install:
+override_dh_auto_clean:
+
+override_dh_installsystemd:
+	dh_installsystemd --no-enable --no-stop-on-upgrade
+
+override_dh_missing:
+	dh_missing --list-missing --fail-missing

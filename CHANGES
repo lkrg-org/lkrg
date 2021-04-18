@@ -1,3 +1,9 @@
+The following major changes have been made between LKRG 0.9.0 and current:
+
+ *) Add the debian/ dir in order to support the Debian build system based on
+    pbuilder/dpkg-buildpackage.
+
+
 The following major changes have been made between LKRG 0.8.1 and 0.9.0:
 
  *) Support new mainline kernel versions 5.8 to 5.12 (inclusive) and new stable

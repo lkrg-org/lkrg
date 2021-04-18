@@ -1,0 +1,12 @@
+---
+Archive: github
+Name: lkrg
+Contact: https://www.openwall.com/lists/lkrg-users/
+Security-Contact: Adam 'pi3' Zabrocki <pi3@pi3.com.pl>
+#Donation:
+Bug-Database: https://github.com/openwall/lkrg/issues
+Bug-Submit: https://github.com/openwall/lkrg/issues/new
+Repository: https://github.com/openwall/lkrg/
+Repository-Browse: https://github.com/openwall/lkrg/
+#Screenshots:
+Changelog: https://github.com/openwall/lkrg/blob/main/CHANGES
