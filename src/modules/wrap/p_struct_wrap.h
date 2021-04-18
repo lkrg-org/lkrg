@@ -140,7 +140,7 @@ static inline unsigned int p_core_size(struct module *p_mod) {
 
 // #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
 
-#ifdef CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE
+#if defined(CONFIG_JUMP_LABEL) && defined(CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE)
 
 static inline unsigned long p_jump_entry_code(const struct jump_entry *entry) {
     return (unsigned long)((unsigned long)&entry->code + entry->code);
@@ -156,7 +156,7 @@ static inline struct static_key *p_jump_entry_key(const struct jump_entry *entry
     return (struct static_key *)((unsigned long)&entry->key + offset);
 }
 
-#else
+#elif defined(CONFIG_JUMP_LABEL)
 
 static inline unsigned long p_jump_entry_code(const struct jump_entry *entry) {
     return (unsigned long)entry->code;
