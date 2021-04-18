@@ -390,4 +390,8 @@ static inline int p_lkrg_counter_lock_val_read(p_lkrg_counter_lock *p_arg) {
  #error "LKRG does not support RT kernels (PREEMPT_RT is enabled)"
 #endif
 
+#if defined(CONFIG_TRIM_UNUSED_KSYMS) && !defined(CONFIG_SECURITY_LKRG)
+ #error "LKRG requires CONFIG_TRIM_UNUSED_KSYMS to be disabled if it should be built as an out-of-tree kernel module"
+#endif
+
 #endif
