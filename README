@@ -322,6 +322,11 @@ The sysctl's are (with default values specified in braces):
   have root privileges and try to load a module explicitly (they could simply
   flip this setting or even unload LKRG first).
 
+  Please note that enabling this setting (too) early (e.g., using the module
+  parameter or /etc/sysctl.*) may cause the system to fail to complete bootup
+  (if required modules are still being loaded in later stages of bootup, which
+  varies between distributions and system configurations).
+
   Also relevant is the kernel's kernel.modules_disabled sysctl, which fully
   disables module loading until the system is rebooted.
 
