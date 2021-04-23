@@ -3,9 +3,10 @@
 [Distribution]
 Distribution=ubuntu
 # Linux version per release:
-#   focal  - v5.4
-#   groovy - v5.8
-Release=groovy
+#   focal   - v5.4
+#   groovy  - v5.8
+#   hirsute - v5.11
+Release=hirsute
 
 [Output]
 Bootable=yes

@@ -23,7 +23,7 @@ jobs:
             - name: Create bootable image using mkosi
               run: |
                   .github/workflows/ubuntu-kernel-daily.sh
-                  sudo mkosi -r groovy -p '!linux-virtual' --cache=mkosi.cache --prepare-script=.github/workflows/dpkg-i.sh
+                  sudo mkosi -r hirsute -p '!linux-virtual' --cache=mkosi.cache --prepare-script=.github/workflows/dpkg-i.sh
 
             - name: Boot image on qemu
               run: |
