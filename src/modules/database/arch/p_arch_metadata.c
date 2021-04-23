@@ -104,6 +104,14 @@ int p_register_arch_metadata(void) {
    }
 #endif
 
+#if defined(CONFIG_HAVE_STATIC_CALL)
+   if (p_install_arch_static_call_transform_hook()) {
+      p_print_log(P_LKRG_ERR,
+             "ERROR: Can't hook 'arch_jump_label_transform' function :(\n");
+      return P_LKRG_GENERAL_ERROR;
+   }
+#endif
+
    return P_LKRG_SUCCESS;
 }
 
@@ -126,6 +134,9 @@ int p_unregister_arch_metadata(void) {
 #endif
 #if defined(CONFIG_FUNCTION_TRACER)
    p_uninstall_ftrace_enable_sysctl_hook();
+#endif
+#if defined(CONFIG_HAVE_STATIC_CALL)
+   p_uninstall_arch_static_call_transform_hook();
 #endif
 
    return P_LKRG_SUCCESS;

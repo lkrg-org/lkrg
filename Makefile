@@ -40,6 +40,7 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/modules/database/JUMP_LABEL/p_arch_jump_label_transform_apply/p_arch_jump_label_transform_apply.o \
                   src/modules/database/FTRACE/p_ftrace_modify_all_code/p_ftrace_modify_all_code.o \
                   src/modules/database/FTRACE/p_ftrace_enable_sysctl/p_ftrace_enable_sysctl.o \
+                  src/modules/database/TRACEPOINT/p_arch_static_call_transform/p_arch_static_call_transform.o \
                   src/modules/database/p_database.o \
                   src/modules/notifiers/p_notifiers.o \
                   src/modules/self-defense/hiding/p_hiding.o \

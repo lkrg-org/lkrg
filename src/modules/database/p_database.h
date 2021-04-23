@@ -94,6 +94,13 @@ typedef struct p_cpu_info {
 #include "FTRACE/p_ftrace_enable_sysctl/p_ftrace_enable_sysctl.h"
 #endif
 
+#if defined(CONFIG_HAVE_STATIC_CALL)
+/*
+ * Since kernel 5.10+ TRACEPOINTs don't use *_JUMP_LABEL engine on x86(-64)
+ */
+#include "TRACEPOINT/p_arch_static_call_transform/p_arch_static_call_transform.h"
+#endif
+
 enum p_jump_label_state {
 
    P_JUMP_LABEL_NONE,
