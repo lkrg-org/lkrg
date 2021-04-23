@@ -27,7 +27,7 @@ if [ "$1" == "install" ]; then
 	exit 1
     else
 	echo -e "       ${P_GREEN}Installing ${P_YL}lkrg.service${P_GREEN} file under ${P_YL}$P_SYSTEMD_DIR${P_GREEN} folder${P_NC}"
-	cp -a scripts/bootup/systemd/lkrg.service "$P_SYSTEMD_DIR/lkrg.service"
+	install -pm 644 -o root -g root scripts/bootup/systemd/lkrg.service "$P_SYSTEMD_DIR/lkrg.service"
 	echo -e "       ${P_GREEN}Enabling ${P_YL}lkrg.service${P_GREEN} on bootup${P_NC}"
 	systemctl enable lkrg.service
 	echo -e "       ${P_GREEN}To start ${P_YL}lkrg.service${P_GREEN} please use: ${P_YL}systemctl start lkrg${P_NC}"
