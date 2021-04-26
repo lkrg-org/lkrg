@@ -24,17 +24,17 @@ echo -e "  ${P_GREEN}[+] ${P_WHITE}Systemd detected${P_NC}"
 
 if [ "$1" == "install" ]; then
     if [ -f "$P_SYSTEMD_DIR/lkrg.service" ]; then
-	echo -e "      ${P_RED}ERROR! ${P_YL}lkrg.service${P_RED} file already exists under ${P_YL}$P_SYSTEMD_DIR${P_RED} folder${P_NC}"
+	echo -e "      ${P_RED}ERROR! ${P_YL}lkrg.service${P_RED} file already exists under ${P_YL}$P_SYSTEMD_DIR${P_RED} directory${P_NC}"
 	exit 1
     else
-	echo -e "       ${P_GREEN}Installing ${P_YL}lkrg.service${P_GREEN} file under ${P_YL}$P_SYSTEMD_DIR${P_GREEN} folder${P_NC}"
+	echo -e "       ${P_GREEN}Installing ${P_YL}lkrg.service${P_GREEN} file under ${P_YL}$P_SYSTEMD_DIR${P_GREEN} directory${P_NC}"
 	install -pm 644 -o root -g root scripts/bootup/systemd/lkrg.service "$P_SYSTEMD_DIR/lkrg.service"
 	echo -e "       ${P_GREEN}Enabling ${P_YL}lkrg.service${P_GREEN} on bootup${P_NC}"
 	systemctl enable lkrg.service
 	echo -e "       ${P_GREEN}To start ${P_YL}lkrg.service${P_GREEN} please use: ${P_YL}systemctl start lkrg${P_NC}"
     fi
     if [ ! -e "$P_SYSCTL_DIR/lkrg.conf" ]; then
-	echo -e "       ${P_GREEN}Installing ${P_YL}lkrg.conf${P_GREEN} file under ${P_YL}$P_SYSCTL_DIR${P_GREEN} folder${P_NC}"
+	echo -e "       ${P_GREEN}Installing ${P_YL}lkrg.conf${P_GREEN} file under ${P_YL}$P_SYSCTL_DIR${P_GREEN} directory${P_NC}"
 	install -pm 644 -o root -g root scripts/bootup/lkrg.conf "$P_SYSCTL_DIR/lkrg.conf"
     else
 	echo -e "       ${P_YL}lkrg.conf${P_GREEN} is already installed, skipping${P_NC}"
@@ -44,10 +44,10 @@ elif [ "$1" == "uninstall" ]; then
     systemctl stop lkrg.service
     echo -e "       ${P_GREEN}Disabling ${P_YL}lkrg.service${P_GREEN} on bootup${P_NC}"
     systemctl disable lkrg.service
-    echo -e "       ${P_GREEN}Deleting ${P_YL}lkrg.service${P_GREEN} file from the ${P_YL}$P_SYSTEMD_DIR${P_GREEN} folder${P_NC}"
+    echo -e "       ${P_GREEN}Deleting ${P_YL}lkrg.service${P_GREEN} file from the ${P_YL}$P_SYSTEMD_DIR${P_GREEN} directory${P_NC}"
     rm "$P_SYSTEMD_DIR/lkrg.service"
     if cmp -s "$P_SYSCTL_DIR/lkrg.conf" scripts/bootup/lkrg.conf; then
-        echo -e "       ${P_GREEN}Deleting unmodified ${P_YL}lkrg.conf${P_GREEN} file from the ${P_YL}$P_SYSCTL_DIR${P_GREEN} folder${P_NC}"
+        echo -e "       ${P_GREEN}Deleting unmodified ${P_YL}lkrg.conf${P_GREEN} file from the ${P_YL}$P_SYSCTL_DIR${P_GREEN} directory${P_NC}"
         rm "$P_SYSCTL_DIR/lkrg.conf"
     else
         echo -e "       ${P_YL}$P_SYSCTL_DIR/lkrg.conf${P_GREEN} was modified, preserve it as ${P_YL}$P_SYSCTL_DIR/lkrg.conf.saved${P_NC}"
