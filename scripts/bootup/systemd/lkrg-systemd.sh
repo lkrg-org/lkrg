@@ -23,8 +23,8 @@ P_NC='\033[0m' # No Color
 echo -e "  ${P_GREEN}[+] ${P_WHITE}Systemd detected${P_NC}"
 
 if [ "$1" == "install" ]; then
-	if [ -f "$P_SYSTEMD_DIR/lkrg.service" ]; then
-		echo -e "       ${P_RED}ERROR! ${P_YL}lkrg.service${P_RED} file already exists under ${P_YL}$P_SYSTEMD_DIR${P_RED} directory${P_NC}"
+	if [ -e "$P_SYSTEMD_DIR/lkrg.service" ]; then
+		echo -e "       ${P_RED}ERROR! ${P_YL}lkrg.service${P_RED} already exists under ${P_YL}$P_SYSTEMD_DIR${P_RED} directory${P_NC}"
 		exit 1
 	else
 		echo -e "       ${P_GREEN}Installing ${P_YL}lkrg.service${P_GREEN} file under ${P_YL}$P_SYSTEMD_DIR${P_GREEN} directory${P_NC}"
@@ -33,11 +33,11 @@ if [ "$1" == "install" ]; then
 		systemctl enable lkrg.service
 		echo -e "       ${P_GREEN}To start ${P_YL}lkrg.service${P_GREEN} please use: ${P_YL}systemctl start lkrg${P_NC}"
 	fi
-	if [ ! -e "$P_SYSCTL_DIR/lkrg.conf" ]; then
+	if [ -e "$P_SYSCTL_DIR/lkrg.conf" ]; then
+		echo -e "       ${P_YL}lkrg.conf${P_GREEN} is already installed, skipping${P_NC}"
+	else
 		echo -e "       ${P_GREEN}Installing ${P_YL}lkrg.conf${P_GREEN} file under ${P_YL}$P_SYSCTL_DIR${P_GREEN} directory${P_NC}"
 		install -pm 644 -o root -g root scripts/bootup/lkrg.conf "$P_SYSCTL_DIR/lkrg.conf"
-	else
-		echo -e "       ${P_YL}lkrg.conf${P_GREEN} is already installed, skipping${P_NC}"
 	fi
 elif [ "$1" == "uninstall" ]; then
 	echo -e "       ${P_GREEN}Stopping ${P_YL}lkrg.service${P_NC}"
