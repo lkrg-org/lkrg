@@ -49,8 +49,8 @@ elif [ "$1" == "uninstall" ]; then
     if cmp -s "$P_SYSCTL_DIR/lkrg.conf" scripts/bootup/lkrg.conf; then
         echo -e "       ${P_GREEN}Deleting unmodified ${P_YL}lkrg.conf${P_GREEN} file from the ${P_YL}$P_SYSCTL_DIR${P_GREEN} folder${P_NC}"
         rm "$P_SYSCTL_DIR/lkrg.conf"
-    else
-        echo -e "       ${P_YL}$P_SYSCTL_DIR/lkrg.conf${P_GREEN} was modified, preserve it as ${P_YL}$P_SYSCTL_DIR/lkrg.conf.saved${P_NC}"
+    elif [ -e "$P_SYSCTL_DIR/lkrg.conf" ]; then
+        echo -e "       ${P_YL}$P_SYSCTL_DIR/lkrg.conf${P_GREEN} was modified, preserving it as ${P_YL}$P_SYSCTL_DIR/lkrg.conf.saved${P_NC}"
         echo -e "       ${P_GREEN}If you do not need it anymore, delete it manually${P_NC}"
         mv "$P_SYSCTL_DIR/lkrg.conf"{,.saved}
     fi
