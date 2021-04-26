@@ -23,7 +23,7 @@
 
 #if defined(P_LKRG_CI_ARCH_STATIC_CALL_TRANSFORM_H)
 
-char p_arch_static_call_transform_kretprobe_state = 0;
+static char p_arch_static_call_transform_kretprobe_state = 0;
 
 static struct kretprobe p_arch_static_call_transform_kretprobe = {
     .kp.symbol_name = "arch_static_call_transform",
@@ -34,11 +34,11 @@ static struct kretprobe p_arch_static_call_transform_kretprobe = {
     .maxactive = 40,
 };
 
-unsigned long p_tracepoint_tmp_text;
-struct module *p_module1;
-struct module *p_module2;
-unsigned int p_module1_idx;
-unsigned int p_module2_idx;
+static unsigned long p_tracepoint_tmp_text;
+static struct module *p_module1;
+static struct module *p_module2;
+static unsigned int p_module1_idx;
+static unsigned int p_module2_idx;
 
 notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
@@ -49,6 +49,11 @@ notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, 
    p_debug_kprobe_log(
           "p_arch_static_call_transform_entry: comm[%s] Pid:%d\n",current->comm,current->pid);
 
+   /*
+    * We don't need to take any lock here because there can be only one instance of
+    * 'arch_static_call_transform' function running at a time. It's being guarded in
+    * a few ways by upper layer via 'static_call_lock', 'tracepoints_mutex' and 'event_mutex'
+    */
    p_module1_idx = p_module2_idx = p_tracepoint_tmp_text = 0;
    p_module1 = p_module2 = NULL;
 
