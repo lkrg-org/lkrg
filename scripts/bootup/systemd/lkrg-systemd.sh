@@ -45,7 +45,7 @@ elif [ "$1" == "uninstall" ]; then
 	systemctl disable lkrg.service
 	echo -e "       ${P_GREEN}Deleting ${P_YL}lkrg.service${P_GREEN} file from ${P_YL}$P_SYSTEMD_DIR${P_GREEN} directory${P_NC}"
 	rm "$P_SYSTEMD_DIR/lkrg.service"
-	if cmp -s "$P_SYSCTL_DIR/lkrg.conf" scripts/bootup/lkrg.conf; then
+	if diff -q "$P_SYSCTL_DIR/lkrg.conf" scripts/bootup/lkrg.conf; then
 		echo -e "       ${P_GREEN}Deleting unmodified ${P_YL}lkrg.conf${P_GREEN} file from ${P_YL}$P_SYSCTL_DIR${P_GREEN} directory${P_NC}"
 		rm "$P_SYSCTL_DIR/lkrg.conf"
 	elif [ -e "$P_SYSCTL_DIR/lkrg.conf" ]; then
