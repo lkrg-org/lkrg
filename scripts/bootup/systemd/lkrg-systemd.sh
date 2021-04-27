@@ -24,8 +24,13 @@ echo -e "  ${P_GREEN}[+] ${P_WHITE}Systemd detected${P_NC}"
 
 if [ "$1" == "install" ]; then
 	if [ -e "$P_SYSTEMD_DIR/lkrg.service" ]; then
-		echo -e "       ${P_RED}ERROR! ${P_YL}lkrg.service${P_RED} already exists under ${P_YL}$P_SYSTEMD_DIR${P_RED} directory${P_NC}"
-		exit 1
+		if diff -q "$P_SYSTEMD_DIR/lkrg.service" \
+		   scripts/bootup/systemd/lkrg.service; then
+			echo -e "       The proper ${P_YL}lkrg.service${P_RED} already exists under ${P_YL}$P_SYSTEMD_DIR${P_RED} directory, skipping${P_NC}"
+		else
+			echo -e "       ${P_RED}ERROR! Another ${P_YL}lkrg.service${P_RED} exists under ${P_YL}$P_SYSTEMD_DIR${P_RED} directory${P_NC}"
+			exit 1
+		fi
 	else
 		echo -e "       ${P_GREEN}Installing ${P_YL}lkrg.service${P_GREEN} file under ${P_YL}$P_SYSTEMD_DIR${P_GREEN} directory${P_NC}"
 		install -pm 644 -o root -g root scripts/bootup/systemd/lkrg.service "$P_SYSTEMD_DIR/lkrg.service"
