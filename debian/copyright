@@ -13,6 +13,15 @@ Files: debian/*
 Copyright: 2020-2021 Mikhail Morfikov <mmorfikov@gmail.com>
 License: GPL-2.0
 
+Files: scripts/copy-builtin.sh
+Copyright: 2021 RageLtMan
+License: GPL-2.0
+
+Files: mkosi.*
+       .github/workflows/*
+Copyright: 2021 Vitaly Chikunov
+License: GPL-2.0
+
 License: GPL-2.0
  This package is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by

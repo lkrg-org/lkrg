@@ -1,3 +1,13 @@
+lkrg (0.9.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/copyright:
+    + Add missing copyrights.
+  * debian/lkrg-dkms.sysctl:
+    + Add the LKRG sysctl documentation.
+
+ -- Mikhail Morfikov <mmorfikov@gmail.com>  Tue, 27 Apr 2021 20:11:24 +0200
+
 lkrg (0.9.0-1) unstable; urgency=medium
 
   * Initial Release (Closes: #944476)
