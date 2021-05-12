@@ -1,0 +1,144 @@
+#!/bin/sh
+#
+# LKRG	Linux Kernel Runtime Guard
+#
+# chkconfig: 2345 01 99
+# description: Linux Kernel Runtime Guard
+# config: /etc/sysctl.d/lkrg.conf
+
+# Do not load RH compatibility interface.
+WITHOUT_RC_COMPAT=1
+
+# Source function library.
+. /etc/init.d/functions
+
+NAME="Linux Kernel Runtime Guard"
+CONFIG="/etc/sysctl.d/lkrg.conf"
+RETVAL=0
+
+check_running()
+{
+	grep -qw p_lkrg /proc/modules
+}
+
+check_nolkrg()
+{
+	grep -qw nolkrg /proc/cmdline
+}
+
+start()
+{
+	if check_running; then
+		msg_already_running "$NAME"
+		echo
+		exit 0
+	fi
+
+	if [ "${1-}" != "force" ] && check_nolkrg; then
+		echo "$NAME: nolkrg kernel parameter passed, do not load"
+		echo "To force service start use force-start command"
+		RETVAL=1
+		return $RETVAL
+	fi
+
+	msg_starting "$NAME"
+	modprobe p_lkrg
+	RETVAL=$?
+
+	if [ "$RETVAL" -eq 0 ] && [ -f "$CONFIG" ]; then
+		sysctl -p "$CONFIG" ||
+			echo 'WARNING: could not set settings'
+	fi
+
+	if [ "$RETVAL" -eq 0 ]; then
+		success "$NAME startup"
+	else
+		failure "$NAME startup"
+	fi
+
+	echo
+
+	return $RETVAL
+}
+
+stop()
+{
+	if ! check_running; then
+		msg_not_running "$NAME"
+		echo
+		exit 0
+	fi
+
+	msg_stopping "$NAME"
+	modprobe -r p_lkrg
+	RETVAL=$?
+
+	if [ "$RETVAL" -eq 0 ]; then
+		success "$NAME stopping"
+	else
+		failure "$NAME stopping"
+	fi
+
+	echo
+
+	return $RETVAL
+}
+
+restart()
+{
+	force=
+	if check_running; then
+		force=force
+	fi
+
+	stop
+	start $force
+}
+
+reload()
+{
+	restart
+}
+
+# See how we were called.
+case "$1" in
+	start)
+		start
+		;;
+	force-start)
+		start force
+		;;
+	stop)
+		stop
+		;;
+	reload)
+		reload
+		;;
+	restart)
+		restart
+		;;
+	condstop)
+		if check_running; then
+			stop
+		fi
+		;;
+	condrestart)
+		if check_running; then
+			restart
+		fi
+		;;
+	condreload)
+		if check_running; then
+			reload
+		fi
+		;;
+	status)
+		check_running
+		RETVAL=$?
+		;;
+	*)
+		msg_usage "${0##*/} {start|force-start|stop|reload|restart|condstop|condrestart|condreload|status}"
+		RETVAL=1
+esac
+
+exit $RETVAL
