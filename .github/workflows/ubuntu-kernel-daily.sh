@@ -21,7 +21,8 @@ do
 	| while read subdir; do
 		url="$listurl$subdir/amd64/"
 		echo >&2 "Trying $url"
-		if page=$(curl -s --fail "$url"); then
+		if page=$(curl -s --fail "$url") &&
+		   echo "$page" | grep -q 'generic.*_amd64\.deb'; then
 			banner $subdir >&2
 			# Show Ubuntu commit and build status.
 			curl --fail "$url/aggregate.yaml" || curl "$url/summary.yaml"
