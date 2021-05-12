@@ -44,7 +44,7 @@ jobs:
                   grep 'Linux version' boot.log
                   grep 'LKRG initialized successfully' boot.log
             - name: Check that boot.log does not contain problems
-              run: "! egrep 'Panic|BUG:|WARNING:|Oops|Call Trace' boot.log"
+              run: "! egrep 'Kernel panic|BUG:|WARNING:|Oops|Call Trace' boot.log"
             - name: Check that boot.log contains shutdown sequence
               run: |
                   grep 'Reached target.*Power-Off' boot.log
