@@ -9,7 +9,7 @@ on top of a wide range of mainline and distros' kernels, without needing to
 patch those.  We currently support kernel versions ranging from as far back as
 RHEL7's (and its many clones/revisions) and Ubuntu 16.04's to latest mainline
 and distros' kernels.  For this release, we've tested LKRG with Linux kernels
-up to and including 5.7.
+up to and including 5.12.
 
 LKRG currently supports the x86-64, 32-bit x86, AArch64 (ARM64), and 32-bit ARM
 CPU architectures.
@@ -280,7 +280,7 @@ The sysctl's are (with default values specified in braces):
   makes the system reboot on kernel panic.  For example, kernel.panic=60 in
   /etc/sysctl.conf or in a file under the /etc/sysctl.d directory, or panic=60
   on the kernel's command-line, will make the system reboot in 60 seconds after
-  a panic.  This provides a brief opportunity read the panic message on the
+  a panic.  This provides a brief opportunity to read the panic message on the
   console yet makes an unattended server try to come back up on its own.
 
   Profiles are currently available via sysctl only - there are no corresponding

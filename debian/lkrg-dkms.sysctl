@@ -64,7 +64,7 @@
 #  makes the system reboot on kernel panic.  For example, kernel.panic=60 in
 #  /etc/sysctl.conf or in a file under the /etc/sysctl.d directory, or panic=60
 #  on the kernel's command-line, will make the system reboot in 60 seconds after
-#  a panic.  This provides a brief opportunity read the panic message on the
+#  a panic.  This provides a brief opportunity to read the panic message on the
 #  console yet makes an unattended server try to come back up on its own.
 #
 #  Profiles are currently available via sysctl only - there are no corresponding
