@@ -1,3 +1,10 @@
+lkrg (0.9.1-2) unstable; urgency=medium
+
+  * Drop the debian/lkrg-dkms.sysctl file altogether and use the provided
+    scripts/bootup/lkrg.conf file instead.
+
+ -- Mikhail Morfikov <mmorfikov@gmail.com>  Tue, 18 May 2021 19:27:18 +0200
+
 lkrg (0.9.1-1) unstable; urgency=medium
 
   * New upstream release.

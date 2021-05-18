@@ -17,7 +17,7 @@ override_dh_install:
 	dh_install -p lkrg-systemd scripts/bootup/systemd/lkrg.service lib/systemd/system
 	mkdir -p debian/tmp/etc/sysctl.d
 	mkdir -p debian/tmp/etc/modules-load.d
-	cp debian/lkrg-dkms.sysctl debian/tmp/etc/sysctl.d/30-lkrg-dkms.conf
+	cp scripts/bootup/lkrg.conf debian/tmp/etc/sysctl.d/30-lkrg-dkms.conf
 	cp debian/lkrg-dkms.modules debian/tmp/etc/modules-load.d/lkrg-dkms.conf
 	dh_install -p lkrg-dkms    debian/tmp/etc/sysctl.d/30-lkrg-dkms.conf etc/sysctl.d
 	dh_install -p lkrg-dkms    debian/tmp/etc/modules-load.d/lkrg-dkms.conf etc/modules-load.d
