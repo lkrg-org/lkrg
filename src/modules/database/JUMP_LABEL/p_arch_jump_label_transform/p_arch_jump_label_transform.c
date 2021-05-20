@@ -69,7 +69,7 @@ notrace int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, s
        * OK, *_JUMP_LABEL tries to modify kernel core .text section
        */
       p_db.p_jump_label.p_state = P_JUMP_LABEL_CORE_TEXT;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0)
+#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
    } else if ( (p_module = P_SYM(p_module_text_address)(p_addr)) != NULL) {
 #else
    } else if ( (p_module = __module_text_address(p_addr)) != NULL) {

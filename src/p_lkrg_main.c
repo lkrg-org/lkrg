@@ -425,7 +425,7 @@ static int __init p_lkrg_register(void) {
  #endif
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0)
+#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
    P_SYM(p_module_address) = (struct module* (*)(unsigned long))P_SYM(p_kallsyms_lookup_name)("__module_address");
 
    if (!P_SYM(p_module_address)) {

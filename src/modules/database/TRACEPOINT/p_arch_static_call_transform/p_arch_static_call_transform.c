@@ -67,7 +67,7 @@ notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, 
 
          p_tracepoint_tmp_text++;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0)
+#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
       } else if ( (p_module1 = P_SYM(p_module_text_address)(p_tramp)) != NULL) {
 #else
       } else if ( (p_module1 = __module_text_address(p_tramp)) != NULL) {
@@ -101,7 +101,7 @@ notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, 
 
          p_tracepoint_tmp_text++;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0)
+#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
       } else if ( (p_module2 = P_SYM(p_module_text_address)(p_site)) != NULL) {
 #else
       } else if ( (p_module2 = __module_text_address(p_site)) != NULL) {

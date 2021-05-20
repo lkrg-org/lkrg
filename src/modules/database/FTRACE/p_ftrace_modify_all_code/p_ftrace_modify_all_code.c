@@ -84,7 +84,7 @@ notrace int p_ftrace_modify_all_code_entry(struct kretprobe_instance *p_ri, stru
 
          p_ftrace_tmp_text++;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0)
+#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
       } else if ( (p_module = P_SYM(p_module_text_address)(p_rec->ip)) != NULL) {
 #else
       } else if ( (p_module = __module_text_address(p_rec->ip)) != NULL) {

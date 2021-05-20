@@ -1,3 +1,8 @@
+The following major changes have been made since LKRG 0.9.1:
+
+ *) Support new stable kernels 5.4.118+
+
+
 The following major changes have been made between LKRG 0.9.0 and 0.9.1:
 
  *) Support CONFIG_HAVE_STATIC_CALL on Linux 5.10+

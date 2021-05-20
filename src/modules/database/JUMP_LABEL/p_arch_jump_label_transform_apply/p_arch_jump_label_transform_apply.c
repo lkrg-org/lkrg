@@ -113,7 +113,7 @@ notrace int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri,
 
          p_text++;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0)
+#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
       } else if ( (p_module = P_SYM(p_module_text_address)(p_jl_batch_addr[p_cnt])) != NULL) {
 #else
       } else if ( (p_module = __module_text_address(p_jl_batch_addr[p_cnt])) != NULL) {
