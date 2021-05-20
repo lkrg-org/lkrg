@@ -217,7 +217,9 @@ typedef struct _p_lkrg_global_symbols_structure {
    void (*p_native_write_cr4)(unsigned long p_val);
  #endif
 #endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0) || \
+ (LINUX_VERSION_CODE >= KERNEL_VERSION(5,4,118) && LINUX_VERSION_CODE < KERNEL_VERSION(5,5,0))
+#define P_LKRG_UNEXPORTED_MODULE_ADDRESS
    struct module* (*p_module_address)(unsigned long p_val);
    struct module* (*p_module_text_address)(unsigned long p_val);
 #endif
