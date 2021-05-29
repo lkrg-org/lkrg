@@ -40,20 +40,29 @@ static struct module *p_module2;
 static unsigned int p_module1_idx;
 static unsigned int p_module2_idx;
 
+static p_lkrg_counter_lock p_static_call_spinlock;
+
 notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
    unsigned long p_site = p_regs_get_arg1(p_regs);
    unsigned long p_tramp = p_regs_get_arg2(p_regs);
    unsigned int p_tmp;
+   unsigned long p_flags;
 
    p_debug_kprobe_log(
           "p_arch_static_call_transform_entry: comm[%s] Pid:%d\n",current->comm,current->pid);
 
-   /*
-    * We don't need to take any lock here because there can be only one instance of
-    * 'arch_static_call_transform' function running at a time. It's being guarded in
-    * a few ways by upper layer via 'static_call_lock', 'tracepoints_mutex' and 'event_mutex'
-    */
+   do {
+      p_lkrg_counter_lock_lock(&p_static_call_spinlock, &p_flags);
+      if (!p_lkrg_counter_lock_val_read(&p_static_call_spinlock))
+         break;
+      p_lkrg_counter_lock_unlock(&p_static_call_spinlock, &p_flags);
+      cpu_relax();
+   } while(1);
+   p_lkrg_counter_lock_val_inc(&p_static_call_spinlock);
+   p_lkrg_counter_lock_unlock(&p_static_call_spinlock, &p_flags);
+
+
    p_module1_idx = p_module2_idx = p_tracepoint_tmp_text = 0;
    p_module1 = p_module2 = NULL;
 
@@ -72,16 +81,20 @@ notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, 
 #else
       } else if ( (p_module1 = __module_text_address(p_tramp)) != NULL) {
 #endif
-         for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
-            if (p_db.p_module_list_array[p_tmp].p_mod == p_module1) {
-               /*
-                * OK, we found this module on our internal tracking list.
-                */
-               p_module1_idx = p_tmp;
-               break;
-            }
-         }
+         if (p_module1->state == MODULE_STATE_LIVE) {
 
+            for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
+               if (p_db.p_module_list_array[p_tmp].p_mod == p_module1) {
+                  /*
+                   * OK, we found this module on our internal tracking list.
+                   */
+                  p_module1_idx = p_tmp;
+                  break;
+               }
+            }
+         } else {
+            p_module1 = NULL;
+         }
       } else {
          /*
           * We shouldn't be here...
@@ -106,16 +119,20 @@ notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, 
 #else
       } else if ( (p_module2 = __module_text_address(p_site)) != NULL) {
 #endif
-         for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
-            if (p_db.p_module_list_array[p_tmp].p_mod == p_module2) {
-               /*
-                * OK, we found this module on our internal tracking list.
-                */
-               p_module2_idx = p_tmp;
-               break;
-            }
-         }
+         if (p_module2->state == MODULE_STATE_LIVE) {
 
+            for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
+               if (p_db.p_module_list_array[p_tmp].p_mod == p_module2) {
+                  /*
+                   * OK, we found this module on our internal tracking list.
+                   */
+                  p_module2_idx = p_tmp;
+                  break;
+               }
+            }
+         } else {
+            p_module2 = NULL;
+         }
       } else {
          /*
           * We shouldn't be here...
@@ -248,6 +265,9 @@ notrace int p_arch_static_call_transform_ret(struct kretprobe_instance *ri, stru
       }
    }
 
+   p_lkrg_counter_lock_val_dec(&p_static_call_spinlock);
+
+
    return 0;
 }
 
@@ -255,6 +275,8 @@ notrace int p_arch_static_call_transform_ret(struct kretprobe_instance *ri, stru
 int p_install_arch_static_call_transform_hook(void) {
 
    int p_tmp;
+
+   p_lkrg_counter_lock_init(&p_static_call_spinlock);
 
    if ( (p_tmp = register_kretprobe(&p_arch_static_call_transform_kretprobe)) != 0) {
       p_print_log(P_LKRG_ERR, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]\n",
