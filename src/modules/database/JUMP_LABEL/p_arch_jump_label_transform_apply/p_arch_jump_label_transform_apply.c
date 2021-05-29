@@ -32,8 +32,8 @@
 
 #ifdef P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_APPLY_H
 
-unsigned long p_jl_batch_addr[P_TP_VEC_MAX];
-unsigned int p_jl_batch_nr;
+static unsigned long p_jl_batch_addr[P_TP_VEC_MAX];
+static unsigned int p_jl_batch_nr;
 
 char p_arch_jump_label_transform_apply_kretprobe_state = 0;
 
@@ -57,7 +57,13 @@ notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p
    p_debug_kprobe_log(
           "p_arch_jump_label_transform_apply_entry: comm[%s] Pid:%d\n",current->comm,current->pid);
 
-   p_lkrg_counter_lock_lock(&p_jl_lock, &p_flags);
+   do {
+      p_lkrg_counter_lock_lock(&p_jl_lock, &p_flags);
+      if (!p_lkrg_counter_lock_val_read(&p_jl_lock))
+         break;
+      p_lkrg_counter_lock_unlock(&p_jl_lock, &p_flags);
+      cpu_relax();
+   } while(1);
    p_lkrg_counter_lock_val_inc(&p_jl_lock);
    p_lkrg_counter_lock_unlock(&p_jl_lock, &p_flags);
 

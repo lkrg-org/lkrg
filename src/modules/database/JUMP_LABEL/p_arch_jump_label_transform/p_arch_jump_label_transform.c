@@ -51,7 +51,13 @@ notrace int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, s
    p_debug_kprobe_log(
           "p_arch_jump_label_transform_entry: comm[%s] Pid:%d\n",current->comm,current->pid);
 
-   p_lkrg_counter_lock_lock(&p_jl_lock, &p_flags);
+   do {
+      p_lkrg_counter_lock_lock(&p_jl_lock, &p_flags);
+      if (!p_lkrg_counter_lock_val_read(&p_jl_lock))
+         break;
+      p_lkrg_counter_lock_unlock(&p_jl_lock, &p_flags);
+      cpu_relax();
+   } while(1);
    p_lkrg_counter_lock_val_inc(&p_jl_lock);
    p_lkrg_counter_lock_unlock(&p_jl_lock, &p_flags);
 
