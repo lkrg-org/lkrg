@@ -7,11 +7,7 @@
 ##
 
 P_SYSCTL_DIR="/etc/sysctl.d"
-P_SYSTEMD_DIR="$(systemctl show -p UnitPath | cut -d " " -f5)"
-
-case "$P_SYSTEMD_DIR" in
-	\/run/*) P_SYSTEMD_DIR=/etc/systemd/system ;;
-esac
+P_SYSTEMD_DIR="/etc/systemd/system"
 
 
 P_RED='\033[0;31m'
