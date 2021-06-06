@@ -1,0 +1,30 @@
+name: Multi-OS container builds
+on: [push, pull_request]
+
+jobs:
+    build:
+        runs-on: ubuntu-20.04
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - image: centos:7
+                      run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
+                    - image: centos:8
+                      run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
+                    - image: quay.io/centos/centos:stream8
+                      run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
+                    - image: fedora:latest
+                      run: dnf install -y kernel-devel kernel gcc make elfutils-libelf-devel
+                    - image: alt:sisyphus
+                      run: apt-get update; apt-get install -y kernel-headers-modules-un-def gcc make libelf-devel
+
+        container:
+            image: ${{ matrix.image }}
+
+        steps:
+            - uses: actions/checkout@v1
+            - run: ${{ matrix.run }}
+            - run: make -j$(nproc) KERNELRELEASE=$(cd /lib/modules; ls)
+
+# vim: sw=4
