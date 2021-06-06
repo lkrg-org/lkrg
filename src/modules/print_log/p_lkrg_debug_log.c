@@ -111,7 +111,9 @@ static struct p_addr_name {
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_unshare),
    P_LKRG_DEBUG_RULE_KPROBE(p_generic_permission),
    P_LKRG_DEBUG_RULE_KPROBE(p_scm_send),
+#if defined(CONFIG_SECCOMP)
    P_LKRG_DEBUG_RULE_KPROBE(p_seccomp),
+#endif
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setresgid),
    P_LKRG_DEBUG_RULE_KPROBE(p_security_ptrace_access),
    P_LKRG_DEBUG_RULE_KPROBE(p_compat_sys_add_key),
