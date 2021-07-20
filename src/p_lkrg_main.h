@@ -116,6 +116,13 @@
 #define P_SELINUX_VERIFY
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0) || \
+ (LINUX_VERSION_CODE >= KERNEL_VERSION(5,4,118) && LINUX_VERSION_CODE < KERNEL_VERSION(5,5,0)) || \
+ (LINUX_VERSION_CODE >= KERNEL_VERSION(4,19,191) && LINUX_VERSION_CODE < KERNEL_VERSION(4,20,0)) || \
+ (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,233) && LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0))
+#define P_LKRG_UNEXPORTED_MODULE_ADDRESS
+#endif
+
 #define nitems(val)      (sizeof(val) / sizeof(val[0]))
 
 typedef struct _p_lkrg_global_conf_structure {
@@ -219,9 +226,7 @@ typedef struct _p_lkrg_global_symbols_structure {
    void (*p_native_write_cr4)(unsigned long p_val);
  #endif
 #endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0) || \
- (LINUX_VERSION_CODE >= KERNEL_VERSION(5,4,118) && LINUX_VERSION_CODE < KERNEL_VERSION(5,5,0))
-#define P_LKRG_UNEXPORTED_MODULE_ADDRESS
+#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
    struct module* (*p_module_address)(unsigned long p_val);
    struct module* (*p_module_text_address)(unsigned long p_val);
 #endif
