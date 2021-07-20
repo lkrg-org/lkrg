@@ -207,13 +207,8 @@ unsigned int p_count_modules_from_sysfs_kobj(void) {
    spin_lock(&p_kset->list_lock);
    list_for_each_entry_safe(p_kobj, p_tmp_safe, &p_kset->list, entry) {
 
-#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
-      if (!P_SYM(p_module_address)((unsigned long)p_kobj))
+      if (!LKRG_P_MODULE_ADDRESS((unsigned long)p_kobj))
          continue;
-#else
-      if (!__module_address((unsigned long)p_kobj))
-         continue;
-#endif
 
       if (!p_kobj->state_initialized || !p_kobj->state_in_sysfs) {
          /* Weirdo state :( */
@@ -271,13 +266,8 @@ static int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
    spin_lock(&p_kset->list_lock);
    list_for_each_entry_safe(p_kobj, p_tmp_safe, &p_kset->list, entry) {
 
-#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
-      if (!P_SYM(p_module_address)((unsigned long)p_kobj))
+      if (!LKRG_P_MODULE_ADDRESS((unsigned long)p_kobj))
          continue;
-#else
-      if (!__module_address((unsigned long)p_kobj))
-         continue;
-#endif
 
       if (!p_kobj->state_initialized || !p_kobj->state_in_sysfs) {
          /* Weirdo state :( */

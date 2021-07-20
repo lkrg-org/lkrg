@@ -76,11 +76,7 @@ notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, 
 
          p_tracepoint_tmp_text++;
 
-#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
-      } else if ( (p_module1 = P_SYM(p_module_text_address)(p_tramp)) != NULL) {
-#else
-      } else if ( (p_module1 = __module_text_address(p_tramp)) != NULL) {
-#endif
+      } else if ( (p_module1 = LKRG_P_MODULE_TEXT_ADDRESS(p_tramp)) != NULL) {
          if (p_module1->state == MODULE_STATE_LIVE) {
 
             for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
@@ -114,11 +110,7 @@ notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, 
 
          p_tracepoint_tmp_text++;
 
-#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
-      } else if ( (p_module2 = P_SYM(p_module_text_address)(p_site)) != NULL) {
-#else
-      } else if ( (p_module2 = __module_text_address(p_site)) != NULL) {
-#endif
+      } else if ( (p_module2 = LKRG_P_MODULE_TEXT_ADDRESS(p_site)) != NULL) {
          if (p_module2->state == MODULE_STATE_LIVE) {
 
             for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++) {

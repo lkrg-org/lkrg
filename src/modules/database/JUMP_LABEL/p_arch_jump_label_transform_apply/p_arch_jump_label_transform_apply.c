@@ -119,11 +119,7 @@ notrace int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri,
 
          p_text++;
 
-#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
-      } else if ( (p_module = P_SYM(p_module_text_address)(p_jl_batch_addr[p_cnt])) != NULL) {
-#else
-      } else if ( (p_module = __module_text_address(p_jl_batch_addr[p_cnt])) != NULL) {
-#endif
+      } else if ( (p_module = LKRG_P_MODULE_TEXT_ADDRESS(p_jl_batch_addr[p_cnt])) != NULL) {
 
          for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
             if (p_db.p_module_list_array[p_tmp].p_mod == p_module) {

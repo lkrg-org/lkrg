@@ -242,6 +242,14 @@ typedef struct _p_lkrg_global_symbols_structure {
 
 } p_lkrg_global_syms;
 
+#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
+#define LKRG_P_MODULE_ADDRESS(p_addr)      P_SYM(p_module_address)(p_addr)
+#define LKRG_P_MODULE_TEXT_ADDRESS(p_addr) P_SYM(p_module_text_address)(p_addr)
+#else
+#define LKRG_P_MODULE_ADDRESS(p_addr)      __module_address(p_addr)
+#define LKRG_P_MODULE_TEXT_ADDRESS(p_addr) __module_text_address(p_addr)
+#endif
+
 typedef struct _p_lkrg_critical_variables {
 
    unsigned long p_dummy1;
