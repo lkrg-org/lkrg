@@ -22,6 +22,13 @@
 #ifndef P_LKRG_INTERNAL_FAST_HASH_H
 #define P_LKRG_INTERNAL_FAST_HASH_H
 
+#if defined(fallthrough)
+ #define P_FALL_THROUGH fallthrough
+#else
+ #define P_FALL_THROUGH __attribute__ ((fallthrough))
+#endif
+
+
 typedef struct uint128_t {
 
    uint64_t p_low;
