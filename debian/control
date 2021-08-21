@@ -14,7 +14,6 @@ Package: lkrg
 Architecture: all
 Depends: ${misc:Depends},
  lkrg-dkms (= ${source:Version})
-Recommends: lkrg-systemd (= ${source:Version})
 Description: Linux Kernel Runtime Guard (LKRG)
  LKRG performs runtime integrity checking of the Linux kernel and detection of
  security vulnerability exploits against the kernel.
