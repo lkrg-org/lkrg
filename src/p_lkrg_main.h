@@ -82,6 +82,14 @@
 #define p_kzfree kfree_sensitive
 #endif
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,15,0)
+#define p_read_cpu_lock get_online_cpus
+#define p_read_cpu_unlock put_online_cpus
+#else
+#define p_read_cpu_lock cpus_read_lock
+#define p_read_cpu_unlock cpus_read_unlock
+#endif
+
 #include <linux/stacktrace.h>
 #include <asm/stacktrace.h>
 #include <asm/tlbflush.h>

@@ -169,7 +169,7 @@ void p_check_integrity(struct work_struct *p_work) {
    /*
     * Checking all online CPUs critical data
     */
-   get_online_cpus();
+   p_read_cpu_lock();
 
 //   for_each_present_cpu(p_tmp) {
    //for_each_online_cpu(p_tmp) {
@@ -211,7 +211,7 @@ void p_check_integrity(struct work_struct *p_work) {
    /* Now we are safe to disable IRQs on current core */
 
    p_tmp_hash = hash_from_CPU_data(p_tmp_cpus);
-   put_online_cpus();
+   p_read_cpu_unlock();
 
    p_text_section_lock();
 
