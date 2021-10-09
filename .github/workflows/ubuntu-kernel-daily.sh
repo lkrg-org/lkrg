@@ -25,7 +25,10 @@ do
 		   echo "$page" | grep -q 'generic.*_amd64\.deb'; then
 			banner $subdir >&2
 			# Show Ubuntu commit and build status.
-			curl --fail "$url/aggregate.yaml" || curl "$url/summary.yaml"
+			curl -so .yaml --fail "$url/aggregate.yaml" || \
+			curl -so .yaml "$url/summary.yaml"
+			cat .yaml
+			[ -v GITHUB_ENV ] && sed -n '/^series:/{s/:\s*/=/p;q}' .yaml >> $GITHUB_ENV
 			echo "$page" \
 			| grep -Eio 'href="[^"]+"' \
 			| grep -o "linux.*deb"     \
