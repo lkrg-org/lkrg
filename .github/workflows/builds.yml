@@ -21,6 +21,7 @@ jobs:
 
         container:
             image: ${{ matrix.image }}
+            options: --security-opt seccomp=unconfined
 
         steps:
             - uses: actions/checkout@v1
