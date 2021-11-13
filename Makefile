@@ -9,7 +9,10 @@ P_OUTPUT = output
 P_PWD ?= $(shell pwd)
 P_KVER ?= $(shell uname -r)
 P_BOOTUP_SCRIPT ?= scripts/bootup/lkrg-bootup.sh
+P_SYSTEMD = /lib/systemd/systemd
+P_SYS_ERR = 'skipping systemd boot scripts'
 TARGET := p_lkrg
+
 ifneq ($(KERNELRELEASE),)
     KERNEL := /lib/modules/$(KERNELRELEASE)/build
 else
@@ -101,10 +104,10 @@ all:
 install:
 	$(MAKE) -C $(KERNEL) M=$(P_PWD) modules_install
 	depmod -a
-	$(P_PWD)/$(P_BOOTUP_SCRIPT) install
+	[ -f $(P_SYSTEMD) ] && $(P_PWD)/$(P_BOOTUP_SCRIPT) install || echo $(P_SYS_ERR)
 
 uninstall:
-	$(P_PWD)/$(P_BOOTUP_SCRIPT) uninstall
+	[ -f $(P_SYSTEMD) ] && $(P_PWD)/$(P_BOOTUP_SCRIPT) uninstall || echo $(P_SYS_ERR)
 
 clean:
 	$(MAKE) -C $(KERNEL) M=$(P_PWD) clean
