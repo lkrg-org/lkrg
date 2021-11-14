@@ -33,8 +33,10 @@ static struct notifier_block p_module_block_notifier = {
 
 static void p_module_notifier_wrapper(unsigned long p_event, struct module *p_kmod) {
 
-
    if (P_CTRL(p_block_modules)) {
+      p_print_log(P_LKRG_CRIT,
+             "Blocking module insertion name:[%s]\n",
+             p_kmod->name);
       p_kmod->init = p_block_always;
    }
 
