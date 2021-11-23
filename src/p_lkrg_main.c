@@ -86,6 +86,21 @@ p_ro_page p_ro __p_lkrg_read_only = {
 };
 
 
+static char *p_verify_boot_params(void) {
+
+   char **p_params_ptr = (char **)P_SYM(p_kallsyms_lookup_name)("saved_command_line");
+   char *p_params;
+
+   p_params = (p_params_ptr) ? *p_params_ptr : NULL;
+
+   if (!p_params) {
+      p_print_log(P_LKRG_ERR, "Can't find kernel boot parameters. Skipping verification!\n");
+      return 0;
+   }
+
+   return strstr(p_params, P_BOOT_DISABLE_LKRG);
+}
+
 static void p_init_page_attr(void) {
 
    unsigned long *p_long_tmp = 0;
@@ -370,17 +385,7 @@ static int __init p_lkrg_register(void) {
    char p_cpu = 0;
    char p_freeze = 0;
 
-   p_print_log(P_LKRG_CRIT, "Loading LKRG...\n");
    P_SYM(p_state_init) = 0;
-
-   /*
-    * Generate random SipHash key
-    */
-   p_global_siphash_key.p_low  = (uint64_t)get_random_long();
-   p_global_siphash_key.p_high = (uint64_t)get_random_long();
-
-   p_parse_module_params();
-   P_SYM(p_find_me) = THIS_MODULE;
 
    if (get_kallsyms_address() != P_LKRG_SUCCESS) {
       p_print_log(P_LKRG_CRIT,
@@ -393,6 +398,26 @@ static int __init p_lkrg_register(void) {
                "kallsyms_lookup_name() => 0x%lx\n",(unsigned long)P_SYM(p_kallsyms_lookup_name));
      }
 #endif
+
+   /*
+    * Verify if user disabled loading LKRG from boot parameters
+    */
+   if (p_verify_boot_params()) {
+      p_print_log(P_LKRG_CRIT,
+                  "'" P_BOOT_DISABLE_LKRG "' kernel boot parameter detected! Not loading LKRG.\n");
+      return P_LKRG_BOOT_DISABLE_LKRG;
+   }
+
+   p_print_log(P_LKRG_CRIT, "Loading LKRG...\n");
+
+   /*
+    * Generate random SipHash key
+    */
+   p_global_siphash_key.p_low  = (uint64_t)get_random_long();
+   p_global_siphash_key.p_high = (uint64_t)get_random_long();
+
+   p_parse_module_params();
+   P_SYM(p_find_me) = THIS_MODULE;
 
    P_SYM(p_freeze_processes) = (int (*)(void))P_SYM(p_kallsyms_lookup_name)("freeze_processes");
 

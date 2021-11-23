@@ -44,6 +44,9 @@
 // Can't register hot CPU plug[in/out] handler
 #define P_LKRG_EXPLOIT_DETECTION_ERROR        -105
 
+// User disabled loading LKRG from boot parameters
+#define P_LKRG_BOOT_DISABLE_LKRG              -125
+
 // Enable hash from IOMMU table? - not recommended!
 // By default disabled
 //#define P_LKRG_IOMMU_HASH_ENABLED
