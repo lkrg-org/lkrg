@@ -8,8 +8,13 @@ LKRG is a kernel module (not a kernel patch), so it can be built for and loaded
 on top of a wide range of mainline and distros' kernels, without needing to
 patch those.  We currently support kernel versions ranging from as far back as
 RHEL7's (and its many clones/revisions) and Ubuntu 16.04's to latest mainline
-and distros' kernels.  For this release, we've tested LKRG with Linux kernels
-up to and including 5.12.
+and distros' kernels.  We've tested this revision of LKRG with Linux kernels
+up to and including 5.15.x.
+
+Our latest release, LKRG 0.9.1, supports Linux kernels up to and including
+5.13.x.  For Linux 5.14+ or stable 5.4.118+ (which were released after LKRG
+0.9.1), a newer LKRG revision off GitHub is currently required (and we
+recommend that you use the latest).
 
 LKRG currently supports the x86-64, 32-bit x86, AArch64 (ARM64), and 32-bit ARM
 CPU architectures.
