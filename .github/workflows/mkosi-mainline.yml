@@ -48,7 +48,7 @@ jobs:
               run: "! egrep 'Kernel panic|BUG:|WARNING:|Oops|Call Trace' boot.log"
             - name: Check that boot.log contains shutdown sequence
               run: |
-                  grep 'Reached target.*Power-Off' boot.log
+                  grep 'Reached target.*Power.Off' boot.log
                   grep 'reboot: Power down' boot.log
 
 # vim: sw=4
