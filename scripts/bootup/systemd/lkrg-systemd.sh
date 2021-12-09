@@ -28,11 +28,11 @@ if [ "$1" == "install" ]; then
 		echo -e "       ${P_GREEN}To start ${P_YL}lkrg.service${P_GREEN} please use: ${P_YL}systemctl start lkrg${P_NC}"
 		echo -e "       ${P_GREEN}To enable ${P_YL}lkrg.service${P_GREEN} on bootup please use: ${P_YL}systemctl enable lkrg.service${P_NC}"
 	fi
-	if [ -e "$P_SYSCTL_DIR/lkrg.conf" ]; then
-		echo -e "       ${P_YL}lkrg.conf${P_GREEN} is already installed, skipping${P_NC}"
+	if [ -e "$P_SYSCTL_DIR/01-lkrg.conf" ]; then
+		echo -e "       ${P_YL}01-lkrg.conf${P_GREEN} is already installed, skipping${P_NC}"
 	else
-		echo -e "       ${P_GREEN}Installing ${P_YL}lkrg.conf${P_GREEN} file under ${P_YL}$P_SYSCTL_DIR${P_GREEN} directory${P_NC}"
-		install -pm 644 -o root -g root scripts/bootup/lkrg.conf "$P_SYSCTL_DIR/lkrg.conf"
+		echo -e "       ${P_GREEN}Installing ${P_YL}01-lkrg.conf${P_GREEN} file under ${P_YL}$P_SYSCTL_DIR${P_GREEN} directory${P_NC}"
+		install -pm 644 -o root -g root scripts/bootup/lkrg.conf "$P_SYSCTL_DIR/01-lkrg.conf"
 	fi
 elif [ "$1" == "uninstall" ]; then
 	echo -e "       ${P_GREEN}Stopping ${P_YL}lkrg.service${P_NC}"
@@ -41,13 +41,13 @@ elif [ "$1" == "uninstall" ]; then
 	systemctl disable lkrg.service
 	echo -e "       ${P_GREEN}Deleting ${P_YL}lkrg.service${P_GREEN} file from ${P_YL}$P_SYSTEMD_DIR${P_GREEN} directory${P_NC}"
 	rm "$P_SYSTEMD_DIR/lkrg.service"
-	if cmp -s "$P_SYSCTL_DIR/lkrg.conf" scripts/bootup/lkrg.conf; then
-		echo -e "       ${P_GREEN}Deleting unmodified ${P_YL}lkrg.conf${P_GREEN} file from ${P_YL}$P_SYSCTL_DIR${P_GREEN} directory${P_NC}"
-		rm "$P_SYSCTL_DIR/lkrg.conf"
-	elif [ -e "$P_SYSCTL_DIR/lkrg.conf" ]; then
-		echo -e "       ${P_YL}$P_SYSCTL_DIR/lkrg.conf${P_GREEN} was modified, preserving it as ${P_YL}$P_SYSCTL_DIR/lkrg.conf.saved${P_NC}"
+	if cmp -s "$P_SYSCTL_DIR/01-lkrg.conf" scripts/bootup/lkrg.conf; then
+		echo -e "       ${P_GREEN}Deleting unmodified ${P_YL}01-lkrg.conf${P_GREEN} file from ${P_YL}$P_SYSCTL_DIR${P_GREEN} directory${P_NC}"
+		rm "$P_SYSCTL_DIR/01-lkrg.conf"
+	elif [ -e "$P_SYSCTL_DIR/01-lkrg.conf" ]; then
+		echo -e "       ${P_YL}$P_SYSCTL_DIR/01-lkrg.conf${P_GREEN} was modified, preserving it as ${P_YL}$P_SYSCTL_DIR/01-lkrg.conf.saved${P_NC}"
 		echo -e "       ${P_GREEN}If you do not need it anymore, delete it manually${P_NC}"
-		mv "$P_SYSCTL_DIR/lkrg.conf"{,.saved}
+		mv "$P_SYSCTL_DIR/01-lkrg.conf"{,.saved}
 	fi
 else
 	echo -e "      ${P_RED}ERROR! Unknown option!${P_NC}"
