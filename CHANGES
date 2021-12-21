@@ -1,7 +1,17 @@
 The following major changes have been made since LKRG 0.9.1:
 
- *) Support new stable kernels 5.4.118+, 4.19.191+, 4.14.233+
+ *) Support new stable and mainline kernels 5.14 to at least 5.16-rc*
+ *) Support new longterm kernels 5.4.118+, 4.19.191+, 4.14.233+
  *) Support various CONFIG_SECCOMP configurations
+ *) Fix a false positive possible because of race on SECCOMP_FILTER_FLAG_TSYNC
+    where LKRG started to validate other threads' seccomp state too early
+ *) Fix support of CONFIG_HAVE_STATIC_CALL on Linux 5.10+ to avoid a race with
+    unloading of other modules
+ *) Support the "nolkrg" kernel parameter in LKRG itself (not only in systemd)
+ *) Log the blocked module name when lkrg.block_modules=1
+ *) Install/expect the sysctl settings in /etc/sysctl.d/01-lkrg.conf
+ *) Add dkms.conf
+ *) Continuous Integration and debugging build updates and improvements
 
 
 The following major changes have been made between LKRG 0.9.0 and 0.9.1:
