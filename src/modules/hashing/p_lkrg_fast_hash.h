@@ -25,7 +25,7 @@
 #if defined(fallthrough)
  #define P_FALL_THROUGH fallthrough
 #else
- #define P_FALL_THROUGH __attribute__ ((fallthrough))
+ #define P_FALL_THROUGH /* FALLTHROUGH */
 #endif
 
 
