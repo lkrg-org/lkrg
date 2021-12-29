@@ -1,4 +1,4 @@
 version=4
-https://www.openwall.com/lkrg/lkrg-(.+).tar.gz
-opts=pgpsigurlmangle=s/$/.sign/ https://www.openwall.com/lkrg/lkrg-(.+).tar.gz
+https://lkrg.org/download/lkrg-(.+).tar.gz
+opts=pgpsigurlmangle=s/$/.sign/ https://lkrg.org/download/lkrg-(.+).tar.gz
 

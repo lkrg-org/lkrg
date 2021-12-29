@@ -1,3 +1,11 @@
+lkrg (0.9.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/rules:
+    + Install the sysctl settings in /etc/sysctl.d/01-lkrg.conf.
+
+ -- Solar Designer <solar@openwall.com>  Tue, 28 Dec 2021 23:59:59 +0100
+
 lkrg (0.9.1-2) unstable; urgency=medium
 
   * Drop the debian/lkrg-dkms.sysctl file altogether and use the provided

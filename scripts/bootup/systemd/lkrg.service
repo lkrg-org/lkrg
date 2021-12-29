@@ -7,7 +7,7 @@
 
 [Unit]
 Description=Linux Kernel Runtime Guard
-Documentation=https://www.openwall.com/lkrg/
+Documentation=https://lkrg.org
 DefaultDependencies=no
 After=systemd-modules-load.service
 Before=systemd-sysctl.service

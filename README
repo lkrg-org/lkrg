@@ -9,12 +9,7 @@ on top of a wide range of mainline and distros' kernels, without needing to
 patch those.  We currently support kernel versions ranging from as far back as
 RHEL7's (and its many clones/revisions) and Ubuntu 16.04's to latest mainline
 and distros' kernels.  We've tested this revision of LKRG with Linux kernels
-up to and including 5.15.x.
-
-Our latest release, LKRG 0.9.1, supports Linux kernels up to and including
-5.13.x.  For Linux 5.14+ or stable 5.4.118+, 4.19.191+, 4.14.233+ (which were
-released after LKRG 0.9.1), a newer LKRG revision off GitHub is currently
-required (and we recommend that you use the latest).
+up to and including 5.16-rc*.
 
 LKRG currently supports the x86-64, 32-bit x86, AArch64 (ARM64), and 32-bit ARM
 CPU architectures.
@@ -31,16 +26,16 @@ Getting the sources
 
 For LKRG releases and latest source code, please refer to its homepage:
 
-	https://www.openwall.com/lkrg/
+	https://lkrg.org
 
 To download this release from there and verify it, you would have used commands
 like the below:
 
 	wget https://www.openwall.com/signatures/openwall-offline-signatures.asc
 	gpg --import openwall-offline-signatures.asc
-	wget https://www.openwall.com/lkrg/lkrg-0.9.1.tar.gz.sign
-	wget https://www.openwall.com/lkrg/lkrg-0.9.1.tar.gz
-	gpg --verify lkrg-0.9.1.tar.gz.sign lkrg-0.9.1.tar.gz
+	wget https://lkrg.org/download/lkrg-0.9.2.tar.gz.sign
+	wget https://lkrg.org/download/lkrg-0.9.2.tar.gz
+	gpg --verify lkrg-0.9.2.tar.gz.sign lkrg-0.9.2.tar.gz
 
 Please preserve the GnuPG key above and also use it to verify future releases,
 which will most likely work in a similar manner.
@@ -48,7 +43,7 @@ which will most likely work in a similar manner.
 Latest LKRG development source code is hosted on Bitbucket, from where you can
 clone the git repository to a local directory using the following command:
 
-	git clone https://github.com/openwall/lkrg
+	git clone https://github.com/lkrg-org/lkrg
 
 
 Build requirements

@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: lkrg
 Upstream-Contact: Adam 'pi3' Zabrocki <pi3@pi3.com.pl>
-Source: https://www.openwall.com/lkrg/
+Source: https://lkrg.org
 
 Files: *
 Copyright: 2015-2021 Adam 'pi3' Zabrocki <pi3@pi3.com.pl>

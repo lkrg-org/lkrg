@@ -1,4 +1,4 @@
-The following major changes have been made since LKRG 0.9.1:
+The following major changes have been made between LKRG 0.9.1 and 0.9.2:
 
  *) Support new stable and mainline kernels 5.14 to at least 5.16-rc*
  *) Support new longterm kernels 5.4.118+, 4.19.191+, 4.14.233+

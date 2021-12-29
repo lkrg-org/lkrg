@@ -2,9 +2,9 @@ Source: lkrg
 Section: kernel
 Priority: optional
 Maintainer: Mikhail Morfikov <mmorfikov@gmail.com>
-Homepage: https://www.openwall.com/lkrg/
-Vcs-Browser: https://github.com/openwall/lkrg/
-Vcs-Git: https://github.com/openwall/lkrg.git
+Homepage: https://lkrg.org
+Vcs-Browser: https://github.com/lkrg-org/lkrg
+Vcs-Git: https://github.com/lkrg-org/lkrg.git
 Standards-Version: 4.5.1.1
 Rules-Requires-Root: no
 Build-Depends: debhelper-compat (= 13),
