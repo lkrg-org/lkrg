@@ -10,7 +10,6 @@ jobs:
             matrix:
                 release:
                     - focal
-                    - groovy
                     - hirsute
         steps:
             - uses: actions/checkout@v2
