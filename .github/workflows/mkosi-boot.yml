@@ -20,6 +20,7 @@ jobs:
               # able to build images properly.
               run: |
                   sudo python3 -m pip install git+https://github.com/systemd/mkosi.git
+                  sudo sed -i 's/linux-generic/linux-virtual/' /usr/local/lib/python*/dist-packages/mkosi/__init__.py
                   echo /usr/local/bin >> $GITHUB_PATH
 
             - name: Create bootable image using mkosi
