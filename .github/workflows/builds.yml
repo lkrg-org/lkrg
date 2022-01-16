@@ -1,4 +1,4 @@
-name: Multi-OS container builds
+name: docker build
 on: [push, pull_request]
 
 jobs:
@@ -12,12 +12,22 @@ jobs:
                       run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
                     - image: centos:8
                       run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
-                    - image: quay.io/centos/centos:stream8
+                    - image: almalinux:8
                       run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
+                    - image: rockylinux:8
+                      run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
+                    - image: quay.io/centos/centos:stream8
+                      run: dnf install -y kernel-devel kernel gcc make elfutils-libelf-devel
+                    - image: quay.io/centos/centos:stream9
+                      run: dnf install -y --nobest kernel-devel-matched gcc make
                     - image: fedora:latest
                       run: dnf install -y kernel-devel kernel gcc make elfutils-libelf-devel
                     - image: alt:sisyphus
                       run: apt-get update; apt-get install -y kernel-headers-modules-un-def gcc make libelf-devel
+                    - image: opensuse/tumbleweed
+                      run: zypper -n install -y gcc make kernel-default-devel
+                    - image: opensuse/leap
+                      run: zypper -n install -y gcc make kernel-default-devel
 
         container:
             image: ${{ matrix.image }}
@@ -25,6 +35,7 @@ jobs:
 
         steps:
             - uses: actions/checkout@v1
+            - run: cat /etc/os-release
             - run: ${{ matrix.run }}
             - run: make -j$(nproc) KERNELRELEASE=$(cd /lib/modules; ls)
 
