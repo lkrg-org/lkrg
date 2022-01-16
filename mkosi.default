@@ -26,7 +26,6 @@ BuildPackages=
 	diffutils
 	gcc
 	make
-	linux-base
 	linux-virtual
 Packages=
 	sysvbanner
