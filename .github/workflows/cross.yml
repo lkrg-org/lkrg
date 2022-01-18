@@ -1,0 +1,49 @@
+name: docker cross build
+on: [push, pull_request]
+
+# Notes:
+#
+# - There is harmless warning:
+#
+#     "[Warning] The requested image's platform (linux/arm64/v8) does not
+#     match the detected host platform (linux/amd64) and no specific
+#     platform was requested"
+#
+#   It's hard to remove, perhaps, because we using 'build' and not 'buildx',
+#   which requires more setup.
+#
+# - git clean is not necessarily on GA, but added so it's easier to copy-paste
+#   Dockerfile for manual runs.
+
+jobs:
+    cross:
+        runs-on: ubuntu-20.04
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - image: arm64v8/ubuntu:impish
+                      packages: libelf-dev linux-headers-generic
+                    - image: arm32v7/alt:latest
+                      packages: elfutils kernel-headers-modules-std-def
+                    - image: i386/ubuntu:bionic
+                      packages: libelf-dev linux-headers-generic
+        steps:
+            - uses: docker/setup-qemu-action@v1
+            - uses: actions/checkout@v1
+            - name: Create Dockerfile
+              run: |
+                  cat <<EOF >Dockerfile
+                  FROM ${{ matrix.image }}
+                  RUN apt-get -y update && \
+                      apt-get install -y git file gcc make ${{ matrix.packages }}
+                  WORKDIR /src
+                  COPY . .
+                  RUN git clean -dxfq
+                  RUN gcc -v; cat /etc/os-release
+                  RUN make -j\$(nproc) KERNELRELEASE=\$(cd /lib/modules; ls)
+                  RUN file p_lkrg.ko
+                  EOF
+            - run: docker build .
+
+# vim: sw=4
