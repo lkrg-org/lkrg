@@ -30,6 +30,7 @@
 #include <linux/cpu.h>
 #include <linux/random.h>
 #include <linux/fs.h>
+#include <linux/proc_fs.h>
 #include <asm/uaccess.h>
 #include <linux/version.h>
 #include <linux/cpufreq.h>
@@ -157,6 +158,7 @@ typedef struct _p_lkrg_global_conf_structure {
    unsigned int p_pint_enforce;
    unsigned int p_kint_enforce;
    unsigned int p_trigger;
+   unsigned int p_vaccinate;
    unsigned int p_hide_lkrg;
    unsigned int p_umh_enforce;
    /* Profiles */
@@ -376,6 +378,7 @@ static inline int p_lkrg_counter_lock_val_read(p_lkrg_counter_lock *p_arg) {
 #include "modules/integrity_timer/p_integrity_timer.h"        // Integrity timer module
 #include "modules/kmod/p_kmod.h"                              // Kernel's modules module
 #include "modules/notifiers/p_notifiers.h"                    // Notifiers module
+#include "modules/immunity/p_immunity.h"                      // Immunity module
 #include "modules/self-defense/hiding/p_hiding.h"             // Hiding module
 #include "modules/exploit_detection/p_exploit_detection.h"    // Exploit Detection
 #include "modules/wrap/p_struct_wrap.h"                       // Wrapping module

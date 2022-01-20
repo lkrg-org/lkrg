@@ -338,6 +338,10 @@ The sysctl's are (with default values specified in braces):
   Please note that LKRG can be easily detected by other means anyway, such as
   through the presence of its sysctl's.
 
+- lkrg.vaccinate (1)
+  Whether or not LKRG should try to immunize the kernel to obstruct its version
+  detection. Allowed values are 0 and 1.
+
 - lkrg.kint_validate (3)
   Whether and when to validate global kernel integrity.  Allowed values are 0
   (disabled), 1 (only when manually triggered by lkrg.trigger), 2 (also
