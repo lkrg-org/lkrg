@@ -34,9 +34,11 @@ static int p_netevent_notifier(struct notifier_block *p_nb, unsigned long p_val,
 static int p_inet6addr_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data);
 #endif
 static int p_inetaddr_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,16,0)
 static int p_taskfree_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data);
 static int p_profile_event_exit_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data);
 static int p_profile_event_munmap_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data);
+#endif
 #if defined(CONFIG_USB)
 static int p_usb_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data);
 #endif
@@ -79,6 +81,7 @@ static struct notifier_block p_inetaddr_notifier_nb = {
    .notifier_call = p_inetaddr_notifier,
 };
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,16,0)
 static struct notifier_block p_taskfree_notifier_nb = {
    .notifier_call = p_taskfree_notifier,
 };
@@ -90,6 +93,7 @@ static struct notifier_block p_profile_event_exit_notifier_nb = {
 static struct notifier_block p_profile_event_munmap_notifier_nb = {
    .notifier_call = p_profile_event_munmap_notifier,
 };
+#endif
 
 #if defined(CONFIG_USB)
 static struct notifier_block p_usb_notifier_nb = {
@@ -119,9 +123,11 @@ void p_register_notifiers(void) {
    register_inet6addr_notifier(&p_inet6addr_notifier_nb);
 #endif
    register_inetaddr_notifier(&p_inetaddr_notifier_nb);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,16,0)
    task_handoff_register(&p_taskfree_notifier_nb);
    profile_event_register(PROFILE_TASK_EXIT, &p_profile_event_exit_notifier_nb);
    profile_event_register(PROFILE_MUNMAP, &p_profile_event_munmap_notifier_nb);
+#endif
 #if defined(CONFIG_USB)
    usb_register_notify(&p_usb_notifier_nb);
 #endif
@@ -194,6 +200,7 @@ static int p_inetaddr_notifier(struct notifier_block *p_nb, unsigned long p_val,
    return 0;
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,16,0)
 static int p_taskfree_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
 
    /* 0.01% */
@@ -217,6 +224,7 @@ static int p_profile_event_munmap_notifier(struct notifier_block *p_nb, unsigned
 
    return 0;
 }
+#endif
 
 #if defined(CONFIG_USB)
 static int p_usb_notifier(struct notifier_block *p_nb, unsigned long p_val, void *p_data) {
@@ -254,9 +262,11 @@ void p_deregister_notifiers(void) {
    unregister_inet6addr_notifier(&p_inet6addr_notifier_nb);
 #endif
    unregister_inetaddr_notifier(&p_inetaddr_notifier_nb);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,16,0)
    task_handoff_unregister(&p_taskfree_notifier_nb);
    profile_event_unregister(PROFILE_TASK_EXIT, &p_profile_event_exit_notifier_nb);
    profile_event_unregister(PROFILE_MUNMAP, &p_profile_event_munmap_notifier_nb);
+#endif
 #if defined(CONFIG_USB)
    usb_unregister_notify(&p_usb_notifier_nb);
 #endif
