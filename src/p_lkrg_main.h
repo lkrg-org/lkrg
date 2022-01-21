@@ -83,7 +83,8 @@
 #define p_kzfree kfree_sensitive
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,15,0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,15,0) && \
+    (!defined(RHEL_RELEASE_CODE) || RHEL_RELEASE_CODE < RHEL_RELEASE_VERSION(9, 0))
 #define p_read_cpu_lock get_online_cpus
 #define p_read_cpu_unlock put_online_cpus
 #else
