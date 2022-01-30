@@ -88,7 +88,8 @@ notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p
             ) &&
           p_tmp->addr
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 5, 0) || \
-   (defined(RHEL_RELEASE_CODE) && RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8, 3))
+   (defined(RHEL_RELEASE_CODE) && RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8, 3)) || \
+   (defined(CONFIG_SUSE_PRODUCT_CODE) && CONFIG_SUSE_PRODUCT_CODE == 1)
           && p_tmp->opcode) {
 #else
           && p_tmp->detour) {
