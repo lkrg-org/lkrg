@@ -25,6 +25,11 @@ jobs:
             - name: Download mainline kernel from Kernel PPA
               run: .github/workflows/ubuntu-kernel-daily.sh
 
+            - name: Enable LKRG debugging options
+              run: |
+                  sed -i '/P_LKRG_JUMP_LABEL_STEXT_DEBUG/s/\/\///' src/modules/print_log/p_lkrg_log_level_shared.h
+                  git diff
+
             - name: Create bootable image using mkosi
               run: sudo mkosi -r ${{ env.series }} --cache=mkosi.cache --prepare-script=.github/workflows/dpkg-i.sh
 
