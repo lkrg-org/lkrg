@@ -75,6 +75,8 @@ notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
       if ( (p_tmp->opcode == CALL_INSN_OPCODE
             || p_tmp->opcode == JMP32_INSN_OPCODE
+            || p_tmp->opcode == INT3_INSN_OPCODE
+            || p_tmp->opcode == RET_INSN_OPCODE
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0)
             || p_tmp->opcode == JMP8_INSN_OPCODE
 #endif
@@ -82,8 +84,14 @@ notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p
           p_tmp->rel_addr) {
 #else
       if ( (p_tmp->len == 5
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0)
+#if 0
+ /*
+  * This will be needed when variable length JUMP_LABEL feature
+  * is backported to LTS or other active branches
+  */
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0)
             || p_tmp->len == 2
+ #endif
 #endif
             ) &&
           p_tmp->addr

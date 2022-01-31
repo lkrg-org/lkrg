@@ -74,7 +74,7 @@ void p_unhide_itself(void) {
    /* Dead function - used only during development process */
    struct module     *p_tmp_mod    = P_GLOBAL_TO_MODULE(P_SYM(p_global_modules));
    struct kset       *p_tmp_kset   = p_tmp_mod->mkobj.kobj.kset;
-   struct kobj_type  *p_tmp_ktype  = p_tmp_mod->mkobj.kobj.ktype;
+   const struct kobj_type  *p_tmp_ktype  = p_tmp_mod->mkobj.kobj.ktype;
 
    if (!P_CTRL(p_hide_lkrg)) {
       p_print_log(P_LKRG_WARN,

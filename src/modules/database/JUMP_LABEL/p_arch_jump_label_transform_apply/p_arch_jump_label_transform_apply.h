@@ -39,12 +39,25 @@
 #include <asm/text-patching.h>
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0)
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(5,17,0)
 typedef struct _p_text_poke_loc {
     s32 rel_addr; /* addr := _stext + rel_addr */
     s32 rel32;
     u8 opcode;
     const u8 text[POKE_MAX_OPCODE_SIZE];
 } p_text_poke_loc;
+ #else
+typedef struct _p_text_poke_loc {
+    /* addr := _stext + rel_addr */
+    s32 rel_addr;
+    s32 disp;
+    u8 len;
+    u8 opcode;
+    const u8 text[POKE_MAX_OPCODE_SIZE];
+    /* see text_poke_bp_batch() */
+    u8 old;
+} p_text_poke_loc;
+ #endif
 #else
 typedef struct text_poke_loc p_text_poke_loc;
 #endif

@@ -40,7 +40,7 @@ static struct module *p_module2;
 static unsigned int p_module1_idx;
 static unsigned int p_module2_idx;
 
-static p_lkrg_counter_lock p_static_call_spinlock;
+p_lkrg_counter_lock p_static_call_spinlock;
 
 notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
