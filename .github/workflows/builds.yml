@@ -10,8 +10,6 @@ jobs:
                 include:
                     - image: centos:7
                       run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
-                    - image: centos:8
-                      run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
                     - image: almalinux:8
                       run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
                     - image: rockylinux:8
