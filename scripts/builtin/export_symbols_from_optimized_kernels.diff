@@ -1,0 +1,32 @@
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index 40baa90e74f4..c2cf7cea5846 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -1775,6 +1775,7 @@ static int change_page_attr_set_clr(unsigned long *addr, int numpages,
+ out:
+        return ret;
+ }
++EXPORT_SYMBOL(change_page_attr_set_clr);
+ 
+ static inline int change_page_attr_set(unsigned long *addr, int numpages,
+                                       pgprot_t mask, int array)
+diff --git a/kernel/seccomp.c b/kernel/seccomp.c
+index 305f0eca163e..fa0d391aef04 100644
+--- a/kernel/seccomp.c
++++ b/kernel/seccomp.c
+@@ -448,6 +448,7 @@ static void __put_seccomp_filter(struct seccomp_filter *orig)
+                seccomp_filter_free(freeme);
+        }
+ }
++EXPORT_SYMBOL(__put_seccomp_filter);
+ 
+ static void __seccomp_filter_release(struct seccomp_filter *orig)
+ {
+@@ -1705,6 +1706,8 @@ static long do_seccomp(unsigned int op, unsigned int flags,
+        }
+ }
+ 
++EXPORT_SYMBOL(do_seccomp);
++
+ SYSCALL_DEFINE3(seccomp, unsigned int, op, unsigned int, flags,
+
