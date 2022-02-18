@@ -55,7 +55,6 @@ read CANCEL
 mkdir -p "$LDIR"
 echo "$KCONFIG" > "$LDIR/Kconfig"
 echo "$MAKEFILE" > "$LDIR/Makefile"
-pushd .
 cd "$SDIR"
 cp -a . "$LDIR/"
 cd "$KDIR"
@@ -67,4 +66,3 @@ if [ -n "$LKRG_USE_GIT" ] && git rev-parse --git-dir &>/dev/null; then
     git add "security/lkrg"
     git commit -am "$COMMIT"
 fi
-popd
