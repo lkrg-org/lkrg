@@ -578,7 +578,7 @@ static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
          p_hide_itself(); // hide module!
       } else {
          P_CTRL(p_hide_lkrg) = p_tmp; // Restore previous state - for sync
-         p_unhide_itself(); // Unide module!
+         p_unhide_itself(); // Unhide the module!
       }
    }
    p_lkrg_close_rw();
