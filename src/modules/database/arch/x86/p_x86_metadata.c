@@ -72,11 +72,10 @@ void p_dump_x86_metadata(void *_p_arg) {
 /*
  * IDTR register
  */
-#ifdef CONFIG_X86_64
-   unsigned char p_idtr[0xA];
-#else
-   unsigned char p_idtr[0x6];
-#endif
+   struct {
+      unsigned char dummy[2]; /* 2+ bytes for limit */
+      unsigned long base; /* 4 or 8 bytes */
+   } p_idtr;
 
    int p_curr_cpu = 0xFFFFFFFF;
 
@@ -101,34 +100,19 @@ void p_dump_x86_metadata(void *_p_arg) {
     /*
      * IDT...
      */
-#ifdef CONFIG_X86_64
-   __asm__("sidt   %0\n"
-           "movq   %3, %%rax\n"
-           "movq   %%rax,%1\n"
-           "movw   %4,%%ax\n"
-           "movw   %%ax,%2\n":"=m"(p_idtr),"=m"(p_arg[p_curr_cpu].p_base),"=m"(p_arg[p_curr_cpu].p_size)
-                             :"m"(p_idtr[2]),"m"(p_idtr[0])
-                             :"%rax");
-#else
-   __asm__("sidt   %0\n"
-           "movl   %3, %%eax\n"
-           "movl   %%eax,%1\n"
-           "movw   %4,%%ax\n"
-           "movw   %%ax,%2\n":"=m"(p_idtr),"=m"(p_arg[p_curr_cpu].p_base),"=m"(p_arg[p_curr_cpu].p_size)
-                             :"m"(p_idtr[2]),"m"(p_idtr[0])
-                             :"%eax");
-#endif
+   __asm__("sidt %0": "=m" (*((unsigned char *)&p_idtr.base - 2)), "=m" (p_idtr.base));
+   p_arg[p_curr_cpu].p_base = p_idtr.base;
 
    /*
     * On all x86 platforms there's defined maximum P_X86_MAX_IDT vectors.
     * We can hardcode that size here since some 'weird' modules might
-    * incorrectly set it to MAX_SHORT value.
+    * incorrectly set the limit e.g. to be higher than that.
     */
    p_arg[p_curr_cpu].p_size = P_X86_MAX_IDT;
 
 #if defined(CONFIG_X86_64) && defined(CONFIG_XEN_PVH)
-   if ((unsigned long)p_arg[p_curr_cpu].p_base >= 0xffff800000000000ULL &&
-       (unsigned long)p_arg[p_curr_cpu].p_base <= 0xffff87ffffffffffULL) {
+   if (p_arg[p_curr_cpu].p_base >= 0xffff800000000000ULL &&
+       p_arg[p_curr_cpu].p_base <= 0xffff87ffffffffffULL) {
       p_arg[p_curr_cpu].p_base = 0;
       p_arg[p_curr_cpu].p_size = 0;
    }
