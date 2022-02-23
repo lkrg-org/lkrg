@@ -70,10 +70,9 @@ typedef struct p_CPU_metadata_hash_mem {
    /*
     * IDT information
     */
-   long       p_base;            // IDT base from IDTR
-   short      p_size;            // IDT size from IDTR
-   uint64_t   p_hash;            // hash from entire IDT table:
-                                 //   p_base * P_X86_MAX_IDT
+   unsigned long p_base;         // IDT base from IDTR
+   uint16_t   p_size;            // LKRG's view of IDT size (0x100 or 0)
+   uint64_t   p_hash;            // hash from entire IDT (of p_size elements)
 
    /*
     * Now MSRs...
