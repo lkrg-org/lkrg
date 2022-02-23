@@ -126,8 +126,16 @@ void p_dump_x86_metadata(void *_p_arg) {
     */
    p_arg[p_curr_cpu].p_size = P_X86_MAX_IDT;
 
+#if defined(CONFIG_X86_64) && defined(CONFIG_XEN_PVH)
+   if ((unsigned long)p_arg[p_curr_cpu].p_base >= 0xffff800000000000ULL &&
+       (unsigned long)p_arg[p_curr_cpu].p_base <= 0xffff87ffffffffffULL) {
+      p_arg[p_curr_cpu].p_base = 0;
+      p_arg[p_curr_cpu].p_size = 0;
+   }
+#endif
+
    p_arg[p_curr_cpu].p_hash = p_lkrg_fast_hash((unsigned char *)p_arg[p_curr_cpu].p_base,
-                                               (unsigned int)sizeof(p_idt_descriptor) * P_X86_MAX_IDT);
+                                               sizeof(p_idt_descriptor) * p_arg[p_curr_cpu].p_size);
 
 // DEBUG
 #ifdef P_LKRG_DEBUG
@@ -135,6 +143,7 @@ void p_dump_x86_metadata(void *_p_arg) {
           "<p_dump_IDT_MSR> CPU:[%d] IDT => base[0x%lx] size[0x%x] hash[0x%llx]\n",
           p_arg[p_curr_cpu].p_cpu_id,p_arg[p_curr_cpu].p_base,p_arg[p_curr_cpu].p_size,p_arg[p_curr_cpu].p_hash);
 
+   if (p_arg[p_curr_cpu].p_size)
    do {
       p_idt_descriptor *p_test;
 
