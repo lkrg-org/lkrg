@@ -194,8 +194,10 @@
 #ifdef P_LKRG_STRONG_KPROBE_DEBUG
  #define p_debug_kprobe_log(p_fmt, p_args...)                                            \
                   p_debug_log(P_LKRG_STRONG_DBG, p_fmt, ## p_args)
+ #define LKRG_DEBUG_TRACE
 #else
  #define p_debug_kprobe_log(p_fmt, p_args...)    ({ 0x0; })
+ #define LKRG_DEBUG_TRACE notrace
 #endif
 
 #define p_debug_log(p_level, p_fmt, p_args...)                                           \
