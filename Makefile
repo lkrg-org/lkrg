@@ -18,11 +18,13 @@ else
 endif
 
 #
-# Uncomment for debug compilation
+# Use DEBUG=on for debug build.
 #
-# ccflags-m := -ggdb -DP_LKRG_DEBUG_BUILD -finstrument-functions
-# ccflags-y := ${ccflags-m}
-# p_lkrg-objs += src/modules/print_log/p_lkrg_debug_log.o
+ifeq ($(DEBUG), on)
+ccflags-m := -ggdb -DP_LKRG_DEBUG_BUILD -finstrument-functions
+ccflags-y := ${ccflags-m}
+$(TARGET)-objs += src/modules/print_log/p_lkrg_debug_log.o
+endif
 
 obj-m += $(TARGET).o
 $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
