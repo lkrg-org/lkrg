@@ -127,7 +127,8 @@ static struct p_addr_name {
    P_LKRG_DEBUG_RULE_KPROBE(p_revert_creds),
    P_LKRG_DEBUG_RULE_KPROBE(p_override_creds),
    P_LKRG_DEBUG_RULE_KPROBE(security_bprm_committing_creds),
-   P_LKRG_DEBUG_RULE_KPROBE(security_bprm_committed_creds),
+   // Next function does not have matching entry one.
+   P_LKRG_DEBUG_RULE(p_security_bprm_committed_creds_ret),
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setresuid),
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_keyctl),
    P_LKRG_DEBUG_RULE_KPROBE(p_key_change_session_keyring),
