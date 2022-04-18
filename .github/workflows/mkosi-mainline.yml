@@ -43,6 +43,7 @@ jobs:
                   set timeout 300
                   expect "login: " {} default abort
                   set timeout 60
+                  expect "# " { send "/lkrg/.github/workflows/run-boot-tests.sh\r" } default abort
                   expect "# " { send "systemctl poweroff\r" } default abort
                   expect timeout abort eof { exit 0 }
                   EOF
@@ -54,6 +55,8 @@ jobs:
                   grep 'LKRG initialized successfully' boot.log
             - name: Check that boot.log does not contain problems
               run: "! egrep 'Kernel panic|BUG:|WARNING:|Oops|Call Trace' boot.log"
+            - name: Check that boot-tests script finished successfully
+              run: grep 'run-boot-tests.sh - SUCCESS' boot.log
             - name: Check that boot.log contains shutdown sequence
               run: |
                   grep 'Reached target.*Power.Off' boot.log
