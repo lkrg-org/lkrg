@@ -8,9 +8,8 @@ LKRG is a kernel module (not a kernel patch), so it can be built for and loaded
 on top of a wide range of mainline and distros' kernels, without needing to
 patch those.  We currently support kernel versions ranging from as far back as
 RHEL7's (and its many clones/revisions) and Ubuntu 16.04's to latest mainline
-and distros' kernels.  We've tested recent git revisions of LKRG with Linux
-kernels up to and including 5.17-rc*, whereas the 0.9.2 release supports Linux
-kernels up to and including 5.16.x.
+and distros' kernels.  We've tested this revision of LKRG with Linux kernels
+up to and including 5.18-rc*.
 
 LKRG currently supports the x86-64, 32-bit x86, AArch64 (ARM64), and 32-bit ARM
 CPU architectures.
@@ -34,9 +33,9 @@ like the below:
 
 	wget https://www.openwall.com/signatures/openwall-offline-signatures.asc
 	gpg --import openwall-offline-signatures.asc
-	wget https://lkrg.org/download/lkrg-0.9.2.tar.gz.sign
-	wget https://lkrg.org/download/lkrg-0.9.2.tar.gz
-	gpg --verify lkrg-0.9.2.tar.gz.sign lkrg-0.9.2.tar.gz
+	wget https://lkrg.org/download/lkrg-0.9.3.tar.gz.sign
+	wget https://lkrg.org/download/lkrg-0.9.3.tar.gz
+	gpg --verify lkrg-0.9.3.tar.gz.sign lkrg-0.9.3.tar.gz
 
 Please preserve the GnuPG key above and also use it to verify future releases,
 which will most likely work in a similar manner.
