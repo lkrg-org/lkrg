@@ -1,0 +1,63 @@
+name: docker arch boot
+on: [push, pull_request]
+
+jobs:
+    build:
+        runs-on: ubuntu-20.04
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - args: image=i386/ubuntu:bionic
+                            qemu=qemu-system-i386
+                      install: qemu-system-x86
+
+                    - args: image=arm64v8/ubuntu:impish
+                            opts="-M virt,gic-version=3 -cpu max"
+                            console=ttyAMA0
+                            root=/dev/vda
+                            qemu=qemu-system-aarch64
+                      install: qemu-system-arm
+
+                    # It's possible to use: opts="-M raspi2b" dtb=bcm2709-rpi-2-b.dtb root=/dev/mmcblk0
+                    # but since power-off is unreliable anyway (until QEMU 6.2) use simpler virt machine.
+                    - args: image=arm32v7/ubuntu:jammy
+                            opts="-M virt"
+                            console=ttyAMA0
+                            root=/dev/vda
+                            kernel="linux-raspi linux-modules-extra-raspi"
+                            qemu=qemu-system-arm
+                      install: qemu-system-arm
+
+        steps:
+            - uses: docker/setup-qemu-action@v1
+            - run: sudo apt-get update
+              # It's possible to update QEMU to (6.0) on focal (ubuntu-20.04) with
+              #   add-apt-repository ppa:canonical-server/server-backports
+              # but this is still not enough to boot & power-off raspi2b properly.
+            - run: sudo apt-get install -y qemu-utils e2fsprogs expect ${{ matrix.install }}
+
+            - uses: actions/checkout@v1
+            - name: Enable LKRG debugging options
+              run: |
+                  sed -i '/P_LKRG_JUMP_LABEL_STEXT_DEBUG/s/\/\///' src/modules/print_log/p_lkrg_log_level_shared.h
+                  git diff
+            - name: Build and boot test image
+              run: .github/workflows/docker-boot.sh ${{ matrix.args }} 2>&1 | tr -d '\r' | tee boot.log
+
+            - name: Check boot.log for 'LKRG initialized successfully'
+              run: |
+                  grep 'Linux version' boot.log
+                  grep 'LKRG initialized successfully' boot.log
+            - name: Check that boot.log does not contain problems
+              run:
+                  "! grep -v 'The requested image.s platform .* does not match the detected host platform' boot.log |
+                     grep -E 'Kernel panic|BUG:|WARNING:|Oops|Call Trace'"
+            - name: Check that boot-tests script finished successfully
+              run: grep 'run-boot-tests.sh - SUCCESS' boot.log
+            - name: Check that boot.log contains shutdown sequence
+              run: |
+                  grep 'sysrq: Power Off' boot.log
+                  grep 'reboot: Power down' boot.log
+
+# vim: sw=4
