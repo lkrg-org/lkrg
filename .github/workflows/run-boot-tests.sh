@@ -8,6 +8,10 @@
 
 set -eux -o pipefail
 
+if [ ! -d /sys/module/p_lkrg ]; then
+	modprobe p_lkrg
+fi
+
 # Trigger loading vhost_vsock module (using UMH call to modprobe).
 # Device numbers are from /lib/modules/*/modules.devname
 mknod /dev/test c 10 241
@@ -19,3 +23,9 @@ sleep 21
 
 # Failed tests will not output this line.
 echo "$0 - SUCCESS"
+
+# If there is no systemd shutdown manually.
+if [ ! -d /run/systemd/system ]; then
+	echo o > /proc/sysrq-trigger
+	sleep 11
+fi

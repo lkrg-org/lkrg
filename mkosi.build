@@ -14,4 +14,4 @@ make -j$(nproc) $@
 # Install if compiled.
 [ -e p_lkrg.ko ] && [ -v DESTDIR ] &&
 install -Dpm 644 p_lkrg.ko $DESTDIR/lib/modules/$KERNELRELEASE/extra/p_lkrg.ko &&
-cp -av ./ $DESTDIR/lkrg/
+cp -av ./ $DESTDIR/lkrg/ || :
