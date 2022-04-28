@@ -65,6 +65,7 @@
 #include <linux/vmalloc.h>
 #include <linux/ftrace.h>
 
+#include <linux/preempt.h>
 #ifndef RHEL_RELEASE_VERSION
 #define RHEL_RELEASE_VERSION(a, b) (((a) << 8) + (b))
 #endif
