@@ -8,16 +8,16 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                    - args: image=i386/ubuntu:bionic
-                            qemu=qemu-system-i386
-                      install: qemu-system-x86
-
-                    - args: image=arm64v8/ubuntu:impish
-                            opts="-M virt,gic-version=3 -cpu max"
-                            console=ttyAMA0
-                            root=/dev/vda
-                            qemu=qemu-system-aarch64
-                      install: qemu-system-arm
+#                    - args: image=i386/ubuntu:bionic
+#                            qemu=qemu-system-i386
+#                      install: qemu-system-x86
+#
+#                    - args: image=arm64v8/ubuntu:impish
+#                            opts="-M virt,gic-version=3 -cpu max"
+#                            console=ttyAMA0
+#                            root=/dev/vda
+#                            qemu=qemu-system-aarch64
+#                      install: qemu-system-arm
 
                     # It's possible to use: opts="-M raspi2b" dtb=bcm2709-rpi-2-b.dtb root=/dev/mmcblk0
                     # but since power-off is unreliable anyway (until QEMU 6.2) use simpler virt machine.
