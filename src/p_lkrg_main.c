@@ -154,10 +154,6 @@ static void p_init_page_attr(void) {
                   (unsigned long)p_long_tmp,
                   (unsigned long)p_long_tmp+2*p_long_offset,
                   *(p_long_tmp+2*p_long_offset));
-      p_print_log(P_LKRG_INFO, "*(p_long_tmp[0x%lx]+3*PAGE_SIZE) => [0x%lx] 0x%lx\n",
-                  (unsigned long)p_long_tmp,
-                  (unsigned long)p_long_tmp+3*p_long_offset,
-                  *(p_long_tmp+3*p_long_offset));
    }
 #endif
 }
