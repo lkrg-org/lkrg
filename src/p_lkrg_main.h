@@ -104,6 +104,20 @@
 #endif
 
 /*
+ * Define kmem_cache_create() flags:
+ *  - LKRG has used to leverage SLAB_HWCACHE_ALIGN but memory overhead
+ *    may be too significant for LKRG's use cases
+ *  - Since the kernel 4.5+ we can use SLAB_ACCOUNT to make sure
+ *    that LKRG's caches are standalone
+ */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,5,0)
+ #define P_LKRG_CACHE_FLAGS 0
+#else
+ #define P_LKRG_CACHE_FLAGS SLAB_ACCOUNT
+#endif
+
+
+/*
  * Some custom compilation of the kernel might aggresively inline
  * critical functions (from LKRG perspective). That's problematic
  * for the project. However, some of the problems *might* be solved
