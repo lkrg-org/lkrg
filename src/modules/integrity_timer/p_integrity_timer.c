@@ -42,7 +42,7 @@ static void p_offload_cache_zero(void *p_arg) {
 int p_offload_cache_init(void) {
 
    if ( (p_offload_cache = kmem_cache_create("p_offload_cache", sizeof(struct work_struct),
-                                             0, SLAB_HWCACHE_ALIGN, p_offload_cache_zero)) == NULL) {
+                                             0, P_LKRG_CACHE_FLAGS, p_offload_cache_zero)) == NULL) {
       p_print_log(P_LKRG_ERR, "kmem_cache_create() for offloading error! :(\n");
       return -ENOMEM;
    }
