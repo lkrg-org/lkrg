@@ -87,18 +87,18 @@ do {                                                                       \
    if (kobject_init_and_add(&p_mod->mkobj.kobj, p_ktype, NULL,             \
                                               "%s", p_mod->name)) {        \
       p_debug_log(P_LKRG_DBG, "FAILED :(\n");                              \
-      return;                                                              \
+      goto p_unhide_itself_exit;                                           \
    }                                                                       \
    p_mod->holders_dir = kobject_create_and_add("holders",                  \
                                               &p_mod->mkobj.kobj);         \
    if (!p_mod->holders_dir) {                                              \
       p_debug_log(P_LKRG_DBG, "FAILED :(\n");                              \
-      return;                                                              \
+      goto p_unhide_itself_exit;                                           \
    }                                                                       \
    if ( (p_tmp = sysfs_create_files(&p_mod->mkobj.kobj,                    \
                (const struct attribute **)&p_mod->modinfo_attrs)) != 0) {  \
       p_debug_log(P_LKRG_DBG, "FAILED :(\n");                              \
-      return;                                                              \
+      goto p_unhide_itself_exit;                                           \
    }                                                                       \
    /* add_usage_links() */                                                 \
    list_for_each_entry(p_use, &p_mod->target_list, target_list) {          \
