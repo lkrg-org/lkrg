@@ -86,14 +86,8 @@ notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p
           p_tmp->rel_addr) {
 #else
       if ( (p_tmp->len == 5
-#if 0
- /*
-  * This will be needed when variable length JUMP_LABEL feature
-  * is backported to LTS or other active branches
-  */
- #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0)
+#if P_LKRG_KERNEL_HAS_VAR_LEN_JUMP_LABEL
             || p_tmp->len == 2
- #endif
 #endif
             ) &&
           p_tmp->addr

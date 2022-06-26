@@ -36,10 +36,21 @@
 #ifndef P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_APPLY_H
 #define P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_APPLY_H
 
+/*
+* This needs to be extended to other LTS or active branches if and
+* when they receive the variable length JUMP_LABEL feature backport
+*/
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 17, 0) || \
+    (LINUX_VERSION_CODE < KERNEL_VERSION(5, 16, 0) && LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 40))
+ #define P_LKRG_KERNEL_HAS_VAR_LEN_JUMP_LABEL 1
+#else
+ #define P_LKRG_KERNEL_HAS_VAR_LEN_JUMP_LABEL 0
+#endif
+
 #include <asm/text-patching.h>
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0)
- #if LINUX_VERSION_CODE < KERNEL_VERSION(5,17,0)
+ #if !P_LKRG_KERNEL_HAS_VAR_LEN_JUMP_LABEL
 typedef struct _p_text_poke_loc {
     s32 rel_addr; /* addr := _stext + rel_addr */
     s32 rel32;
