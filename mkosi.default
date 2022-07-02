@@ -19,7 +19,7 @@ BootProtocols=bios
 
 [Partitions]
 # 2G was not enough for build with mainline kernels installs.
-RootSize=3G
+RootSize=4G
 
 [Packages]
 BuildPackages=
