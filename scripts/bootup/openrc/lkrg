@@ -1,0 +1,31 @@
+#!/sbin/openrc-run
+# Distributed under the terms of the GNU General Public License v2
+
+description="Linux Kernel Runtime Guard"
+command="/sbin/modprobe"
+command_args="-v p_lkrg"
+unload_command_args="-v -r p_lkrg"
+runlevel_command="/sbin/runlevel"
+grep_command="/bin/grep"
+
+depend() {
+	before sysctl modules
+}
+
+start() {
+	ebegin "Starting \"lkrg\" service"
+	$command $command_args
+	eend $?
+}
+
+stop() {
+	# for more info about runlevels (e.g. "S", "0", "1", "6") check: man 8 init
+	if $runlevel_command | $grep_command -q ' [S016]$'; then
+		ebegin "Stopping \"lkrg\" service without unloading \"p_lkrg\" module from the kernel"
+		eend $?
+	else
+		ebegin "Unloading \"p_lkrg\" module from the kernel"
+		$command $unload_command_args
+		eend $?
+	fi
+}

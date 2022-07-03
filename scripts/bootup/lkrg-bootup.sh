@@ -7,6 +7,7 @@
 ##
 
 P_LKRG_SYSTEMD="scripts/bootup/systemd/lkrg-systemd.sh"
+P_LKRG_OPENRC="scripts/bootup/openrc/lkrg-openrc.sh"
 
 P_RED='\033[0;31m'
 P_GREEN='\033[0;32m'
@@ -20,7 +21,11 @@ case "`readlink -e /proc/1/exe`" in
 	/lib/systemd/systemd)
 		exec "$P_LKRG_SYSTEMD" "$@"
 		;;
+	/sbin/openrc-init | \
+	/sbin/init)
+		exec "$P_LKRG_OPENRC" "$@"
+		;;
 	*)
-		echo -e "  ${P_RED}[-] Unsupported init system: not systemd or not running as root?${P_NC}"
+		echo -e "  ${P_RED}[-] Unsupported init system or not running as root?${P_NC}"
 		;;
 esac

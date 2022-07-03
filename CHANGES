@@ -1,3 +1,8 @@
+The following major changes have been made since LKRG 0.9.3:
+
+ *) OpenRC init system support
+
+
 The following major changes have been made between LKRG 0.9.2 and 0.9.3:
 
  *) Support new mainline kernels 5.17.x, 5.18-rc*, and hopefully beyond
