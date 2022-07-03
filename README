@@ -119,48 +119,80 @@ bootup and without the parameter override.
 Installation
 ------------
 
-If your Linux distribution uses systemd, you can install LKRG with:
+If your Linux distribution uses a supported init system (systemd or OpenRC),
+you can install LKRG with:
 
 	sudo make install
 
 while you're still in its top level source code directory.
 
-Run the following command to start the LKRG service just like it would be
-started on next system bootup:
+We don't in any way favor one init system over another, and would gladly add
+support for them as well if there's demand, or especially if we receive such
+contributions.  Meanwhile, on a distribution without a supported init system
+you can let "sudo make install" partially complete (up to the point where it
+finds you're not using a supported init system).
+
+Run the following command to start the LKRG service, for systemd:
 
 	sudo systemctl start lkrg
+
+for OpenRC:
+
+	sudo /etc/init.d/lkrg start
+
+for other:
+
+	sudo modprobe -v p_lkrg
+
+
+Autoload on bootup
+------------------
+
+In order to automatically load LKRG into the Linux kernel on each bootup run
+the following command, for systemd:
+
+	sudo systemctl enable lkrg
+
+for OpenRC:
+
+	sudo rc-update add lkrg boot
+
+for other:
+
+	sudo mkdir -p /etc/modules-load.d/ &&
+		echo p_lkrg | sudo tee /etc/modules-load.d/p_lkrg.conf
+
+Alternatively you can put the "modprobe p_lkrg" command into a system
+startup script.  Please note that ideally this command would run before sysctl
+files (especially /etc/sysctl.d/01-lkrg.conf) are processed, or otherwise the
+LKRG settings specified in those would not take effect.
+
+
+Uninstalling
+------------
 
 You can uninstall LKRG using "make" as well (still in the same directory):
 
 	sudo make uninstall
 
 You can also use the following command to temporarily stop the LKRG service
-without uninstalling it:
+without uninstalling it, for systemd:
 
 	sudo systemctl stop lkrg
 
-We don't in any way favor systemd over other init systems, and would gladly add
-support for those as well if there's demand, or especially if we receive such
-contributions.  Meanwhile, on a system without systemd you can let "sudo make
-install" partially complete (up to the point where it finds you're not using
-systemd) and then use:
+for OpenRC:
 
-	sudo modprobe p_lkrg
+	sudo /etc/init.d/lkrg stop
 
-to load the module.  You can also put the "modprobe p_lkrg" command into a
-system startup script.
+for other:
+
+	sudo modprobe -v -r p_lkrg
 
 
-Uninstalling and upgrading
---------------------------
+Upgrading
+---------
 
-Our suggested way to upgrade LKRG is to start by uninstalling the old version,
-which you can do with:
-
-	sudo make uninstall
-
-from the top level source code directory of that old version (doing so using
-the source code tree of the new version may or may not work correctly).
+Our suggested way to upgrade LKRG is to start by uninstalling the old version.
 
 You can then follow the Testing and Installation steps for the new version.
 
@@ -171,11 +203,12 @@ Recovery
 To account for the hopefully unlikely, but really unfortunate event that some
 incompatibility between the Linux kernel or other components of the system and
 LKRG isn't detected prior to LKRG installation, yet leads to system crash on
-bootup, we've included support for the "nolkrg" kernel parameter in the systemd
-unit file for LKRG.  Thus, if you've followed the above installation procedure
-for LKRG with systemd, you may disable LKRG by specifying "nolkrg" on the
-kernel command-line via your bootloader.  The system should then boot up
-without LKRG, and thus without triggering the problem, letting you fix it.
+bootup, we've included support for the "nolkrg" kernel parameter.  Thus, you
+may disable LKRG by specifying "nolkrg" on the kernel command-line via your
+bootloader.  The system should then boot up without LKRG, and thus without
+triggering the problem, letting you fix it.  You must be aware though, that you
+will not be able to manually load the LKRG module if the kernel was booted with
+this parameter.
 
 
 Module parameters

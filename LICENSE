@@ -12,6 +12,9 @@ Copyright (c) 2021 Vitaly Chikunov
 debian/*
 Copyright (c) 2020-2021 Mikhail Morfikov
 
+scripts/bootup/openrc/*
+Copyright (c) 2022 Jakub 'mrl5' Kołodziejczak
+
 This version of LKRG is hereby being made available under the terms of the GNU
 General Public License version 2 as published by the Free Software Foundation.
 
