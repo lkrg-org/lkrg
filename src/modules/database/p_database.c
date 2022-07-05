@@ -344,13 +344,13 @@ int p_create_database(void) {
 /*
    if (p_install_arch_jump_label_transform_hook()) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't hook arch_jump_label_transform function :(\n");
+             "Can't hook arch_jump_label_transform function :(\n");
       return P_LKRG_GENERAL_ERROR;
    }
 
    if (p_install_arch_jump_label_transform_static_hook()) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't hook arch_jump_label_transform_static function :(\n");
+             "Can't hook arch_jump_label_transform_static function :(\n");
       return P_LKRG_GENERAL_ERROR;
    }
 */
