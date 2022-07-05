@@ -522,7 +522,7 @@ static int p_sysctl_log_level(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
    int p_ret;
    static const char * const p_log_level_string[] = {
-      "NONE",
+      "CRIT",
       "ALIVE",
       "ERROR",
       "WARN",
@@ -537,7 +537,7 @@ static int p_sysctl_log_level(struct ctl_table *p_table, int p_write,
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
       p_print_log(P_LKRG_CRIT, "New log level => %d (%s)\n",
                   P_CTRL(p_log_level),
-                  p_log_level_string[P_CTRL(p_log_level]));
+                  p_log_level_string[P_CTRL(p_log_level)]);
    }
    p_lkrg_close_rw();
 
