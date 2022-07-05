@@ -28,7 +28,7 @@ jobs:
 
             - name: Enable LKRG debugging options
               run: |
-                  sed -i '/P_LKRG_JUMP_LABEL_STEXT_DEBUG/s/\/\///' src/modules/print_log/p_lkrg_log_level_shared.h
+                  sed -i '/P_LKRG_JUMP_LABEL_STEXT_DEBUG/s/\/\///' src/modules/print_log/p_lkrg_print_log.h
                   git diff
 
             - name: Create bootable image using mkosi

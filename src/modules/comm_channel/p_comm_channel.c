@@ -35,8 +35,8 @@ static int p_pint_enforce_max = 2;
 static int p_interval_min = 5;
 static int p_interval_max = 1800;
 
-static int p_log_level_min = P_LOG_LEVEL_NONE;
-static int p_log_level_max = P_LOG_LEVEL_MAX - 1;
+static int p_log_level_min = P_LOG_LEVEL_MIN;
+static int p_log_level_max = P_LOG_LEVEL_MAX;
 
 static int p_block_module_min = 0;
 static int p_block_module_max = 1;
@@ -522,14 +522,14 @@ static int p_sysctl_log_level(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
    int p_ret;
    static const char * const p_log_level_string[] = {
-      "CRIT",
+      "ALERT",
       "ALIVE",
-      "ERROR",
-      "WARN",
-      "INFO"
+      "FAULT",
+      "ISSUE",
+      "WATCH"
 #if defined(P_LKRG_DEBUG)
       ,"DEBUG",
-      "STRONG_DEBUG"
+      "FLOOD"
 #endif
    };
 
