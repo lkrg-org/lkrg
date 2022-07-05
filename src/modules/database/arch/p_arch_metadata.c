@@ -44,7 +44,7 @@ int p_register_arch_metadata(void) {
 
    if (!P_SYM(p_core_kernel_text)) {
       p_print_log(P_LKRG_ERR,
-             "[ED] ERROR: Can't find 'core_kernel_text' function :( Exiting...\n");
+             "[ED] Can't find 'core_kernel_text' function :( Exiting...\n");
       return P_LKRG_GENERAL_ERROR;
    }
 
