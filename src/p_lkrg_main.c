@@ -141,7 +141,7 @@ static void p_init_page_attr(void) {
       }
    } else {
       p_print_log(P_LKRG_CRIT,
-             "ERROR: Can't find marker pages so configuration page is NOT RO :( Continue...\n");
+             "Can't find marker pages so configuration page is NOT RO :( Continue...\n");
       p_print_log(P_LKRG_INFO, "*(p_long_tmp[0x%lx]-PAGE_SIZE) => [0x%lx] 0x%lx\n",
                   (unsigned long)p_long_tmp,
                   (unsigned long)p_long_tmp-p_long_offset,
@@ -419,7 +419,7 @@ static int __init p_lkrg_register(void) {
 
    if (!P_SYM(p_freeze_processes)) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't find 'freeze_processes' function :( Exiting...\n");
+             "Can't find 'freeze_processes' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -428,7 +428,7 @@ static int __init p_lkrg_register(void) {
 
    if (!P_SYM(p_thaw_processes)) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't find 'thaw_processes' function :( Exiting...\n");
+             "Can't find 'thaw_processes' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -439,7 +439,7 @@ static int __init p_lkrg_register(void) {
 
    if (!P_SYM(p_native_write_cr4)) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't find 'native_write_cr4' function :( Exiting...\n");
+             "Can't find 'native_write_cr4' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -451,7 +451,7 @@ static int __init p_lkrg_register(void) {
 
    if (!P_SYM(p_module_address)) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't find '__module_address' function :( Exiting...\n");
+             "Can't find '__module_address' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -460,7 +460,7 @@ static int __init p_lkrg_register(void) {
 
    if (!P_SYM(p_module_text_address)) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't find '__module_text_address' function :( Exiting...\n");
+             "Can't find '__module_text_address' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -471,7 +471,7 @@ static int __init p_lkrg_register(void) {
 
    if (!P_SYM(p_wait_for_kprobe_optimizer)) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't find 'wait_for_kprobe_optimizer' function :( Exiting...\n");
+             "Can't find 'wait_for_kprobe_optimizer' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -544,7 +544,7 @@ static int __init p_lkrg_register(void) {
 
    if (!P_SYM(p_flush_tlb_all)) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't find 'flush_tlb_all' function :( Exiting...\n");
+             "Can't find 'flush_tlb_all' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -558,7 +558,7 @@ static int __init p_lkrg_register(void) {
                             P_SYM(p_kallsyms_lookup_name)("set_memory_ro");
    if (!P_SYM(p_kernel_set_memory_ro)) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't find 'set_memory_ro' function :( Exiting...\n");
+             "Can't find 'set_memory_ro' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -567,7 +567,7 @@ static int __init p_lkrg_register(void) {
                             P_SYM(p_kallsyms_lookup_name)("set_memory_rw");
    if (!P_SYM(p_kernel_set_memory_rw)) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't find 'set_memory_rw' function :( Exiting...\n");
+             "Can't find 'set_memory_rw' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -579,7 +579,7 @@ static int __init p_lkrg_register(void) {
                             P_SYM(p_kallsyms_lookup_name)("set_memory_np");
    if (!P_SYM(p_kernel_set_memory_np)) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't find 'set_memory_np' function :( Exiting...\n");
+             "Can't find 'set_memory_np' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -589,7 +589,7 @@ static int __init p_lkrg_register(void) {
                                P_SYM(p_kallsyms_lookup_name)("set_memory_valid");
    if (!P_SYM(p_kernel_set_memory_valid)) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't find 'set_memory_valid' function :( Exiting...\n");
+             "Can't find 'set_memory_valid' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -603,7 +603,7 @@ static int __init p_lkrg_register(void) {
 
    if (!P_SYM(p_change_page_attr_set_clr)) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't find 'change_page_attr_set_clr' function :( Exiting...\n");
+             "Can't find 'change_page_attr_set_clr' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -614,7 +614,7 @@ static int __init p_lkrg_register(void) {
 
    if (!P_SYM(p_change_memory_common)) {
       p_print_log(P_LKRG_ERR,
-             "ERROR: Can't find 'change_memory_common' function :( Exiting...\n");
+             "Can't find 'change_memory_common' function :( Exiting...\n");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
