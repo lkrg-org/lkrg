@@ -40,7 +40,7 @@ jobs:
             - uses: actions/checkout@v1
             - name: Enable LKRG debugging options
               run: |
-                  sed -i '/P_LKRG_JUMP_LABEL_STEXT_DEBUG/s/\/\///' src/modules/print_log/p_lkrg_log_level_shared.h
+                  sed -i '/P_LKRG_JUMP_LABEL_STEXT_DEBUG/s/\/\///' src/modules/print_log/p_lkrg_print_log.h
                   git diff
             - name: Build and boot test image
               run: .github/workflows/docker-boot.sh ${{ matrix.args }} 2>&1 | tr -d '\r' | tee boot.log

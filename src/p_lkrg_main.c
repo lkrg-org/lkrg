@@ -207,8 +207,8 @@ void p_parse_module_params(void) {
    }
 
    /* log_level */
-   if (log_level >= P_LOG_LEVEL_MAX) {
-      P_CTRL(p_log_level) = P_LOG_LEVEL_MAX-1;      // Max
+   if (log_level > P_LOG_LEVEL_MAX) {
+      P_CTRL(p_log_level) = P_LOG_LEVEL_MAX;
    } else {
       P_CTRL(p_log_level) = log_level;
    }
@@ -759,7 +759,7 @@ late_initcall_sync(p_lkrg_register);
 module_exit(p_lkrg_deregister);
 
 module_param(log_level, uint, 0000);
-MODULE_PARM_DESC(log_level, "log_level [3 (warn) is default]");
+MODULE_PARM_DESC(log_level, "log_level [3 (issue) is default]");
 module_param(heartbeat, uint, 0000);
 MODULE_PARM_DESC(heartbeat, "heartbeat [0 (don't print) is default]");
 module_param(block_modules, uint, 0000);
