@@ -213,7 +213,7 @@ int p_install_ftrace_modify_all_code_hook(void) {
 
    if (!P_SYM(p_ftrace_lock)) {
       p_print_log(P_LKRG_ERR,
-             "[FTRACE] ERROR: Can't find 'ftrace_lock' function :( Exiting...\n");
+             "[FTRACE] Can't find 'ftrace_lock' function :( Exiting...\n");
       return P_LKRG_GENERAL_ERROR;
    }
 
@@ -222,7 +222,7 @@ int p_install_ftrace_modify_all_code_hook(void) {
 
    if (!P_SYM(p_ftrace_rec_iter_start)) {
       p_print_log(P_LKRG_ERR,
-             "[FTRACE] ERROR: Can't find 'ftrace_rec_iter_start' function :( Exiting...\n");
+             "[FTRACE] Can't find 'ftrace_rec_iter_start' function :( Exiting...\n");
       return P_LKRG_GENERAL_ERROR;
    }
 
@@ -231,7 +231,7 @@ int p_install_ftrace_modify_all_code_hook(void) {
 
    if (!P_SYM(p_ftrace_rec_iter_next)) {
       p_print_log(P_LKRG_ERR,
-             "[FTRACE] ERROR: Can't find 'ftrace_rec_iter_next' function :( Exiting...\n");
+             "[FTRACE] Can't find 'ftrace_rec_iter_next' function :( Exiting...\n");
       return P_LKRG_GENERAL_ERROR;
    }
 
@@ -240,7 +240,7 @@ int p_install_ftrace_modify_all_code_hook(void) {
 
    if (!P_SYM(p_ftrace_rec_iter_record)) {
       p_print_log(P_LKRG_ERR,
-             "[FTRACE] ERROR: Can't find 'ftrace_rec_iter_record' function :( Exiting...\n");
+             "[FTRACE] Can't find 'ftrace_rec_iter_record' function :( Exiting...\n");
       return P_LKRG_GENERAL_ERROR;
    }
 
