@@ -88,41 +88,41 @@
 // Signature in logs...
 #define P_LKRG_SIGNATURE "LKRG: "
 
-#define P_LOG_LEVEL_MIN         0
-#define P_LKRG_CRIT             0
-#define P_LKRG_ALIVE            1
-#define P_LKRG_ERR              2
-#define P_LKRG_WARN             3
-#define P_LKRG_INFO             4
-#define P_LKRG_DBG              5
-#define P_LKRG_STRONG_DBG       6
-#define P_LOG_LEVEL_MAX         6
+#define P_LOG_MIN   0
+#define P_LOG_ALERT 0
+#define P_LOG_ALIVE 1
+#define P_LOG_FAULT 2
+#define P_LOG_ISSUE 3
+#define P_LOG_WATCH 4
+#define P_LOG_DEBUG 5
+#define P_LOG_FLOOD 6
+#define P_LOG_MAX   6
 
 #define p_print_log(p_level, p_fmt, p_args...)                                           \
 ({                                                                                       \
    int p_print_ret = 0;                                                                  \
                                                                                          \
-   if (p_level == P_LKRG_CRIT)                                                           \
-      p_print_ret = printk(KERN_CRIT P_LKRG_SIGNATURE "ALERT: " p_fmt, ## p_args);       \
+   if (p_level == P_LOG_ALERT)                                                           \
+      p_print_ret = printk(KERN_CRIT    P_LKRG_SIGNATURE "ALERT: " p_fmt, ## p_args);    \
    else if (P_CTRL(p_log_level) >= p_level)                                              \
    switch (p_level) {                                                                    \
-   case P_LKRG_ALIVE:                                                                    \
-      p_print_ret = printk(KERN_NOTICE P_LKRG_SIGNATURE "ALIVE: " p_fmt, ## p_args);     \
+   case P_LOG_ALIVE:                                                                     \
+      p_print_ret = printk(KERN_NOTICE  P_LKRG_SIGNATURE "ALIVE: " p_fmt, ## p_args);    \
       break;                                                                             \
-   case P_LKRG_ERR:                                                                      \
-      p_print_ret = printk(KERN_ERR P_LKRG_SIGNATURE "FAULT: " p_fmt, ## p_args);        \
+   case P_LOG_FAULT:                                                                     \
+      p_print_ret = printk(KERN_ERR     P_LKRG_SIGNATURE "FAULT: " p_fmt, ## p_args);    \
       break;                                                                             \
-   case P_LKRG_WARN:                                                                     \
+   case P_LOG_ISSUE:                                                                     \
       p_print_ret = printk(KERN_WARNING P_LKRG_SIGNATURE "ISSUE: " p_fmt, ## p_args);    \
       break;                                                                             \
-   case P_LKRG_INFO:                                                                     \
-      p_print_ret = printk(KERN_INFO P_LKRG_SIGNATURE "WATCH: " p_fmt, ## p_args);       \
+   case P_LOG_WATCH:                                                                     \
+      p_print_ret = printk(KERN_INFO    P_LKRG_SIGNATURE "WATCH: " p_fmt, ## p_args);    \
       break;                                                                             \
-   case P_LKRG_DBG:                                                                      \
-      p_print_ret = printk(KERN_DEBUG P_LKRG_SIGNATURE "DEBUG: " p_fmt, ## p_args);      \
+   case P_LOG_DEBUG:                                                                     \
+      p_print_ret = printk(KERN_DEBUG   P_LKRG_SIGNATURE "DEBUG: " p_fmt, ## p_args);    \
       break;                                                                             \
-   case P_LKRG_STRONG_DBG:                                                               \
-      p_print_ret = printk(KERN_DEBUG P_LKRG_SIGNATURE "FLOOD: " p_fmt, ## p_args);      \
+   case P_LOG_FLOOD:                                                                     \
+      p_print_ret = printk(KERN_DEBUG   P_LKRG_SIGNATURE "FLOOD: " p_fmt, ## p_args);    \
       break;                                                                             \
    }                                                                                     \
                                                                                          \
@@ -135,14 +135,14 @@
 
 #ifdef P_LKRG_NOTIFIER_DBG
  #define p_debug_notifier_log(p_fmt, p_args...)                                          \
-                  p_debug_log(P_LKRG_STRONG_DBG, p_fmt, ## p_args)
+                  p_debug_log(P_LOG_FLOOD, p_fmt, ## p_args)
 #else
  #define p_debug_notifier_log(p_fmt, p_args...)  ({ 0x0; })
 #endif
 
 #ifdef P_LKRG_STRONG_KPROBE_DEBUG
  #define p_debug_kprobe_log(p_fmt, p_args...)                                            \
-                  p_debug_log(P_LKRG_STRONG_DBG, p_fmt, ## p_args)
+                  p_debug_log(P_LOG_FLOOD, p_fmt, ## p_args)
  #undef LKRG_DEBUG_TRACE
  #define LKRG_DEBUG_TRACE
 #else

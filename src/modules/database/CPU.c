@@ -59,8 +59,8 @@ void p_get_cpus(p_cpu_info *p_arg) {
 
    p_arg->p_nr_cpu_ids = nr_cpu_ids;
 
-   p_debug_log(P_LKRG_DBG,
-//   p_print_log(P_LKRG_CRIT,
+   p_debug_log(P_LOG_DEBUG,
+//   p_print_log(P_LOG_ALERT,
           "<p_get_cpus> online[%d] possible[%d] present[%d] active[%d] nr_cpu_ids[%d]\n",
           p_arg->online_CPUs,p_arg->possible_CPUs,p_arg->present_CPUs,p_arg->active_CPUs,
           p_arg->p_nr_cpu_ids);
@@ -71,27 +71,27 @@ int p_cmp_cpus(p_cpu_info *p_arg1, p_cpu_info *p_arg2) {
    int p_flag = 0;
 
    if (p_arg1->online_CPUs != p_arg2->online_CPUs) {
-      p_print_log(P_LKRG_CRIT,
+      p_print_log(P_LOG_ALERT,
              "ALERT !!! NUMBER OF ONLINE CPUs IS DIFFERENT !!!\n");
       p_flag++;
    }
    if (p_arg1->possible_CPUs != p_arg2->possible_CPUs) {
-      p_print_log(P_LKRG_CRIT,
+      p_print_log(P_LOG_ALERT,
              "ALERT !!! NUMBER OF POSSIBLE CPUs IS DIFFERENT !!!\n");
       p_flag++;
    }
    if (p_arg1->present_CPUs != p_arg2->present_CPUs) {
-      p_print_log(P_LKRG_CRIT,
+      p_print_log(P_LOG_ALERT,
              "ALERT !!! NUMBER OF PRESENT CPUs IS DIFFERENT !!!\n");
       p_flag++;
    }
    if (p_arg1->active_CPUs != p_arg2->active_CPUs) {
-      p_print_log(P_LKRG_CRIT,
+      p_print_log(P_LOG_ALERT,
              "ALERT !!! NUMBER OF ACTIVE CPUs IS DIFFERENT !!!\n");
       p_flag++;
    }
    if (p_arg1->p_nr_cpu_ids != p_arg2->p_nr_cpu_ids) {
-      p_print_log(P_LKRG_CRIT,
+      p_print_log(P_LOG_ALERT,
              "ALERT !!! VARIABLE 'nr_cpu_ids' IS DIFFERENT !!!\n");
       p_flag++;
    }
@@ -157,19 +157,19 @@ int p_cpu_online_action(unsigned int p_cpu) {
    if (tmp_online_CPUs == 1 && p_db.p_cpu.online_CPUs > 1) {
       /* First recalculate _STEXT and other critical kernel's data - now is SMPbooted! */
       if (hash_from_ex_table() != P_LKRG_SUCCESS) {
-         p_print_log(P_LKRG_CRIT,
+         p_print_log(P_LOG_ALERT,
             "CPU ONLINE ERROR: CANNOT GET HASH FROM EXCEPTION TABLE!\n");
       }
       if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
-         p_print_log(P_LKRG_CRIT,
+         p_print_log(P_LOG_ALERT,
             "CPU ONLINE ERROR: CANNOT GET HASH FROM _STEXT!\n");
       }
       if (hash_from_kernel_rodata() != P_LKRG_SUCCESS) {
-         p_print_log(P_LKRG_CRIT,
+         p_print_log(P_LOG_ALERT,
             "CPU ONLINE ERROR: CANNOT GET HASH FROM _RODATA!\n");
       }
       if (hash_from_iommu_table() != P_LKRG_SUCCESS) {
-         p_print_log(P_LKRG_CRIT,
+         p_print_log(P_LOG_ALERT,
             "CPU ONLINE ERROR: CANNOT GET HASH FROM IOMMU TABLE!\n");
       }
       /* Now recalculate modules, again some macros are different now ! */
@@ -186,8 +186,8 @@ int p_cpu_online_action(unsigned int p_cpu) {
       p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                              (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
 
-      p_print_log(P_LKRG_INFO,"Hash from 'module list' => [0x%llx]\n",p_db.p_module_list_hash);
-      p_print_log(P_LKRG_INFO,"Hash from 'module kobj(s)' => [0x%llx]\n",p_db.p_module_kobj_hash);
+      p_print_log(P_LOG_WATCH,"Hash from 'module list' => [0x%llx]\n",p_db.p_module_list_hash);
+      p_print_log(P_LOG_WATCH,"Hash from 'module kobj(s)' => [0x%llx]\n",p_db.p_module_kobj_hash);
 
       /* We should be fine now! */
    }
@@ -230,19 +230,19 @@ int p_cpu_dead_action(unsigned int p_cpu) {
    if (tmp_online_CPUs > 1 && p_db.p_cpu.online_CPUs == 1) {
       /* First recalculate _STEXT and other critical kernel's data - now is not SMPbooted! */
       if (hash_from_ex_table() != P_LKRG_SUCCESS) {
-         p_print_log(P_LKRG_CRIT,
+         p_print_log(P_LOG_ALERT,
             "CPU OFFLINE ERROR: CANNOT GET HASH FROM EXCEPTION TABLE!\n");
       }
       if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
-         p_print_log(P_LKRG_CRIT,
+         p_print_log(P_LOG_ALERT,
             "CPU OFFLINE ERROR: CANNOT GET HASH FROM _STEXT!\n");
       }
       if (hash_from_kernel_rodata() != P_LKRG_SUCCESS) {
-         p_print_log(P_LKRG_CRIT,
+         p_print_log(P_LOG_ALERT,
             "CPU OFFLINE ERROR: CANNOT GET HASH FROM _RODATA!\n");
       }
       if (hash_from_iommu_table() != P_LKRG_SUCCESS) {
-         p_print_log(P_LKRG_CRIT,
+         p_print_log(P_LOG_ALERT,
             "CPU OFFLINE ERROR: CANNOT GET HASH FROM IOMMU TABLE!\n");
       }
       /* Now recalculate modules, again some macros are different now ! */
@@ -259,8 +259,8 @@ int p_cpu_dead_action(unsigned int p_cpu) {
       p_db.p_module_kobj_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_kobj_array,
                                              (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
 
-      p_print_log(P_LKRG_INFO,"Hash from 'module list' => [0x%llx]\n",p_db.p_module_list_hash);
-      p_print_log(P_LKRG_INFO,"Hash from 'module kobj(s)' => [0x%llx]\n",p_db.p_module_kobj_hash);
+      p_print_log(P_LOG_WATCH,"Hash from 'module list' => [0x%llx]\n",p_db.p_module_list_hash);
+      p_print_log(P_LOG_WATCH,"Hash from 'module kobj(s)' => [0x%llx]\n",p_db.p_module_kobj_hash);
 
       /* We should be fine now! */
    }

@@ -27,7 +27,7 @@ struct module_notes_attrs *p_find_notes_attrs;
 void p_hide_itself(void) {
 
    if (P_CTRL(p_hide_lkrg)) {
-      p_print_log(P_LKRG_WARN,
+      p_print_log(P_LOG_ISSUE,
              "Module is already hidden!\n");
       return;
    }
@@ -74,7 +74,7 @@ void p_unhide_itself(void) {
    struct kobj_type  *p_tmp_ktype  = (struct kobj_type *)((void*)p_tmp_mod->mkobj.kobj.ktype);
 
    if (!P_CTRL(p_hide_lkrg)) {
-      p_print_log(P_LKRG_WARN,
+      p_print_log(P_LOG_ISSUE,
              "Module is already unhidden (visible)!\n");
       return;
    }

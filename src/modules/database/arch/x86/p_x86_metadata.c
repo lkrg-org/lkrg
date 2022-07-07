@@ -46,7 +46,7 @@ u64 p_read_msr(/*int p_cpu, */u32 p_arg) {
 // Sometime may generate OOPS ;/
 /*
    if ( (p_err = rdmsr_safe_on_cpu(p_cpu,p_arg,&p_low,&p_high))) {
-      p_debug_log(P_LKRG_STRONG_DBG,
+      p_debug_log(P_LOG_FLOOD,
              "<p_read_msr> rdmsr_safe_on_cpu() error! - shouldn't happen [err=0x%x]!\n",p_err);
       return 0;
    }
@@ -56,7 +56,7 @@ u64 p_read_msr(/*int p_cpu, */u32 p_arg) {
    p_val = P_MSR_ASM_RET(p_val,p_low,p_high);
 
 // DEBUG
-   p_debug_log(P_LKRG_DBG,
+   p_debug_log(P_LOG_DEBUG,
           "<p_read_msr[%d]> MSR arg[0x%x] value[%llx]\n",smp_processor_id(),p_arg,p_val);
 
     return p_val;
@@ -123,7 +123,7 @@ void p_dump_x86_metadata(void *_p_arg) {
 
 // DEBUG
 #ifdef P_LKRG_DEBUG
-   p_debug_log(P_LKRG_DBG,
+   p_debug_log(P_LOG_DEBUG,
           "<p_dump_IDT_MSR> CPU:[%d] IDT => base[0x%lx] size[0x%x] hash[0x%llx]\n",
           p_arg[p_curr_cpu].p_cpu_id,p_arg[p_curr_cpu].p_base,p_arg[p_curr_cpu].p_size,p_arg[p_curr_cpu].p_hash);
 
@@ -131,11 +131,11 @@ void p_dump_x86_metadata(void *_p_arg) {
    do {
       p_idt_descriptor *p_test;
 
-      p_debug_log(P_LKRG_DBG,
+      p_debug_log(P_LOG_DEBUG,
              "Reading IDT 1 to verify data:");
       p_test = (p_idt_descriptor *)(p_arg[p_curr_cpu].p_base+(sizeof(p_idt_descriptor)*1));
 #ifdef CONFIG_X86_64
-      p_debug_log(P_LKRG_DBG,
+      p_debug_log(P_LOG_DEBUG,
                 "off_low[0x%x]"
                 "sel[0x%x]"
                 "none[0x%x]"
@@ -152,7 +152,7 @@ void p_dump_x86_metadata(void *_p_arg) {
                 p_test->padding
                 );
 #else
-      p_debug_log(P_LKRG_DBG,
+      p_debug_log(P_LOG_DEBUG,
                 "off_low[0x%x]"
                 "sel[0x%x]"
                 "none[0x%x]"
@@ -182,13 +182,13 @@ void p_dump_x86_metadata(void *_p_arg) {
 //      p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_CS = p_read_msr(p_curr_cpu,MSR_IA32_SYSENTER_CS);
 
       if (!p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_CS) {
-         p_print_log(P_LKRG_INFO,
+         p_print_log(P_LOG_WATCH,
                 "MSR IA32_SYSENTER_CS offset 0x%x on CPU:[%d] is not set!\n",
                 MSR_IA32_SYSENTER_CS,p_curr_cpu);
       }
 
       // STRONG_DEBUG
-      p_debug_log(P_LKRG_STRONG_DBG,
+      p_debug_log(P_LOG_FLOOD,
              "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_SYSENTER_CS[0x%llx] address in db[0x%lx]\n",
              p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_CS,(unsigned long)&p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_CS);
 
@@ -198,13 +198,13 @@ void p_dump_x86_metadata(void *_p_arg) {
       P_MSR_READ_COUNT(3,p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_ESP,MSR_IA32_SYSENTER_ESP);
 
       if (!p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_ESP) {
-         p_print_log(P_LKRG_INFO,
+         p_print_log(P_LOG_WATCH,
                 "MSR IA32_SYSENTER_ESP offset 0x%x on CPU:[%d] is not set!\n",
                 MSR_IA32_SYSENTER_ESP,p_curr_cpu);
       }
 
       // STRONG_DEBUG
-      p_debug_log(P_LKRG_STRONG_DBG,
+      p_debug_log(P_LOG_FLOOD,
              "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_SYSENTER_ESP[0x%llx] address in db[0x%lx]\n",
              p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_ESP,(unsigned long)&p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_ESP);
 
@@ -214,13 +214,13 @@ void p_dump_x86_metadata(void *_p_arg) {
       P_MSR_READ_COUNT(3,p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_EIP,MSR_IA32_SYSENTER_EIP);
 
       if (!p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_EIP) {
-         p_print_log(P_LKRG_INFO,
+         p_print_log(P_LOG_WATCH,
                 "MSR IA32_SYSENTER_EIP offset 0x%x on CPU:[%d] is not set!\n",
                 MSR_IA32_SYSENTER_EIP,p_curr_cpu);
       }
 
       // STRONG_DEBUG
-      p_debug_log(P_LKRG_STRONG_DBG,
+      p_debug_log(P_LOG_FLOOD,
              "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_SYSENTER_EIP[0x%llx] address in db[0x%lx]\n",
              p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_EIP,(unsigned long)&p_arg[p_curr_cpu].p_MSR_IA32_SYSENTER_EIP);
 
@@ -231,13 +231,13 @@ void p_dump_x86_metadata(void *_p_arg) {
       P_MSR_READ_COUNT(3,p_arg[p_curr_cpu].p_MSR_IA32_CR_PAT,MSR_IA32_CR_PAT);
 
       if (!p_arg[p_curr_cpu].p_MSR_IA32_CR_PAT) {
-         p_print_log(P_LKRG_INFO,
+         p_print_log(P_LOG_WATCH,
                 "MSR IA32_CR_PAT offset 0x%x on CPU:[%d] is not set!\n",
                 MSR_IA32_CR_PAT,p_curr_cpu);
       }
 
       // STRONG_DEBUG
-      p_debug_log(P_LKRG_STRONG_DBG,
+      p_debug_log(P_LOG_FLOOD,
              "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_CR_PAT[0x%llx] address in db[0x%lx]\n",
              p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_CR_PAT,(unsigned long)&p_arg[p_curr_cpu].p_MSR_IA32_CR_PAT);
       */
@@ -247,13 +247,13 @@ void p_dump_x86_metadata(void *_p_arg) {
       P_MSR_READ_COUNT(3,p_arg[p_curr_cpu].p_MSR_IA32_APICBASE,MSR_IA32_APICBASE);
 
       if (!p_arg[p_curr_cpu].p_MSR_IA32_APICBASE) {
-         p_print_log(P_LKRG_INFO,
+         p_print_log(P_LOG_WATCH,
                 "MSR IA32_APICBASE offset 0x%x on CPU:[%d] is not set!\n",
                 MSR_IA32_APICBASE,p_curr_cpu);
       }
 
       // STRONG_DEBUG
-      p_debug_log(P_LKRG_STRONG_DBG,
+      p_debug_log(P_LOG_FLOOD,
              "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_IA32_APICBASE[0x%llx] address in db[0x%lx]\n",
              p_curr_cpu,p_arg[p_curr_cpu].p_MSR_IA32_APICBASE,(unsigned long)&p_arg[p_curr_cpu].p_MSR_IA32_APICBASE);
 
@@ -263,13 +263,13 @@ void p_dump_x86_metadata(void *_p_arg) {
       P_MSR_READ_COUNT(3,p_arg[p_curr_cpu].p_MSR_EFER,MSR_EFER);
 
       if (!p_arg[p_curr_cpu].p_MSR_EFER) {
-         p_print_log(P_LKRG_INFO,
+         p_print_log(P_LOG_WATCH,
                 "MSR EFER offset 0x%x on CPU:[%d] is not set!\n",
                 MSR_EFER,p_curr_cpu);
       }
 
       // STRONG_DEBUG
-      p_debug_log(P_LKRG_STRONG_DBG,
+      p_debug_log(P_LOG_FLOOD,
              "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_EFER[0x%llx] address in db[0x%lx]\n",
              p_curr_cpu,p_arg[p_curr_cpu].p_MSR_EFER,(unsigned long)&p_arg[p_curr_cpu].p_MSR_EFER);
 
@@ -279,13 +279,13 @@ void p_dump_x86_metadata(void *_p_arg) {
       P_MSR_READ_COUNT(3,p_arg[p_curr_cpu].p_MSR_STAR,MSR_STAR);
 
       if (!p_arg[p_curr_cpu].p_MSR_STAR) {
-         p_print_log(P_LKRG_INFO,
+         p_print_log(P_LOG_WATCH,
                 "MSR STAR offset 0x%x on CPU:[%d] is not set!\n",
                 MSR_STAR,p_curr_cpu);
       }
 
       // STRONG_DEBUG
-      p_debug_log(P_LKRG_STRONG_DBG,
+      p_debug_log(P_LOG_FLOOD,
              "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_STAR[0x%llx] address in db[0x%lx]\n",
              p_curr_cpu,p_arg[p_curr_cpu].p_MSR_STAR,(unsigned long)&p_arg[p_curr_cpu].p_MSR_STAR);
 
@@ -295,13 +295,13 @@ void p_dump_x86_metadata(void *_p_arg) {
       P_MSR_READ_COUNT(3,p_arg[p_curr_cpu].p_MSR_LSTAR,MSR_LSTAR);
 
       if (!p_arg[p_curr_cpu].p_MSR_LSTAR) {
-         p_print_log(P_LKRG_INFO,
+         p_print_log(P_LOG_WATCH,
                 "MSR LSTAR offset 0x%x on CPU:[%d] is not set!\n",
                 MSR_LSTAR,p_curr_cpu);
       }
 
       // STRONG_DEBUG
-      p_debug_log(P_LKRG_STRONG_DBG,
+      p_debug_log(P_LOG_FLOOD,
              "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_LSTAR[0x%llx] address in db[0x%lx]\n",
              p_curr_cpu,p_arg[p_curr_cpu].p_MSR_LSTAR,(unsigned long)&p_arg[p_curr_cpu].p_MSR_LSTAR);
 
@@ -311,13 +311,13 @@ void p_dump_x86_metadata(void *_p_arg) {
       P_MSR_READ_COUNT(3,p_arg[p_curr_cpu].p_MSR_CSTAR,MSR_CSTAR);
 
       if (!p_arg[p_curr_cpu].p_MSR_CSTAR) {
-         p_print_log(P_LKRG_INFO,
+         p_print_log(P_LOG_WATCH,
                 "MSR CSTAR offset 0x%x on CPU:[%d] is not set!\n",
                 MSR_CSTAR,p_curr_cpu);
       }
 
       // STRONG_DEBUG
-      p_debug_log(P_LKRG_STRONG_DBG,
+      p_debug_log(P_LOG_FLOOD,
              "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_CSTAR[0x%llx] address in db[0x%lx]\n",
              p_curr_cpu,p_arg[p_curr_cpu].p_MSR_CSTAR,(unsigned long)&p_arg[p_curr_cpu].p_MSR_CSTAR);
 
@@ -327,13 +327,13 @@ void p_dump_x86_metadata(void *_p_arg) {
       P_MSR_READ_COUNT(3,p_arg[p_curr_cpu].p_MSR_SYSCALL_MASK,MSR_SYSCALL_MASK);
 
       if (!p_arg[p_curr_cpu].p_MSR_SYSCALL_MASK) {
-         p_print_log(P_LKRG_INFO,
+         p_print_log(P_LOG_WATCH,
                 "MSR SYSCALL_MASK offset 0x%x on CPU:[%d] is not set!\n",
                 MSR_SYSCALL_MASK,p_curr_cpu);
       }
 
       // STRONG_DEBUG
-      p_debug_log(P_LKRG_STRONG_DBG,
+      p_debug_log(P_LOG_FLOOD,
              "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_SYSCALL_MASK[0x%llx] address in db[0x%lx]\n",
              p_curr_cpu,p_arg[p_curr_cpu].p_MSR_SYSCALL_MASK,(unsigned long)&p_arg[p_curr_cpu].p_MSR_SYSCALL_MASK);
 
@@ -344,13 +344,13 @@ void p_dump_x86_metadata(void *_p_arg) {
       P_MSR_READ_COUNT(3,p_arg[p_curr_cpu].p_MSR_KERNEL_GS_BASE,MSR_KERNEL_GS_BASE);
 
       if (!p_arg[p_curr_cpu].p_MSR_KERNEL_GS_BASE) {
-         p_print_log(P_LKRG_INFO,
+         p_print_log(P_LOG_WATCH,
                 "MSR KERNEL_GS_BASE offset 0x%x on CPU:[%d] is not set!\n",
                 MSR_KERNEL_GS_BASE,p_curr_cpu);
       }
 
       // STRONG_DEBUG
-      p_debug_log(P_LKRG_STRONG_DBG,
+      p_debug_log(P_LOG_FLOOD,
              "<p_dump_IDT_MSR> CPU:[%d] MSR: MSR_KERNEL_GS_BASE[0x%llx] address in db[0x%lx]\n",
              p_curr_cpu,p_arg[p_curr_cpu].p_MSR_KERNEL_GS_BASE,(unsigned long)&p_arg[p_curr_cpu].p_MSR_KERNEL_GS_BASE);
       */
