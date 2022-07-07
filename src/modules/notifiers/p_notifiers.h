@@ -24,6 +24,7 @@
 //#define P_RARE_RATE         80000000
 //#define P_SUPER_RARE_RATE   3000000000
 
+#define P_ALWAYS_RATE             4294967295U   /*  100%     */
 #define P_SUPER_RARE_RATE         2147483647    /*   50%     */
 #define P_RARE_RATE               429496729     /*   10%     */
 #define P_LESS_RARE_RATE          214748364     /*    5%     */
@@ -35,21 +36,17 @@
 #define P_M_SS_MORE_OFTEN_RATE    21474         /*    0.005% */
 #define P_S_SS_MORE_OFTEN_RATE    42949         /*    0.001% */
 
-#define P_CHECK_RANDOM(x) ({ (get_random_int() < x) ? 1 : 0; })
+#define P_CHECK_RANDOM(x) (get_random_int() <= x)
 
-#define P_TRY_OFFLOAD_NOTIFIER(p_arg1, p_arg2)        \
-do {                                                  \
-   if (P_CHECK_RANDOM(p_arg1)) {                      \
-      p_debug_log(P_LOG_DEBUG, "%s", p_arg2);         \
-      p_offload_work(0);                              \
-   }                                                  \
+#define P_TRY_OFFLOAD_NOTIFIER(rate, where)                                \
+do {                                                                       \
+   if (rate == P_ALWAYS_RATE || P_CHECK_RANDOM(rate)) {                    \
+      p_debug_log(P_LOG_DEBUG, "%s: Offloading integrity check\n", where); \
+      p_offload_work(0);                                                   \
+   }                                                                       \
 } while(0)
 
-#define P_TRY_OFFLOAD_NOTIFIER_ALWAYS(p_arg1)         \
-do {                                                  \
-   p_debug_log(P_LOG_DEBUG, "%s", p_arg1);            \
-   p_offload_work(0);                                 \
-} while(0)
+#define P_TRY_OFFLOAD_NOTIFIER_ALWAYS(where) P_TRY_OFFLOAD_NOTIFIER(P_ALWAYS_RATE, where)
 
 void p_register_notifiers(void);
 void p_deregister_notifiers(void);
