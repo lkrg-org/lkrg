@@ -172,7 +172,7 @@ void __cyg_profile_func_enter(void *func, void *caller) {
 
    for (it = p_addr_name_array; it->name != NULL; it++) {
       if (it->addr == (uintptr_t)func) {
-         p_debug_log(P_LKRG_STRONG_DBG,
+         p_debug_log(P_LOG_FLOOD,
             "Entering function <%s>\n", it->name);
          break;
       }
@@ -185,7 +185,7 @@ void __cyg_profile_func_exit(void *func, void *caller) {
 
    for (it = p_addr_name_array; it->name != NULL; it++) {
       if (it->addr == (uintptr_t)func) {
-         p_debug_log(P_LKRG_STRONG_DBG,
+         p_debug_log(P_LOG_FLOOD,
             "Leaving function <%s>\n", it->name);
 		   break;
       }

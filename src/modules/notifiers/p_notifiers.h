@@ -41,7 +41,7 @@
 #define P_TRY_OFFLOAD_NOTIFIER(p_arg1, p_arg2)        \
 do {                                                  \
    if (P_CHECK_RANDOM(p_arg1)) {                      \
-      p_print_log(P_LKRG_DBG, "%s", p_arg2);          \
+      p_print_log(P_LOG_DEBUG, "%s", p_arg2);         \
       p_offload_work(0);                              \
    }                                                  \
 } while(0)
@@ -57,7 +57,7 @@ do {                                                  \
 #ifdef P_LKRG_DEBUG
 #define P_TRY_OFFLOAD_NOTIFIER_ALWAYS(p_arg1)         \
 do {                                                  \
-   p_print_log(P_LKRG_DBG, "%s", p_arg1);             \
+   p_print_log(P_LOG_DEBUG, "%s", p_arg1);            \
    p_offload_work(0);                                 \
 } while(0)
 #else

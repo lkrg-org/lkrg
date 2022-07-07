@@ -31,17 +31,17 @@ static int p_find_isra_name(void *p_isra_argg, const char *name,
    snprintf(p_buf, sizeof(p_buf), "%s.isra.", p_isra_arg->p_name);
    snprintf(p_buf2, sizeof(p_buf2), "%s.constprop.", p_isra_arg->p_name);
    if (strncmp(p_buf, name, strlen(p_buf)) == 0) {
-      p_print_log(P_LKRG_WARN, "Found ISRA version of function <%s>\n", name);
+      p_print_log(P_LOG_ISSUE, "Found ISRA version of function <%s>\n", name);
       if ( (p_isra_arg->p_isra_name = kzalloc(strlen(name)+1, GFP_KERNEL)) == NULL) {
-         p_print_log(P_LKRG_ERR, "[p_find_isra_name] kzalloc() failed!\n");
+         p_print_log(P_LOG_FAULT, "[p_find_isra_name] kzalloc() failed!\n");
          return 0;
       }
       memcpy(p_isra_arg->p_isra_name, name, strlen(name));
       return addr;
    } else if (strncmp(p_buf2, name, strlen(p_buf2)) == 0) {
-      p_print_log(P_LKRG_WARN, "Found CONSTPROP version of function <%s>\n", name);
+      p_print_log(P_LOG_ISSUE, "Found CONSTPROP version of function <%s>\n", name);
       if ( (p_isra_arg->p_isra_name = kzalloc(strlen(name)+1, GFP_KERNEL)) == NULL) {
-         p_print_log(P_LKRG_ERR, "[p_find_isra_name] kzalloc() failed!\n");
+         p_print_log(P_LOG_FAULT, "[p_find_isra_name] kzalloc() failed!\n");
          return 0;
       }
       memcpy(p_isra_arg->p_isra_name, name, strlen(name));
@@ -95,7 +95,7 @@ long get_kallsyms_address(void) {
    p_kprobe.pre_handler = p_tmp_kprobe_handler;
    p_kprobe.symbol_name = "kallsyms_lookup_name";
    if ( (p_ret = register_kprobe(&p_kprobe)) < 0) {
-      p_print_log(P_LKRG_ERR,
+      p_print_log(P_LOG_FAULT,
              "[get_kallsyms_address] register_kprobe error [%d] :(\n", p_ret);
       return P_LKRG_GENERAL_ERROR;
    }
@@ -117,12 +117,12 @@ long get_kallsyms_address(void) {
 #else
 
    if ( (p_ret = kallsyms_on_each_symbol(p_lookup_syms_hack,NULL)) == 0) {
-      p_debug_log(P_LKRG_DBG,
+      p_debug_log(P_LOG_DEBUG,
              "kallsyms_on_each_symbol error :(\n");
       return P_LKRG_GENERAL_ERROR;
    }
 
-   p_print_log(P_LKRG_INFO,
+   p_print_log(P_LOG_WATCH,
           "kallsyms_on_each_symbol() returned => 0x%x [0x%lx]\n",
           p_ret,
           (unsigned long)P_SYM(p_kallsyms_lookup_name));
