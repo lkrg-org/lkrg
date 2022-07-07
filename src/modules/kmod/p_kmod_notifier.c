@@ -60,13 +60,10 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
 
    struct module *p_tmp = p_kmod;
 
-// STRONG_DEBUG
-#ifdef P_LKRG_DEBUG
    char *p_mod_strings[] = { "New module is LIVE",
                              "New module is COMING",
                              "Module is GOING AWAY",
                              "New module is UNFORMED yet" };
-#endif
 
 // STRONG_DEBUG
    p_debug_log(P_LKRG_STRONG_DBG,
