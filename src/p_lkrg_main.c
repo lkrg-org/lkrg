@@ -387,13 +387,10 @@ static int __init p_lkrg_register(void) {
       p_print_log(P_LOG_ALERT,
              "Can't find kallsyms_lookup_name() function address! Exiting...\n");
       return P_LKRG_RESOLVER_ERROR;
+   } else {
+      p_debug_log(P_LOG_DEBUG,
+             "kallsyms_lookup_name() => 0x%lx\n",(unsigned long)P_SYM(p_kallsyms_lookup_name));
    }
-#ifdef P_LKRG_DEBUG
-     else {
-        p_print_log(P_LOG_DEBUG,
-               "kallsyms_lookup_name() => 0x%lx\n",(unsigned long)P_SYM(p_kallsyms_lookup_name));
-     }
-#endif
 
    /*
     * Verify if user disabled loading LKRG from boot parameters
@@ -699,10 +696,8 @@ static void __exit p_lkrg_deregister(void) {
 
    p_print_log(P_LOG_ALERT, "Unloading LKRG...\n");
 
-#ifdef P_LKRG_DEBUG
-   p_print_log(P_LOG_DEBUG,
+   p_debug_log(P_LOG_DEBUG,
           "I should never be here! This operation probably is going to break your system! Goodbye ;)\n");
-#endif
 
    p_uninit_page_attr();
 

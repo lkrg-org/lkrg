@@ -37,35 +37,19 @@
 
 #define P_CHECK_RANDOM(x) ({ (get_random_int() < x) ? 1 : 0; })
 
-#ifdef P_LKRG_DEBUG
 #define P_TRY_OFFLOAD_NOTIFIER(p_arg1, p_arg2)        \
 do {                                                  \
    if (P_CHECK_RANDOM(p_arg1)) {                      \
-      p_print_log(P_LOG_DEBUG, "%s", p_arg2);         \
+      p_debug_log(P_LOG_DEBUG, "%s", p_arg2);         \
       p_offload_work(0);                              \
    }                                                  \
 } while(0)
-#else
-#define P_TRY_OFFLOAD_NOTIFIER(p_arg1, p_arg2)        \
-do {                                                  \
-   if (P_CHECK_RANDOM(p_arg1)) {                      \
-      p_offload_work(0);                              \
-   }                                                  \
-} while(0)
-#endif
 
-#ifdef P_LKRG_DEBUG
 #define P_TRY_OFFLOAD_NOTIFIER_ALWAYS(p_arg1)         \
 do {                                                  \
-   p_print_log(P_LOG_DEBUG, "%s", p_arg1);            \
+   p_debug_log(P_LOG_DEBUG, "%s", p_arg1);            \
    p_offload_work(0);                                 \
 } while(0)
-#else
-#define P_TRY_OFFLOAD_NOTIFIER_ALWAYS(p_arg1)         \
-do {                                                  \
-   p_offload_work(0);                                 \
-} while(0)
-#endif
 
 void p_register_notifiers(void);
 void p_deregister_notifiers(void);
