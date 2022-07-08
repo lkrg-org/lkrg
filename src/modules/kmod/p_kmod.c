@@ -55,7 +55,7 @@ int p_kmod_init(void) {
  #endif
 #endif
                         "module_mutex[0x%lx] p_global_modules[0x%lx] "
-                        "p_module_kset[0x%lx]\n",
+                        "p_module_kset[0x%lx]",
 #if defined(CONFIG_DYNAMIC_DEBUG)
                                                             (unsigned long)P_SYM(p_ddebug_tables),
                                                             (unsigned long)P_SYM(p_ddebug_lock),
@@ -69,7 +69,7 @@ int p_kmod_init(void) {
 
    if (!P_SYM(p_global_modules)) {
       p_print_log(P_LOG_FAULT,
-             "KMOD error! Can't initialize global modules variable :( Exiting...\n");
+             "KMOD error! Can't initialize global modules variable :( Exiting...");
       return P_LKRG_GENERAL_ERROR;
    }
 
@@ -77,7 +77,7 @@ int p_kmod_init(void) {
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
    if (!P_SYM(p_ddebug_remove_module_ptr)) {
       p_print_log(P_LOG_FAULT,
-             "KMOD error! Can't find 'ddebug_remove_module' function :( Exiting...\n");
+             "KMOD error! Can't find 'ddebug_remove_module' function :( Exiting...");
       return P_LKRG_GENERAL_ERROR;
    }
  #endif
@@ -85,19 +85,19 @@ int p_kmod_init(void) {
 
    if (!P_SYM(p_module_kset)) {
       p_print_log(P_LOG_FAULT,
-             "KMOD error! Can't find 'module_kset' variable :( Exiting...\n");
+             "KMOD error! Can't find 'module_kset' variable :( Exiting...");
       return P_LKRG_GENERAL_ERROR;
    }
 
    if (!P_SYM(p_module_mutex)) {
       p_print_log(P_LOG_FAULT,
-             "KMOD error! Can't find 'module_mutex' variable :( Exiting...\n");
+             "KMOD error! Can't find 'module_mutex' variable :( Exiting...");
       return P_LKRG_GENERAL_ERROR;
    }
 
    if (!P_SYM(p_find_module)) {
       p_print_log(P_LOG_FAULT,
-             "KMOD error! Can't find 'find_module' function :( Exiting...\n");
+             "KMOD error! Can't find 'find_module' function :( Exiting...");
       return P_LKRG_GENERAL_ERROR;
    }
 
@@ -179,7 +179,7 @@ static int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
 
 // STRONG_DEBUG
       p_debug_log(P_LOG_FLOOD,
-             "[%s | 0x%lx] module_core[0x%lx | 0x%x] hash[0x%llx]\n",
+             "[%s | 0x%lx] module_core[0x%lx | 0x%x] hash[0x%llx]",
              p_arg[p_cnt].p_name,
              (unsigned long)p_arg[p_cnt].p_mod,
              (unsigned long)p_arg[p_cnt].p_module_core,
@@ -336,9 +336,9 @@ static int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
 
 // STRONG_DEBUG
       p_debug_log(P_LOG_FLOOD,
-             "[%s | 0x%lx] module_core[0x%lx | 0x%x] hash[0x%llx]\n"
+             "[%s | 0x%lx] module_core[0x%lx | 0x%x] hash[0x%llx]"
              "module_kobject[0x%lx] KOBJ: name[%s] parent[0x%lx] "
-             "kset[0x%lx] ktype[0x%lx] sd[0x%lx] refcount[0x%x|%d]\n",
+             "kset[0x%lx] ktype[0x%lx] sd[0x%lx] refcount[0x%x|%d]",
              p_arg[p_cnt].p_name,
              (unsigned long)p_arg[p_cnt].p_mod,
              (unsigned long)p_arg[p_cnt].p_module_core,
@@ -388,7 +388,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
 
 // STRONG_DEBUG
    p_debug_log(P_LOG_FLOOD,
-          "[p_kmod_hash] %s => Found %d modules in module list and %d modules in sysfs.\n",
+          "[p_kmod_hash] %s => Found %d modules in module list and %d modules in sysfs.",
           (*p_module_list_cnt_arg != *p_module_kobj_cnt_arg) ? "DOESN'T MATCH" : "MATCH",
           *p_module_list_cnt_arg,*p_module_kobj_cnt_arg);
 
@@ -434,7 +434,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
           */
          p_ret = P_LKRG_GENERAL_ERROR;
          p_print_log(P_LOG_ALERT,
-                "KMOD HASH kmalloc() error! Can't allocate memory for module bitmask ;[\n");
+                "KMOD HASH kmalloc() error! Can't allocate memory for module bitmask ;[");
          goto p_kmod_hash_err;
       }
 
@@ -457,13 +457,13 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
           */
          p_ret = P_LKRG_GENERAL_ERROR;
          p_print_log(P_LOG_ALERT,
-                "KMOD HASH kzalloc() error! Can't allocate memory for module list ;[\n");
+                "KMOD HASH kzalloc() error! Can't allocate memory for module list ;[");
          goto p_kmod_hash_err;
       }
       // STRONG_DEBUG
         else {
            p_debug_log(P_LOG_FLOOD,
-                  "<p_kmod_hash> p_mlm_tmp allocated at: 0x%lx with size: %zd[0x%zx]\n",
+                  "<p_kmod_hash> p_mlm_tmp allocated at: 0x%lx with size: %zd[0x%zx]",
                   (unsigned long)*p_mlm_tmp,
                   sizeof(p_module_list_mem) * (*p_module_list_cnt_arg+P_MODULE_BUFFER_RACE),
                   sizeof(p_module_list_mem) * (*p_module_list_cnt_arg+P_MODULE_BUFFER_RACE));
@@ -487,13 +487,13 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
           */
          p_ret = P_LKRG_GENERAL_ERROR;
          p_print_log(P_LOG_ALERT,
-                "KMOD HASH kzalloc() error! Can't allocate memory for kobj list;[\n");
+                "KMOD HASH kzalloc() error! Can't allocate memory for kobj list;[");
          goto p_kmod_hash_err;
       }
       // STRONG_DEBUG
         else {
            p_debug_log(P_LOG_FLOOD,
-                  "<p_kmod_hash> p_mkm_tmp allocated at: 0x%lx with size: %zd[0x%zx]\n",
+                  "<p_kmod_hash> p_mkm_tmp allocated at: 0x%lx with size: %zd[0x%zx]",
                   (unsigned long)*p_mkm_tmp,
                   sizeof(p_module_kobj_mem) * (*p_module_kobj_cnt_arg+P_MODULE_BUFFER_RACE),
                   sizeof(p_module_kobj_mem) * (*p_module_kobj_cnt_arg+P_MODULE_BUFFER_RACE));
@@ -521,7 +521,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
              */
             p_ret = P_LKRG_GENERAL_ERROR;
             p_print_log(P_LOG_ALERT,
-                   "KMOD HASH kmalloc() error! Can't allocate memory for module bitmask ;[\n");
+                   "KMOD HASH kmalloc() error! Can't allocate memory for module bitmask ;[");
             goto p_kmod_hash_err;
          }
 
@@ -543,21 +543,21 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
              */
             p_ret = P_LKRG_GENERAL_ERROR;
             p_print_log(P_LOG_ALERT,
-                   "KMOD HASH kzalloc() error! Can't allocate memory for module list ;[\n");
+                   "KMOD HASH kzalloc() error! Can't allocate memory for module list ;[");
             goto p_kmod_hash_err;
          }
       // STRONG_DEBUG
            else {
 //              p_print_log(P_LOG_ALERT,
               p_debug_log(P_LOG_FLOOD,
-                     "<p_kmod_hash> p_mlm_tmp allocated at: 0x%lx with size: %zd[0x%zx]\n",
+                     "<p_kmod_hash> p_mlm_tmp allocated at: 0x%lx with size: %zd[0x%zx]",
                      (unsigned long)*p_mlm_tmp,
                      sizeof(p_module_list_mem) * (*p_module_list_cnt_arg+P_MODULE_BUFFER_RACE),
                      sizeof(p_module_list_mem) * (*p_module_list_cnt_arg+P_MODULE_BUFFER_RACE));
          }
 
       } else {
-//         printk(KERN_CRIT "p_module_list_cnt_arg_old[%d] *p_module_list_cnt_arg[%d] *p_mlm_tmp[0x%lx]\n",
+//         printk(KERN_CRIT "p_module_list_cnt_arg_old[%d] *p_module_list_cnt_arg[%d] *p_mlm_tmp[0x%lx]",
 //                          p_module_list_cnt_arg_old, *p_module_list_cnt_arg, (unsigned long)*p_mlm_tmp);
          memset(*p_mlm_tmp,0,sizeof(p_module_list_mem) * *p_module_list_cnt_arg);
       }
@@ -587,13 +587,13 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
              */
             p_ret = P_LKRG_GENERAL_ERROR;
             p_print_log(P_LOG_ALERT,
-                   "KMOD HASH kzalloc() error! Can't allocate memory for kobj list;[\n");
+                   "KMOD HASH kzalloc() error! Can't allocate memory for kobj list;[");
             goto p_kmod_hash_err;
          }
       // STRONG_DEBUG
            else {
               p_debug_log(P_LOG_FLOOD,
-                     "<p_kmod_hash> p_mkm_tmp allocated at: 0x%lx with size: %zd[0x%zx]\n",
+                     "<p_kmod_hash> p_mkm_tmp allocated at: 0x%lx with size: %zd[0x%zx]",
                      (unsigned long)*p_mkm_tmp,
                      sizeof(p_module_kobj_mem) * (*p_module_kobj_cnt_arg+P_MODULE_BUFFER_RACE),
                      sizeof(p_module_kobj_mem) * (*p_module_kobj_cnt_arg+P_MODULE_BUFFER_RACE));
@@ -624,7 +624,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
        * I should NEVER be here!
        */
       p_print_log(P_LOG_ALERT,
-             "KMOD HASH error! Can't allocate memory during dumping modules from module list ;[\n");
+             "KMOD HASH error! Can't allocate memory during dumping modules from module list ;[");
       goto p_kmod_hash_err;
    }
 

@@ -35,7 +35,7 @@ static void p_module_notifier_wrapper(unsigned long p_event, struct module *p_km
 
    if (P_CTRL(p_block_modules)) {
       p_print_log(P_LOG_ALERT,
-             "Blocking module insertion name:[%s]\n",
+             "Blocking module insertion name:[%s]",
              p_kmod->name);
       p_kmod->init = p_block_always;
    }
@@ -68,7 +68,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
 
 // STRONG_DEBUG
    p_debug_log(P_LOG_FLOOD,
-               "[%ld | %s | %s] Entering function <p_module_event_notifier> m[0x%lx] hd[0x%lx] s[0x%lx] n[0x%lx]\n",
+               "[%ld | %s | %s] Entering function <p_module_event_notifier> m[0x%lx] hd[0x%lx] s[0x%lx] n[0x%lx]",
                p_event,
                p_mod_strings[p_event],
                p_tmp->name,
@@ -83,7 +83,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
 
 // DEBUG
    p_debug_log(P_LOG_DEBUG,
-          "<p_module_event_notifier> !! Module activity detected [<%s>] %lu: 0x%lx\n",
+          "<p_module_event_notifier> !! Module activity detected [<%s>] %lu: 0x%lx",
           p_mod_strings[p_event],
           p_event,
           (unsigned long)p_kmod);
@@ -145,14 +145,14 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
                                              (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
       /* We should be fine now! */
 
-      p_print_log(P_LOG_WATCH,"Hash from 'module list' => [0x%llx]\n",p_db.p_module_list_hash);
-      p_print_log(P_LOG_WATCH,"Hash from 'module kobj(s)' => [0x%llx]\n",p_db.p_module_kobj_hash);
+      p_print_log(P_LOG_WATCH,"Hash from 'module list' => [0x%llx]",p_db.p_module_list_hash);
+      p_print_log(P_LOG_WATCH,"Hash from 'module kobj(s)' => [0x%llx]",p_db.p_module_kobj_hash);
 
       if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
          p_print_log(P_LOG_ALERT,
-            "[module_notifier:%s] Can't recalculate hash from _STEXT!\n",p_mod_strings[p_event]);
+            "[module_notifier:%s] Can't recalculate hash from _STEXT!",p_mod_strings[p_event]);
       }
-      p_print_log(P_LOG_WATCH,"Hash from '_stext' => [0x%llx]\n",p_db.kernel_stext.p_hash);
+      p_print_log(P_LOG_WATCH,"Hash from '_stext' => [0x%llx]",p_db.kernel_stext.p_hash);
 
       goto p_module_event_notifier_unlock_out;
    }
@@ -213,14 +213,14 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
                                              (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
          /* We should be fine now! */
 
-         p_print_log(P_LOG_WATCH,"Hash from 'module list' => [0x%llx]\n",p_db.p_module_list_hash);
-         p_print_log(P_LOG_WATCH,"Hash from 'module kobj(s)' => [0x%llx]\n",p_db.p_module_kobj_hash);
+         p_print_log(P_LOG_WATCH,"Hash from 'module list' => [0x%llx]",p_db.p_module_list_hash);
+         p_print_log(P_LOG_WATCH,"Hash from 'module kobj(s)' => [0x%llx]",p_db.p_module_kobj_hash);
 
          if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
             p_print_log(P_LOG_ALERT,
-               "[module_notifier:%s] Can't recalculate hash from _STEXT!\n",p_mod_strings[p_event]);
+               "[module_notifier:%s] Can't recalculate hash from _STEXT!",p_mod_strings[p_event]);
          }
-         p_print_log(P_LOG_WATCH,"Hash from '_stext' => [0x%llx]\n",p_db.kernel_stext.p_hash);
+         p_print_log(P_LOG_WATCH,"Hash from '_stext' => [0x%llx]",p_db.kernel_stext.p_hash);
 
          goto p_module_event_notifier_unlock_out;
       }
@@ -246,7 +246,7 @@ p_module_event_notifier_activity_out:
 int p_block_always(void) {
 
    p_print_log(P_LOG_ALERT,
-          "!! Module insertion blocked (from always!) !!\n");
+          "!! Module insertion blocked (from always!) !!");
 
    return P_LKRG_GENERAL_ERROR;
 
@@ -276,8 +276,8 @@ void p_verify_module_live(struct module *p_mod) {
       if (p_install_ovl_create_or_link_hook(1)) {
          p_print_log(P_LOG_FAULT,
                 "OverlayFS is being loaded but LKRG can't hook 'ovl_create_or_link' function. "
-                "It is very likely that LKRG will produce False Positives :(\n");
-         p_print_log(P_LOG_FAULT,"It is recomended to reload LKRG module!\n");
+                "It is very likely that LKRG will produce False Positives :(");
+         p_print_log(P_LOG_FAULT,"It is recomended to reload LKRG module!");
       }
       /* Done */
       p_lkrg_open_rw();
@@ -319,7 +319,7 @@ void p_register_module_notifier(void) {
 
 // STRONG_DEBUG
    p_debug_log(P_LOG_FLOOD,
-          "<p_register_module_notifier> Registering module's noitifier routine\n");
+          "<p_register_module_notifier> Registering module's noitifier routine");
 
    register_module_notifier(&p_module_block_notifier);
 
@@ -342,5 +342,5 @@ void p_deregister_module_notifier(void) {
       p_db.p_jump_label.p_mod_mask = NULL;
    }
 
-//   printk("Goodbye ;)\n");
+//   printk("Goodbye ;)");
 }

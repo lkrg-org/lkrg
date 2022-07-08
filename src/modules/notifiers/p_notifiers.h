@@ -41,7 +41,7 @@
 #define P_TRY_OFFLOAD_NOTIFIER(rate, where)                                \
 do {                                                                       \
    if (rate == P_ALWAYS_RATE || P_CHECK_RANDOM(rate)) {                    \
-      p_debug_log(P_LOG_DEBUG, "%s: Offloading integrity check\n", where); \
+      p_debug_log(P_LOG_DEBUG, "%s: Offloading integrity check", where); \
       p_offload_work(0);                                                   \
    }                                                                       \
 } while(0)
