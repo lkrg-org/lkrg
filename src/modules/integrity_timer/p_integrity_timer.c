@@ -1741,7 +1741,7 @@ void p_check_integrity(struct work_struct *p_work) {
              "ALERT !!! SYSTEM HAS BEEN COMPROMISED - DETECTED DIFFERENT %u CHECKSUMS !!!\n",p_hack_check);
       if (P_CTRL(p_kint_enforce == 2)) {
          // OK, we need to crash the kernel now
-         panic(P_LKRG_SIGNATURE "Kernel Integrity verification failed! Killing the kernel...\n");
+         panic(P_LKRG_SIGNATURE "Kernel Integrity verification failed! Killing the kernel...");
       }
    } else if (P_CTRL(p_heartbeat)) {
       p_print_log(P_LOG_ALIVE,"System is clean!\n");
