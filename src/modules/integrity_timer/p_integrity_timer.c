@@ -431,7 +431,7 @@ void p_check_integrity(struct work_struct *p_work) {
                               p_module_list_nr_tmp,
                               p_module_kobj_nr_tmp);
                         p_print_log(P_LOG_WATCH,
-                              "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                              "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                               p_module_kobj_tmp[p_tmp_hash].p_name,
                               (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                               (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -449,7 +449,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                     p_module_list_nr_tmp,
                                     p_module_kobj_nr_tmp);
                               p_print_log(P_LOG_WATCH,
-                                    "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                    "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                     p_module_kobj_tmp[p_tmp_hash].p_name,
                                     (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                                     (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -467,7 +467,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                     p_module_list_nr_tmp,
                                     p_module_kobj_nr_tmp);
                               p_print_log(P_LOG_WATCH,
-                                    "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                    "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                     p_module_kobj_tmp[p_tmp_hash].p_name,
                                     (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                                     (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -488,7 +488,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                   p_module_kobj_nr_tmp);
                            /* Let's dump information about 'hidden' module */
                            p_print_log(P_LOG_ALERT,
-                              "HIDDEN MODULE:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                              "HIDDEN MODULE: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                               p_module_kobj_tmp[p_tmp_hash].p_name,
                               (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                               (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -512,7 +512,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_module_list_nr_tmp,
                                  p_module_kobj_nr_tmp);
                            p_print_log(P_LOG_WATCH,
-                                 "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_module_kobj_tmp[p_tmp_hash].p_name,
                                  (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                                  (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -530,7 +530,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_module_list_nr_tmp,
                                  p_module_kobj_nr_tmp);
                            p_print_log(P_LOG_WATCH,
-                                 "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_module_kobj_tmp[p_tmp_hash].p_name,
                                  (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                                  (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -551,7 +551,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                   p_module_kobj_nr_tmp);
                            /* Let's dump information about 'hidden' module */
                            p_print_log(P_LOG_ALERT,
-                              "HIDDEN MODULE:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                              "HIDDEN MODULE: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                               p_module_kobj_tmp[p_tmp_hash].p_name,
                               (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                               (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -574,7 +574,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         p_module_kobj_nr_tmp);
                   /* Let's dump information about 'hidden' module */
                   p_print_log(P_LOG_ALERT,
-                        "HIDDEN MODULE:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                        "HIDDEN MODULE: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                         p_module_kobj_tmp[p_tmp_hash].p_name,
                         (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                         (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -635,7 +635,7 @@ void p_check_integrity(struct work_struct *p_work) {
                               p_module_kobj_nr_tmp,
                               p_module_list_nr_tmp);
                         p_print_log(P_LOG_WATCH,
-                              "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                              "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                               p_module_list_tmp[p_tmp_hash].p_name,
                               (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                               (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -653,7 +653,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                     p_module_kobj_nr_tmp,
                                     p_module_list_nr_tmp);
                               p_print_log(P_LOG_WATCH,
-                                    "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                    "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                     p_module_list_tmp[p_tmp_hash].p_name,
                                     (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                                     (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -671,7 +671,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                     p_module_kobj_nr_tmp,
                                     p_module_list_nr_tmp);
                               p_print_log(P_LOG_WATCH,
-                                    "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                    "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                     p_module_list_tmp[p_tmp_hash].p_name,
                                     (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                                     (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -690,7 +690,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_module_kobj_nr_tmp,
                                  p_module_list_nr_tmp);
                            p_print_log(P_LOG_ISSUE,
-                                 "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_module_list_tmp[p_tmp_hash].p_name,
                                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -713,7 +713,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_module_kobj_nr_tmp,
                                  p_module_list_nr_tmp);
                            p_print_log(P_LOG_WATCH,
-                                 "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_module_list_tmp[p_tmp_hash].p_name,
                                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -731,7 +731,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_module_kobj_nr_tmp,
                                  p_module_list_nr_tmp);
                            p_print_log(P_LOG_WATCH,
-                                 "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_module_list_tmp[p_tmp_hash].p_name,
                                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -751,7 +751,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_module_kobj_nr_tmp,
                                  p_module_list_nr_tmp);
                            p_print_log(P_LOG_ISSUE,
-                                 "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_module_list_tmp[p_tmp_hash].p_name,
                                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -772,7 +772,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         p_module_kobj_nr_tmp,
                         p_module_list_nr_tmp);
                   p_print_log(P_LOG_ISSUE,
-                        "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                        "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                         p_module_list_tmp[p_tmp_hash].p_name,
                         (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                         (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -874,7 +874,7 @@ void p_check_integrity(struct work_struct *p_work) {
                               p_module_list_nr_tmp,
                               p_db.p_module_list_nr);
                         p_print_log(P_LOG_WATCH,
-                              "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                              "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                               p_db.p_module_list_array[p_tmp_hash].p_name,
                               (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_mod,
                               (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_module_core,
@@ -892,7 +892,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                     p_module_list_nr_tmp,
                                     p_db.p_module_list_nr);
                               p_print_log(P_LOG_WATCH,
-                                    "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                    "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                     p_db.p_module_list_array[p_tmp_hash].p_name,
                                     (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_mod,
                                     (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_module_core,
@@ -910,7 +910,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                     p_module_list_nr_tmp,
                                     p_db.p_module_list_nr);
                               p_print_log(P_LOG_WATCH,
-                                    "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                    "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                     p_db.p_module_list_array[p_tmp_hash].p_name,
                                     (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_mod,
                                     (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_module_core,
@@ -930,7 +930,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_module_list_nr_tmp,
                                  p_db.p_module_list_nr);
                            p_print_log(P_LOG_ISSUE,
-                                 "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_db.p_module_list_array[p_tmp_hash].p_name,
                                  (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_mod,
                                  (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_module_core,
@@ -953,7 +953,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_module_list_nr_tmp,
                                  p_db.p_module_list_nr);
                            p_print_log(P_LOG_WATCH,
-                                 "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_db.p_module_list_array[p_tmp_hash].p_name,
                                  (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_mod,
                                  (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_module_core,
@@ -971,7 +971,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_module_list_nr_tmp,
                                  p_db.p_module_list_nr);
                            p_print_log(P_LOG_WATCH,
-                                 "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_db.p_module_list_array[p_tmp_hash].p_name,
                                  (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_mod,
                                  (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_module_core,
@@ -990,7 +990,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_module_list_nr_tmp,
                                  p_db.p_module_list_nr);
                            p_print_log(P_LOG_ISSUE,
-                                 "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_db.p_module_list_array[p_tmp_hash].p_name,
                                  (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_mod,
                                  (unsigned long)p_db.p_module_list_array[p_tmp_hash].p_module_core,
@@ -1059,7 +1059,7 @@ void p_check_integrity(struct work_struct *p_work) {
                               p_db.p_module_list_nr,
                               p_module_list_nr_tmp);
                         p_print_log(P_LOG_WATCH,
-                              "Extra module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                              "Extra module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                               p_module_list_tmp[p_tmp_hash].p_name,
                               (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                               (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -1077,7 +1077,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                     p_db.p_module_list_nr,
                                     p_module_list_nr_tmp);
                               p_print_log(P_LOG_WATCH,
-                                    "Extra module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                    "Extra module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                     p_module_list_tmp[p_tmp_hash].p_name,
                                     (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                                     (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -1095,7 +1095,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                     p_db.p_module_list_nr,
                                     p_module_list_nr_tmp);
                               p_print_log(P_LOG_WATCH,
-                                    "Extra module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                    "Extra module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                     p_module_list_tmp[p_tmp_hash].p_name,
                                     (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                                     (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -1116,7 +1116,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_module_list_nr_tmp);
                            /* Let's dump information about 'hidden' module */
                            p_print_log(P_LOG_ALERT,
-                              "EXTRA MODULE:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                              "EXTRA MODULE: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                               p_module_list_tmp[p_tmp_hash].p_name,
                               (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                               (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -1140,7 +1140,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_db.p_module_list_nr,
                                  p_module_list_nr_tmp);
                            p_print_log(P_LOG_WATCH,
-                                 "Extra module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Extra module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_module_list_tmp[p_tmp_hash].p_name,
                                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -1158,7 +1158,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_db.p_module_list_nr,
                                  p_module_list_nr_tmp);
                            p_print_log(P_LOG_WATCH,
-                                 "Extra module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Extra module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_module_list_tmp[p_tmp_hash].p_name,
                                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                                  (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -1178,7 +1178,7 @@ void p_check_integrity(struct work_struct *p_work) {
                               p_module_list_nr_tmp);
                         /* Let's dump information about 'hidden' module */
                         p_print_log(P_LOG_ALERT,
-                           "EXTRA MODULE:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                           "EXTRA MODULE: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                            p_module_list_tmp[p_tmp_hash].p_name,
                            (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                            (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -1198,7 +1198,7 @@ void p_check_integrity(struct work_struct *p_work) {
                        p_module_list_nr_tmp);
                 /* Let's dump information about 'hidden' module */
                 p_print_log(P_LOG_ALERT,
-                      "EXTRA MODULE:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                      "EXTRA MODULE: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                       p_module_list_tmp[p_tmp_hash].p_name,
                       (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                       (unsigned long)p_module_list_tmp[p_tmp_hash].p_module_core,
@@ -1292,7 +1292,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                p_module_kobj_nr_tmp,
                                p_db.p_module_kobj_nr);
                         p_print_log(P_LOG_WATCH,
-                              "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                              "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                               p_db.p_module_kobj_array[p_tmp_hash].p_name,
                               (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_mod,
                               (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_module_core,
@@ -1310,7 +1310,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                      p_module_kobj_nr_tmp,
                                      p_db.p_module_kobj_nr);
                               p_print_log(P_LOG_WATCH,
-                                    "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                    "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                     p_db.p_module_kobj_array[p_tmp_hash].p_name,
                                     (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_mod,
                                     (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_module_core,
@@ -1328,7 +1328,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                      p_module_kobj_nr_tmp,
                                      p_db.p_module_kobj_nr);
                               p_print_log(P_LOG_WATCH,
-                                    "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                    "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                     p_db.p_module_kobj_array[p_tmp_hash].p_name,
                                     (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_mod,
                                     (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_module_core,
@@ -1348,7 +1348,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                   p_module_kobj_nr_tmp,
                                   p_db.p_module_kobj_nr);
                            p_print_log(P_LOG_ISSUE,
-                                 "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_db.p_module_kobj_array[p_tmp_hash].p_name,
                                  (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_mod,
                                  (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_module_core,
@@ -1370,7 +1370,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                   p_module_kobj_nr_tmp,
                                   p_db.p_module_kobj_nr);
                            p_print_log(P_LOG_WATCH,
-                                 "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_db.p_module_kobj_array[p_tmp_hash].p_name,
                                  (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_mod,
                                  (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_module_core,
@@ -1388,7 +1388,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                   p_module_kobj_nr_tmp,
                                   p_db.p_module_kobj_nr);
                            p_print_log(P_LOG_WATCH,
-                                 "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_db.p_module_kobj_array[p_tmp_hash].p_name,
                                  (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_mod,
                                  (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_module_core,
@@ -1407,7 +1407,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                p_module_kobj_nr_tmp,
                                p_db.p_module_kobj_nr);
                         p_print_log(P_LOG_ISSUE,
-                              "Lost module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                              "Lost module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                               p_db.p_module_kobj_array[p_tmp_hash].p_name,
                               (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_mod,
                               (unsigned long)p_db.p_module_kobj_array[p_tmp_hash].p_module_core,
@@ -1475,7 +1475,7 @@ void p_check_integrity(struct work_struct *p_work) {
                               p_db.p_module_kobj_nr,
                               p_module_kobj_nr_tmp);
                         p_print_log(P_LOG_WATCH,
-                              "Extra module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                              "Extra module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                               p_module_kobj_tmp[p_tmp_hash].p_name,
                               (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                               (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -1493,7 +1493,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                     p_db.p_module_kobj_nr,
                                     p_module_kobj_nr_tmp);
                               p_print_log(P_LOG_WATCH,
-                                    "Extra module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                    "Extra module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                     p_module_kobj_tmp[p_tmp_hash].p_name,
                                     (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                                     (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -1511,7 +1511,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                     p_db.p_module_kobj_nr,
                                     p_module_kobj_nr_tmp);
                               p_print_log(P_LOG_WATCH,
-                                    "Extra module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                    "Extra module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                     p_module_kobj_tmp[p_tmp_hash].p_name,
                                     (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                                     (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -1531,7 +1531,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_db.p_module_kobj_nr,
                                  p_module_kobj_nr_tmp);
                            p_print_log(P_LOG_ISSUE,
-                                 "Extra module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Extra module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_module_kobj_tmp[p_tmp_hash].p_name,
                                  (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                                  (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -1554,7 +1554,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_db.p_module_kobj_nr,
                                  p_module_kobj_nr_tmp);
                            p_print_log(P_LOG_WATCH,
-                                 "Extra module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Extra module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_module_kobj_tmp[p_tmp_hash].p_name,
                                  (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                                  (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -1572,7 +1572,7 @@ void p_check_integrity(struct work_struct *p_work) {
                                  p_db.p_module_kobj_nr,
                                  p_module_kobj_nr_tmp);
                            p_print_log(P_LOG_WATCH,
-                                 "Extra module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                                 "Extra module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                                  p_module_kobj_tmp[p_tmp_hash].p_name,
                                  (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                                  (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,
@@ -1591,7 +1591,7 @@ void p_check_integrity(struct work_struct *p_work) {
                               p_db.p_module_kobj_nr,
                               p_module_kobj_nr_tmp);
                         p_print_log(P_LOG_ISSUE,
-                              "Extra module:\nname[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
+                              "Extra module: name[%s] module at addr[0x%lx] module core[0x%lx] with size[0x%x] hash[0x%llx]",
                               p_module_kobj_tmp[p_tmp_hash].p_name,
                               (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                               (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_module_core,

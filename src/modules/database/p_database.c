@@ -356,7 +356,7 @@ int p_create_database(void) {
 */
 
    p_debug_log(P_LOG_DEBUG,
-          "p_module_list_hash => [0x%llx]\np_module_kobj_hash => [0x%llx]",
+          "p_module_list_hash => [0x%llx] p_module_kobj_hash => [0x%llx]",
           p_db.p_module_list_hash,p_db.p_module_kobj_hash);
 
    P_SYM(p_state_init) = 1;
