@@ -98,35 +98,35 @@
 #define P_LOG_FLOOD 6
 #define P_LOG_MAX   6
 
-#define p_print_log(p_level, p_fmt, p_args...)                                           \
-({                                                                                       \
-   int p_print_ret = 0;                                                                  \
-                                                                                         \
-   if (p_level == P_LOG_ALERT)                                                           \
-      p_print_ret = printk(KERN_CRIT    P_LKRG_SIGNATURE "ALERT: " p_fmt, ## p_args);    \
-   else if (P_CTRL(p_log_level) >= p_level)                                              \
-   switch (p_level) {                                                                    \
-   case P_LOG_ALIVE:                                                                     \
-      p_print_ret = printk(KERN_NOTICE  P_LKRG_SIGNATURE "ALIVE: " p_fmt, ## p_args);    \
-      break;                                                                             \
-   case P_LOG_FAULT:                                                                     \
-      p_print_ret = printk(KERN_ERR     P_LKRG_SIGNATURE "FAULT: " p_fmt, ## p_args);    \
-      break;                                                                             \
-   case P_LOG_ISSUE:                                                                     \
-      p_print_ret = printk(KERN_WARNING P_LKRG_SIGNATURE "ISSUE: " p_fmt, ## p_args);    \
-      break;                                                                             \
-   case P_LOG_WATCH:                                                                     \
-      p_print_ret = printk(KERN_INFO    P_LKRG_SIGNATURE "WATCH: " p_fmt, ## p_args);    \
-      break;                                                                             \
-   case P_LOG_DEBUG:                                                                     \
-      p_print_ret = printk(KERN_DEBUG   P_LKRG_SIGNATURE "DEBUG: " p_fmt, ## p_args);    \
-      break;                                                                             \
-   case P_LOG_FLOOD:                                                                     \
-      p_print_ret = printk(KERN_DEBUG   P_LKRG_SIGNATURE "FLOOD: " p_fmt, ## p_args);    \
-      break;                                                                             \
-   }                                                                                     \
-                                                                                         \
-   p_print_ret;                                                                          \
+#define p_print_log(p_level, p_fmt, p_args...)                                             \
+({                                                                                         \
+   int p_print_ret = 0;                                                                    \
+                                                                                           \
+   if (p_level == P_LOG_ALERT)                                                             \
+      p_print_ret = printk(KERN_CRIT    P_LKRG_SIGNATURE "ALERT: " p_fmt "\n", ## p_args); \
+   else if (P_CTRL(p_log_level) >= p_level)                                                \
+   switch (p_level) {                                                                      \
+   case P_LOG_ALIVE:                                                                       \
+      p_print_ret = printk(KERN_NOTICE  P_LKRG_SIGNATURE "ALIVE: " p_fmt "\n", ## p_args); \
+      break;                                                                               \
+   case P_LOG_FAULT:                                                                       \
+      p_print_ret = printk(KERN_ERR     P_LKRG_SIGNATURE "FAULT: " p_fmt "\n", ## p_args); \
+      break;                                                                               \
+   case P_LOG_ISSUE:                                                                       \
+      p_print_ret = printk(KERN_WARNING P_LKRG_SIGNATURE "ISSUE: " p_fmt "\n", ## p_args); \
+      break;                                                                               \
+   case P_LOG_WATCH:                                                                       \
+      p_print_ret = printk(KERN_INFO    P_LKRG_SIGNATURE "WATCH: " p_fmt "\n", ## p_args); \
+      break;                                                                               \
+   case P_LOG_DEBUG:                                                                       \
+      p_print_ret = printk(KERN_DEBUG   P_LKRG_SIGNATURE "DEBUG: " p_fmt "\n", ## p_args); \
+      break;                                                                               \
+   case P_LOG_FLOOD:                                                                       \
+      p_print_ret = printk(KERN_DEBUG   P_LKRG_SIGNATURE "FLOOD: " p_fmt "\n", ## p_args); \
+      break;                                                                               \
+   }                                                                                       \
+                                                                                           \
+   p_print_ret;                                                                            \
 })
 
 #define LKRG_DEBUG_TRACE notrace

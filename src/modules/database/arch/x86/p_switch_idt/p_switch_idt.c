@@ -66,12 +66,12 @@ int p_install_switch_idt_hook(void) {
    int p_tmp;
 
    if ( (p_tmp = register_kretprobe(&p_switch_idt_kretprobe)) != 0) {
-      p_print_log(P_LOG_FAULT, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]\n",
+      p_print_log(P_LOG_FAULT, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
                   p_switch_idt_kretprobe.kp.symbol_name,
                   p_tmp);
       return P_LKRG_GENERAL_ERROR;
    }
-   p_print_log(P_LOG_WATCH, "Planted [kretprobe] <%s> at: 0x%lx\n",
+   p_print_log(P_LOG_WATCH, "Planted [kretprobe] <%s> at: 0x%lx",
                p_switch_idt_kretprobe.kp.symbol_name,
                (unsigned long)p_switch_idt_kretprobe.kp.addr);
    p_switch_idt_kretprobe_state = 1;
@@ -83,12 +83,12 @@ int p_install_switch_idt_hook(void) {
 void p_uninstall_switch_idt_hook(void) {
 
    if (!p_switch_idt_kretprobe_state) {
-      p_print_log(P_LOG_WATCH, "[kretprobe] <%s> at 0x%lx is NOT installed\n",
+      p_print_log(P_LOG_WATCH, "[kretprobe] <%s> at 0x%lx is NOT installed",
                   p_switch_idt_kretprobe.kp.symbol_name,
                   (unsigned long)p_switch_idt_kretprobe.kp.addr);
    } else {
       unregister_kretprobe(&p_switch_idt_kretprobe);
-      p_print_log(P_LOG_WATCH, "Removing [kretprobe] <%s> at 0x%lx nmissed[%d]\n",
+      p_print_log(P_LOG_WATCH, "Removing [kretprobe] <%s> at 0x%lx nmissed[%d]",
                   p_switch_idt_kretprobe.kp.symbol_name,
                   (unsigned long)p_switch_idt_kretprobe.kp.addr,
                   p_switch_idt_kretprobe.nmissed);

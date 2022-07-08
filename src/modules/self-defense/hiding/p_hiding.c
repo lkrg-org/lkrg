@@ -28,7 +28,7 @@ void p_hide_itself(void) {
 
    if (P_CTRL(p_hide_lkrg)) {
       p_print_log(P_LOG_ISSUE,
-             "Module is already hidden!\n");
+             "Module is already hidden!");
       return;
    }
 
@@ -75,7 +75,7 @@ void p_unhide_itself(void) {
 
    if (!P_CTRL(p_hide_lkrg)) {
       p_print_log(P_LOG_ISSUE,
-             "Module is already unhidden (visible)!\n");
+             "Module is already unhidden (visible)!");
       return;
    }
 

@@ -36,7 +36,7 @@ int hash_from_ex_table(void) {
                                                   (unsigned int)p_db.kernel_ex_table.p_size);
 
    p_debug_log(P_LOG_DEBUG,
-          "hash [0x%llx] ___ex_table start [0x%lx] size [0x%lx]\n",p_db.kernel_ex_table.p_hash,
+          "hash [0x%llx] ___ex_table start [0x%lx] size [0x%lx]",p_db.kernel_ex_table.p_hash,
                                                                    (long)p_db.kernel_ex_table.p_addr,
                                                                    (long)p_db.kernel_ex_table.p_size);
 
@@ -66,7 +66,7 @@ int hash_from_kernel_stext(void) {
           * I should NEVER be here!
           */
          p_print_log(P_LOG_ALERT,
-                "CREATING DATABASE: kzalloc() error! Can't allocate memory - copy stext ;[\n");
+                "CREATING DATABASE: kzalloc() error! Can't allocate memory - copy stext ;[");
          return P_LKRG_GENERAL_ERROR;
       }
    }
@@ -75,7 +75,7 @@ int hash_from_kernel_stext(void) {
 #endif
 
    p_debug_log(P_LOG_DEBUG,
-          "hash [0x%llx] _stext start [0x%lx] size [0x%lx]\n",p_db.kernel_stext.p_hash,
+          "hash [0x%llx] _stext start [0x%lx] size [0x%lx]",p_db.kernel_stext.p_hash,
                                                               (long)p_db.kernel_stext.p_addr,
                                                               (long)p_db.kernel_stext.p_size);
    return P_LKRG_SUCCESS;
@@ -106,7 +106,7 @@ int hash_from_kernel_rodata(void) {
 #endif
 
    p_debug_log(P_LOG_DEBUG,
-          "hash [0x%llx] _rodata start [0x%lx] size [0x%lx]\n",p_db.kernel_rodata.p_hash,
+          "hash [0x%llx] _rodata start [0x%lx] size [0x%lx]",p_db.kernel_rodata.p_hash,
                                                                (long)p_db.kernel_rodata.p_addr,
                                                                (long)p_db.kernel_rodata.p_size);
    return P_LKRG_SUCCESS;
@@ -139,7 +139,7 @@ int hash_from_iommu_table(void) {
 #endif
 
    p_debug_log(P_LOG_DEBUG,
-          "hash [0x%llx] __iommu_table start [0x%lx] size [0x%lx]\n",p_db.kernel_iommu_table.p_hash,
+          "hash [0x%llx] __iommu_table start [0x%lx] size [0x%lx]",p_db.kernel_iommu_table.p_hash,
                                                                      (long)p_db.kernel_iommu_table.p_addr,
                                                                      (long)p_db.kernel_iommu_table.p_size);
 
@@ -169,7 +169,7 @@ uint64_t hash_from_CPU_data(p_CPU_metadata_hash_mem *p_arg) {
                                           (unsigned int)offsetof(p_CPU_metadata_hash_mem, p_MSR_marker));
             }
             p_debug_log(P_LOG_DEBUG,
-                   "<hash_from_CPU_data> Hash for cpu id %i total_hash[0x%llx]\n",p_tmp,p_hash);
+                   "<hash_from_CPU_data> Hash for cpu id %i total_hash[0x%llx]",p_tmp,p_hash);
          } else {
           // WTF?! I should never be here
             p_print_log(P_LOG_ALERT,
@@ -178,7 +178,7 @@ uint64_t hash_from_CPU_data(p_CPU_metadata_hash_mem *p_arg) {
       } else {
       // Skip offline CPUs
          p_debug_log(P_LOG_DEBUG,
-                "<hash_from_CPU_data> Offline cpu id %i total_hash[0x%llx]\n",p_tmp,p_hash);
+                "<hash_from_CPU_data> Offline cpu id %i total_hash[0x%llx]",p_tmp,p_hash);
       }
    }
 
@@ -194,13 +194,13 @@ int p_create_database(void) {
 
    if ( (P_SYM(p_jump_label_mutex) = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("jump_label_mutex")) == NULL) {
       p_print_log(P_LOG_FAULT,
-             "CREATING DATABASE: error! Can't find 'jump_label_mutex' variable :( Exiting...\n");
+             "CREATING DATABASE: error! Can't find 'jump_label_mutex' variable :( Exiting...");
       return P_LKRG_GENERAL_ERROR;
    }
 
    if ( (P_SYM(p_text_mutex) = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("text_mutex")) == NULL) {
       p_print_log(P_LOG_FAULT,
-             "CREATING DATABASE: error! Can't find 'text_mutex' variable :( Exiting...\n");
+             "CREATING DATABASE: error! Can't find 'text_mutex' variable :( Exiting...");
       return P_LKRG_GENERAL_ERROR;
    }
 
@@ -226,14 +226,14 @@ int p_create_database(void) {
        * I should NEVER be here!
        */
       p_print_log(P_LOG_ALERT,
-             "CREATING DATABASE: kzalloc() error! Can't allocate memory ;[\n");
+             "CREATING DATABASE: kzalloc() error! Can't allocate memory ;[");
       return P_LKRG_GENERAL_ERROR;
    }
 // STRONG_DEBUG
      else {
         p_debug_log(P_LOG_FLOOD,
                "<p_create_database> p_db.p_CPU_metadata_array[0x%lx] with requested size[%d] "
-               "= sizeof(p_CPU_metadata_hash_mem)[%d] * p_db.p_cpu.p_nr_cpu_ids[%d]\n",
+               "= sizeof(p_CPU_metadata_hash_mem)[%d] * p_db.p_cpu.p_nr_cpu_ids[%d]",
                (unsigned long)p_db.p_CPU_metadata_array,
                (int)(sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids),
                (int)sizeof(p_CPU_metadata_hash_mem),p_db.p_cpu.p_nr_cpu_ids);
@@ -269,7 +269,7 @@ int p_create_database(void) {
 //         }
       } else {
          p_print_log(P_LOG_ISSUE,
-                "!!! WARNING !!! CPU ID:%d is offline !!!\n",p_tmp);
+                "!!! WARNING !!! CPU ID:%d is offline !!!",p_tmp);
 //                "Let's try to run on it anyway...",p_tmp);
 //         p_dump_CPU_metadata(p_db.p_CPU_metadata_array);
 //         smp_call_function_single(p_tmp,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
@@ -283,14 +283,14 @@ int p_create_database(void) {
    /* Some arch needs extra hooks */
    if (p_register_arch_metadata() != P_LKRG_SUCCESS) {
       p_print_log(P_LOG_FAULT,
-             "CREATING DATABASE: error! Can't register CPU architecture specific metadata :( Exiting...\n");
+             "CREATING DATABASE: error! Can't register CPU architecture specific metadata :( Exiting...");
       return P_LKRG_GENERAL_ERROR;
    }
 
 
    if (hash_from_ex_table() != P_LKRG_SUCCESS) {
       p_print_log(P_LOG_ALERT,
-         "CREATING DATABASE ERROR: EXCEPTION TABLE CAN'T BE FOUND (skipping it)!\n");
+         "CREATING DATABASE ERROR: EXCEPTION TABLE CAN'T BE FOUND (skipping it)!");
       p_db.kernel_ex_table.p_hash = p_db.kernel_ex_table.p_size = 0;
       p_db.kernel_ex_table.p_addr = NULL;
    }
@@ -298,14 +298,14 @@ int p_create_database(void) {
 
    if (hash_from_kernel_rodata() != P_LKRG_SUCCESS) {
       p_print_log(P_LOG_ALERT,
-         "CREATING DATABASE ERROR: _RODATA CAN'T BE FOUND (skipping it)!\n");
+         "CREATING DATABASE ERROR: _RODATA CAN'T BE FOUND (skipping it)!");
       p_db.kernel_rodata.p_hash = p_db.kernel_rodata.p_size = 0;
       p_db.kernel_rodata.p_addr = NULL;
    }
 
    if (hash_from_iommu_table() != P_LKRG_SUCCESS) {
       p_print_log(P_LOG_ALERT,
-         "CREATING DATABASE ERROR: IOMMU TABLE CAN'T BE FOUND (skipping it)!\n");
+         "CREATING DATABASE ERROR: IOMMU TABLE CAN'T BE FOUND (skipping it)!");
       p_db.kernel_iommu_table.p_hash = p_db.kernel_iommu_table.p_size = 0;
       p_db.kernel_iommu_table.p_addr = NULL;
    }
@@ -344,19 +344,19 @@ int p_create_database(void) {
 /*
    if (p_install_arch_jump_label_transform_hook()) {
       p_print_log(P_LOG_FAULT,
-             "Can't hook arch_jump_label_transform function :(\n");
+             "Can't hook arch_jump_label_transform function :(");
       return P_LKRG_GENERAL_ERROR;
    }
 
    if (p_install_arch_jump_label_transform_static_hook()) {
       p_print_log(P_LOG_FAULT,
-             "Can't hook arch_jump_label_transform_static function :(\n");
+             "Can't hook arch_jump_label_transform_static function :(");
       return P_LKRG_GENERAL_ERROR;
    }
 */
 
    p_debug_log(P_LOG_DEBUG,
-          "p_module_list_hash => [0x%llx]\np_module_kobj_hash => [0x%llx]\n",
+          "p_module_list_hash => [0x%llx]\np_module_kobj_hash => [0x%llx]",
           p_db.p_module_list_hash,p_db.p_module_kobj_hash);
 
    P_SYM(p_state_init) = 1;
@@ -369,7 +369,7 @@ int p_create_database(void) {
    p_text_section_lock();
    if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
       p_print_log(P_LOG_ALERT,
-         "CREATING DATABASE ERROR: HASH FROM _STEXT!\n");
+         "CREATING DATABASE ERROR: HASH FROM _STEXT!");
       p_text_section_unlock();
       return P_LKRG_GENERAL_ERROR;
    }

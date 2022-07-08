@@ -44,7 +44,7 @@ int p_register_arch_metadata(void) {
 
    if (!P_SYM(p_core_kernel_text)) {
       p_print_log(P_LOG_FAULT,
-             "[ED] Can't find 'core_kernel_text' function :( Exiting...\n");
+             "[ED] Can't find 'core_kernel_text' function :( Exiting...");
       return P_LKRG_GENERAL_ERROR;
    }
 
@@ -53,7 +53,7 @@ int p_register_arch_metadata(void) {
    if (p_install_switch_idt_hook()) {
       p_print_log(P_LOG_ALERT,
              "Can't hook 'switch_idt' function :( "
-             "It's OK, but tracelogs might be not supported - if enabled, it might generate FP! (depends on the kernel version)\n");
+             "It's OK, but tracelogs might be not supported - if enabled, it might generate FP! (depends on the kernel version)");
       //
       // p_ret = P_LKRG_GENERAL_ERROR;
       // goto error path
@@ -70,7 +70,7 @@ int p_register_arch_metadata(void) {
     */
    if (p_install_arch_jump_label_transform_hook()) {
       p_print_log(P_LOG_FAULT,
-             "Can't hook 'arch_jump_label_transform' function :(\n");
+             "Can't hook 'arch_jump_label_transform' function :(");
       return P_LKRG_GENERAL_ERROR;
    }
 
@@ -80,7 +80,7 @@ int p_register_arch_metadata(void) {
     */
    if (p_install_arch_jump_label_transform_apply_hook()) {
       p_print_log(P_LOG_FAULT,
-             "Can't hook 'arch_jump_label_transform_apply' function :(\n");
+             "Can't hook 'arch_jump_label_transform_apply' function :(");
       return P_LKRG_GENERAL_ERROR;
    }
 #endif
@@ -91,7 +91,7 @@ int p_register_arch_metadata(void) {
     */
    if (p_install_ftrace_modify_all_code_hook()) {
       p_print_log(P_LOG_FAULT,
-             "Can't hook 'ftrace_modify_all_code' function :(\n");
+             "Can't hook 'ftrace_modify_all_code' function :(");
       return P_LKRG_GENERAL_ERROR;
    }
 #endif
@@ -99,7 +99,7 @@ int p_register_arch_metadata(void) {
 #if defined(CONFIG_FUNCTION_TRACER)
    if (p_install_ftrace_enable_sysctl_hook()) {
       p_print_log(P_LOG_FAULT,
-             "Can't hook 'ftrace_enable_sysctl' function :(\n");
+             "Can't hook 'ftrace_enable_sysctl' function :(");
       return P_LKRG_GENERAL_ERROR;
    }
 #endif
@@ -107,7 +107,7 @@ int p_register_arch_metadata(void) {
 #if defined(CONFIG_HAVE_STATIC_CALL)
    if (p_install_arch_static_call_transform_hook()) {
       p_print_log(P_LOG_FAULT,
-             "Can't hook 'arch_jump_label_transform' function :(\n");
+             "Can't hook 'arch_jump_label_transform' function :(");
       return P_LKRG_GENERAL_ERROR;
    }
 #endif

@@ -55,7 +55,7 @@ notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p
    unsigned long p_flags;
 
    p_debug_kprobe_log(
-          "p_arch_jump_label_transform_apply_entry: comm[%s] Pid:%d\n",current->comm,current->pid);
+          "p_arch_jump_label_transform_apply_entry: comm[%s] Pid:%d",current->comm,current->pid);
 
    do {
       p_lkrg_counter_lock_lock(&p_jl_lock, &p_flags);
@@ -68,7 +68,7 @@ notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p
    p_lkrg_counter_lock_unlock(&p_jl_lock, &p_flags);
 
    p_print_log(P_LOG_WATCH,
-               "[JUMP_LABEL <batch mode>] New modifications => %d\n",p_nr);
+               "[JUMP_LABEL <batch mode>] New modifications => %d",p_nr);
 
    for (p_jl_batch_nr = 0; p_cnt < p_nr; p_cnt++) {
       p_tmp = (p_text_poke_loc *)&P_SYM(p_tp_vec)[p_jl_batch_nr*sizeof(p_text_poke_loc)];
@@ -154,7 +154,7 @@ notrace int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri,
           * This is not abnormal situation anymore.
           */
          p_print_log(P_LOG_WATCH,
-                     "[JUMP_LABEL <batch mode>] Not a .text section! [0x%lx]\n",p_jl_batch_addr[p_cnt]);
+                     "[JUMP_LABEL <batch mode>] Not a .text section! [0x%lx]",p_jl_batch_addr[p_cnt]);
       }
    }
 
@@ -172,7 +172,7 @@ notrace int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri,
 #endif
 
       p_print_log(P_LOG_WATCH,
-                  "[JUMP_LABEL <batch mode>] Updating kernel core .text section hash!\n");
+                  "[JUMP_LABEL <batch mode>] Updating kernel core .text section hash!");
    }
 
    if (p_mod) {
@@ -187,7 +187,7 @@ notrace int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri,
             p_module = p_db.p_module_list_array[p_tmp].p_mod;
 
             p_print_log(P_LOG_WATCH,
-                        "[JUMP_LABEL <batch mode>] Updating module's core .text section hash module[%s : 0x%lx]!\n",
+                        "[JUMP_LABEL <batch mode>] Updating module's core .text section hash module[%s : 0x%lx]!",
                         p_db.p_module_list_array[p_tmp].p_name,
                         (unsigned long)p_db.p_module_list_array[p_tmp].p_mod);
 
@@ -215,9 +215,9 @@ notrace int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri,
 
             if (!p_flag) {
                p_print_log(P_LOG_FAULT,
-                           "[JUMP_LABEL <batch mode>] Updated module's list hash for module[%s] but can't find the same module in KOBJs list!\n",
+                           "[JUMP_LABEL <batch mode>] Updated module's list hash for module[%s] but can't find the same module in KOBJs list!",
                            p_db.p_module_list_array[p_tmp].p_name);
-               p_print_log(P_LOG_WATCH,"module[%s : 0x%lx]!\n",
+               p_print_log(P_LOG_WATCH,"module[%s : 0x%lx]!",
                            p_db.p_module_list_array[p_tmp].p_name,
                            (unsigned long)p_db.p_module_list_array[p_tmp].p_mod);
             } else {
@@ -250,24 +250,24 @@ int p_install_arch_jump_label_transform_apply_hook(void) {
 
 // DEBUG
    p_debug_log(P_LOG_DEBUG, "<p_install_arch_jump_label_transform_apply_hook> "
-                           "p_tp_vec[0x%lx] p_tp_vec_nr[0x%lx]\n",
+                           "p_tp_vec[0x%lx] p_tp_vec_nr[0x%lx]",
                            (unsigned long)P_SYM(p_tp_vec),
                            (unsigned long)P_SYM(p_tp_vec_nr));
 
    if (!P_SYM(p_tp_vec) || !P_SYM(p_tp_vec_nr)) {
       p_print_log(P_LOG_FAULT,
              "<p_install_arch_jump_label_transform_apply_hook> "
-             "Can't find 'tp_vec' / 'tp_vec_nr' variable :( Exiting...\n");
+             "Can't find 'tp_vec' / 'tp_vec_nr' variable :( Exiting...");
       return P_LKRG_GENERAL_ERROR;
    }
 
    if ( (p_tmp = register_kretprobe(&p_arch_jump_label_transform_apply_kretprobe)) != 0) {
-      p_print_log(P_LOG_FAULT, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]\n",
+      p_print_log(P_LOG_FAULT, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
                   p_arch_jump_label_transform_apply_kretprobe.kp.symbol_name,
                   p_tmp);
       return P_LKRG_GENERAL_ERROR;
    }
-   p_print_log(P_LOG_WATCH, "Planted [kretprobe] <%s> at: 0x%lx\n",
+   p_print_log(P_LOG_WATCH, "Planted [kretprobe] <%s> at: 0x%lx",
                p_arch_jump_label_transform_apply_kretprobe.kp.symbol_name,
                (unsigned long)p_arch_jump_label_transform_apply_kretprobe.kp.addr);
    p_arch_jump_label_transform_apply_kretprobe_state = 1;
@@ -279,12 +279,12 @@ int p_install_arch_jump_label_transform_apply_hook(void) {
 void p_uninstall_arch_jump_label_transform_apply_hook(void) {
 
    if (!p_arch_jump_label_transform_apply_kretprobe_state) {
-      p_print_log(P_LOG_WATCH, "[kretprobe] <%s> at 0x%lx is NOT installed\n",
+      p_print_log(P_LOG_WATCH, "[kretprobe] <%s> at 0x%lx is NOT installed",
                   p_arch_jump_label_transform_apply_kretprobe.kp.symbol_name,
                   (unsigned long)p_arch_jump_label_transform_apply_kretprobe.kp.addr);
    } else {
       unregister_kretprobe(&p_arch_jump_label_transform_apply_kretprobe);
-      p_print_log(P_LOG_WATCH, "Removing [kretprobe] <%s> at 0x%lx nmissed[%d]\n",
+      p_print_log(P_LOG_WATCH, "Removing [kretprobe] <%s> at 0x%lx nmissed[%d]",
                   p_arch_jump_label_transform_apply_kretprobe.kp.symbol_name,
                   (unsigned long)p_arch_jump_label_transform_apply_kretprobe.kp.addr,
                   p_arch_jump_label_transform_apply_kretprobe.nmissed);

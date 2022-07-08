@@ -103,7 +103,7 @@ notrace int p_ftrace_modify_all_code_entry(struct kretprobe_instance *p_ri, stru
           * This is not abnormal situation anymore.
           */
          p_print_log(P_LOG_WATCH,
-                     "[FTRACE] Not a .text section! [0x%lx]\n",p_rec->ip);
+                     "[FTRACE] Not a .text section! [0x%lx]",p_rec->ip);
       }
    }
 
@@ -136,7 +136,7 @@ notrace int p_ftrace_modify_all_code_ret(struct kretprobe_instance *ri, struct p
 #endif
 
       p_print_log(P_LOG_WATCH,
-             "[FTRACE] Updating kernel core .text section hash!\n");
+             "[FTRACE] Updating kernel core .text section hash!");
 
    }
 
@@ -152,7 +152,7 @@ notrace int p_ftrace_modify_all_code_ret(struct kretprobe_instance *ri, struct p
             p_module = p_db.p_module_list_array[p_tmp].p_mod;
 
             p_print_log(P_LOG_WATCH,
-                        "[FTRACE] Updating module's core .text section hash module[%s : 0x%lx]!\n",
+                        "[FTRACE] Updating module's core .text section hash module[%s : 0x%lx]!",
                         p_db.p_module_list_array[p_tmp].p_name,
                         (unsigned long)p_db.p_module_list_array[p_tmp].p_mod);
 
@@ -181,9 +181,9 @@ notrace int p_ftrace_modify_all_code_ret(struct kretprobe_instance *ri, struct p
 
             if (!p_flag) {
                p_print_log(P_LOG_FAULT,
-                           "[FTRACE] Updated module's list hash for module[%s] but can't find the same module in KOBJs list!\n",
+                           "[FTRACE] Updated module's list hash for module[%s] but can't find the same module in KOBJs list!",
                            p_db.p_module_list_array[p_tmp].p_name);
-               p_print_log(P_LOG_WATCH,"module[%s : 0x%lx]!\n",
+               p_print_log(P_LOG_WATCH,"module[%s : 0x%lx]!",
                            p_db.p_module_list_array[p_tmp].p_name,
                            (unsigned long)p_db.p_module_list_array[p_tmp].p_mod);
             } else {
@@ -213,7 +213,7 @@ int p_install_ftrace_modify_all_code_hook(void) {
 
    if (!P_SYM(p_ftrace_lock)) {
       p_print_log(P_LOG_FAULT,
-             "[FTRACE] Can't find 'ftrace_lock' function :( Exiting...\n");
+             "[FTRACE] Can't find 'ftrace_lock' function :( Exiting...");
       return P_LKRG_GENERAL_ERROR;
    }
 
@@ -222,7 +222,7 @@ int p_install_ftrace_modify_all_code_hook(void) {
 
    if (!P_SYM(p_ftrace_rec_iter_start)) {
       p_print_log(P_LOG_FAULT,
-             "[FTRACE] Can't find 'ftrace_rec_iter_start' function :( Exiting...\n");
+             "[FTRACE] Can't find 'ftrace_rec_iter_start' function :( Exiting...");
       return P_LKRG_GENERAL_ERROR;
    }
 
@@ -231,7 +231,7 @@ int p_install_ftrace_modify_all_code_hook(void) {
 
    if (!P_SYM(p_ftrace_rec_iter_next)) {
       p_print_log(P_LOG_FAULT,
-             "[FTRACE] Can't find 'ftrace_rec_iter_next' function :( Exiting...\n");
+             "[FTRACE] Can't find 'ftrace_rec_iter_next' function :( Exiting...");
       return P_LKRG_GENERAL_ERROR;
    }
 
@@ -240,17 +240,17 @@ int p_install_ftrace_modify_all_code_hook(void) {
 
    if (!P_SYM(p_ftrace_rec_iter_record)) {
       p_print_log(P_LOG_FAULT,
-             "[FTRACE] Can't find 'ftrace_rec_iter_record' function :( Exiting...\n");
+             "[FTRACE] Can't find 'ftrace_rec_iter_record' function :( Exiting...");
       return P_LKRG_GENERAL_ERROR;
    }
 
    if ( (p_tmp = register_kretprobe(&p_ftrace_modify_all_code_kretprobe)) != 0) {
-      p_print_log(P_LOG_FAULT, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]\n",
+      p_print_log(P_LOG_FAULT, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
                   p_ftrace_modify_all_code_kretprobe.kp.symbol_name,
                   p_tmp);
       return P_LKRG_GENERAL_ERROR;
    }
-   p_print_log(P_LOG_WATCH, "Planted [kretprobe] <%s> at: 0x%lx\n",
+   p_print_log(P_LOG_WATCH, "Planted [kretprobe] <%s> at: 0x%lx",
                p_ftrace_modify_all_code_kretprobe.kp.symbol_name,
                (unsigned long)p_ftrace_modify_all_code_kretprobe.kp.addr);
    p_ftrace_modify_all_code_kretprobe_state = 1;
@@ -262,12 +262,12 @@ int p_install_ftrace_modify_all_code_hook(void) {
 void p_uninstall_ftrace_modify_all_code_hook(void) {
 
    if (!p_ftrace_modify_all_code_kretprobe_state) {
-      p_print_log(P_LOG_WATCH, "[kretprobe] <%s> at 0x%lx is NOT installed\n",
+      p_print_log(P_LOG_WATCH, "[kretprobe] <%s> at 0x%lx is NOT installed",
                   p_ftrace_modify_all_code_kretprobe.kp.symbol_name,
                   (unsigned long)p_ftrace_modify_all_code_kretprobe.kp.addr);
    } else {
       unregister_kretprobe(&p_ftrace_modify_all_code_kretprobe);
-      p_print_log(P_LOG_WATCH, "Removing [kretprobe] <%s> at 0x%lx nmissed[%d]\n",
+      p_print_log(P_LOG_WATCH, "Removing [kretprobe] <%s> at 0x%lx nmissed[%d]",
                   p_ftrace_modify_all_code_kretprobe.kp.symbol_name,
                   (unsigned long)p_ftrace_modify_all_code_kretprobe.kp.addr,
                   p_ftrace_modify_all_code_kretprobe.nmissed);
