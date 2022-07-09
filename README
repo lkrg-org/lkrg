@@ -40,7 +40,7 @@ like the below:
 Please preserve the GnuPG key above and also use it to verify future releases,
 which will most likely work in a similar manner.
 
-Latest LKRG development source code is hosted on Bitbucket, from where you can
+Latest LKRG development source code is hosted on GitHub, from where you can
 clone the git repository to a local directory using the following command:
 
 	git clone https://github.com/lkrg-org/lkrg
@@ -127,7 +127,7 @@ you can install LKRG with:
 while you're still in its top level source code directory.
 
 We don't in any way favor one init system over another, and would gladly add
-support for them as well if there's demand, or especially if we receive such
+support for more of them if there's demand, or especially if we receive such
 contributions.  Meanwhile, on a distribution without a supported init system
 you can let "sudo make install" partially complete (up to the point where it
 finds you're not using a supported init system).
@@ -162,32 +162,33 @@ for other:
 	sudo mkdir -p /etc/modules-load.d/ &&
 		echo p_lkrg | sudo tee /etc/modules-load.d/p_lkrg.conf
 
-Alternatively you can put the "modprobe p_lkrg" command into a system
-startup script.  Please note that ideally this command would run before sysctl
-files (especially /etc/sysctl.d/01-lkrg.conf) are processed, or otherwise the
-LKRG settings specified in those would not take effect.
+Alternatively you can put the "modprobe p_lkrg" command into a system startup
+script.  Please note that ideally this command would run before sysctl files
+(especially /etc/sysctl.d/01-lkrg.conf) are processed, or otherwise the LKRG
+settings specified in those would not take effect.
 
 
 Installing using DKMS
 ---------------------
 
-DKMS enables kernel modules to be dynamically built for each kernel version.  What
-this means in effect is that on kernel upgrades the module is rebuilt.  You can
-install LKRG using DKMS as well.  For instance on Red Hat'ish distributions after
-following the shared download instructions above:
+DKMS enables kernel modules to be dynamically built for each kernel version.
+What this means in effect is that on kernel upgrades the module is rebuilt.
+You can install LKRG using DKMS as well.  For instance on Red Hat'ish
+distributions after following the shared download instructions above:
 
-  sudo tar -xzf lkrg-0.9.3.tar.gz -C /usr/src/ 
-  sudo dnf update -y 
+  sudo tar -xzf lkrg-0.9.3.tar.gz -C /usr/src/
+  sudo dnf update -y
   sudo dnf install kernel-devel dkms openssl
   sudo dkms add -m lkrg -v 0.9.3
-  sudo dkms build -m lkrg -v 0.9.3 
-  sudo dkms install -m lkrg -v 0.9.3 
+  sudo dkms build -m lkrg -v 0.9.3
+  sudo dkms install -m lkrg -v 0.9.3
 
-The only difference on other distributions should be the installation of the kernel
-headers, the DKMS utility, and OpenSSL.  Install the headers for the target kernels. 
+The only difference on other distributions should be the installation of the
+kernel headers, the DKMS utility, and OpenSSL.  Install the headers for the
+target kernels.
 
 If this succeeds you should get similar output to the following:
-  
+
   $ dkms status
   lkrg/0.9.3, 5.18.9-200.fc36.x86_64, x86_64: installed
 
