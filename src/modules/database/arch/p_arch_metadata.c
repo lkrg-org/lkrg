@@ -40,13 +40,7 @@ void p_dump_CPU_metadata(void *_p_arg) {
 
 int p_register_arch_metadata(void) {
 
-   P_SYM(p_core_kernel_text) = (int (*)(unsigned long))P_SYM(p_kallsyms_lookup_name)("core_kernel_text");
-
-   if (!P_SYM(p_core_kernel_text)) {
-      p_print_log(P_LOG_FAULT,
-             "[ED] Can't find 'core_kernel_text' function :( Exiting...");
-      return P_LKRG_GENERAL_ERROR;
-   }
+   P_SYM_INIT(core_kernel_text, int (*)(unsigned long))
 
 #ifdef P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
 
@@ -113,6 +107,9 @@ int p_register_arch_metadata(void) {
 #endif
 
    return P_LKRG_SUCCESS;
+
+p_sym_error:
+   return P_LKRG_GENERAL_ERROR;
 }
 
 

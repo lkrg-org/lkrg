@@ -28,19 +28,19 @@
 int p_kmod_init(void) {
 
 #if defined(CONFIG_DYNAMIC_DEBUG)
-   P_SYM(p_ddebug_tables)    = (struct list_head *)P_SYM(p_kallsyms_lookup_name)("ddebug_tables");
-   P_SYM(p_ddebug_lock)      = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("ddebug_lock");
+   P_SYM_INIT(ddebug_tables, struct list_head *)
+   P_SYM_INIT(ddebug_lock, struct mutex *)
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
-   P_SYM(p_ddebug_remove_module_ptr) = (int(*)(const char *))P_SYM(p_kallsyms_lookup_name)("ddebug_remove_module");
+   P_SYM_INIT(ddebug_remove_module, int(*)(const char *))
  #endif
 #endif
 
-   P_SYM(p_global_modules)   = (struct list_head *)P_SYM(p_kallsyms_lookup_name)("modules");
-   P_SYM(p_module_kset)      = (struct kset **)P_SYM(p_kallsyms_lookup_name)("module_kset");
+   P_SYM_INIT(modules, struct list_head *)
+   P_SYM_INIT(module_kset, struct kset **)
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,12,0)
-   P_SYM(p_module_mutex)     = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("module_mutex");
-   P_SYM(p_find_module)      = (struct module* (*)(const char *))P_SYM(p_kallsyms_lookup_name)("find_module");
+   P_SYM_INIT(module_mutex, struct mutex *)
+   P_SYM_INIT(find_module, struct module* (*)(const char *))
 #else
    P_SYM(p_module_mutex)     = (struct mutex *)&module_mutex;
    P_SYM(p_find_module)      = (struct module* (*)(const char *))find_module;
@@ -51,57 +51,26 @@ int p_kmod_init(void) {
 #if defined(CONFIG_DYNAMIC_DEBUG)
                         "p_ddebug_tables[0x%lx] p_ddebug_lock[0x%lx] "
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
-                        "p_ddebug_remove_module_ptr[0x%lx]"
+                        "p_ddebug_remove_module[0x%lx]"
  #endif
 #endif
-                        "module_mutex[0x%lx] p_global_modules[0x%lx] "
+                        "module_mutex[0x%lx] p_modules[0x%lx] "
                         "p_module_kset[0x%lx]",
 #if defined(CONFIG_DYNAMIC_DEBUG)
                                                             (unsigned long)P_SYM(p_ddebug_tables),
                                                             (unsigned long)P_SYM(p_ddebug_lock),
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
-                                                            (unsigned long)P_SYM(p_ddebug_remove_module_ptr),
+                                                            (unsigned long)P_SYM(p_ddebug_remove_module),
  #endif
 #endif
                                                             (unsigned long)P_SYM(p_module_mutex),
-                                                            (unsigned long)P_SYM(p_global_modules),
+                                                            (unsigned long)P_SYM(p_modules),
                                                             (unsigned long)P_SYM(p_module_kset));
 
-   if (!P_SYM(p_global_modules)) {
-      p_print_log(P_LOG_FAULT,
-             "KMOD error! Can't initialize global modules variable :( Exiting...");
-      return P_LKRG_GENERAL_ERROR;
-   }
-
-#if defined(CONFIG_DYNAMIC_DEBUG)
- #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
-   if (!P_SYM(p_ddebug_remove_module_ptr)) {
-      p_print_log(P_LOG_FAULT,
-             "KMOD error! Can't find 'ddebug_remove_module' function :( Exiting...");
-      return P_LKRG_GENERAL_ERROR;
-   }
- #endif
-#endif
-
-   if (!P_SYM(p_module_kset)) {
-      p_print_log(P_LOG_FAULT,
-             "KMOD error! Can't find 'module_kset' variable :( Exiting...");
-      return P_LKRG_GENERAL_ERROR;
-   }
-
-   if (!P_SYM(p_module_mutex)) {
-      p_print_log(P_LOG_FAULT,
-             "KMOD error! Can't find 'module_mutex' variable :( Exiting...");
-      return P_LKRG_GENERAL_ERROR;
-   }
-
-   if (!P_SYM(p_find_module)) {
-      p_print_log(P_LOG_FAULT,
-             "KMOD error! Can't find 'find_module' function :( Exiting...");
-      return P_LKRG_GENERAL_ERROR;
-   }
-
    return P_LKRG_SUCCESS;
+
+p_sym_error:
+   return P_LKRG_GENERAL_ERROR;
 }
 
 /*
@@ -112,7 +81,7 @@ static unsigned int p_count_modules_from_module_list(void) {
    unsigned int p_cnt = 0;
    struct module *p_mod;
 
-   list_for_each_entry(p_mod, P_SYM(p_global_modules), list) {
+   list_for_each_entry(p_mod, P_SYM(p_modules), list) {
 
 /*
       if (p_mod->state >= MODULE_STATE_UNFORMED ||
@@ -146,7 +115,7 @@ static int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
    struct module *p_mod;
    unsigned int p_cnt = 0;
 
-   list_for_each_entry(p_mod, P_SYM(p_global_modules), list) {
+   list_for_each_entry(p_mod, P_SYM(p_modules), list) {
 /*
       if (p_mod->state >= MODULE_STATE_UNFORMED ||
           p_mod->state < MODULE_STATE_LIVE)

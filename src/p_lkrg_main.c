@@ -382,9 +382,9 @@ static int __init p_lkrg_register(void) {
    P_SYM(p_state_init) = 0;
 
    if (get_kallsyms_address() != P_LKRG_SUCCESS) {
-      p_print_log(P_LOG_ALERT,
-             "Can't find kallsyms_lookup_name() function address! Exiting...");
-      return P_LKRG_RESOLVER_ERROR;
+      p_print_log(P_LOG_ALERT, "Can't find 'kallsyms_lookup_name'");
+      p_ret = P_LKRG_RESOLVER_ERROR;
+      goto p_main_error;
    } else {
       p_debug_log(P_LOG_DEBUG,
              "kallsyms_lookup_name() => 0x%lx",(unsigned long)P_SYM(p_kallsyms_lookup_name));
@@ -410,66 +410,17 @@ static int __init p_lkrg_register(void) {
    p_parse_module_params();
    P_SYM(p_find_me) = THIS_MODULE;
 
-   P_SYM(p_freeze_processes) = (int (*)(void))P_SYM(p_kallsyms_lookup_name)("freeze_processes");
-
-   if (!P_SYM(p_freeze_processes)) {
-      p_print_log(P_LOG_FAULT,
-             "Can't find 'freeze_processes' function :( Exiting...");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
-
-   P_SYM(p_thaw_processes) = (void (*)(void))P_SYM(p_kallsyms_lookup_name)("thaw_processes");
-
-   if (!P_SYM(p_thaw_processes)) {
-      p_print_log(P_LOG_FAULT,
-             "Can't find 'thaw_processes' function :( Exiting...");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
-
-#if defined(CONFIG_X86)
- #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,8,0)
-   P_SYM(p_native_write_cr4) = (void (*)(unsigned long))P_SYM(p_kallsyms_lookup_name)("native_write_cr4");
-
-   if (!P_SYM(p_native_write_cr4)) {
-      p_print_log(P_LOG_FAULT,
-             "Can't find 'native_write_cr4' function :( Exiting...");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
- #endif
+   P_SYM_INIT(freeze_processes, int (*)(void))
+   P_SYM_INIT(thaw_processes, void (*)(void))
+#if defined(CONFIG_X86) && LINUX_VERSION_CODE >= KERNEL_VERSION(5,8,0)
+   P_SYM_INIT(native_write_cr4, void (*)(unsigned long))
 #endif
-
 #ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
-   P_SYM(p_module_address) = (struct module* (*)(unsigned long))P_SYM(p_kallsyms_lookup_name)("__module_address");
-
-   if (!P_SYM(p_module_address)) {
-      p_print_log(P_LOG_FAULT,
-             "Can't find '__module_address' function :( Exiting...");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
-
-   P_SYM(p_module_text_address) = (struct module* (*)(unsigned long))P_SYM(p_kallsyms_lookup_name)("__module_text_address");
-
-   if (!P_SYM(p_module_text_address)) {
-      p_print_log(P_LOG_FAULT,
-             "Can't find '__module_text_address' function :( Exiting...");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
+   P_SYM_INIT(__module_address, struct module *(*)(unsigned long))
+   P_SYM_INIT(__module_text_address, struct module *(*)(unsigned long))
 #endif
-
 #if defined(CONFIG_OPTPROBES)
-   P_SYM(p_wait_for_kprobe_optimizer) = (void (*)(void))P_SYM(p_kallsyms_lookup_name)("wait_for_kprobe_optimizer");
-
-   if (!P_SYM(p_wait_for_kprobe_optimizer)) {
-      p_print_log(P_LOG_FAULT,
-             "Can't find 'wait_for_kprobe_optimizer' function :( Exiting...");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
+   P_SYM_INIT(wait_for_kprobe_optimizer, void (*)(void))
 #endif
 
    // Freeze all non-kernel processes
@@ -534,85 +485,22 @@ static int __init p_lkrg_register(void) {
    p_cpu = 1;
 
 #if !defined(CONFIG_ARM64)
-
-   P_SYM(p_flush_tlb_all) = (void (*)(void))P_SYM(p_kallsyms_lookup_name)("flush_tlb_all");
-
-   if (!P_SYM(p_flush_tlb_all)) {
-      p_print_log(P_LOG_FAULT,
-             "Can't find 'flush_tlb_all' function :( Exiting...");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
-
+   P_SYM_INIT(flush_tlb_all, void (*)(void))
 #endif
 
-
 #if defined(P_KERNEL_AGGRESSIVE_INLINING)
+   P_SYM_INIT(set_memory_ro, int (*)(unsigned long, int))
+   P_SYM_INIT(set_memory_rw, int (*)(unsigned long, int))
 
-   P_SYM(p_kernel_set_memory_ro) = (int (*)(unsigned long, int))
-                            P_SYM(p_kallsyms_lookup_name)("set_memory_ro");
-   if (!P_SYM(p_kernel_set_memory_ro)) {
-      p_print_log(P_LOG_FAULT,
-             "Can't find 'set_memory_ro' function :( Exiting...");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
-
-   P_SYM(p_kernel_set_memory_rw) = (int (*)(unsigned long, int))
-                            P_SYM(p_kallsyms_lookup_name)("set_memory_rw");
-   if (!P_SYM(p_kernel_set_memory_rw)) {
-      p_print_log(P_LOG_FAULT,
-             "Can't find 'set_memory_rw' function :( Exiting...");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
-
- #if defined(CONFIG_X86)
-   ;
-/*
-   P_SYM(p_kernel_set_memory_np) = (int (*)(unsigned long, int))
-                            P_SYM(p_kallsyms_lookup_name)("set_memory_np");
-   if (!P_SYM(p_kernel_set_memory_np)) {
-      p_print_log(P_LOG_FAULT,
-             "Can't find 'set_memory_np' function :( Exiting...");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
-*/
- #elif defined(CONFIG_ARM64)
-   P_SYM(p_kernel_set_memory_valid) = (int (*)(unsigned long, int, int))
-                               P_SYM(p_kallsyms_lookup_name)("set_memory_valid");
-   if (!P_SYM(p_kernel_set_memory_valid)) {
-      p_print_log(P_LOG_FAULT,
-             "Can't find 'set_memory_valid' function :( Exiting...");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
+ #if defined(CONFIG_ARM64)
+   P_SYM_INIT(set_memory_valid, int (*)(unsigned long, int, int))
  #endif
 
 #else
  #if defined(CONFIG_X86)
-   P_SYM(p_change_page_attr_set_clr) =
-          (int (*)(unsigned long *, int, pgprot_t, pgprot_t, int, int, struct page **))
-          P_SYM(p_kallsyms_lookup_name)("change_page_attr_set_clr");
-
-   if (!P_SYM(p_change_page_attr_set_clr)) {
-      p_print_log(P_LOG_FAULT,
-             "Can't find 'change_page_attr_set_clr' function :( Exiting...");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
+   P_SYM_INIT(change_page_attr_set_clr, int (*)(unsigned long *, int, pgprot_t, pgprot_t, int, int, struct page **))
  #elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)
-   P_SYM(p_change_memory_common) =
-          (int (*)(unsigned long, int, pgprot_t, pgprot_t))
-          P_SYM(p_kallsyms_lookup_name)("change_memory_common");
-
-   if (!P_SYM(p_change_memory_common)) {
-      p_print_log(P_LOG_FAULT,
-             "Can't find 'change_memory_common' function :( Exiting...");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
+   P_SYM_INIT(change_memory_common, int (*)(unsigned long, int, pgprot_t, pgprot_t))
  #else
    p_print_log(P_LOG_ALERT, "UNSUPPORTED PLATFORM! Exiting...");
    p_ret = P_LKRG_GENERAL_ERROR;
@@ -685,6 +573,10 @@ p_main_error:
    }
 
    return p_ret;
+
+p_sym_error:
+   p_ret = P_LKRG_GENERAL_ERROR;
+   goto p_main_error;
 }
 
 /*

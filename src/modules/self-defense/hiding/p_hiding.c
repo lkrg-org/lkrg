@@ -69,7 +69,7 @@ void p_hide_itself(void) {
 #ifdef P_LKRG_UNHIDE
 void p_unhide_itself(void) {
 
-   struct module     *p_tmp_mod    = P_GLOBAL_TO_MODULE(P_SYM(p_global_modules));
+   struct module     *p_tmp_mod    = P_GLOBAL_TO_MODULE(P_SYM(p_modules));
    struct kset       *p_tmp_kset   = p_tmp_mod->mkobj.kobj.kset;
    struct kobj_type  *p_tmp_ktype  = (struct kobj_type *)((void*)p_tmp_mod->mkobj.kobj.ktype);
 
@@ -82,7 +82,7 @@ void p_unhide_itself(void) {
    /* We are heavily consuming module list here - take 'module_mutex' */
    mutex_lock(P_SYM(p_module_mutex));
 
-   P_UNHIDE_FROM_MODULE_LIST(P_SYM(p_find_me),P_SYM(p_global_modules));
+   P_UNHIDE_FROM_MODULE_LIST(P_SYM(p_find_me),P_SYM(p_modules));
    P_UNHIDE_FROM_KOBJ(P_SYM(p_find_me),p_tmp_kset,p_tmp_ktype);
 
 //   P_UNHIDE_FROM_KOBJ(P_SYM(p_find_me),p_find_kobj_parent,

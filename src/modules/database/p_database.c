@@ -192,17 +192,8 @@ int p_create_database(void) {
 
    memset(&p_db,0,sizeof(p_hash_database));
 
-   if ( (P_SYM(p_jump_label_mutex) = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("jump_label_mutex")) == NULL) {
-      p_print_log(P_LOG_FAULT,
-             "CREATING DATABASE: error! Can't find 'jump_label_mutex' variable :( Exiting...");
-      return P_LKRG_GENERAL_ERROR;
-   }
-
-   if ( (P_SYM(p_text_mutex) = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("text_mutex")) == NULL) {
-      p_print_log(P_LOG_FAULT,
-             "CREATING DATABASE: error! Can't find 'text_mutex' variable :( Exiting...");
-      return P_LKRG_GENERAL_ERROR;
-   }
+   P_SYM_INIT(jump_label_mutex, struct mutex *)
+   P_SYM_INIT(text_mutex, struct mutex *)
 
    /*
     * First gather information about CPUs in the system - CRITICAL !!!
@@ -377,4 +368,7 @@ int p_create_database(void) {
 #endif
 
    return P_LKRG_SUCCESS;
+
+p_sym_error:
+   return P_LKRG_GENERAL_ERROR;
 }
