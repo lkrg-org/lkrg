@@ -215,7 +215,7 @@ int p_install_ftrace_modify_all_code_hook(void) {
    P_SYM_INIT(ftrace_rec_iter_record, struct dyn_ftrace *(*)(struct ftrace_rec_iter *))
 
    if ( (p_tmp = register_kretprobe(&p_ftrace_modify_all_code_kretprobe)) != 0) {
-      p_print_log(P_LOG_FAULT, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
+      p_print_log(P_LOG_FATAL, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
                   p_ftrace_modify_all_code_kretprobe.kp.symbol_name,
                   p_tmp);
       return P_LKRG_GENERAL_ERROR;

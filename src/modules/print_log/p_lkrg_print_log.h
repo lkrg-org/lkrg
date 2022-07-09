@@ -99,6 +99,8 @@
 #define P_LOG_MAX   6
 
 #define P_LOG_STATE P_LOG_ALIVE
+#define P_LOG_DYING P_LOG_ALIVE
+#define P_LOG_FATAL P_LOG_FAULT
 
 #define p_print_log(p_level, p_fmt, p_args...)                                             \
 ({                                                                                         \

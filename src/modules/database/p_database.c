@@ -65,8 +65,7 @@ int hash_from_kernel_stext(void) {
          /*
           * I should NEVER be here!
           */
-         p_print_log(P_LOG_ALERT,
-                "CREATING DATABASE: kzalloc() error! Can't allocate memory - copy stext ;[");
+         p_print_log(P_LOG_FATAL, "Can't allocate memory for _stext copy");
          return P_LKRG_GENERAL_ERROR;
       }
    }
@@ -155,7 +154,7 @@ int hash_from_iommu_table(void) {
 
 uint64_t hash_from_CPU_data(p_CPU_metadata_hash_mem *p_arg) {
 
-   int p_tmp = 0;
+   unsigned int p_tmp = 0;
    uint64_t p_hash = 0;
 
    for_each_present_cpu(p_tmp) {
@@ -169,16 +168,15 @@ uint64_t hash_from_CPU_data(p_CPU_metadata_hash_mem *p_arg) {
                                           (unsigned int)offsetof(p_CPU_metadata_hash_mem, p_MSR_marker));
             }
             p_debug_log(P_LOG_DEBUG,
-                   "<hash_from_CPU_data> Hash for cpu id %i total_hash[0x%llx]",p_tmp,p_hash);
+                   "<hash_from_CPU_data> Hash for CPU %u total_hash[0x%llx]", p_tmp, p_hash);
          } else {
           // WTF?! I should never be here
-            p_print_log(P_LOG_ALERT,
-                   "WTF?! DB corrupted?");
+            p_print_log(P_LOG_FAULT, "CPU %u is unexpectedly offline", p_tmp);
          }
       } else {
       // Skip offline CPUs
          p_debug_log(P_LOG_DEBUG,
-                "<hash_from_CPU_data> Offline cpu id %i total_hash[0x%llx]",p_tmp,p_hash);
+                "<hash_from_CPU_data> Offline CPU %u total_hash[0x%llx]", p_tmp, p_hash);
       }
    }
 
@@ -216,8 +214,7 @@ int p_create_database(void) {
       /*
        * I should NEVER be here!
        */
-      p_print_log(P_LOG_ALERT,
-             "CREATING DATABASE: kzalloc() error! Can't allocate memory ;[");
+      p_print_log(P_LOG_FATAL, "Can't allocate memory for CPU metadata");
       return P_LKRG_GENERAL_ERROR;
    }
 // STRONG_DEBUG
@@ -273,30 +270,26 @@ int p_create_database(void) {
 
    /* Some arch needs extra hooks */
    if (p_register_arch_metadata() != P_LKRG_SUCCESS) {
-      p_print_log(P_LOG_FAULT,
-             "CREATING DATABASE: error! Can't register CPU architecture specific metadata :( Exiting...");
+      p_print_log(P_LOG_FATAL, "Can't register CPU architecture specific metadata");
       return P_LKRG_GENERAL_ERROR;
    }
 
 
    if (hash_from_ex_table() != P_LKRG_SUCCESS) {
-      p_print_log(P_LOG_ALERT,
-         "CREATING DATABASE ERROR: EXCEPTION TABLE CAN'T BE FOUND (skipping it)!");
+      p_print_log(P_LOG_FAULT, "Exception table can't be found (skipping)");
       p_db.kernel_ex_table.p_hash = p_db.kernel_ex_table.p_size = 0;
       p_db.kernel_ex_table.p_addr = NULL;
    }
 
 
    if (hash_from_kernel_rodata() != P_LKRG_SUCCESS) {
-      p_print_log(P_LOG_ALERT,
-         "CREATING DATABASE ERROR: _RODATA CAN'T BE FOUND (skipping it)!");
+      p_print_log(P_LOG_FAULT, "_rodata can't be found (skipping)");
       p_db.kernel_rodata.p_hash = p_db.kernel_rodata.p_size = 0;
       p_db.kernel_rodata.p_addr = NULL;
    }
 
    if (hash_from_iommu_table() != P_LKRG_SUCCESS) {
-      p_print_log(P_LOG_ALERT,
-         "CREATING DATABASE ERROR: IOMMU TABLE CAN'T BE FOUND (skipping it)!");
+      p_print_log(P_LOG_ISSUE, "IOMMU table can't be found (skipping)");
       p_db.kernel_iommu_table.p_hash = p_db.kernel_iommu_table.p_size = 0;
       p_db.kernel_iommu_table.p_addr = NULL;
    }
@@ -332,20 +325,6 @@ int p_create_database(void) {
    /* Register module notification routine - must be outside p_text_section_(un)lock */
    p_register_module_notifier();
 
-/*
-   if (p_install_arch_jump_label_transform_hook()) {
-      p_print_log(P_LOG_FAULT,
-             "Can't hook arch_jump_label_transform function :(");
-      return P_LKRG_GENERAL_ERROR;
-   }
-
-   if (p_install_arch_jump_label_transform_static_hook()) {
-      p_print_log(P_LOG_FAULT,
-             "Can't hook arch_jump_label_transform_static function :(");
-      return P_LKRG_GENERAL_ERROR;
-   }
-*/
-
    p_debug_log(P_LOG_DEBUG,
           "p_module_list_hash => [0x%llx] p_module_kobj_hash => [0x%llx]",
           p_db.p_module_list_hash,p_db.p_module_kobj_hash);
@@ -359,8 +338,7 @@ int p_create_database(void) {
 #if !defined(CONFIG_GRKERNSEC)
    p_text_section_lock();
    if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
-      p_print_log(P_LOG_ALERT,
-         "CREATING DATABASE ERROR: HASH FROM _STEXT!");
+      p_print_log(P_LOG_FATAL, "Can't compute hash from _stext");
       p_text_section_unlock();
       return P_LKRG_GENERAL_ERROR;
    }

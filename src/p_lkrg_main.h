@@ -319,7 +319,7 @@ extern p_ro_page p_ro;
 
 #define P_SYM_INIT(sym, type) \
    if (!(P_SYM(p_ ## sym) = (type)P_SYM(p_kallsyms_lookup_name)(#sym))) { \
-      p_print_log(P_LOG_ALERT, "Can't find '" #sym "'"); \
+      p_print_log(P_LOG_FATAL, "Can't find '" #sym "'"); \
       goto p_sym_error; \
    }
 

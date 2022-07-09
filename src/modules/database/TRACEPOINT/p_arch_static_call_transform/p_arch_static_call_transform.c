@@ -271,7 +271,7 @@ int p_install_arch_static_call_transform_hook(void) {
    p_lkrg_counter_lock_init(&p_static_call_spinlock);
 
    if ( (p_tmp = register_kretprobe(&p_arch_static_call_transform_kretprobe)) != 0) {
-      p_print_log(P_LOG_FAULT, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
+      p_print_log(P_LOG_FATAL, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
                   p_arch_static_call_transform_kretprobe.kp.symbol_name,
                   p_tmp);
       return P_LKRG_GENERAL_ERROR;

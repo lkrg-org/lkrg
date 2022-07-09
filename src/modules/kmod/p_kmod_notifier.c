@@ -31,12 +31,18 @@ static struct notifier_block p_module_block_notifier = {
 };
 
 
+static int p_block_always(void) {
+
+   p_print_log(P_LOG_WATCH, "Module loading blocked");
+
+   return P_LKRG_GENERAL_ERROR;
+
+}
+
 static void p_module_notifier_wrapper(unsigned long p_event, struct module *p_kmod) {
 
    if (P_CTRL(p_block_modules)) {
-      p_print_log(P_LOG_ALERT,
-             "Blocking module insertion name:[%s]",
-             p_kmod->name);
+      p_print_log(P_LOG_ALERT, "BLOCK: Module: Loading of module name %s", p_kmod->name);
       p_kmod->init = p_block_always;
    }
 
@@ -149,8 +155,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
       p_print_log(P_LOG_WATCH,"Hash from 'module kobj(s)' => [0x%llx]",p_db.p_module_kobj_hash);
 
       if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
-         p_print_log(P_LOG_ALERT,
-            "[module_notifier:%s] Can't recalculate hash from _STEXT!",p_mod_strings[p_event]);
+         p_print_log(P_LOG_FAULT, "Can't recalculate hash of a module (%s)", p_mod_strings[p_event]);
       }
       p_print_log(P_LOG_WATCH,"Hash from '_stext' => [0x%llx]",p_db.kernel_stext.p_hash);
 
@@ -217,8 +222,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
          p_print_log(P_LOG_WATCH,"Hash from 'module kobj(s)' => [0x%llx]",p_db.p_module_kobj_hash);
 
          if (hash_from_kernel_stext() != P_LKRG_SUCCESS) {
-            p_print_log(P_LOG_ALERT,
-               "[module_notifier:%s] Can't recalculate hash from _STEXT!",p_mod_strings[p_event]);
+            p_print_log(P_LOG_FAULT, "Can't recalculate hash of a module (%s)", p_mod_strings[p_event]);
          }
          p_print_log(P_LOG_WATCH,"Hash from '_stext' => [0x%llx]",p_db.kernel_stext.p_hash);
 
@@ -241,15 +245,6 @@ p_module_event_notifier_activity_out:
    mutex_unlock(&p_module_activity);
 
    return NOTIFY_DONE;
-}
-
-int p_block_always(void) {
-
-   p_print_log(P_LOG_ALERT,
-          "!! Module insertion blocked (from always!) !!");
-
-   return P_LKRG_GENERAL_ERROR;
-
 }
 
 void p_verify_module_live(struct module *p_mod) {
@@ -276,8 +271,7 @@ void p_verify_module_live(struct module *p_mod) {
       if (p_install_ovl_create_or_link_hook(1)) {
          p_print_log(P_LOG_FAULT,
                 "OverlayFS is being loaded but LKRG can't hook 'ovl_create_or_link' function. "
-                "It is very likely that LKRG will produce False Positives :(");
-         p_print_log(P_LOG_FAULT,"It is recomended to reload LKRG module!");
+                "It is very likely that LKRG will produce false positives. Please reload LKRG.");
       }
       /* Done */
       p_lkrg_open_rw();
@@ -341,6 +335,4 @@ void p_deregister_module_notifier(void) {
       kfree(p_db.p_jump_label.p_mod_mask);
       p_db.p_jump_label.p_mod_mask = NULL;
    }
-
-//   printk("Goodbye ;)");
 }

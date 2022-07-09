@@ -122,11 +122,11 @@ do {                                                                       \
 do {                                                                       \
    int p_ret;                                                              \
                                                                            \
-   p_debug_log(P_LOG_DEBUG, "Reestoring KOBJ[0x%lx] for [%s]",             \
+   p_debug_log(P_LOG_DEBUG, "Restoring KOBJ[0x%lx] for [%s]",              \
                (unsigned long)&p_mod->mkobj.kobj,p_mod->name);             \
    if ( (p_ret = kobject_add(&p_mod->mkobj.kobj, p_kobj_parent,            \
                                                      "p_lkrg")) < 0) {     \
-      p_print_log(P_LOG_WATCH, "FAILED to restore KOBJ :(");               \
+      p_print_log(P_LOG_WATCH, "Failed to restore KOBJ");                  \
       return;                                                              \
    }                                                                       \
    p_mod->sect_attrs  = p_sect;                                            \

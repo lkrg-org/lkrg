@@ -66,7 +66,7 @@ int p_install_switch_idt_hook(void) {
    int p_tmp;
 
    if ( (p_tmp = register_kretprobe(&p_switch_idt_kretprobe)) != 0) {
-      p_print_log(P_LOG_FAULT, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
+      p_print_log(P_LOG_ISSUE, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
                   p_switch_idt_kretprobe.kp.symbol_name,
                   p_tmp);
       return P_LKRG_GENERAL_ERROR;
