@@ -94,8 +94,8 @@ static char *p_verify_boot_params(void) {
    p_params = (p_params_ptr) ? *p_params_ptr : NULL;
 
    if (!p_params) {
-      p_print_log(P_LOG_FAULT, "Can't find kernel boot parameters. Skipping verification!");
-      return 0;
+      p_print_log(P_LOG_FAULT, "Can't find kernel boot parameters, not checking for '" P_BOOT_DISABLE_LKRG "'");
+      return NULL;
    }
 
    return strstr(p_params, P_BOOT_DISABLE_LKRG);
@@ -112,21 +112,21 @@ static void p_init_page_attr(void) {
 
 #if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
    if (*(p_long_tmp-p_long_offset) == P_LKRG_MARKER1) {
-      p_print_log(P_LOG_WATCH, "Found marker before configuration page.");
+      p_debug_log(P_LOG_DEBUG, "Found marker before configuration page");
       if (*(p_long_tmp+p_long_offset) == P_LKRG_MARKER1) {
-         p_print_log(P_LOG_WATCH, "Found marker after configuration page.");
+         p_debug_log(P_LOG_DEBUG, "Found marker after configuration page");
 #endif
          P_SYM(p_state_init) = 2;
          p_set_memory_ro((unsigned long)p_long_tmp,1);
-         p_print_log(P_LOG_WATCH, "Configuration page marked read-only.");
+         p_debug_log(P_LOG_DEBUG, "Configuration page marked read-only");
          p_attr_init++;
 #if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
          p_set_memory_np((unsigned long)(p_long_tmp-p_long_offset),1);
-         p_print_log(P_LOG_WATCH, "Setup guard page before configuration page.");
+         p_debug_log(P_LOG_DEBUG, "Setup guard page before configuration page");
          if (*(p_long_tmp+p_long_offset*2) == P_LKRG_MARKER2) {
-            p_print_log(P_LOG_WATCH, "Found next marker after configuration page.");
+            p_debug_log(P_LOG_DEBUG, "Found next marker after configuration page");
             p_set_memory_np((unsigned long)(p_long_tmp+p_long_offset),1);
-            p_print_log(P_LOG_WATCH, "Setup guard page after configuration page.");
+            p_debug_log(P_LOG_DEBUG, "Setup guard page after configuration page");
             p_attr_init++;
          }
 #endif
@@ -140,17 +140,16 @@ static void p_init_page_attr(void) {
 #if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
       }
    } else {
-      p_print_log(P_LOG_ALERT,
-             "Can't find marker pages so configuration page is NOT RO :( Continue...");
-      p_print_log(P_LOG_WATCH, "*(p_long_tmp[0x%lx]-PAGE_SIZE) => [0x%lx] 0x%lx",
+      p_print_log(P_LOG_FAULT, "Can't find marker pages, so configuration page is not read-only");
+      p_debug_log(P_LOG_DEBUG, "*(p_long_tmp[0x%lx]-PAGE_SIZE) => [0x%lx] 0x%lx",
                   (unsigned long)p_long_tmp,
                   (unsigned long)p_long_tmp-p_long_offset,
                   *(p_long_tmp-p_long_offset));
-      p_print_log(P_LOG_WATCH, "*(p_long_tmp[0x%lx]+PAGE_SIZE) => [0x%lx] 0x%lx",
+      p_debug_log(P_LOG_DEBUG, "*(p_long_tmp[0x%lx]+PAGE_SIZE) => [0x%lx] 0x%lx",
                   (unsigned long)p_long_tmp,
                   (unsigned long)p_long_tmp+p_long_offset,
                   *(p_long_tmp+p_long_offset));
-      p_print_log(P_LOG_WATCH, "*(p_long_tmp[0x%lx]+2*PAGE_SIZE) => [0x%lx] 0x%lx",
+      p_debug_log(P_LOG_DEBUG, "*(p_long_tmp[0x%lx]+2*PAGE_SIZE) => [0x%lx] 0x%lx",
                   (unsigned long)p_long_tmp,
                   (unsigned long)p_long_tmp+2*p_long_offset,
                   *(p_long_tmp+2*p_long_offset));
@@ -168,14 +167,14 @@ static void p_uninit_page_attr(void) {
    if (p_attr_init) {
       p_long_tmp = (unsigned long *)P_CTRL_ADDR;
       p_set_memory_rw((unsigned long)p_long_tmp,1);
-      p_print_log(P_LOG_WATCH, "Configuration page marked read-write.");
+      p_debug_log(P_LOG_DEBUG, "Configuration page marked read-write");
 #if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
       p_set_memory_p((unsigned long)(p_long_tmp-p_long_offset),1);
-      p_print_log(P_LOG_WATCH, "Disabled guard page before configuration page.");
+      p_debug_log(P_LOG_DEBUG, "Disabled guard page before configuration page");
       p_set_memory_rw((unsigned long)(p_long_tmp-p_long_offset),1);
       *(p_long_tmp-p_long_offset) = P_LKRG_MARKER1;
       if (p_attr_init > 1) {
-         p_print_log(P_LOG_WATCH, "Disabled guard page after configuration page.");
+         p_debug_log(P_LOG_DEBUG, "Disabled guard page after configuration page");
          p_set_memory_p((unsigned long)(p_long_tmp+p_long_offset),1);
          p_set_memory_rw((unsigned long)(p_long_tmp+p_long_offset),1);
          *(p_long_tmp+p_long_offset) = P_LKRG_MARKER1;
@@ -189,7 +188,7 @@ static void p_uninit_page_attr(void) {
 #endif
       schedule();
    } else {
-      p_print_log(P_LOG_WATCH, "Configuration page was NOT RO.");
+      p_print_log(P_LOG_FAULT, "Configuration page was not read-only");
    }
 
    p_attr_init ^= p_attr_init;
@@ -382,24 +381,22 @@ static int __init p_lkrg_register(void) {
    P_SYM(p_state_init) = 0;
 
    if (get_kallsyms_address() != P_LKRG_SUCCESS) {
-      p_print_log(P_LOG_ALERT, "Can't find 'kallsyms_lookup_name'");
+      p_print_log(P_LOG_FATAL, "Can't find 'kallsyms_lookup_name'");
       p_ret = P_LKRG_RESOLVER_ERROR;
       goto p_main_error;
-   } else {
-      p_debug_log(P_LOG_DEBUG,
-             "kallsyms_lookup_name() => 0x%lx",(unsigned long)P_SYM(p_kallsyms_lookup_name));
    }
+
+   p_debug_log(P_LOG_DEBUG, "kallsyms_lookup_name() => 0x%lx", (unsigned long)P_SYM(p_kallsyms_lookup_name));
 
    /*
     * Verify if user disabled loading LKRG from boot parameters
     */
    if (p_verify_boot_params()) {
-      p_print_log(P_LOG_ALERT,
-                  "'" P_BOOT_DISABLE_LKRG "' kernel boot parameter detected! Not loading LKRG.");
+      p_print_log(P_LOG_DYING, "Not loading LKRG ('" P_BOOT_DISABLE_LKRG "' kernel boot parameter detected)");
       return P_LKRG_BOOT_DISABLE_LKRG;
    }
 
-   p_print_log(P_LOG_ALERT, "Loading LKRG...");
+   p_print_log(P_LOG_ALIVE, "Loading LKRG");
 
    /*
     * Generate random SipHash key
@@ -433,15 +430,13 @@ static int __init p_lkrg_register(void) {
     * First, we need to plant *kprobes... Before DB is created!
     */
    if (p_exploit_detection_init()) {
-      p_print_log(P_LOG_ALERT,
-             "Can't initialize exploit detection features! Exiting...");
+      p_print_log(P_LOG_FATAL, "Can't initialize exploit detection features");
       p_ret = P_LKRG_EXPLOIT_DETECTION_ERROR;
       goto p_main_error;
    }
 
    if (p_offload_cache_init()) {
-      p_print_log(P_LOG_ALERT,
-             "Can't initialize offloading cache :(");
+      p_print_log(P_LOG_FATAL, "Can't initialize cache for system integrity WQ");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -450,15 +445,13 @@ static int __init p_lkrg_register(void) {
     * Initialize kmod module
     */
    if (p_kmod_init()) {
-      p_print_log(P_LOG_ALERT,
-             "Can't initialize kernel modules handling! Exiting...");
+      p_print_log(P_LOG_FATAL, "Can't initialize kernel module handling");
       p_ret = P_LKRG_KMOD_ERROR;
       goto p_main_error;
    }
 
    if (p_create_database() != P_LKRG_SUCCESS) {
-      p_print_log(P_LOG_ALERT,
-             "Can't create database! Exiting...");
+      p_print_log(P_LOG_FATAL, "Can't create database");
       p_ret = P_LKRG_DATABASE_ERROR;
       goto p_main_error;
    }
@@ -476,8 +469,7 @@ static int __init p_lkrg_register(void) {
                          "x86/p_lkrg:online",
                          p_cpu_online_action,
                          p_cpu_dead_action)) < 0) {
-      p_print_log(P_LOG_ALERT,
-             "Can't register hot CPU plug[in/out] handler! Exiting...");
+      p_print_log(P_LOG_FATAL, "Can't register hot CPU plug[in/out] handler");
       p_ret = P_LKRG_HPCPU_ERROR;
       goto p_main_error;
    }
@@ -502,15 +494,14 @@ static int __init p_lkrg_register(void) {
  #elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)
    P_SYM_INIT(change_memory_common, int (*)(unsigned long, int, pgprot_t, pgprot_t))
  #else
-   p_print_log(P_LOG_ALERT, "UNSUPPORTED PLATFORM! Exiting...");
+   p_print_log(P_LOG_FATAL, "Unsupported platform");
    p_ret = P_LKRG_GENERAL_ERROR;
    goto p_main_error;
  #endif
 #endif
 
    if (p_register_comm_channel()) {
-      p_print_log(P_LOG_ALERT,
-             "Can't initialize communication channel (sysctl) :(");
+      p_print_log(P_LOG_FATAL, "Can't initialize sysctl");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
@@ -523,14 +514,14 @@ static int __init p_lkrg_register(void) {
    p_register_notifiers();
    p_init_page_attr();
 
-   p_print_log(P_LOG_ALERT,
-          "LKRG initialized successfully!");
+   p_print_log(P_LOG_ALIVE, "LKRG initialized successfully");
 
    p_ret = P_LKRG_SUCCESS;
 
 p_main_error:
 
    if (p_ret != P_LKRG_SUCCESS) {
+      p_print_log(P_LOG_DYING, "Not loading LKRG (initialization failed)");
       P_CTRL(p_kint_validate) = 0;
       p_deregister_notifiers();
       if (p_timer.function)
@@ -559,7 +550,8 @@ p_main_error:
          p_kzfree(p_db.p_CPU_metadata_array);
          p_db.p_CPU_metadata_array = NULL;
       }
-      p_uninit_page_attr();
+      if (p_attr_init)
+         p_uninit_page_attr();
 #if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
       if (p_db.kernel_stext_copy)
          vfree(p_db.kernel_stext_copy);
@@ -584,10 +576,7 @@ p_sym_error:
  */
 static void __exit p_lkrg_deregister(void) {
 
-   p_print_log(P_LOG_ALERT, "Unloading LKRG...");
-
-   p_debug_log(P_LOG_DEBUG,
-          "I should never be here! This operation probably is going to break your system! Goodbye ;)");
+   p_print_log(P_LOG_DYING, "Unloading LKRG");
 
    p_uninit_page_attr();
 
@@ -632,7 +621,7 @@ static void __exit p_lkrg_deregister(void) {
    // Thaw all non-kernel processes
    P_SYM(p_thaw_processes)();
 
-   p_print_log(P_LOG_ALERT, "LKRG unloaded!");
+   p_print_log(P_LOG_DYING, "LKRG unloaded");
 }
 
 

@@ -255,7 +255,7 @@ int p_install_arch_jump_label_transform_apply_hook(void) {
                            (unsigned long)P_SYM(p_tp_vec_nr));
 
    if ( (p_tmp = register_kretprobe(&p_arch_jump_label_transform_apply_kretprobe)) != 0) {
-      p_print_log(P_LOG_FAULT, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
+      p_print_log(P_LOG_FATAL, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
                   p_arch_jump_label_transform_apply_kretprobe.kp.symbol_name,
                   p_tmp);
       return P_LKRG_GENERAL_ERROR;

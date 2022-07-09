@@ -58,7 +58,6 @@ typedef struct p_module_kobj_mem {
 extern struct mutex p_module_activity;
 extern struct module *p_module_activity_ptr;
 
-int p_block_always(void);
 void p_verify_module_live(struct module *p_mod);
 void p_verify_module_going(struct module *p_mod);
 
