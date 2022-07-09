@@ -181,7 +181,7 @@ static inline int p_ddebug_remove_module(const char *p_name) {
 
 #else
 
-   return P_SYM(p_ddebug_remove_module_ptr)(p_name);
+   return P_SYM(p_ddebug_remove_module)(p_name);
 
 #endif
 
@@ -383,7 +383,7 @@ static inline void p_syscall_set_arg2(struct pt_regs *p_regs, unsigned long p_va
 static inline int p_set_memory_rw(unsigned long p_addr, int p_numpages) {
 
 #if defined(P_KERNEL_AGGRESSIVE_INLINING)
-   return P_SYM(p_kernel_set_memory_rw)(p_addr, p_numpages);
+   return P_SYM(p_set_memory_rw)(p_addr, p_numpages);
 #else
    return P_SYM(p_change_page_attr_set_clr)(&p_addr, p_numpages,
                                             __pgprot(_PAGE_RW),
@@ -395,7 +395,7 @@ static inline int p_set_memory_rw(unsigned long p_addr, int p_numpages) {
 static inline int p_set_memory_ro(unsigned long p_addr, int p_numpages) {
 
 #if defined(P_KERNEL_AGGRESSIVE_INLINING)
-   return P_SYM(p_kernel_set_memory_ro)(p_addr, p_numpages);
+   return P_SYM(p_set_memory_ro)(p_addr, p_numpages);
 #else
    return P_SYM(p_change_page_attr_set_clr)(&p_addr, p_numpages,
                                             __pgprot(0),
@@ -408,7 +408,7 @@ static inline int p_set_memory_np(unsigned long p_addr, int p_numpages) {
 
 #if defined(P_KERNEL_AGGRESSIVE_INLINING)
    return 0x0;
-//   return P_SYM(p_kernel_set_memory_np)(p_addr, p_numpages);
+//   return P_SYM(p_set_memory_np)(p_addr, p_numpages);
 #else
    return P_SYM(p_change_page_attr_set_clr)(&p_addr, p_numpages,
                                             __pgprot(0),
@@ -564,7 +564,7 @@ static inline void p_syscall_set_arg2(struct pt_regs *p_regs, unsigned long p_va
 static inline int p_set_memory_rw(unsigned long p_addr, int p_numpages) {
 
 #if defined(P_KERNEL_AGGRESSIVE_INLINING)
-   return P_SYM(p_kernel_set_memory_rw)(p_addr, p_numpages);
+   return P_SYM(p_set_memory_rw)(p_addr, p_numpages);
 #else
    return P_SYM(p_change_memory_common)(p_addr, p_numpages,
                                         __pgprot(0),
@@ -575,7 +575,7 @@ static inline int p_set_memory_rw(unsigned long p_addr, int p_numpages) {
 static inline int p_set_memory_ro(unsigned long p_addr, int p_numpages) {
 
 #if defined(P_KERNEL_AGGRESSIVE_INLINING)
-   return P_SYM(p_kernel_set_memory_ro)(p_addr, p_numpages);
+   return P_SYM(p_set_memory_ro)(p_addr, p_numpages);
 #else
    return P_SYM(p_change_memory_common)(p_addr, p_numpages,
                                         __pgprot(L_PTE_RDONLY),
@@ -696,7 +696,7 @@ static inline void p_syscall_set_arg2(struct pt_regs *p_regs, unsigned long p_va
 static inline int p_set_memory_rw(unsigned long p_addr, int p_numpages) {
 
 #if defined(P_KERNEL_AGGRESSIVE_INLINING)
-   return P_SYM(p_kernel_set_memory_rw)(p_addr, p_numpages);
+   return P_SYM(p_set_memory_rw)(p_addr, p_numpages);
 #else
    return P_SYM(p_change_memory_common)(p_addr, p_numpages,
                                         __pgprot(PTE_WRITE),
@@ -707,7 +707,7 @@ static inline int p_set_memory_rw(unsigned long p_addr, int p_numpages) {
 static inline int p_set_memory_ro(unsigned long p_addr, int p_numpages) {
 
 #if defined(P_KERNEL_AGGRESSIVE_INLINING)
-   return P_SYM(p_kernel_set_memory_ro)(p_addr, p_numpages);
+   return P_SYM(p_set_memory_ro)(p_addr, p_numpages);
 #else
    return P_SYM(p_change_memory_common)(p_addr, p_numpages,
                                         __pgprot(PTE_RDONLY),
@@ -718,7 +718,7 @@ static inline int p_set_memory_ro(unsigned long p_addr, int p_numpages) {
 static inline int p_set_memory_np(unsigned long p_addr, int p_numpages) {
 
 #if defined(P_KERNEL_AGGRESSIVE_INLINING)
-   return P_SYM(p_kernel_set_memory_valid)(p_addr, p_numpages, 0);
+   return P_SYM(p_set_memory_valid)(p_addr, p_numpages, 0);
 #else
    return P_SYM(p_change_memory_common)(p_addr, p_numpages,
                                         __pgprot(0),
@@ -729,7 +729,7 @@ static inline int p_set_memory_np(unsigned long p_addr, int p_numpages) {
 static inline int p_set_memory_p(unsigned long p_addr, int p_numpages) {
 
 #if defined(P_KERNEL_AGGRESSIVE_INLINING)
-   return P_SYM(p_kernel_set_memory_valid)(p_addr, p_numpages, 1);
+   return P_SYM(p_set_memory_valid)(p_addr, p_numpages, 1);
 #else
    return P_SYM(p_change_memory_common)(p_addr, p_numpages,
                                         __pgprot(PTE_VALID),

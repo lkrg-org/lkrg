@@ -209,40 +209,10 @@ int p_install_ftrace_modify_all_code_hook(void) {
 
    int p_tmp;
 
-   P_SYM(p_ftrace_lock) = (struct mutex *)P_SYM(p_kallsyms_lookup_name)("ftrace_lock");
-
-   if (!P_SYM(p_ftrace_lock)) {
-      p_print_log(P_LOG_FAULT,
-             "[FTRACE] Can't find 'ftrace_lock' function :( Exiting...");
-      return P_LKRG_GENERAL_ERROR;
-   }
-
-   P_SYM(p_ftrace_rec_iter_start) = (struct ftrace_rec_iter *(*)(void))
-                                    P_SYM(p_kallsyms_lookup_name)("ftrace_rec_iter_start");
-
-   if (!P_SYM(p_ftrace_rec_iter_start)) {
-      p_print_log(P_LOG_FAULT,
-             "[FTRACE] Can't find 'ftrace_rec_iter_start' function :( Exiting...");
-      return P_LKRG_GENERAL_ERROR;
-   }
-
-   P_SYM(p_ftrace_rec_iter_next) = (struct ftrace_rec_iter *(*)(struct ftrace_rec_iter *))
-                                   P_SYM(p_kallsyms_lookup_name)("ftrace_rec_iter_next");
-
-   if (!P_SYM(p_ftrace_rec_iter_next)) {
-      p_print_log(P_LOG_FAULT,
-             "[FTRACE] Can't find 'ftrace_rec_iter_next' function :( Exiting...");
-      return P_LKRG_GENERAL_ERROR;
-   }
-
-   P_SYM(p_ftrace_rec_iter_record) = (struct dyn_ftrace *(*)(struct ftrace_rec_iter *))
-                                     P_SYM(p_kallsyms_lookup_name)("ftrace_rec_iter_record");
-
-   if (!P_SYM(p_ftrace_rec_iter_record)) {
-      p_print_log(P_LOG_FAULT,
-             "[FTRACE] Can't find 'ftrace_rec_iter_record' function :( Exiting...");
-      return P_LKRG_GENERAL_ERROR;
-   }
+   P_SYM_INIT(ftrace_lock, struct mutex *)
+   P_SYM_INIT(ftrace_rec_iter_start, struct ftrace_rec_iter *(*)(void))
+   P_SYM_INIT(ftrace_rec_iter_next, struct ftrace_rec_iter *(*)(struct ftrace_rec_iter *))
+   P_SYM_INIT(ftrace_rec_iter_record, struct dyn_ftrace *(*)(struct ftrace_rec_iter *))
 
    if ( (p_tmp = register_kretprobe(&p_ftrace_modify_all_code_kretprobe)) != 0) {
       p_print_log(P_LOG_FAULT, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
@@ -256,6 +226,9 @@ int p_install_ftrace_modify_all_code_hook(void) {
    p_ftrace_modify_all_code_kretprobe_state = 1;
 
    return P_LKRG_SUCCESS;
+
+p_sym_error:
+   return P_LKRG_GENERAL_ERROR;
 }
 
 

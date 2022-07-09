@@ -245,21 +245,14 @@ int p_install_arch_jump_label_transform_apply_hook(void) {
 
    int p_tmp;
 
-   P_SYM(p_tp_vec) = (struct text_poke_loc **)P_SYM(p_kallsyms_lookup_name)("tp_vec");
-   P_SYM(p_tp_vec_nr) = (int *)P_SYM(p_kallsyms_lookup_name)("tp_vec_nr");
+   P_SYM_INIT(tp_vec, struct text_poke_loc **)
+   P_SYM_INIT(tp_vec_nr, int *)
 
 // DEBUG
    p_debug_log(P_LOG_DEBUG, "<p_install_arch_jump_label_transform_apply_hook> "
                            "p_tp_vec[0x%lx] p_tp_vec_nr[0x%lx]",
                            (unsigned long)P_SYM(p_tp_vec),
                            (unsigned long)P_SYM(p_tp_vec_nr));
-
-   if (!P_SYM(p_tp_vec) || !P_SYM(p_tp_vec_nr)) {
-      p_print_log(P_LOG_FAULT,
-             "<p_install_arch_jump_label_transform_apply_hook> "
-             "Can't find 'tp_vec' / 'tp_vec_nr' variable :( Exiting...");
-      return P_LKRG_GENERAL_ERROR;
-   }
 
    if ( (p_tmp = register_kretprobe(&p_arch_jump_label_transform_apply_kretprobe)) != 0) {
       p_print_log(P_LOG_FAULT, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
@@ -273,6 +266,9 @@ int p_install_arch_jump_label_transform_apply_hook(void) {
    p_arch_jump_label_transform_apply_kretprobe_state = 1;
 
    return P_LKRG_SUCCESS;
+
+p_sym_error:
+   return P_LKRG_GENERAL_ERROR;
 }
 
 
