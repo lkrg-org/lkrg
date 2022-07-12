@@ -98,6 +98,8 @@
 #define P_LOG_FLOOD 6
 #define P_LOG_MAX   6
 
+#define P_LOG_STATE P_LOG_ALIVE
+
 #define p_print_log(p_level, p_fmt, p_args...)                                             \
 ({                                                                                         \
    int p_print_ret = 0;                                                                    \
