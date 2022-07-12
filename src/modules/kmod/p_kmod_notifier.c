@@ -60,7 +60,8 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
 
    struct module *p_tmp = p_kmod;
 
-   char *p_mod_strings[] = { "New module is LIVE",
+   static const char * const p_mod_strings[] = {
+                             "New module is LIVE",
                              "New module is COMING",
                              "Module is GOING AWAY",
                              "New module is UNFORMED yet" };

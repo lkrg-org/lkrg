@@ -349,7 +349,7 @@ static int p_sysctl_kint_validate(struct ctl_table *p_table, int p_write,
 
    int p_ret;
    unsigned int p_tmp;
-   char *p_str[] = {
+   static const char * const p_str[] = {
       "DISABLED",
       "MANUAL",
       "PERIODICALLY",
@@ -386,7 +386,7 @@ static int p_sysctl_kint_enforce(struct ctl_table *p_table, int p_write,
 
    int p_ret;
    unsigned int p_tmp;
-   char *p_str[] = {
+   static const char * const p_str[] = {
       "LOG & ACCEPT",
 #if defined(CONFIG_X86)
       "LOG ONLY (For SELinux and CR0.WP LOG & RESTORE)",
@@ -425,7 +425,7 @@ static int p_sysctl_pint_validate(struct ctl_table *p_table, int p_write,
 
    int p_ret;
    unsigned int p_tmp;
-   char *p_str[] = {
+   static const char * const p_str[] = {
       "DISABLED",
       "CURRENT",
       "CURRENT",
@@ -456,7 +456,7 @@ static int p_sysctl_pint_enforce(struct ctl_table *p_table, int p_write,
 
    int p_ret;
    unsigned int p_tmp;
-   char *p_str[] = {
+   static const char * const p_str[] = {
       "LOG & ACCEPT",
       "KILL TASK",
       "PANIC"
@@ -648,7 +648,7 @@ static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
 
    int p_ret;
    unsigned int p_tmp;
-   char *p_str[] = {
+   static const char * const p_str[] = {
       "LOG & ACCEPT",
       "LOG & RESTORE",
       "PANIC"
@@ -719,7 +719,7 @@ static int p_sysctl_smap_enforce(struct ctl_table *p_table, int p_write,
 
    int p_ret;
    unsigned int p_tmp;
-   char *p_str[] = {
+   static const char * const p_str[] = {
       "LOG & ACCEPT",
       "LOG & RESTORE",
       "PANIC"
@@ -788,7 +788,7 @@ static int p_sysctl_umh_enforce(struct ctl_table *p_table, int p_write,
 
    int p_ret;
    unsigned int p_tmp;
-   char *p_str[] = {
+   static const char * const p_str[] = {
       "LOG ONLY",
       "PREVENT EXECUTION",
       "PANIC"
@@ -885,7 +885,7 @@ static int p_sysctl_pcfi_enforce(struct ctl_table *p_table, int p_write,
 
    int p_ret;
    unsigned int p_tmp;
-   char *p_str[] = {
+   static const char * const p_str[] = {
       "LOG ONLY",
       "KILL TASK",
       "PANIC"
