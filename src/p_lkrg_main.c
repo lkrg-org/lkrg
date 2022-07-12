@@ -335,8 +335,7 @@ void p_parse_module_params(void) {
    } else {
       P_CTRL(p_smep_validate) = 0;
       P_CTRL(p_smep_enforce) = 0;
-      p_print_log(P_LOG_FAULT,
-            "System does NOT support SMEP. LKRG can't enforce SMEP validation :(");
+      p_print_log(P_LOG_ISSUE, "System does not support SMEP, which won't be validated");
    }
 
    if (boot_cpu_has(X86_FEATURE_SMAP)) {
@@ -362,8 +361,7 @@ void p_parse_module_params(void) {
    } else {
       P_CTRL(p_smap_validate) = 0;
       P_CTRL(p_smap_enforce) = 0;
-      p_print_log(P_LOG_FAULT,
-            "System does NOT support SMAP. LKRG can't enforce SMAP validation :(");
+      p_print_log(P_LOG_ISSUE, "System does not support SMAP, which won't be validated");
    }
 
    P_ENABLE_WP_FLAG(p_pcfi_CPU_flags);
