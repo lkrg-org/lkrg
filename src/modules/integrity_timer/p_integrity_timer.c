@@ -405,7 +405,6 @@ void p_check_integrity(struct work_struct *p_work) {
           * NOTE: We should have been able to log this module in the loading
           *       stage by notifier!
           */
-         P_KINT_HACK_I(p_hack_check);
 
          p_tmp_diff = p_module_kobj_nr_tmp - p_module_list_nr_tmp;
 
@@ -432,7 +431,6 @@ void p_check_integrity(struct work_struct *p_work) {
                                 (unsigned long)p_module_kobj_tmp[p_tmp_hash].p_mod,
                                 (unsigned long)p_module_activity_ptr);
                      if (p_module_kobj_tmp[p_tmp_hash].p_mod == p_module_activity_ptr) {
-                        P_KINT_HACK_D(p_hack_check);
                         p_print_log(P_LKRG_INFO,
                               "Found less[%d] modules in module list[%d] than in KOBJ[%d]\n",
                               p_tmp_diff,
@@ -451,7 +449,6 @@ void p_check_integrity(struct work_struct *p_work) {
                         p_tmp_mod = P_SYM(p_find_module(p_module_kobj_tmp[p_tmp_hash].p_name));
                         if (p_tmp_mod) {
                            if (p_tmp_mod->state != MODULE_STATE_LIVE) {
-                              P_KINT_HACK_D(p_hack_check);
                               p_print_log(P_LKRG_INFO,
                                     "Found less[%d] modules in module list[%d] than in KOBJ[%d]\n",
                                     p_tmp_diff,
@@ -470,7 +467,6 @@ void p_check_integrity(struct work_struct *p_work) {
                                     (p_tmp_mod->state == 2) ? "GOING AWAY" :
                                     (p_tmp_mod->state == 3) ? "COMING" : "UNKNOWN!");
                            } else {
-                              P_KINT_HACK_D(p_hack_check);
                               p_print_log(P_LKRG_INFO,
                                     "Found less[%d] modules in module list[%d] than in KOBJ[%d]\n",
                                     p_tmp_diff,
@@ -490,6 +486,7 @@ void p_check_integrity(struct work_struct *p_work) {
                               // TODO: Dump module
                            }
                         } else {
+                           p_hack_check++;
                            p_print_log(P_LKRG_CRIT,
                                   "ALERT !!! FOUND LESS[%d] MODULES IN MODULE LIST[%d] THAN IN KOBJ[%d]\n",
                                   p_tmp_diff,
@@ -515,7 +512,6 @@ void p_check_integrity(struct work_struct *p_work) {
                      p_tmp_mod = P_SYM(p_find_module(p_module_kobj_tmp[p_tmp_hash].p_name));
                      if (p_tmp_mod) {
                         if (p_tmp_mod->state != MODULE_STATE_LIVE) {
-                           P_KINT_HACK_D(p_hack_check);
                            p_print_log(P_LKRG_INFO,
                                  "Found less[%d] modules in module list[%d] than in KOBJ[%d]\n",
                                  p_tmp_diff,
@@ -534,7 +530,6 @@ void p_check_integrity(struct work_struct *p_work) {
                                  (p_tmp_mod->state == 2) ? "GOING AWAY" :
                                  (p_tmp_mod->state == 3) ? "COMING" : "UNKNOWN!");
                         } else {
-                           P_KINT_HACK_D(p_hack_check);
                            p_print_log(P_LKRG_INFO,
                                  "Found less[%d] modules in module list[%d] than in KOBJ[%d]\n",
                                  p_tmp_diff,
@@ -554,6 +549,7 @@ void p_check_integrity(struct work_struct *p_work) {
                            // TODO: Dump module
                         }
                      } else {
+                           p_hack_check++;
                            p_print_log(P_LKRG_CRIT,
                                   "ALERT !!! FOUND LESS[%d] MODULES IN MODULE LIST[%d] THAN IN KOBJ[%d]\n",
                                   p_tmp_diff,
@@ -576,6 +572,7 @@ void p_check_integrity(struct work_struct *p_work) {
                      }
                   }
                } else {
+                  p_hack_check++;
                   p_print_log(P_LKRG_CRIT,
                         "ALERT !!! FOUND LESS[%d] MODULES IN MODULE LIST[%d] THAN IN KOBJ[%d]\n",
                         p_tmp_diff,
@@ -1689,7 +1686,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
             /* Maybe we have sleeping module activity event ? */
             if (mutex_is_locked(&p_module_activity)) {
-                  P_KINT_HACK_D(p_hack_check);
+               p_hack_check -= p_local_hack_check; /* FIXME: should also have avoided the alert(s) above */
                   p_print_log(P_LKRG_INFO,
                               "Unhandled on-going module activity events detected. "
                               "Activity changed module list consistency (system is stable).\n");
