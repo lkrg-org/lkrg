@@ -105,7 +105,7 @@ int p_kmod_init(void) {
 }
 
 /*
- * 'module_lock' must be taken by calling function!
+ * 'module_mutex' must be taken by calling function!
  */
 static unsigned int p_count_modules_from_module_list(void) {
 
@@ -139,7 +139,7 @@ static unsigned int p_count_modules_from_module_list(void) {
 /*
  * Traverse module list
  *
- * 'module_lock' must be taken by calling function!
+ * 'module_mutex' must be taken by calling function!
  */
 static int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
 
@@ -193,7 +193,7 @@ static int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
 }
 
 /*
- * 'module_lock' must be taken by calling function!
+ * 'module_mutex' must be taken by calling function!
  */
 unsigned int p_count_modules_from_sysfs_kobj(void) {
 
@@ -252,7 +252,7 @@ unsigned int p_count_modules_from_sysfs_kobj(void) {
 }
 
 /*
- * 'module_lock' must be taken by calling function!
+ * 'module_mutex' must be taken by calling function!
  */
 static int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
 
@@ -367,7 +367,7 @@ static int p_list_from_sysfs_kobj(p_module_kobj_mem *p_arg) {
 }
 
 /*
- * 'module_lock' must be taken by calling function!
+ * 'module_mutex' must be taken by calling function!
  */
 int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_tmp,
                 unsigned int *p_module_kobj_cnt_arg, p_module_kobj_mem **p_mkm_tmp, char p_flag) {
