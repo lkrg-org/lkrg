@@ -241,9 +241,11 @@ void p_check_integrity(struct work_struct *p_work) {
       p_print_log(P_LKRG_CRIT,
              "ALERT !!! HASHES FROM CPUs METADATA IS DIFFERENT- it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                p_tmp_hash,p_db.p_CPU_metadata_hashes);
-      P_KINT_IF_ACCEPT(p_db.p_CPU_metadata_hashes,
-                       p_tmp_hash,
-                       p_hack_check);
+#define P_KINT_IF_ACCEPT(old, new) \
+      if (!P_CTRL(p_kint_enforce)) \
+         old = new; \
+      p_hack_check++;
+      P_KINT_IF_ACCEPT(p_db.p_CPU_metadata_hashes, p_tmp_hash)
    }
 
    p_print_log(P_LKRG_INFO,"Hash from CPUs metadata => [0x%llx]\n",p_tmp_hash);
@@ -261,9 +263,7 @@ void p_check_integrity(struct work_struct *p_work) {
          p_print_log(P_LKRG_CRIT,
                 "ALERT !!! EXCEPTION TABLE HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                   p_tmp_hash,p_db.kernel_ex_table.p_hash);
-         P_KINT_IF_ACCEPT(p_db.kernel_ex_table.p_hash,
-                          p_tmp_hash,
-                          p_hack_check);
+         P_KINT_IF_ACCEPT(p_db.kernel_ex_table.p_hash, p_tmp_hash)
       }
 
       p_print_log(P_LKRG_INFO,"Hash from kernel exception table => [0x%llx]\n",p_tmp_hash);
@@ -300,9 +300,7 @@ void p_check_integrity(struct work_struct *p_work) {
          }
       }
 #endif
-      P_KINT_IF_ACCEPT(p_db.kernel_stext.p_hash,
-                       p_tmp_hash,
-                       p_hack_check);
+      P_KINT_IF_ACCEPT(p_db.kernel_stext.p_hash, p_tmp_hash)
    }
 
    p_print_log(P_LKRG_INFO,"Hash from _stext memory block => [0x%llx]\n",p_tmp_hash);
@@ -324,9 +322,7 @@ void p_check_integrity(struct work_struct *p_work) {
          p_print_log(P_LKRG_CRIT,
                 "ALERT !!! _RODATA MEMORY BLOCK HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                   p_tmp_hash,p_db.kernel_rodata.p_hash);
-         P_KINT_IF_ACCEPT(p_db.kernel_rodata.p_hash,
-                          p_tmp_hash,
-                          p_hack_check);
+         P_KINT_IF_ACCEPT(p_db.kernel_rodata.p_hash, p_tmp_hash)
       }
 
       p_print_log(P_LKRG_INFO,"Hash from _rodata memory block => [0x%llx]\n",p_tmp_hash);
@@ -349,9 +345,7 @@ void p_check_integrity(struct work_struct *p_work) {
          p_print_log(P_LKRG_CRIT,
                 "ALERT !!! IOMMU TABLE HASH IS DIFFERENT - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                   p_tmp_hash,p_db.kernel_iommu_table.p_hash);
-         P_KINT_IF_ACCEPT(p_db.kernel_iommu_table.p_hash,
-                          p_tmp_hash,
-                          p_hack_check);
+         P_KINT_IF_ACCEPT(p_db.kernel_iommu_table.p_hash, p_tmp_hash)
       }
 
       p_print_log(P_LKRG_INFO,"Hash from IOMMU table => [0x%llx]\n",p_tmp_hash);
@@ -1660,8 +1654,7 @@ void p_check_integrity(struct work_struct *p_work) {
                               p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash,
                               p_db.p_module_list_array[p_tmp_cnt].p_mod_core_text_hash);
                   P_KINT_IF_ACCEPT(p_db.p_module_list_array[p_tmp_cnt].p_mod_core_text_hash,
-                                   p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash,
-                                   p_hack_check);
+                                   p_module_list_tmp[p_tmp_cnt].p_mod_core_text_hash)
                   p_local_hack_check++;
                }
             }
@@ -1694,7 +1687,7 @@ void p_check_integrity(struct work_struct *p_work) {
                p_print_log(P_LKRG_CRIT,
                       "ALERT !!! MODULE LIST HASH IS DIFFERENT !!! - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                              p_tmp_hash,p_db.p_module_list_hash);
-               P_KINT_HACK_I(p_hack_check);
+               p_hack_check++;
             }
          }
       }
@@ -1722,7 +1715,7 @@ void p_check_integrity(struct work_struct *p_work) {
             p_print_log(P_LKRG_CRIT,
                    "ALERT !!! MODULE KOBJ HASH IS DIFFERENT !!! - it is [0x%llx] and should be [0x%llx] !!!\n",
                                                                           p_tmp_hash,p_db.p_module_kobj_hash);
-            P_KINT_HACK_I(p_hack_check);
+            p_hack_check++;
          }
       }
 
@@ -1737,8 +1730,7 @@ void p_check_integrity(struct work_struct *p_work) {
                           p_module_kobj_tmp[p_tmp_hash].p_mod_core_text_hash,
                           p_db.p_module_kobj_array[p_tmp_cnt].p_mod_core_text_hash);
                   P_KINT_IF_ACCEPT(p_db.p_module_kobj_array[p_tmp_cnt].p_mod_core_text_hash,
-                                   p_module_kobj_tmp[p_tmp_hash].p_mod_core_text_hash,
-                                   p_hack_check);
+                                   p_module_kobj_tmp[p_tmp_hash].p_mod_core_text_hash)
                }
          }
       }
