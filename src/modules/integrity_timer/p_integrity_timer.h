@@ -21,7 +21,6 @@
 #define p_alloc_offload()      kmem_cache_alloc(p_offload_cache, GFP_ATOMIC)
 #define p_free_offload(name)   kmem_cache_free(p_offload_cache, (void *)(name))
 
-#define P_KINT_HACK_D(check) check--
 #define P_KINT_HACK_I(check) check++
 
 #define P_KINT_IF_ACCEPT(old, new, check)   \
