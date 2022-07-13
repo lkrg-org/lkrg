@@ -21,16 +21,6 @@
 #define p_alloc_offload()      kmem_cache_alloc(p_offload_cache, GFP_ATOMIC)
 #define p_free_offload(name)   kmem_cache_free(p_offload_cache, (void *)(name))
 
-#define P_KINT_HACK_I(check) check++
-
-#define P_KINT_IF_ACCEPT(old, new, check)   \
-do {                                        \
-   if (!P_CTRL(p_kint_enforce)) {           \
-      old = new;                            \
-   }                                        \
-   P_KINT_HACK_I(check);                    \
-} while(0)
-
 void p_check_integrity(struct work_struct *p_work);
 void p_integrity_timer(void);
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0)
