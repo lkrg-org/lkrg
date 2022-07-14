@@ -434,24 +434,23 @@ void p_check_integrity(struct work_struct *p_work) {
                                  (p_tmp_mod->state == 3) ? "COMING" : "UNKNOWN!");
                            P_PRINT_LIVE_OR_NOT
                         } else {
-                           p_hack_check++;
-#define P_PRINT_ALERT_FEWER(hidden_or_extra, nr1, name1, nr2, list2, name2) \
+#define P_PRINT_ALERT_FEWER(nr1, name1, nr2, list2, name2) \
                            /* Did NOT find it in the system via official API... MOST LIKELY WE ARE HACKED! */ \
+                           p_hack_check++; \
                            p_print_log(P_LOG_ALERT, \
                               "DETECT: Kernel: Found %u fewer modules in " name1 " (%u) than in " name2 " (%u), " \
-                              "maybe " hidden_or_extra " module name %s", \
+                              "maybe hidden module name %s", \
                               p_tmp_diff, nr1, nr2, list2[p_tmp_hash].p_name); \
                            /* Let's dump information about 'hidden' module */ \
                            p_print_log(P_LOG_WATCH, \
-                              hidden_or_extra " module name[%s] addr[0x%lx] core[0x%lx] size[0x%x] hash[0x%llx]", \
+                              "Hidden module name[%s] addr[0x%lx] core[0x%lx] size[0x%x] hash[0x%llx]", \
                               list2[p_tmp_hash].p_name, \
                               (unsigned long)list2[p_tmp_hash].p_mod, \
                               (unsigned long)list2[p_tmp_hash].p_module_core, \
                               list2[p_tmp_hash].p_core_text_size, \
                               list2[p_tmp_hash].p_mod_core_text_hash);
-                           P_PRINT_ALERT_FEWER("hidden",
-                              p_module_list_nr_tmp, "module list",
-                              p_module_kobj_nr_tmp, p_module_kobj_tmp, "KOBJ")
+                           P_PRINT_ALERT_FEWER(p_module_list_nr_tmp, "module list",
+                                               p_module_kobj_nr_tmp, p_module_kobj_tmp, "KOBJ")
                         }
                      }
                   } else {
@@ -462,17 +461,13 @@ void p_check_integrity(struct work_struct *p_work) {
                            p_module_kobj_nr_tmp, p_module_kobj_tmp, "KOBJ")
                         P_PRINT_LIVE_OR_NOT
                      } else {
-                           p_hack_check++;
-                           P_PRINT_ALERT_FEWER("hidden",
-                              p_module_list_nr_tmp, "module list",
-                              p_module_kobj_nr_tmp, p_module_kobj_tmp, "KOBJ")
+                        P_PRINT_ALERT_FEWER(p_module_list_nr_tmp, "module list",
+                                            p_module_kobj_nr_tmp, p_module_kobj_tmp, "KOBJ")
                      }
                   }
                } else {
-                  p_hack_check++;
-                  P_PRINT_ALERT_FEWER("hidden",
-                     p_module_list_nr_tmp, "module list",
-                     p_module_kobj_nr_tmp, p_module_kobj_tmp, "KOBJ")
+                  P_PRINT_ALERT_FEWER(p_module_list_nr_tmp, "module list",
+                                      p_module_kobj_nr_tmp, p_module_kobj_tmp, "KOBJ")
                }
             }
          }
@@ -482,7 +477,7 @@ void p_check_integrity(struct work_struct *p_work) {
             p_print_log(P_LOG_FAULT, "Found more[%d] missing modules than expected[%d]... something went wrong", \
                p_tmp_flag_cnt, p_tmp_diff);
          P_PRINT_FOUND_MORE
-      } else if (p_module_kobj_nr_tmp < p_module_list_nr_tmp) {
+      } else if (p_module_kobj_nr_tmp < p_module_list_nr_tmp && P_CTRL(p_log_level) >= P_LOG_WATCH) {
         /*
          * This is strange behaviour. Most of the malicious modules don't remove them from KOBJ
          * Just from module list. If any remove themselves from the KOBJ most likely they also
@@ -551,8 +546,13 @@ void p_check_integrity(struct work_struct *p_work) {
 
    /*
     * We found as many modules in module list as in sysfs
+    */
+
+   if (P_CTRL(p_log_level) < P_LOG_WATCH)
+      goto skip_db_checks;
+
+   /*
     * Let's validate if our database has the same information as we gathered now
-    *
     */
 
 
@@ -674,6 +674,10 @@ void p_check_integrity(struct work_struct *p_work) {
 
                // TODO: Dump module
 
+               P_PRINT_WATCH_FEWER("Extra",
+                  p_db.p_module_list_nr, "DB module list",
+                  p_module_list_nr_tmp, p_module_list_tmp, "current module list")
+
                if (!P_CTRL(p_block_modules)) {
                   /* Maybe we have sleeping module activity event ? */
                   if (mutex_is_locked(&p_module_activity)) {
@@ -683,40 +687,19 @@ void p_check_integrity(struct work_struct *p_work) {
                                 (unsigned long)p_module_list_tmp[p_tmp_hash].p_mod,
                                 (unsigned long)p_module_activity_ptr);
                      if (p_module_list_tmp[p_tmp_hash].p_mod == p_module_activity_ptr) {
-                        P_PRINT_WATCH_FEWER("Extra",
-                           p_db.p_module_list_nr, "DB module list",
-                           p_module_list_nr_tmp, p_module_list_tmp, "current module list")
                         P_PRINT_ONGOING("Extra")
                      } else {
                         p_tmp_mod = P_SYM(p_find_module(p_module_list_tmp[p_tmp_hash].p_name));
                         if (p_tmp_mod) {
-                           P_PRINT_WATCH_FEWER("Extra",
-                              p_db.p_module_list_nr, "DB module list",
-                              p_module_list_nr_tmp, p_module_list_tmp, "current module list")
                            P_PRINT_LIVE_OR_NOT
-                        } else {
-                           P_PRINT_ALERT_FEWER("extra",
-                              p_db.p_module_list_nr, "DB module list",
-                              p_module_list_nr_tmp, p_module_list_tmp, "current module list")
                         }
                      }
                   } else {
                      p_tmp_mod = P_SYM(p_find_module(p_module_list_tmp[p_tmp_hash].p_name));
                      if (p_tmp_mod) {
-                        P_PRINT_WATCH_FEWER("Extra",
-                           p_db.p_module_list_nr, "DB module list",
-                           p_module_list_nr_tmp, p_module_list_tmp, "current module list")
                         P_PRINT_LIVE_OR_NOT
-                     } else {
-                        P_PRINT_ALERT_FEWER("extra",
-                           p_db.p_module_list_nr, "DB module list",
-                           p_module_list_nr_tmp, p_module_list_tmp, "current module list")
                      }
                   }
-               } else {
-                  P_PRINT_ALERT_FEWER("extra",
-                     p_db.p_module_list_nr, "DB module list",
-                     p_module_list_nr_tmp, p_module_list_tmp, "current module list")
                }
             }
          }
@@ -877,6 +860,8 @@ void p_check_integrity(struct work_struct *p_work) {
          P_PRINT_FOUND_MORE
       }
    }
+
+skip_db_checks:
 
    p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_module_list_tmp,
                                  (unsigned int)p_module_list_nr_tmp * sizeof(p_module_list_mem));
