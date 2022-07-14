@@ -98,9 +98,9 @@
 #define P_LOG_FLOOD 6
 #define P_LOG_MAX   6
 
-#define P_LOG_STATE P_LOG_ALIVE
-#define P_LOG_DYING P_LOG_ALIVE
-#define P_LOG_FATAL P_LOG_FAULT
+#define P_LOG_STATE (0x10 | P_LOG_ALIVE)
+#define P_LOG_DYING (0x20 | P_LOG_ALIVE)
+#define P_LOG_FATAL (0x30 | P_LOG_FAULT)
 
 #define p_print_log(p_level, p_fmt, p_args...)                                             \
 ({                                                                                         \
@@ -108,13 +108,22 @@
                                                                                            \
    if (p_level == P_LOG_ALERT)                                                             \
       p_print_ret = printk(KERN_CRIT    P_LKRG_SIGNATURE "ALERT: " p_fmt "\n", ## p_args); \
-   else if (P_CTRL(p_log_level) >= p_level)                                                \
+   else if (P_CTRL(p_log_level) >= (p_level & 7))                                          \
    switch (p_level) {                                                                      \
    case P_LOG_ALIVE:                                                                       \
       p_print_ret = printk(KERN_NOTICE  P_LKRG_SIGNATURE "ALIVE: " p_fmt "\n", ## p_args); \
       break;                                                                               \
+   case P_LOG_STATE:                                                                       \
+      p_print_ret = printk(KERN_NOTICE  P_LKRG_SIGNATURE "STATE: " p_fmt "\n", ## p_args); \
+      break;                                                                               \
+   case P_LOG_DYING:                                                                       \
+      p_print_ret = printk(KERN_NOTICE  P_LKRG_SIGNATURE "DYING: " p_fmt "\n", ## p_args); \
+      break;                                                                               \
    case P_LOG_FAULT:                                                                       \
       p_print_ret = printk(KERN_ERR     P_LKRG_SIGNATURE "FAULT: " p_fmt "\n", ## p_args); \
+      break;                                                                               \
+   case P_LOG_FATAL:                                                                       \
+      p_print_ret = printk(KERN_ERR     P_LKRG_SIGNATURE "FATAL: " p_fmt "\n", ## p_args); \
       break;                                                                               \
    case P_LOG_ISSUE:                                                                       \
       p_print_ret = printk(KERN_WARNING P_LKRG_SIGNATURE "ISSUE: " p_fmt "\n", ## p_args); \
