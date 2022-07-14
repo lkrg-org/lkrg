@@ -52,7 +52,7 @@ jobs:
             - name: Check that boot.log does not contain problems
               run:
                   "! grep -v 'The requested image.s platform .* does not match the detected host platform' boot.log |
-                     grep -E 'Kernel panic|BUG:|WARNING:|Oops|Call Trace'"
+                     grep -E 'Kernel panic|BUG:|WARNING:|ALERT:|FAULT:|FATAL:|Oops|Call Trace'"
             - name: Check that boot-tests script finished successfully
               run: grep 'run-boot-tests.sh - SUCCESS' boot.log
             - name: Check that boot.log contains shutdown sequence
