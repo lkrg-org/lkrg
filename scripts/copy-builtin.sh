@@ -23,6 +23,15 @@ config SECURITY_LKRG
           integrity validation and anti-exploitation functions.
 
 	  If you are unsure how to answer this question, answer M.
+
+config SECURITY_LKRG_DEBUG
+	bool "LKRG debug mode"
+	depends on SECURITY_LKRG
+	default n
+	help
+	  This builds LKRG - Linux Kernel Runtime Guard, in debug mode
+
+	  If you are unsure how to answer this question, answer N.
 EOC
 )
 
@@ -30,7 +39,13 @@ MAKEFILE=$(cat <<EOC
 # SPDX-License-Identifier: GPL-2.0-only
 
 obj-\$(CONFIG_SECURITY_LKRG) := p_lkrg.o
-$(awk '/^\$\(TARGET\)-objs/,/^$/' "$BASEDIR/../Makefile"|sed -e 's|src/||; s|$(TARGET)-objs|p_lkrg-objs|')
+ifeq (\$(SECURITY_LKRG_DEBUG), on)
+ccflags-m := -ggdb -DP_LKRG_DEBUG_BUILD -finstrument-functions
+ccflags-y := \${ccflags-m}
+p_lkrg-objs += modules/print_log/p_lkrg_debug_log.o
+endif
+
+$(grep '\.o' "$BASEDIR/../Makefile"|tail -n +3|grep -v '$(RM)'|sed -e 's|src/||; s|$(TARGET)-objs|p_lkrg-objs|g')
  
 EOC
 )
