@@ -142,6 +142,12 @@
    p_print_ret;                                                                            \
 })
 
+#define p_panic(p_fmt, p_args...) \
+({ \
+   p_print_log(P_LOG_ALERT, "BLOCK: " p_fmt, ## p_args); \
+   panic(p_fmt, ## p_args); \
+})
+
 #define LKRG_DEBUG_TRACE notrace
 
 #ifdef P_LKRG_DEBUG

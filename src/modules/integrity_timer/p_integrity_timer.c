@@ -962,7 +962,7 @@ skip_db_checks:
       p_print_log(P_LOG_ALERT, "DETECT: Kernel: %u checksums changed unexpectedly", p_hack_check);
       if (P_CTRL(p_kint_enforce >= 2)) {
          // OK, we need to crash the kernel now
-         panic(P_LKRG_SIGNATURE "BLOCK: Kernel: %u checksums changed unexpectedly", p_hack_check);
+         p_panic("Kernel: %u checksums changed unexpectedly", p_hack_check);
       }
    } else if (P_CTRL(p_heartbeat)) {
       p_print_log(P_LOG_ALIVE, "System is clean");
