@@ -8,8 +8,8 @@
 
 set -eux -o pipefail
 
-if [ ! -d /sys/module/p_lkrg ]; then
-	modprobe p_lkrg
+if [ ! -d /sys/module/lkrg ]; then
+	modprobe lkrg
 fi
 
 # Trigger loading vhost_vsock module (using UMH call to modprobe).

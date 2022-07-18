@@ -125,7 +125,7 @@ do {                                                                       \
    p_debug_log(P_LOG_DEBUG, "Restoring KOBJ[0x%lx] for [%s]",              \
                (unsigned long)&p_mod->mkobj.kobj,p_mod->name);             \
    if ( (p_ret = kobject_add(&p_mod->mkobj.kobj, p_kobj_parent,            \
-                                                     "p_lkrg")) < 0) {     \
+                                                     "lkrg")) < 0) {       \
       p_print_log(P_LOG_WATCH, "Failed to restore KOBJ");                  \
       return;                                                              \
    }                                                                       \

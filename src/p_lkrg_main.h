@@ -389,7 +389,7 @@ static inline int p_lkrg_counter_lock_val_read(p_lkrg_counter_lock *p_arg) {
 /* End */
 
 /*
- * p_lkrg modules
+ * LKRG modules
  */
 #include "modules/print_log/p_lkrg_print_log.h"               // printing, error and debug module
 #include "modules/hashing/p_lkrg_fast_hash.h"                 // Hashing module

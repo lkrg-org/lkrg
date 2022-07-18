@@ -466,7 +466,7 @@ static int __init p_lkrg_register(void) {
 #endif
 #else
    if ( (p_hot_cpus = cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
-                         "x86/p_lkrg:online",
+                         "x86/lkrg:online",
                          p_cpu_online_action,
                          p_cpu_dead_action)) < 0) {
       p_print_log(P_LOG_FATAL, "Can't register hot CPU plug[in/out] handler");

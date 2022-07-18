@@ -98,7 +98,7 @@ only proceed with installation if there are none.
 You can do this for a freshly built LKRG (and while you're still in its top
 level source code directory) with the following command:
 
-	sudo insmod output/p_lkrg.ko kint_enforce=1
+	sudo insmod output/lkrg.ko kint_enforce=1
 
 Then check kernel messages for any potential errors, use the system for a long
 while, and check again:
@@ -110,7 +110,7 @@ might not require root.)
 
 Unload LKRG from the kernel with:
 
-	sudo rmmod p_lkrg
+	sudo rmmod lkrg
 
 so that it can then be loaded using the same procedure that's used on system
 bootup and without the parameter override.
@@ -142,7 +142,7 @@ for OpenRC:
 
 for other:
 
-	sudo modprobe -v p_lkrg
+	sudo modprobe -v lkrg
 
 
 Autoload on bootup
@@ -160,9 +160,9 @@ for OpenRC:
 for other:
 
 	sudo mkdir -p /etc/modules-load.d/ &&
-		echo p_lkrg | sudo tee /etc/modules-load.d/p_lkrg.conf
+		echo lkrg | sudo tee /etc/modules-load.d/lkrg.conf
 
-Alternatively you can put the "modprobe p_lkrg" command into a system startup
+Alternatively you can put the "modprobe lkrg" command into a system startup
 script.  Please note that ideally this command would run before sysctl files
 (especially /etc/sysctl.d/01-lkrg.conf) are processed, or otherwise the LKRG
 settings specified in those would not take effect.
@@ -215,7 +215,7 @@ for OpenRC:
 
 for other:
 
-	sudo modprobe -v -r p_lkrg
+	sudo modprobe -v -r lkrg
 
 
 Upgrading
@@ -248,13 +248,13 @@ already mentioned above and many more.
 
 For freshly built LKRG, you can list the parameters with:
 
-	modinfo output/p_lkrg.ko
+	modinfo output/lkrg.ko
 
 while you're still in LKRG's top level source code directory.
 
 With LKRG installed on the system, you can list them with:
 
-	sudo modinfo p_lkrg
+	sudo modinfo lkrg
 
 (Depending on system configuration, "modinfo" might not require root.)
 
