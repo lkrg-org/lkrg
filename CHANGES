@@ -1,6 +1,15 @@
 The following major changes have been made since LKRG 0.9.3:
 
- *) OpenRC init system support
+ *) Support new longterm kernels 5.15.40+
+ *) Support the OpenRC init system
+ *) Make log messages more consistent and suitable for both automated analysis
+    and human consumption, as well as easier to maintain
+ *) Introduce LKRG's own message severities and categories, which are separate
+    from (but mapped onto) the kernel's and are included in messages themselves
+ *) Many minor bug fixes, issue workarounds, and significant code cleanups
+ *) Rename the module from p_lkrg to lkrg
+ *) Add instructions on installing using DKMS
+ *) Continuous Integration updates
 
 
 The following major changes have been made between LKRG 0.9.2 and 0.9.3:
