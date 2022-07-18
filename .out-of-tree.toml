@@ -1,4 +1,4 @@
-name = "p_lkrg"
+name = "lkrg"
 type = "module"
 
 [[supported_kernels]]

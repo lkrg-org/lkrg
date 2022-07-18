@@ -17,9 +17,9 @@ ConditionKernelCommandLine=!nolkrg
 
 [Service]
 Type=oneshot
-ExecStart=/sbin/modprobe -v p_lkrg
+ExecStart=/sbin/modprobe -v lkrg
 ExecStartPost=/sbin/sysctl -p /etc/sysctl.d/01-lkrg.conf
-ExecStop=/sbin/modprobe -v -r p_lkrg
+ExecStop=/sbin/modprobe -v -r lkrg
 RemainAfterExit=yes
 
 [Install]

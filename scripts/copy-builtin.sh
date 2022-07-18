@@ -38,14 +38,14 @@ EOC
 MAKEFILE=$(cat <<EOC
 # SPDX-License-Identifier: GPL-2.0-only
 
-obj-\$(CONFIG_SECURITY_LKRG) := p_lkrg.o
+obj-\$(CONFIG_SECURITY_LKRG) := lkrg.o
 ifeq (\$(SECURITY_LKRG_DEBUG), on)
 ccflags-m := -ggdb -DP_LKRG_DEBUG_BUILD -finstrument-functions
 ccflags-y := \${ccflags-m}
-p_lkrg-objs += modules/print_log/p_lkrg_debug_log.o
+lkrg-objs += modules/print_log/p_lkrg_debug_log.o
 endif
 
-$(sed -n '/^$(TARGET)-objs += .* \\/,/[^\]$/ {s|src/||; s|$(TARGET)|p_lkrg|; p}' "$BASEDIR/../Makefile")
+$(sed -n '/^$(TARGET)-objs += .* \\/,/[^\]$/ {s|src/||; s|$(TARGET)|lkrg|; p}' "$BASEDIR/../Makefile")
  
 EOC
 )

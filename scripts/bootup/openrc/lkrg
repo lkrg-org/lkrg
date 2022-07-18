@@ -3,8 +3,8 @@
 
 description="Linux Kernel Runtime Guard"
 command="/sbin/modprobe"
-command_args="-v p_lkrg"
-unload_command_args="-v -r p_lkrg"
+command_args="-v lkrg"
+unload_command_args="-v -r lkrg"
 runlevel_command="/sbin/runlevel"
 grep_command="/bin/grep"
 
@@ -21,10 +21,10 @@ start() {
 stop() {
 	# for more info about runlevels (e.g. "S", "0", "1", "6") check: man 8 init
 	if $runlevel_command | $grep_command -q ' [S016]$'; then
-		ebegin "Stopping \"lkrg\" service without unloading \"p_lkrg\" module from the kernel"
+		ebegin "Stopping \"lkrg\" service without unloading \"lkrg\" module from the kernel"
 		eend $?
 	else
-		ebegin "Unloading \"p_lkrg\" module from the kernel"
+		ebegin "Unloading \"lkrg\" module from the kernel"
 		$command $unload_command_args
 		eend $?
 	fi

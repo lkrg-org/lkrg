@@ -42,7 +42,7 @@ jobs:
                   RUN git clean -dxfq
                   RUN gcc -v; cat /etc/os-release
                   RUN make -j\$(nproc) KERNELRELEASE=\$(cd /lib/modules; ls)
-                  RUN file p_lkrg.ko
+                  RUN file lkrg.ko
                   EOF
             - run: docker build .
 

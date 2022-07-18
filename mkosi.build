@@ -12,6 +12,6 @@ type banner >/dev/null 2>&1 && banner build $KERNELRELEASE >&2
 make -j$(nproc) $@
 
 # Install if compiled.
-[ -e p_lkrg.ko ] && [ -v DESTDIR ] &&
-install -Dpm 644 p_lkrg.ko $DESTDIR/lib/modules/$KERNELRELEASE/extra/p_lkrg.ko &&
+[ -e lkrg.ko ] && [ -v DESTDIR ] &&
+install -Dpm 644 lkrg.ko $DESTDIR/lib/modules/$KERNELRELEASE/extra/lkrg.ko &&
 cp -av ./ $DESTDIR/lkrg/ || :
