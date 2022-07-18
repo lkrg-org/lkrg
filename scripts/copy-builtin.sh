@@ -45,7 +45,7 @@ ccflags-y := \${ccflags-m}
 p_lkrg-objs += modules/print_log/p_lkrg_debug_log.o
 endif
 
-$(grep '\.o' "$BASEDIR/../Makefile"|tail -n +3|grep -v '$(RM)'|sed -e 's|src/||; s|$(TARGET)-objs|p_lkrg-objs|g')
+$(sed -n '/^$(TARGET)-objs += .* \\/,/[^\]$/ {s|src/||; s|$(TARGET)|p_lkrg|; p}' "$BASEDIR/../Makefile")
  
 EOC
 )
