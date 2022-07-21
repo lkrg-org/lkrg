@@ -546,12 +546,6 @@ void p_check_integrity(struct work_struct *p_work) {
 
    /*
     * We found as many modules in module list as in sysfs
-    */
-
-   if (P_CTRL(p_log_level) < P_LOG_WATCH)
-      goto skip_db_checks;
-
-   /*
     * Let's validate if our database has the same information as we gathered now
     */
 
@@ -861,7 +855,6 @@ void p_check_integrity(struct work_struct *p_work) {
       }
    }
 
-skip_db_checks:
 
    p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_module_list_tmp,
                                  (unsigned int)p_module_list_nr_tmp * sizeof(p_module_list_mem));
