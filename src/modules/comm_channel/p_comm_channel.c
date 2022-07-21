@@ -470,11 +470,15 @@ static int p_sysctl_pint_enforce(struct ctl_table *p_table, int p_write,
 static int p_sysctl_interval(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
    int p_ret;
+   unsigned int p_tmp;
 
+   p_tmp = P_CTRL(p_interval);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      p_print_log(P_LOG_STATE, "Changing 'interval' to %d", P_CTRL(p_interval));
-      p_offload_work(0); // run integrity check!
+      if (P_CTRL(p_interval) != p_tmp) {
+         p_print_log(P_LOG_STATE, "Changing 'interval' from %d to %d", p_tmp, P_CTRL(p_interval));
+         p_offload_work(0); // run integrity check!
+      }
    }
    p_lkrg_close_rw();
 
@@ -504,6 +508,7 @@ static int p_sysctl_block_modules(struct ctl_table *p_table, int p_write,
 static int p_sysctl_log_level(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
    int p_ret;
+   unsigned int p_log_level_old;
    static const char * const p_log_level_string[] = {
       "ALERT",
       "ALIVE",
@@ -516,17 +521,20 @@ static int p_sysctl_log_level(struct ctl_table *p_table, int p_write,
 #endif
    };
 
-   p_log_level_new = P_CTRL(p_log_level);
+   p_log_level_new = p_log_level_old = P_CTRL(p_log_level);
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
-      int increasing = p_log_level_new > P_CTRL(p_log_level);
-      p_lkrg_open_rw();
-      if (increasing)
-         P_CTRL(p_log_level) = p_log_level_new;
-      p_print_log(P_LOG_STATE, "Changing 'log_level' to %d (%s)",
-                  p_log_level_new, p_log_level_string[p_log_level_new]);
-      if (!increasing)
-         P_CTRL(p_log_level) = p_log_level_new;
-      p_lkrg_close_rw();
+      if (p_log_level_new != p_log_level_old) {
+         int increasing = p_log_level_new > p_log_level_old;
+         p_lkrg_open_rw();
+         if (increasing)
+            P_CTRL(p_log_level) = p_log_level_new;
+         p_print_log(P_LOG_STATE, "Changing 'log_level' from %d (%s) to %d (%s)",
+                     p_log_level_old, p_log_level_string[p_log_level_old],
+                     p_log_level_new, p_log_level_string[p_log_level_new]);
+         if (!increasing)
+            P_CTRL(p_log_level) = p_log_level_new;
+         p_lkrg_close_rw();
+      }
    }
 
    return p_ret;
