@@ -162,7 +162,7 @@ for other:
 	sudo mkdir -p /etc/modules-load.d/ &&
 		echo lkrg | sudo tee /etc/modules-load.d/lkrg.conf
 
-Alternatively you can put the "modprobe lkrg" command into a system startup
+Alternatively, you can put the "modprobe lkrg" command into a system startup
 script.  Please note that ideally this command would run before sysctl files
 (especially /etc/sysctl.d/01-lkrg.conf) are processed, or otherwise the LKRG
 settings specified in those would not take effect.
@@ -173,36 +173,45 @@ Installing using DKMS
 
 DKMS enables kernel modules to be dynamically built for each kernel version.
 What this means in effect is that on kernel upgrades the module is rebuilt.
-You can install LKRG using DKMS as well.  For instance on Red Hat'ish
+You can install LKRG using DKMS as well.  For instance, on Red Hat'ish
 distributions after following the shared download instructions above:
 
-  sudo tar -xzf lkrg-0.9.3.tar.gz -C /usr/src/
-  sudo dnf update -y
-  sudo dnf install kernel-devel dkms openssl
-  sudo dkms add -m lkrg -v 0.9.3
-  sudo dkms build -m lkrg -v 0.9.3
-  sudo dkms install -m lkrg -v 0.9.3
+	sudo tar -xzf lkrg-0.9.3.tar.gz -C /usr/src/
+	sudo dnf update -y
+	sudo dnf install kernel-devel dkms openssl
+	sudo dkms add -m lkrg -v 0.9.3
+	sudo dkms build -m lkrg -v 0.9.3
+	sudo dkms install -m lkrg -v 0.9.3
 
 The only difference on other distributions should be the installation of the
 kernel headers, the DKMS utility, and OpenSSL.  Install the headers for the
 target kernels.
 
-If this succeeds you should get similar output to the following:
+You can then query the status with:
 
-  $ dkms status
-  lkrg/0.9.3, 5.18.9-200.fc36.x86_64, x86_64: installed
+	dkms status
+
+If everything is right, you should get similar output to the following:
+
+	lkrg/0.9.3, 5.18.9-200.fc36.x86_64, x86_64: installed
 
 Please refer to the previous two sections for how to start the LKRG service or
-have it started on system bootup.  If you wish to use the unit/init file you
+have it started on system bootup.  If you wish to use the unit/init file, you
 must install it manually.
 
 
 Uninstalling
 ------------
 
-You can uninstall LKRG using "make" as well (still in the same directory):
+Similarly to installation, you can uninstall LKRG using "make" as well:
 
 	sudo make uninstall
+
+while you're in the top level source code directory of the installed version.
+
+If you installed using DKMS, you'd uninstall with:
+
+	sudo dkms remove -m lkrg/0.9.3 --all
 
 You can also use the following command to temporarily stop the LKRG service
 without uninstalling it, for systemd:
