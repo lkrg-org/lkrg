@@ -1,19 +1,19 @@
 Linux Kernel Runtime Guard (LKRG)
-Copyright (c) 2015-2021 Adam 'pi3' Zabrocki
-Copyright (c) 2020-2021 Mariusz Zaborski
-Copyright (c) 2020 Solar Designer
+Copyright (c) 2015-2022 Adam 'pi3' Zabrocki
+Copyright (c) 2020-2022 Mariusz Zaborski
+Copyright (c) 2020-2022 Solar Designer
 
-scripts/copy-builtin.sh
-Copyright (c) 2021 RageLtMan
-
-mkosi.* and .github/workflows/*
-Copyright (c) 2021 Vitaly Chikunov
-
-debian/*
-Copyright (c) 2020-2021 Mikhail Morfikov
+scripts/copy-builtin.sh, scripts/add-exports.sh
+Copyright (c) 2021-2022 RageLtMan
 
 scripts/bootup/openrc/*
 Copyright (c) 2022 Jakub 'mrl5' Kołodziejczak
+
+mkosi.* and .github/workflows/*
+Copyright (c) 2021-2022 Vitaly Chikunov
+
+debian/*
+Copyright (c) 2020-2021 Mikhail Morfikov
 
 This version of LKRG is hereby being made available under the terms of the GNU
 General Public License version 2 as published by the Free Software Foundation.
