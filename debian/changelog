@@ -1,3 +1,11 @@
+lkrg (0.9.4-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/lkrg-dkms.*:
+    + Rename the module from p_lkrg to lkrg.
+
+ -- Solar Designer <solar@openwall.com>  Fri, 22 Jul 2022 19:20:00 +0200
+
 lkrg (0.9.3-1) unstable; urgency=medium
 
   * New upstream release.

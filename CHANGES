@@ -1,4 +1,4 @@
-The following major changes have been made since LKRG 0.9.3:
+The following major changes have been made between LKRG 0.9.3 and 0.9.4:
 
  *) Support new longterm kernels 5.15.40+
  *) Support the OpenRC init system
