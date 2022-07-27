@@ -22,7 +22,7 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                    - image: arm64v8/ubuntu:impish
+                    - image: arm64v8/ubuntu:jammy
                       packages: libelf-dev linux-headers-generic
                     - image: arm32v7/alt:latest
                       packages: elfutils kernel-headers-modules-std-def
