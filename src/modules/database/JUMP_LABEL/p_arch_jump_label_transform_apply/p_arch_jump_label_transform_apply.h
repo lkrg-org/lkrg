@@ -36,12 +36,18 @@
 #ifndef P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_APPLY_H
 #define P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_APPLY_H
 
+#include <asm/linkage.h> /* for ASM_RET */
+
 /*
-* This needs to be extended to other LTS or active branches if and
-* when they receive the variable length JUMP_LABEL feature backport
-*/
+ * This can be extended to other LTS or active branches if and when they
+ * receive the variable length JUMP_LABEL feature backport, although the
+ * addition of ASM_RET is part of the same change set and thus our check
+ * for it hopefully makes the specific kernel version checks redundant.
+ */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 17, 0) || \
-    (LINUX_VERSION_CODE < KERNEL_VERSION(5, 16, 0) && LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 40))
+    (LINUX_VERSION_CODE < KERNEL_VERSION(5, 16, 0) && LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 40)) || \
+    (LINUX_VERSION_CODE < KERNEL_VERSION(5, 11, 0) && LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 133)) || \
+    defined(ASM_RET)
  #define P_LKRG_KERNEL_HAS_VAR_LEN_JUMP_LABEL 1
 #else
  #define P_LKRG_KERNEL_HAS_VAR_LEN_JUMP_LABEL 0
