@@ -123,7 +123,7 @@ static struct p_addr_name {
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setfsgid),
    P_LKRG_DEBUG_RULE_KPROBE(p_call_usermodehelper_exec),
    P_LKRG_DEBUG_RULE_KPROBE(p_set_current_groups),
-#if defined(P_LKRG_EXPLOIT_DETECTION_OVL_OVERRIDE_SYNC_H)
+#if P_OVL_OVERRIDE_SYNC_MODE
    P_LKRG_DEBUG_RULE_KPROBE(p_ovl_override_sync),
 #endif
    P_LKRG_DEBUG_RULE_KPROBE(p_revert_creds),

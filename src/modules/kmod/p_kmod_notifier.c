@@ -249,7 +249,7 @@ p_module_event_notifier_activity_out:
 
 void p_verify_module_live(struct module *p_mod) {
 
-#if defined(P_LKRG_EXPLOIT_DETECTION_OVL_OVERRIDE_SYNC_H)
+#if P_OVL_OVERRIDE_SYNC_MODE
    if (p_ovl_override_sync_kretprobe_state) {
       /* We do not need to do anything for now */
       return;
@@ -271,15 +271,7 @@ void p_verify_module_live(struct module *p_mod) {
       /* Try to install the hook */
       if (p_install_ovl_override_sync_hook(1)) {
          p_print_log(P_LOG_FAULT,
-                "OverlayFS is being loaded but LKRG can't hook '"
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0) || \
-    (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 179) && LINUX_VERSION_CODE < KERNEL_VERSION(4, 5, 0)) || \
-    (defined(RHEL_RELEASE_CODE) && RHEL_RELEASE_CODE > RHEL_RELEASE_VERSION(7, 4))
-     "ovl_dentry_is_whiteout' function. "
-#else
-    /* Between the kernels 4.7 and 4.9, the 'ovl_dentry_is_whiteout' function does not exist */
-     "ovl_create_or_link' function. "
-#endif
+                "OverlayFS is being loaded but LKRG can't hook '" P_OVL_OVERRIDE_SYNC_FUNC "'. "
                 "It is very likely that LKRG will produce false positives. Please reload LKRG.");
       }
       /* Done */
@@ -292,7 +284,7 @@ void p_verify_module_live(struct module *p_mod) {
 
 void p_verify_module_going(struct module *p_mod) {
 
-#if defined(P_LKRG_EXPLOIT_DETECTION_OVL_OVERRIDE_SYNC_H)
+#if P_OVL_OVERRIDE_SYNC_MODE
    if (!p_ovl_override_sync_kretprobe_state) {
       /* We do not need to do anything for now */
       return;
