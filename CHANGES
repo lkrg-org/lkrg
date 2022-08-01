@@ -1,5 +1,7 @@
-The following major changes have been made since LKRG 0.9.4:
+The following major changes have been made between LKRG 0.9.4 and 0.9.5:
  *) Support new longterm kernels 5.10.133+
+ *) Rework the logic supporting OverlayFS (notably used by Docker) to support
+    a wider variety of kernel versions and builds
 
 
 The following major changes have been made between LKRG 0.9.3 and 0.9.4:
