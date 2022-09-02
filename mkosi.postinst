@@ -13,8 +13,10 @@ if test -x /usr/bin/dracut; then
 	depmod -a $KERNELRELEASE
 	# Install module into (and force load early in) initrd.
 	dracut --force --force-drivers lkrg /boot/initrd.img-$KERNELRELEASE $KERNELRELEASE
-	# Delete default cmdline which contains 'quiet splash' to see full boot log.
-	sed -i /GRUB_CMDLINE_LINUX_DEFAULT/d /etc/default/grub
-	update-grub
+	if [ -e /etc/default/grub ]; then
+		# Delete default cmdline which contains 'quiet splash' to see full boot log.
+		sed -i /GRUB_CMDLINE_LINUX_DEFAULT/d /etc/default/grub
+		update-grub
+	fi
 fi
 exit 0
