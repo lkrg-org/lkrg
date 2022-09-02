@@ -12,10 +12,8 @@ Release=hirsute
 Bootable=yes
 # 'no_timer_check' is old workaround to intermittent apic kernel panic in qemu.
 KernelCommandLine=no_timer_check panic=-1 oops=panic panic_on_warn softlockup_panic=1 ignore_loglevel
-# Simplest way of installing initrd is without unified kernel image,
-# which requires bios (grub) boot.
+# Separate initrd for possible debugging.
 WithUnifiedKernelImages=no
-BootProtocols=bios
 
 [Partitions]
 # 2G was not enough for build with mainline kernels installs.
