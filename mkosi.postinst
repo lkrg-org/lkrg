@@ -11,8 +11,24 @@ if test -x /usr/bin/dracut; then
 	banner postinst >&2
 	# Register our module in kmod database.
 	depmod -a $KERNELRELEASE
-	# Install module into (and force load early in) initrd.
-	dracut --force --force-drivers lkrg /boot/initrd.img-$KERNELRELEASE $KERNELRELEASE
+
+	# Install module into (and force its load early in) initrd.
+
+	# Add lkrg by default for any dracut invocation w/o requirement of
+	# passing '--force-drivers lkrg' command line option.
+	echo 'force_drivers+=" lkrg "' > /etc/dracut.conf.d/31-lkrg.conf
+	dracut --force /boot/initrd.img-$KERNELRELEASE $KERNELRELEASE
+
+	if [ -d /boot/loader/entries ]; then
+		# Install into systemd-boot loader.
+
+		# Because we pass INITRD argument to kernel-install, this will
+		# skip calling dracut (saving time, because it would regenerate
+		# ALL images) by mkosi hooks, but this will not delete old
+		# 'initrd' file from its boot entry, which is not big deal.
+		# Boot entry itself will not be duplicated.
+		kernel-install add $KERNELRELEASE /boot/vmlinuz-$KERNELRELEASE /boot/initrd.img-$KERNELRELEASE
+	fi
 	if [ -e /etc/default/grub ]; then
 		# Delete default cmdline which contains 'quiet splash' to see full boot log.
 		sed -i /GRUB_CMDLINE_LINUX_DEFAULT/d /etc/default/grub
