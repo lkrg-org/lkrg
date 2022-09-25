@@ -136,9 +136,12 @@ static void p_cpu_rehash(const char *onoffline) {
    if (hash_from_kernel_rodata() != P_LKRG_SUCCESS) {
       p_print_log(P_LOG_FAULT, "CPU %s: Can't get hash from _rodata", onoffline);
    }
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,19,0)
    if (hash_from_iommu_table() != P_LKRG_SUCCESS) {
       p_print_log(P_LOG_FAULT, "CPU %s: Can't get hash from IOMMU table", onoffline);
    }
+#endif
+
    /* Now recalculate modules, again some macros are different now ! */
 
    /* OK, now recalculate hashes again! */

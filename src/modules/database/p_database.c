@@ -111,13 +111,11 @@ int hash_from_kernel_rodata(void) {
    return P_LKRG_SUCCESS;
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,19,0)
 int hash_from_iommu_table(void) {
 
 #ifdef CONFIG_X86
    unsigned long p_tmp = 0;
-#endif
-
-#ifdef CONFIG_X86
 
    p_db.kernel_iommu_table.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("__iommu_table");
    p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("__iommu_table_end");
@@ -151,6 +149,7 @@ int hash_from_iommu_table(void) {
 
    return P_LKRG_SUCCESS;
 }
+#endif
 
 uint64_t hash_from_CPU_data(p_CPU_metadata_hash_mem *p_arg) {
 
@@ -288,12 +287,13 @@ int p_create_database(void) {
       p_db.kernel_rodata.p_addr = NULL;
    }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,19,0)
    if (hash_from_iommu_table() != P_LKRG_SUCCESS) {
       p_print_log(P_LOG_ISSUE, "IOMMU table can't be found (skipping)");
       p_db.kernel_iommu_table.p_hash = p_db.kernel_iommu_table.p_size = 0;
       p_db.kernel_iommu_table.p_addr = NULL;
    }
-
+#endif
 
 #if defined(CONFIG_OPTPROBES)
    P_SYM(p_wait_for_kprobe_optimizer)();

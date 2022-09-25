@@ -76,7 +76,9 @@ static struct p_addr_name {
    P_LKRG_DEBUG_RULE(hash_from_ex_table),
    P_LKRG_DEBUG_RULE(hash_from_kernel_stext),
    P_LKRG_DEBUG_RULE(hash_from_kernel_rodata),
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,19,0)
    P_LKRG_DEBUG_RULE(hash_from_iommu_table),
+#endif
    P_LKRG_DEBUG_RULE(hash_from_CPU_data),
    P_LKRG_DEBUG_RULE(p_create_database),
    P_LKRG_DEBUG_RULE(p_register_notifiers),

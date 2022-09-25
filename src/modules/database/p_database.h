@@ -169,7 +169,9 @@ typedef struct p_hash_database {
    char *kernel_stext_copy;               // copy of .text
 #endif
    p_hash_mem_block kernel_rodata;        // .rodata
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,19,0)
    p_hash_mem_block kernel_iommu_table;   // IOMMU table
+#endif
    p_hash_mem_block kernel_ex_table;      // Exception tale
    struct p_jump_label p_jump_label;      // *_JUMP_LABEL state during modification
 
@@ -183,7 +185,9 @@ extern struct notifier_block p_cpu_notifier;
 int hash_from_ex_table(void);
 int hash_from_kernel_stext(void);
 int hash_from_kernel_rodata(void);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,19,0)
 int hash_from_iommu_table(void);
+#endif
 
 static inline void p_text_section_lock(void) {
 

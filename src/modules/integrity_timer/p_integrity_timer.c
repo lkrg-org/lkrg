@@ -322,6 +322,7 @@ void p_check_integrity(struct work_struct *p_work) {
          p_db.kernel_rodata.p_hash, p_tmp_hash);
    }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,19,0)
    /*
     * Checking memory block:
     * "__iommu_table"
@@ -343,6 +344,7 @@ void p_check_integrity(struct work_struct *p_work) {
       p_print_log(P_LOG_WATCH, "IOMMU table hash expected 0x%llx vs. actual 0x%llx",
          p_db.kernel_iommu_table.p_hash, p_tmp_hash);
    }
+#endif
 
    /*
     * Checking this kernel modules integrity.
