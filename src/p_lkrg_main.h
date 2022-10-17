@@ -73,9 +73,11 @@
 #if ( (LINUX_VERSION_CODE < KERNEL_VERSION(4,4,72)) && \
       (!(defined(RHEL_RELEASE_CODE)) || \
          RHEL_RELEASE_CODE < RHEL_RELEASE_VERSION(7, 4)))
-#define P_LKRG_CUSTOM_GET_RANDOM_LONG
-/* We use md5_transform() in our custom get_random_long() */
-#include <linux/cryptohash.h>
+static inline unsigned long get_random_long(void) {
+   unsigned long p_ret;
+   get_random_bytes(&p_ret, sizeof(p_ret));
+   return p_ret;
+}
 #endif
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)
