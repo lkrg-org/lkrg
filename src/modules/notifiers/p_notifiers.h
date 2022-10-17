@@ -33,7 +33,7 @@
 #define P_M_MORE_OFTEN_RATE       4294967       /*    0.1%   */
 #define P_S_MORE_OFTEN_RATE       2147483       /*    0.05%  */
 #define P_SS_MORE_OFTEN_RATE      429496        /*    0.01%  */
-#define P_M_SS_MORE_OFTEN_RATE    21474         /*    0.005% */
+#define P_M_SS_MORE_OFTEN_RATE    214748        /*    0.005% */
 #define P_S_SS_MORE_OFTEN_RATE    42949         /*    0.001% */
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0)
