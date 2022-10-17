@@ -36,7 +36,11 @@
 #define P_M_SS_MORE_OFTEN_RATE    21474         /*    0.005% */
 #define P_S_SS_MORE_OFTEN_RATE    42949         /*    0.001% */
 
-#define P_CHECK_RANDOM(x) (get_random_int() <= x)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0)
+#define get_random_u32 get_random_int
+#endif
+
+#define P_CHECK_RANDOM(x) (get_random_u32() <= x)
 
 #define P_TRY_OFFLOAD_NOTIFIER(rate, where)                                \
 do {                                                                       \
