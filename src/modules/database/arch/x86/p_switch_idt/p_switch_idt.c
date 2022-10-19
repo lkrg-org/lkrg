@@ -32,8 +32,6 @@ static struct kretprobe p_switch_idt_kretprobe = {
     .handler = p_switch_idt_ret,
     .entry_handler = p_switch_idt_entry,
     .data_size = sizeof(struct p_switch_idt_data),
-    /* Probe up to 40 instances concurrently. */
-    .maxactive = 40,
 };
 
 
@@ -65,6 +63,7 @@ int p_install_switch_idt_hook(void) {
 
    int p_tmp;
 
+   p_switch_idt_kretprobe.maxactive = p_get_kprobe_maxactive();
    if ( (p_tmp = register_kretprobe(&p_switch_idt_kretprobe)) != 0) {
       p_print_log(P_LOG_ISSUE, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
                   p_switch_idt_kretprobe.kp.symbol_name,

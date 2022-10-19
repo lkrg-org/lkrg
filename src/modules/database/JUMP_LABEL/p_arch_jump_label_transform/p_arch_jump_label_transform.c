@@ -36,8 +36,6 @@ static struct kretprobe p_arch_jump_label_transform_kretprobe = {
     .handler = p_arch_jump_label_transform_ret,
     .entry_handler = p_arch_jump_label_transform_entry,
     .data_size = sizeof(struct p_arch_jump_label_transform_data),
-    /* Probe up to 40 instances concurrently. */
-    .maxactive = 40,
 };
 
 
@@ -202,6 +200,7 @@ int p_install_arch_jump_label_transform_hook(void) {
 
    p_lkrg_counter_lock_init(&p_jl_lock);
 
+   p_arch_jump_label_transform_kretprobe.maxactive = p_get_kprobe_maxactive();
    if ( (p_tmp = register_kretprobe(&p_arch_jump_label_transform_kretprobe)) != 0) {
       p_print_log(P_LOG_FATAL, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
                   p_arch_jump_label_transform_kretprobe.kp.symbol_name,
