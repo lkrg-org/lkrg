@@ -16,6 +16,7 @@
  */
 
 #include "p_lkrg_main.h"
+#include "modules/net/net.h"
 
 unsigned int log_level = 3;
 unsigned int heartbeat = 0;
@@ -380,6 +381,8 @@ static int __init p_lkrg_register(void) {
    char p_cpu = 0;
    char p_freeze = 0;
 
+   lkrg_register_net();
+
    P_SYM(p_state_init) = 0;
 
    if (get_kallsyms_address() != P_LKRG_SUCCESS) {
@@ -395,6 +398,7 @@ static int __init p_lkrg_register(void) {
     */
    if (p_verify_boot_params()) {
       p_print_log(P_LOG_DYING, "Not loading LKRG ('" P_BOOT_DISABLE_LKRG "' kernel boot parameter detected)");
+      lkrg_deregister_net();
       return P_LKRG_BOOT_DISABLE_LKRG;
    }
 
@@ -588,6 +592,9 @@ p_main_error:
       p_freeze = 0;
    }
 
+   if (p_ret != P_LKRG_SUCCESS)
+      lkrg_deregister_net();
+
    return p_ret;
 
 p_sym_error:
@@ -646,6 +653,8 @@ static void __exit p_lkrg_deregister(void) {
    P_SYM(p_thaw_processes)();
 
    p_print_log(P_LOG_DYING, "LKRG unloaded");
+
+   lkrg_deregister_net();
 }
 
 
