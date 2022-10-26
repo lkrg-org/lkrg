@@ -18,6 +18,8 @@
 #ifndef P_LKRG_PRINT_LOG_H
 #define P_LKRG_PRINT_LOG_H
 
+#include "../net/net.h"
+
 /*
  * Debugging settings
  */
@@ -138,6 +140,8 @@
       p_print_ret = printk(KERN_DEBUG   P_LKRG_SIGNATURE "FLOOD: " p_fmt "\n", ## p_args); \
       break;                                                                               \
    }                                                                                       \
+                                                                                           \
+   lkrg_queue_net();                                                                       \
                                                                                            \
    p_print_ret;                                                                            \
 })

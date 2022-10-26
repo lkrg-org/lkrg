@@ -33,6 +33,7 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/modules/integrity_timer/p_integrity_timer.o \
                   src/modules/integrity_timer/verify_kprobes/p_verify_kprobes.o \
                   src/modules/kmod/p_kmod.o \
+                  src/modules/net/net.o \
                   src/modules/database/CPU.o \
                   src/modules/database/arch/x86/p_x86_metadata.o \
                   src/modules/database/arch/x86/p_switch_idt/p_switch_idt.o \

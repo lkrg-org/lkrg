@@ -16,6 +16,7 @@
  */
 
 #include "../../p_lkrg_main.h"
+#include "../net/net.h"
 
 /*
  * Local timer for integrity checks...
@@ -92,6 +93,7 @@ void p_offload_work(struct timer_list *p_timer) {
    INIT_WORK(p_worker, p_check_integrity);
    /* schedule for execution */
    queue_work(system_unbound_wq, p_worker);
+   lkrg_queue_net();
    if (p_timer)
       p_integrity_timer();
 }
