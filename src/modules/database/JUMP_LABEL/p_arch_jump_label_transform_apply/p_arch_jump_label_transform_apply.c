@@ -72,14 +72,17 @@ notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p
 
    for (p_jl_batch_nr = 0; p_cnt < p_nr; p_cnt++) {
       p_tmp = (p_text_poke_loc *)&P_SYM(p_tp_vec)[p_jl_batch_nr*sizeof(p_text_poke_loc)];
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0) || \
+    defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL)
       if ( (p_tmp->opcode == CALL_INSN_OPCODE
             || p_tmp->opcode == JMP32_INSN_OPCODE
             || p_tmp->opcode == INT3_INSN_OPCODE
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0) || \
+    defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL)
             || p_tmp->opcode == RET_INSN_OPCODE
 #endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0) || \
+    defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL)
             || p_tmp->opcode == JMP8_INSN_OPCODE
 #endif
             ) &&
@@ -101,7 +104,8 @@ notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p
 
 #endif
          p_jl_batch_addr[p_jl_batch_nr++] =
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0) || \
+    defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL)
                   (unsigned long)p_tmp->rel_addr +
                   (unsigned long)p_db.kernel_stext.p_addr;
 #else
