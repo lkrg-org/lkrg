@@ -10,6 +10,8 @@
 #include <linux/socket.h>
 #include <linux/inet.h>
 
+#include <linux/time.h>
+
 #include <linux/mutex.h>
 #include <linux/workqueue.h>
 
@@ -40,10 +42,11 @@ static uint8_t server_static_pk[hydro_kx_PUBLICKEYBYTES];
 static uint8_t packet1[hydro_kx_N_PACKET1BYTES];
 static hydro_kx_session_keypair kp_client;
 
+#define TIMESTAMPS_MAX (20 + 1 + 20 + 1)
 #ifdef CONSOLE_EXT_LOG_MAX
-static char buf[CONSOLE_EXT_LOG_MAX];
+static char buf[TIMESTAMPS_MAX + CONSOLE_EXT_LOG_MAX];
 #else
-static char buf[0x2000];
+static char buf[TIMESTAMPS_MAX + 0x2000];
 #endif
 static uint8_t ciphertext[4 + sizeof(buf) + hydro_secretbox_HEADERBYTES];
 
@@ -159,8 +162,6 @@ struct devkmsg_user {
 static void work_do(struct work_struct *work)
 {
 	static DEFINE_MUTEX(lock);
-	char *pbuf;
-	ssize_t n;
 	bool sent;
 	unsigned int retry = 0;
 
@@ -178,21 +179,50 @@ static void work_do(struct work_struct *work)
 		return;
 
 	do {
+		u64 usec_since_epoch, usec_since_boot;
+		ssize_t m, n;
+		char *pbuf;
+
+#if defined(TIME_T_MAX) && !defined(TIME64_MAX)
+		struct timespec ts;
+		ktime_get_real_ts(&ts);
+#else
+		struct timespec64 ts;
+		ktime_get_real_ts64(&ts);
+#endif
+
+		usec_since_epoch = ts.tv_nsec;
+		do_div(usec_since_epoch, 1000);
+		usec_since_epoch += ts.tv_sec * (u64)1000000;
+
+/*
+ * local_clock() is the function used by printk().  We use the same one to have
+ * comparable timestamps.  We might not be on the same CPU and some clock drift
+ * between CPUs is possible, but the same issue applies to timestamps seen on
+ * different kmsg records anyway.
+ */
+		usec_since_boot = local_clock();
+		do_div(usec_since_boot, 1000);
+
+		m = snprintf(buf, TIMESTAMPS_MAX + 1, "%llu,%llu,", usec_since_epoch, usec_since_boot);
+		if (m < 0 || m > TIMESTAMPS_MAX)
+			break; /* Shouldn't happen */
+		pbuf = buf + m;
+
 /*
  * Assume we're running in a kthread, so with addr_limit = KERNEL_DS on < 5.10
  * and thus don't need to use kernel_read().  If we're on 5.10+, kernel_read()
  * wouldn't have helped anyway (would have triggered a runtime warning), so we
  * expect a -EFAULT, which we then handle.
  */
-		n = kmsg_file->f_op->read(kmsg_file, buf, sizeof(buf), &kmsg_pos);
-		pbuf = buf;
+		n = kmsg_file->f_op->read(kmsg_file, pbuf, sizeof(buf) - TIMESTAMPS_MAX, &kmsg_pos);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
 		if (n == -EFAULT) {
 			struct devkmsg_user *user = kmsg_file->private_data;
 			char *end = memchr(user->buf, '\n', sizeof(user->buf));
-			if (end) {
+			if (end && end > user->buf && end - user->buf + 1 <= sizeof(buf) - TIMESTAMPS_MAX) {
 				n = end - user->buf + 1;
-				pbuf = user->buf;
+				memcpy(pbuf, user->buf, n);
 			}
 		}
 #endif
@@ -206,7 +236,7 @@ static void work_do(struct work_struct *work)
 			retry = 0;
 		sent = false;
 		if (n > 0)
-			sent = try_send_reconnect(pbuf, n);
+			sent = try_send_reconnect(buf, m + n);
 	} while (sent || (retry > 0 && retry < 10));
 
 	mutex_unlock(&lock);
