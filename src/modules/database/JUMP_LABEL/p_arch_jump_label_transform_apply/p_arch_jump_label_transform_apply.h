@@ -38,6 +38,10 @@
 
 #include <asm/linkage.h> /* for ASM_RET */
 
+#if defined(RHEL_RELEASE_CODE) && defined(DISP32_SIZE)
+ #define P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL 1
+#endif
+
 /*
  * This can be extended to other LTS or active branches if and when they
  * receive the variable length JUMP_LABEL feature backport, although the
@@ -55,8 +59,10 @@
 
 #include <asm/text-patching.h>
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0)
- #if !P_LKRG_KERNEL_HAS_VAR_LEN_JUMP_LABEL
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0) || \
+    defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL)
+ #if !P_LKRG_KERNEL_HAS_VAR_LEN_JUMP_LABEL || \
+     defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL)
 typedef struct _p_text_poke_loc {
     s32 rel_addr; /* addr := _stext + rel_addr */
     s32 rel32;
