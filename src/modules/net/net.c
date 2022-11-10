@@ -50,6 +50,7 @@ static char buf[TIMESTAMPS_MAX + CONSOLE_EXT_LOG_MAX];
 static char buf[TIMESTAMPS_MAX + 0x2000];
 #endif
 static uint8_t ciphertext[4 + sizeof(buf) + hydro_secretbox_HEADERBYTES];
+static size_t buf_resend_size;
 
 static void disconnect(void)
 {
@@ -165,7 +166,7 @@ struct devkmsg_user {
 static void work_do(struct work_struct *work)
 {
 	static DEFINE_MUTEX(lock);
-	bool sent;
+	bool sent = true;
 	unsigned int retry = 0;
 
 /*
@@ -181,7 +182,11 @@ static void work_do(struct work_struct *work)
 	if (!mutex_trylock(&lock))
 		return;
 
-	do {
+	if (buf_resend_size)
+		if ((sent = try_send_reconnect(buf, buf_resend_size)))
+			buf_resend_size = 0;
+
+	while (sent || (retry > 0 && retry < 10)) {
 		u64 usec_since_epoch, usec_since_boot;
 		ssize_t m, n;
 		char *pbuf;
@@ -239,8 +244,9 @@ static void work_do(struct work_struct *work)
 			retry = 0;
 		sent = false;
 		if (n > 0)
-			sent = try_send_reconnect(buf, m + n);
-	} while (sent || (retry > 0 && retry < 10));
+			if (!(sent = try_send_reconnect(buf, m + n)))
+				buf_resend_size = m + n;
+	}
 
 	mutex_unlock(&lock);
 }
