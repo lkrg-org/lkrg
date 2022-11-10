@@ -34,6 +34,7 @@ MODULE_PARM_DESC(net_server_pk, "log server public key");
 static __be32 net_server_addr_n;
 
 static struct socket *sk;
+static uint64_t msg_id;
 
 static struct file *kmsg_file;
 static loff_t kmsg_pos;
@@ -88,6 +89,8 @@ static void maybe_reconnect(void)
 
 	hydro_kx_n_1(&kp_client, packet1, NULL, server_static_pk);
 	try_send_raw(packet1, sizeof(packet1));
+
+	msg_id = 0;
 }
 
 static bool try_send_raw(void *buf, size_t count)
@@ -126,7 +129,7 @@ static bool try_send(void *buf, size_t count)
 	if (count > sizeof(ciphertext) - 4 - hydro_secretbox_HEADERBYTES)
 		count = sizeof(ciphertext) - 4 - hydro_secretbox_HEADERBYTES;
 
-	hydro_secretbox_encrypt(&ciphertext[4], buf, count, 0, "lkrg-net", kp_client.tx);
+	hydro_secretbox_encrypt(&ciphertext[4], buf, count, ++msg_id, "lkrg-net", kp_client.tx);
 	count += hydro_secretbox_HEADERBYTES;
 	ciphertext[0] = (count >> 24) & 0xff;
 	ciphertext[1] = (count >> 16) & 0xff;
