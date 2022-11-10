@@ -31,6 +31,7 @@ int session_process(const char *from)
 {
 	int fd;
 	ssize_t n;
+	uint64_t msg_id = 0;
 
 	if (read_loop(0, packet1, sizeof(packet1)) != sizeof(packet1))
 		return log_error("read");
@@ -66,7 +67,7 @@ int session_process(const char *from)
 			log_error("read");
 			break;
 		}
-		if (hydro_secretbox_decrypt(buf, buf, n, 0, "lkrg-net", kp_server.rx))
+		if (hydro_secretbox_decrypt(buf, buf, n, ++msg_id, "lkrg-net", kp_server.rx))
 			goto fail_data;
 		n -= hydro_secretbox_HEADERBYTES;
 		if (write_loop(fd, buf, n) != n)
