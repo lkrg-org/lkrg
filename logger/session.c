@@ -4,6 +4,8 @@
 #include <fcntl.h>
 #include <arpa/inet.h>
 
+#include <sys/time.h>
+
 #include "hydrogen/hydrogen.c"
 
 #include "misc.h"
@@ -50,6 +52,7 @@ int session_process(const char *from)
 	}
 
 	while (1) {
+/* Receive */
 		uint8_t buf[0x2100 + hydro_secretbox_HEADERBYTES];
 		uint32_t len;
 		n = read_loop(0, &len, sizeof(len));
@@ -67,9 +70,25 @@ int session_process(const char *from)
 			log_error("read");
 			break;
 		}
+
+/* Timestamp */
+		struct timeval tv;
+		if (gettimeofday(&tv, NULL)) {
+			n = -1;
+			log_error("gettimeofday");
+			break;
+		}
+
+/* Decrypt */
 		if (hydro_secretbox_decrypt(buf, buf, n, ++msg_id, "lkrg-net", kp_server.rx))
 			goto fail_data;
 		n -= hydro_secretbox_HEADERBYTES;
+
+/* Store */
+		char tvbuf[22];
+		snprintf(tvbuf, sizeof(tvbuf), "%llu,", (unsigned long long)tv.tv_sec * 1000000 + tv.tv_usec);
+		if (write_loop(fd, tvbuf, strlen(tvbuf)) != (ssize_t)strlen(tvbuf))
+			log_error("write");
 		if (write_loop(fd, buf, n) != n)
 			log_error("write");
 	}
