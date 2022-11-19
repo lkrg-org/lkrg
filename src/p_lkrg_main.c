@@ -45,6 +45,8 @@ static enum cpuhp_state p_hot_cpus;
 #endif
 unsigned int p_attr_init = 0;
 
+DEFINE_MUTEX(p_ro_page_mutex);
+
 p_ro_page p_ro __p_lkrg_read_only = {
 
 #if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
