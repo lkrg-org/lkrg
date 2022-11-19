@@ -25,6 +25,8 @@
 #ifndef P_LKRG_WRAPPER_H
 #define P_LKRG_WRAPPER_H
 
+extern struct mutex p_ro_page_mutex;
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
 
 static inline void p_set_uid(kuid_t *p_arg, unsigned int p_val) {
@@ -455,6 +457,8 @@ static inline void p_lkrg_open_rw(void) {
 
    unsigned long p_flags;
 
+   mutex_lock(&p_ro_page_mutex);
+
 //   preempt_disable();
    barrier();
    p_set_memory_rw((unsigned long)P_CTRL_ADDR,1);
@@ -472,6 +476,8 @@ static inline void p_lkrg_close_rw(void) {
    p_set_memory_ro((unsigned long)P_CTRL_ADDR,1);
    barrier();
 //   preempt_enable(); //_no_resched();
+
+   mutex_unlock(&p_ro_page_mutex);
 }
 
 /* ARM */
@@ -587,6 +593,8 @@ static inline void p_lkrg_open_rw(void) {
 
    unsigned long p_flags;
 
+   mutex_lock(&p_ro_page_mutex);
+
    preempt_disable();
    barrier();
    p_set_memory_rw((unsigned long)P_CTRL_ADDR,1);
@@ -604,6 +612,8 @@ static inline void p_lkrg_close_rw(void) {
    p_set_memory_ro((unsigned long)P_CTRL_ADDR,1);
    barrier();
    preempt_enable(); //_no_resched();
+
+   mutex_unlock(&p_ro_page_mutex);
 }
 
 /* ARM64 */
@@ -741,6 +751,8 @@ static inline void p_lkrg_open_rw(void) {
 
    unsigned long p_flags;
 
+   mutex_lock(&p_ro_page_mutex);
+
    preempt_disable();
    barrier();
    p_set_memory_rw((unsigned long)P_CTRL_ADDR,1);
@@ -758,6 +770,8 @@ static inline void p_lkrg_close_rw(void) {
    p_set_memory_ro((unsigned long)P_CTRL_ADDR,1);
    barrier();
    preempt_enable(); //_no_resched();
+
+   mutex_unlock(&p_ro_page_mutex);
 }
 
 #endif
