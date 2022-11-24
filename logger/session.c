@@ -53,7 +53,9 @@ int session_process(const char *from)
 
 	while (1) {
 /* Receive */
-		uint8_t buf[0x2100 + hydro_secretbox_HEADERBYTES];
+#define TIMESTAMP_SIZE 0x20
+		uint8_t buf[TIMESTAMP_SIZE + 0x2100 + hydro_secretbox_HEADERBYTES];
+		uint8_t *pbuf = &buf[TIMESTAMP_SIZE];
 		uint32_t len;
 		n = read_loop(0, &len, sizeof(len));
 		if (n != sizeof(len)) {
@@ -62,9 +64,9 @@ int session_process(const char *from)
 			break;
 		}
 		len = ntohl(len);
-		if (len <= hydro_secretbox_HEADERBYTES || len > sizeof(buf))
+		if (len <= hydro_secretbox_HEADERBYTES || len > sizeof(buf) - TIMESTAMP_SIZE)
 			goto fail_data;
-		n = read_loop(0, buf, len);
+		n = read_loop(0, pbuf, len);
 		if (n != len) {
 			n = -1;
 			log_error("read");
@@ -80,16 +82,17 @@ int session_process(const char *from)
 		}
 
 /* Decrypt */
-		if (hydro_secretbox_decrypt(buf, buf, n, ++msg_id, "lkrg-net", kp_server.rx))
+		if (hydro_secretbox_decrypt(pbuf, pbuf, n, ++msg_id, "lkrg-net", kp_server.rx))
 			goto fail_data;
 		n -= hydro_secretbox_HEADERBYTES;
 
 /* Store */
-		char tvbuf[22];
-		snprintf(tvbuf, sizeof(tvbuf), "%llu,", (unsigned long long)tv.tv_sec * 1000000 + tv.tv_usec);
-		if (write_loop(fd, tvbuf, strlen(tvbuf)) != (ssize_t)strlen(tvbuf))
-			log_error("write");
-		if (write_loop(fd, buf, n) != n)
+		int m = snprintf((char *)buf, TIMESTAMP_SIZE, "%llu,", (unsigned long long)tv.tv_sec * 1000000 + tv.tv_usec);
+		if (m < 0 || m >= TIMESTAMP_SIZE)
+			continue; /* Shouldn't happen */
+		pbuf = &buf[TIMESTAMP_SIZE - m];
+		memmove(pbuf, buf, m);
+		if (write_loop(fd, pbuf, m + n) != m + n)
 			log_error("write");
 	}
 
