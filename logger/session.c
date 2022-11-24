@@ -86,6 +86,12 @@ int session_process(const char *from)
 			goto fail_data;
 		n -= hydro_secretbox_HEADERBYTES;
 
+/* Sanitize */
+		pbuf[n] = 0;
+		uint8_t *p = &pbuf[strspn((char *)pbuf, "0123456789,")];
+		if ((*p != '-' && *p != 'c') || p[1] != ';' || memchr(pbuf, '\n', n) != &pbuf[n - 1])
+			goto fail_data; /* Assumes no CONFIG_PRINTK_CALLER */
+
 /* Store */
 		int m = snprintf((char *)buf, TIMESTAMP_SIZE, "%llu,", (unsigned long long)tv.tv_sec * 1000000 + tv.tv_usec);
 		if (m < 0 || m >= TIMESTAMP_SIZE)
