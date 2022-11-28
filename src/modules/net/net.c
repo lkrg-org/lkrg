@@ -58,6 +58,13 @@ static char buf[TIMESTAMPS_MAX + 0x2000];
 static uint8_t ciphertext[4 + sizeof(buf) + hydro_secretbox_HEADERBYTES];
 static size_t buf_resend_size;
 
+static void log_issue(int err)
+{
+	static DEFINE_RATELIMIT_STATE(state, 180 * HZ, 3);
+	if (___ratelimit(&state, "LKRG: ISSUE: Net: Rate limit"))
+		p_print_log(P_LOG_ISSUE, "Net: Connection error %d", err);
+}
+
 static void disconnect(void)
 {
 	if (sk) {
@@ -71,12 +78,14 @@ static bool try_send_raw(void *buf, size_t count);
 static void maybe_reconnect(void)
 {
 	struct sockaddr_in saddr = {};
+	int err;
 
 	if (sk)
 		return;
 
-	if (sock_create(PF_INET, SOCK_STREAM, IPPROTO_TCP, &sk) < 0) {
+	if ((err = sock_create(PF_INET, SOCK_STREAM, IPPROTO_TCP, &sk)) < 0) {
 		sk = NULL;
+		log_issue(err);
 		return;
 	}
 
@@ -85,12 +94,13 @@ static void maybe_reconnect(void)
 	saddr.sin_family = AF_INET;
 	saddr.sin_port = htons(net_server_port);
 	saddr.sin_addr.s_addr = net_server_addr_n;
-	switch (sk->ops->connect(sk, (struct sockaddr *)&saddr, sizeof(saddr), O_WRONLY)) {
+	switch ((err = sk->ops->connect(sk, (struct sockaddr *)&saddr, sizeof(saddr), O_WRONLY))) {
 	case 0:
 	case -EINPROGRESS:
 		break;
 	default:
 		disconnect();
+		log_issue(err);
 		return;
 	}
 
@@ -114,6 +124,7 @@ static bool try_send_raw(void *buf, size_t count)
 		int sent = kernel_sendmsg(sk, &msg, &vec, 1, vec.iov_len);
 		if (sent <= 0) {
 			disconnect();
+			log_issue(sent);
 			return false;
 		}
 /*
