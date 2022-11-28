@@ -23,6 +23,8 @@
 
 #include "hydrogen/hydrogen.c"
 
+#include "../../p_lkrg_main.h"
+
 static char net_server_addr[16];
 module_param_string(net_server_addr, net_server_addr, sizeof(net_server_addr), 0);
 MODULE_PARM_DESC(net_server_addr, "log server IPv4 address");
@@ -274,19 +276,30 @@ static struct console lkrg_console = {
 
 void lkrg_register_net(void)
 {
-	if (!net_server_addr[0] || !net_server_pk[0] ||
-	    hydro_init() ||
-	    hydro_hex2bin(server_static_pk, sizeof(server_static_pk), net_server_pk, 64, NULL, NULL) != 32)
+	const char *end;
+
+	if (!net_server_addr[0])
 		return;
+
+	if (!in4_pton(net_server_addr, -1, (u8 *)&net_server_addr_n, -1, &end) || *end) {
+		p_print_log(P_LOG_FAULT, "Net: Can't parse 'net_server_addr'");
+		return;
+	}
+
+	if (!net_server_pk[0] ||
+	    hydro_init() /* Currently can't fail */ ||
+	    hydro_hex2bin(server_static_pk, sizeof(server_static_pk), net_server_pk, 64, NULL, NULL) != 32) {
+		p_print_log(P_LOG_FAULT, "Net: Can't parse 'net_server_pk'");
+		return;
+	}
 
 	kmsg_file = filp_open("/dev/kmsg", O_RDONLY | O_NONBLOCK, 0);
-
-	if (!kmsg_file)
+	if (!kmsg_file) {
+		p_print_log(P_LOG_FAULT, "Net: Can't open '/dev/kmsg'");
 		return;
+	}
 
 	kmsg_file->f_op->llseek(kmsg_file, 0, SEEK_END);
-
-	net_server_addr_n = in_aton(net_server_addr);
 
 	/* Optional, could also connect on first message */
 	maybe_reconnect();
