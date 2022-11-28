@@ -77,11 +77,16 @@ static bool try_send_raw(void *buf, size_t count);
 
 static void maybe_reconnect(void)
 {
+	static unsigned long last_time;
 	struct sockaddr_in saddr = {};
 	int err;
 
 	if (sk)
 		return;
+
+	if (last_time && jiffies - last_time < 10 * HZ)
+		return;
+	last_time = jiffies;
 
 	if ((err = sock_create(PF_INET, SOCK_STREAM, IPPROTO_TCP, &sk)) < 0) {
 		sk = NULL;
