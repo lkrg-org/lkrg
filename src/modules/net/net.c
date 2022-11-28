@@ -1,3 +1,7 @@
+#include "net.h"
+
+#ifdef LKRG_WITH_NET
+
 #include <linux/version.h>
 #include <linux/moduleparam.h>
 
@@ -299,3 +303,5 @@ void lkrg_deregister_net(void)
 		filp_close(kmsg_file, NULL);
 	disconnect();
 }
+
+#endif
