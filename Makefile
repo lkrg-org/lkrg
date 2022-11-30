@@ -31,6 +31,7 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/modules/hashing/p_lkrg_fast_hash.o \
                   src/modules/comm_channel/p_comm_channel.o \
                   src/modules/integrity_timer/p_integrity_timer.o \
+                  src/modules/integrity_timer/verify_kprobes/p_verify_kprobes.o \
                   src/modules/kmod/p_kmod.o \
                   src/modules/database/CPU.o \
                   src/modules/database/arch/x86/p_x86_metadata.o \
