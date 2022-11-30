@@ -18,6 +18,9 @@
 #ifndef P_LKRG_INTEGRITY_TIMER_H
 #define P_LKRG_INTEGRITY_TIMER_H
 
+/* Submodule for verifying kprobes */
+#include "verify_kprobes/p_verify_kprobes.h"
+
 #define p_alloc_offload()      kmem_cache_alloc(p_offload_cache, GFP_ATOMIC)
 #define p_free_offload(name)   kmem_cache_free(p_offload_cache, (void *)(name))
 

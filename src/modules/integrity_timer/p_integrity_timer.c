@@ -211,6 +211,12 @@ void p_check_integrity(struct work_struct *p_work) {
    p_tmp_hash = hash_from_CPU_data(p_tmp_cpus);
    p_read_cpu_unlock();
 
+   /* Verify kprobes now */
+   if (lkrg_verify_kprobes()) {
+      /* I'm hacked! ;( */
+      p_hack_check++;
+   }
+
    p_text_section_lock();
 
    /*
