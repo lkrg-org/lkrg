@@ -10,6 +10,9 @@ The following major changes have been made since LKRG 0.9.5:
  *) Add synchronization logic around sysctl updates and other module (un)loads
     (previously, some concurrent events of this sort could lead to a crash on
     attempting to write to our read-only page)
+ *) Test whether kretprobes work correctly at LKRG loading time and re-test
+    periodically (previously, LKRG would only detect disabling of kretprobes
+    after it's loaded, and only indirectly - through kernel code hash changes)
  *) Set kretprobes' maxactive based on actual number of possible logical CPUs
     (previously, we used a hard-coded value, which would more likely result in
     missed hook function invocations on systems with more CPUs)
