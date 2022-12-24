@@ -18,7 +18,7 @@ jobs:
               # Native focal package seems to be too old (v5) and not even
               # able to build images properly.
               run: |
-                  sudo python3 -m pip install git+https://github.com/systemd/mkosi.git
+                  sudo python3 -m pip install git+https://github.com/systemd/mkosi.git@v14
                   sudo sed -i 's/linux-generic/linux-virtual/' /usr/local/lib/python*/dist-packages/mkosi/__init__.py
                   sudo rm -f /dev/kvm
                   echo /usr/local/bin >> $GITHUB_PATH
