@@ -280,8 +280,8 @@ void p_check_integrity(struct work_struct *p_work) {
 
    if (p_db.kernel_stext.p_hash != p_tmp_hash) {
 #if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
-      char *p_str1 = (unsigned char *)p_db.kernel_stext.p_addr;
-      char *p_str2 = (unsigned char *)p_db.kernel_stext_copy;
+      unsigned char *p_str1 = (unsigned char *)p_db.kernel_stext.p_addr;
+      unsigned char *p_str2 = (unsigned char *)p_db.kernel_stext_copy;
       char p_eh_buf[0x100];
 #endif
       /* We detected core kernel .text corruption - we are hacked and can't recover */
