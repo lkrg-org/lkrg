@@ -62,7 +62,7 @@
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0) || \
     defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL)
  #if !P_LKRG_KERNEL_HAS_VAR_LEN_JUMP_LABEL || \
-     defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL)
+     (defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL) && RHEL_RELEASE_CODE < RHEL_RELEASE_VERSION(9,1))
 typedef struct _p_text_poke_loc {
     s32 rel_addr; /* addr := _stext + rel_addr */
     s32 rel32;
