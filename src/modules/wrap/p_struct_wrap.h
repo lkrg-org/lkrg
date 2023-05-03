@@ -88,7 +88,21 @@ static inline unsigned int p_get_gid(const kgid_t *p_from) {
 #endif
 
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 6)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
+
+static inline void *p_module_core(struct module *p_mod) {
+   return p_mod->mem[MOD_TEXT].base;
+}
+
+static inline unsigned int p_init_text_size(struct module *p_mod) {
+   return p_mod->mem[MOD_INIT_TEXT].size;
+}
+
+static inline unsigned int p_core_text_size(struct module *p_mod) {
+   return p_mod->mem[MOD_TEXT].size;
+}
+
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 6)
 
 #if defined(CONFIG_GRKERNSEC)
 
@@ -177,7 +191,37 @@ static inline struct static_key *p_jump_entry_key(const struct jump_entry *entry
 #if defined(CONFIG_DYNAMIC_DEBUG)
 static inline int p_ddebug_remove_module(const char *p_name) {
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
+/*
+ * Starting from the following commit:
+ * https://github.com/torvalds/linux/commit/7deabd67498869640c937c9bd83472574b7dea0b
+ *
+ * 'ddebug_remove_module' is not exported anymore and defined as 'static'.
+ * However, we can implement the same logic by hand.
+ */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
+
+   struct p_ddebug_table {
+       struct list_head link, maps;
+       const char *mod_name;
+       unsigned int num_ddebugs;
+       struct _ddebug *ddebugs;
+   };
+
+   struct p_ddebug_table *dt, *nextdt;
+   int p_ret = -ENOENT;
+
+   list_for_each_entry_safe(dt, nextdt, P_SYM(p_ddebug_tables), link) {
+      if (dt->mod_name == p_name) {
+         list_del_init(&dt->link);
+         kfree(dt);
+         p_ret = 0;
+         break;
+      }
+   }
+
+   return p_ret;
+
+#elif LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
 
    return ddebug_remove_module(p_name);
 

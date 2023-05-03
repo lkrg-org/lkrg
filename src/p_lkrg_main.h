@@ -242,7 +242,7 @@ typedef struct _p_lkrg_global_symbols_structure {
 #if defined(CONFIG_DYNAMIC_DEBUG)
    struct list_head *p_ddebug_tables;
    struct mutex *p_ddebug_lock;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(6, 4, 0)
    int (*p_ddebug_remove_module)(const char *p_name);
 #endif
 #endif

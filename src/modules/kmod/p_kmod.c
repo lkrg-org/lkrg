@@ -30,7 +30,7 @@ int p_kmod_init(void) {
 #if defined(CONFIG_DYNAMIC_DEBUG)
    P_SYM_INIT(ddebug_tables, struct list_head *)
    P_SYM_INIT(ddebug_lock, struct mutex *)
- #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(6, 4, 0)
    P_SYM_INIT(ddebug_remove_module, int(*)(const char *))
  #endif
 #endif
@@ -50,7 +50,7 @@ int p_kmod_init(void) {
    p_debug_log(P_LOG_DEBUG, "<p_kmod_init> "
 #if defined(CONFIG_DYNAMIC_DEBUG)
                         "p_ddebug_tables[0x%lx] p_ddebug_lock[0x%lx] "
- #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(6, 4, 0)
                         "p_ddebug_remove_module[0x%lx]"
  #endif
 #endif
@@ -59,7 +59,7 @@ int p_kmod_init(void) {
 #if defined(CONFIG_DYNAMIC_DEBUG)
                                                             (unsigned long)P_SYM(p_ddebug_tables),
                                                             (unsigned long)P_SYM(p_ddebug_lock),
- #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(6, 4, 0)
                                                             (unsigned long)P_SYM(p_ddebug_remove_module),
  #endif
 #endif
