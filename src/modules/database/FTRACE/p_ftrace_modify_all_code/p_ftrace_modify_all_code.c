@@ -207,10 +207,10 @@ int p_install_ftrace_modify_all_code_hook(void) {
 
    int p_tmp;
 
-   P_SYM_INIT(ftrace_lock, struct mutex *)
-   P_SYM_INIT(ftrace_rec_iter_start, struct ftrace_rec_iter *(*)(void))
-   P_SYM_INIT(ftrace_rec_iter_next, struct ftrace_rec_iter *(*)(struct ftrace_rec_iter *))
-   P_SYM_INIT(ftrace_rec_iter_record, struct dyn_ftrace *(*)(struct ftrace_rec_iter *))
+   P_SYM_INIT(ftrace_lock)
+   P_SYM_INIT(ftrace_rec_iter_start)
+   P_SYM_INIT(ftrace_rec_iter_next)
+   P_SYM_INIT(ftrace_rec_iter_record)
 
    p_ftrace_modify_all_code_kretprobe.maxactive = p_get_kprobe_maxactive();
    if ( (p_tmp = register_kretprobe(&p_ftrace_modify_all_code_kretprobe)) != 0) {

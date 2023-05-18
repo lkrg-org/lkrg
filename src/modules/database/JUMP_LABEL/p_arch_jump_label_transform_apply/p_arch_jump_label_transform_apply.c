@@ -247,8 +247,8 @@ int p_install_arch_jump_label_transform_apply_hook(void) {
 
    int p_tmp;
 
-   P_SYM_INIT(tp_vec, struct text_poke_loc **)
-   P_SYM_INIT(tp_vec_nr, int *)
+   P_SYM_INIT(tp_vec)
+   P_SYM_INIT(tp_vec_nr)
 
 // DEBUG
    p_debug_log(P_LOG_DEBUG, "<p_install_arch_jump_label_transform_apply_hook> "

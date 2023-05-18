@@ -319,8 +319,8 @@ extern p_ro_page p_ro;
 #define P_CTRL(p_field) p_ro.p_lkrg_global_ctrl.ctrl.p_field
 #define P_CTRL_ADDR &p_ro.p_lkrg_global_ctrl
 
-#define P_SYM_INIT(sym, type) \
-   if (!(P_SYM(p_ ## sym) = (type)P_SYM(p_kallsyms_lookup_name)(#sym))) { \
+#define P_SYM_INIT(sym) \
+   if (!(P_SYM(p_ ## sym) = (typeof(P_SYM(p_ ## sym)))P_SYM(p_kallsyms_lookup_name)(#sym))) { \
       p_print_log(P_LOG_FATAL, "Can't find '" #sym "'"); \
       goto p_sym_error; \
    }

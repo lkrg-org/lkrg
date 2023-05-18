@@ -189,8 +189,8 @@ int p_create_database(void) {
 
    memset(&p_db,0,sizeof(p_hash_database));
 
-   P_SYM_INIT(jump_label_mutex, struct mutex *)
-   P_SYM_INIT(text_mutex, struct mutex *)
+   P_SYM_INIT(jump_label_mutex)
+   P_SYM_INIT(text_mutex)
 
    /*
     * First gather information about CPUs in the system - CRITICAL !!!

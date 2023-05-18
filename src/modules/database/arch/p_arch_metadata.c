@@ -40,7 +40,7 @@ void p_dump_CPU_metadata(void *_p_arg) {
 
 int p_register_arch_metadata(void) {
 
-   P_SYM_INIT(core_kernel_text, int (*)(unsigned long))
+   P_SYM_INIT(core_kernel_text)
 
 #ifdef P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
 
