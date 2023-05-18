@@ -28,19 +28,19 @@
 int p_kmod_init(void) {
 
 #if defined(CONFIG_DYNAMIC_DEBUG)
-   P_SYM_INIT(ddebug_tables, struct list_head *)
-   P_SYM_INIT(ddebug_lock, struct mutex *)
+   P_SYM_INIT(ddebug_tables)
+   P_SYM_INIT(ddebug_lock)
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(6, 4, 0)
-   P_SYM_INIT(ddebug_remove_module, int(*)(const char *))
+   P_SYM_INIT(ddebug_remove_module)
  #endif
 #endif
 
-   P_SYM_INIT(modules, struct list_head *)
-   P_SYM_INIT(module_kset, struct kset **)
+   P_SYM_INIT(modules)
+   P_SYM_INIT(module_kset)
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,12,0)
-   P_SYM_INIT(module_mutex, struct mutex *)
-   P_SYM_INIT(find_module, struct module* (*)(const char *))
+   P_SYM_INIT(module_mutex)
+   P_SYM_INIT(find_module)
 #else
    P_SYM(p_module_mutex)     = (struct mutex *)&module_mutex;
    P_SYM(p_find_module)      = (struct module* (*)(const char *))find_module;

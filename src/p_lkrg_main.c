@@ -430,17 +430,17 @@ static int __init p_lkrg_register(void) {
       return P_LKRG_GENERAL_ERROR;
    }
 
-   P_SYM_INIT(freeze_processes, int (*)(void))
-   P_SYM_INIT(thaw_processes, void (*)(void))
+   P_SYM_INIT(freeze_processes)
+   P_SYM_INIT(thaw_processes)
 #if defined(CONFIG_X86) && LINUX_VERSION_CODE >= KERNEL_VERSION(5,8,0)
-   P_SYM_INIT(native_write_cr4, void (*)(unsigned long))
+   P_SYM_INIT(native_write_cr4)
 #endif
 #ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
-   P_SYM_INIT(__module_address, struct module *(*)(unsigned long))
-   P_SYM_INIT(__module_text_address, struct module *(*)(unsigned long))
+   P_SYM_INIT(__module_address)
+   P_SYM_INIT(__module_text_address)
 #endif
 #if defined(CONFIG_OPTPROBES)
-   P_SYM_INIT(wait_for_kprobe_optimizer, void (*)(void))
+   P_SYM_INIT(wait_for_kprobe_optimizer)
 #endif
 
    // Freeze all non-kernel processes
@@ -500,22 +500,22 @@ static int __init p_lkrg_register(void) {
    p_cpu = 1;
 
 #if !defined(CONFIG_ARM64)
-   P_SYM_INIT(flush_tlb_all, void (*)(void))
+   P_SYM_INIT(flush_tlb_all)
 #endif
 
 #if defined(P_KERNEL_AGGRESSIVE_INLINING)
-   P_SYM_INIT(set_memory_ro, int (*)(unsigned long, int))
-   P_SYM_INIT(set_memory_rw, int (*)(unsigned long, int))
+   P_SYM_INIT(set_memory_ro)
+   P_SYM_INIT(set_memory_rw)
 
  #if defined(CONFIG_ARM64)
-   P_SYM_INIT(set_memory_valid, int (*)(unsigned long, int, int))
+   P_SYM_INIT(set_memory_valid)
  #endif
 
 #else
  #if defined(CONFIG_X86)
-   P_SYM_INIT(change_page_attr_set_clr, int (*)(unsigned long *, int, pgprot_t, pgprot_t, int, int, struct page **))
+   P_SYM_INIT(change_page_attr_set_clr)
  #elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)
-   P_SYM_INIT(change_memory_common, int (*)(unsigned long, int, pgprot_t, pgprot_t))
+   P_SYM_INIT(change_memory_common)
  #else
    p_print_log(P_LOG_FATAL, "Unsupported platform");
    p_ret = P_LKRG_GENERAL_ERROR;
