@@ -4,13 +4,13 @@ Upstream-Contact: Adam 'pi3' Zabrocki <pi3@pi3.com.pl>
 Source: https://lkrg.org
 
 Files: *
-Copyright: 2015-2021 Adam 'pi3' Zabrocki <pi3@pi3.com.pl>
-           2020-2021 Mariusz Zaborski
-           2020 Solar Designer
+Copyright: 2015-2023 Adam 'pi3' Zabrocki <pi3@pi3.com.pl>
+           2020-2023 Mariusz Zaborski
+           2020-2023 Solar Designer
 License: GPL-2.0
 
 Files: debian/*
-Copyright: 2020-2021 Mikhail Morfikov <mmorfikov@gmail.com>
+Copyright: 2020-2023 Mikhail Morfikov <mmorfikov@gmail.com>
 License: GPL-2.0
 
 Files: scripts/copy-builtin.sh
