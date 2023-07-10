@@ -197,7 +197,8 @@ If everything is right, you should get similar output to the following:
 
 Please refer to the previous two sections for how to start the LKRG service or
 have it started on system bootup.  If you wish to use the unit/init file, you
-must install it manually.
+must install it manually, e.g., by running the `lkrg-bootup.sh` script
+located under `scripts/bootup/` with the `install` subcommand (as root).
 
 
 Uninstalling
