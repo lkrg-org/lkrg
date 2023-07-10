@@ -1,7 +1,7 @@
 Linux Kernel Runtime Guard (LKRG)
-Copyright (c) 2015-2022 Adam 'pi3' Zabrocki
+Copyright (c) 2015-2023 Adam 'pi3' Zabrocki
 Copyright (c) 2020-2022 Mariusz Zaborski
-Copyright (c) 2020-2022 Solar Designer
+Copyright (c) 2020-2023 Solar Designer
 
 scripts/copy-builtin.sh, scripts/add-exports.sh
 Copyright (c) 2021-2022 RageLtMan
