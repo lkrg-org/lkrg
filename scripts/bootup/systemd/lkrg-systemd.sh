@@ -6,8 +6,11 @@
 #  - Adam 'pi3' Zabrocki (http://pi3.com.pl)
 ##
 
+set -eu
+
 P_SYSCTL_DIR="/etc/sysctl.d"
 P_SYSTEMD_DIR="/etc/systemd/system"
+P_SCRIPT_DIR="$(dirname "$0")"
 
 
 P_RED='\033[0;31m'
@@ -15,6 +18,16 @@ P_GREEN='\033[0;32m'
 P_WHITE='\033[1;37m'
 P_YL='\033[1;33m'
 P_NC='\033[0m' # No Color
+
+if [ $# -ne 1 ]; then
+	echo "Usage: $0 (install|uninstall)" >&2
+	exit 1
+fi
+
+if [ "$(id -u)" -ne 0 ]; then
+	echo "Please run as root." >&2
+	exit 1
+fi
 
 echo -e "  ${P_GREEN}[+] ${P_WHITE}Systemd detected${P_NC}"
 
@@ -24,7 +37,7 @@ if [ "$1" == "install" ]; then
 		exit 1
 	else
 		echo -e "       ${P_GREEN}Installing ${P_YL}lkrg.service${P_GREEN} file under ${P_YL}$P_SYSTEMD_DIR${P_GREEN} directory${P_NC}"
-		install -pm 644 -o root -g root scripts/bootup/systemd/lkrg.service "$P_SYSTEMD_DIR/lkrg.service"
+		install -pm 644 -o root -g root "${P_SCRIPT_DIR}/lkrg.service" "${P_SYSTEMD_DIR}/lkrg.service"
 		echo -e "       ${P_GREEN}To start ${P_YL}lkrg.service${P_GREEN} please use: ${P_YL}systemctl start lkrg${P_NC}"
 		echo -e "       ${P_GREEN}To enable ${P_YL}lkrg.service${P_GREEN} on bootup please use: ${P_YL}systemctl enable lkrg.service${P_NC}"
 	fi
@@ -32,7 +45,7 @@ if [ "$1" == "install" ]; then
 		echo -e "       ${P_YL}01-lkrg.conf${P_GREEN} is already installed, skipping${P_NC}"
 	else
 		echo -e "       ${P_GREEN}Installing ${P_YL}01-lkrg.conf${P_GREEN} file under ${P_YL}$P_SYSCTL_DIR${P_GREEN} directory${P_NC}"
-		install -pm 644 -o root -g root scripts/bootup/lkrg.conf "$P_SYSCTL_DIR/01-lkrg.conf"
+		install -pm 644 -o root -g root "${P_SCRIPT_DIR}/../lkrg.conf" "${P_SYSCTL_DIR}/01-lkrg.conf"
 	fi
 elif [ "$1" == "uninstall" ]; then
 	echo -e "       ${P_GREEN}Stopping ${P_YL}lkrg.service${P_NC}"
@@ -41,7 +54,7 @@ elif [ "$1" == "uninstall" ]; then
 	systemctl disable lkrg.service
 	echo -e "       ${P_GREEN}Deleting ${P_YL}lkrg.service${P_GREEN} file from ${P_YL}$P_SYSTEMD_DIR${P_GREEN} directory${P_NC}"
 	rm "$P_SYSTEMD_DIR/lkrg.service"
-	if cmp -s "$P_SYSCTL_DIR/01-lkrg.conf" scripts/bootup/lkrg.conf; then
+	if cmp -s "$P_SYSCTL_DIR/01-lkrg.conf" "${P_SCRIPT_DIR}/../lkrg.conf"; then
 		echo -e "       ${P_GREEN}Deleting unmodified ${P_YL}01-lkrg.conf${P_GREEN} file from ${P_YL}$P_SYSCTL_DIR${P_GREEN} directory${P_NC}"
 		rm "$P_SYSCTL_DIR/01-lkrg.conf"
 	elif [ -e "$P_SYSCTL_DIR/01-lkrg.conf" ]; then
