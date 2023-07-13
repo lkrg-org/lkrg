@@ -62,6 +62,7 @@ p_ro_page p_ro __p_lkrg_read_only = {
       .p_log_level = 3,                   // log_level
       .p_trigger = 0,                     // trigger
       .p_block_modules = 0,               // block_modules
+      .p_vaccinate = 1,                   // vaccinate
       .p_hide_lkrg = 0,                   // hide_lkrg
       .p_heartbeat = 0,                   // heartbeat
 #if defined(CONFIG_X86)
@@ -529,6 +530,10 @@ static int __init p_lkrg_register(void) {
       goto p_main_error;
    }
 
+   if (P_CTRL(p_vaccinate)) {
+      p_vaccinate();
+   }
+
    if (P_CTRL(p_hide_lkrg)) {
       p_hide_itself();
    }
@@ -615,6 +620,8 @@ static void __exit p_lkrg_deregister(void) {
       schedule();
 
    p_deregister_comm_channel();
+
+   p_devaccinate();
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)

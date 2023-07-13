@@ -50,6 +50,9 @@ static int p_hide_lkrg_min = 0;
 static int p_hide_lkrg_max = 1;
 #endif
 
+static int p_vaccinate_min = 0;
+static int p_vaccinate_max = 1;
+
 static int p_heartbeat_min = 0;
 static int p_heartbeat_max = 1;
 
@@ -110,6 +113,8 @@ static int p_sysctl_trigger(struct ctl_table *p_table, int p_write,
 static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
                          void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #endif
+static int p_sysctl_vaccinate(struct ctl_table *p_table, int p_write,
+                         void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 static int p_sysctl_heartbeat(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #if defined(CONFIG_X86)
@@ -136,6 +141,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
                                      void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
                                     void __user *p_buffer, size_t *p_len, loff_t *p_pos);
+
 
 
 struct ctl_table p_lkrg_sysctl_base[] = {
@@ -231,6 +237,15 @@ struct ctl_table p_lkrg_sysctl_table[] = {
       .extra2         = &p_hide_lkrg_max,
    },
 #endif
+   {
+      .procname       = "vaccinate",
+      .data           = &P_CTRL(p_vaccinate),
+      .maxlen         = sizeof(unsigned int),
+      .mode           = 0600,
+      .proc_handler   = p_sysctl_vaccinate,
+      .extra1         = &p_vaccinate_min,
+      .extra2         = &p_vaccinate_max,
+   },
    {
       .procname       = "heartbeat",
       .data           = &P_CTRL(p_heartbeat),
@@ -582,6 +597,28 @@ static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 #endif
+
+static int p_sysctl_vaccinate(struct ctl_table *p_table, int p_write,
+                         void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
+
+   int p_ret;
+   unsigned int p_tmp;
+
+   p_tmp = P_CTRL(p_vaccinate);
+   p_lkrg_open_rw();
+   if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
+      if (P_CTRL(p_vaccinate)) {
+         P_CTRL(p_vaccinate) = p_tmp; // Restore previous state - for sync
+         p_vaccinate(); // vaccinate kernel!
+      } else {
+         P_CTRL(p_vaccinate) = p_tmp; // Restore previous state - for sync
+         p_devaccinate(); // devaccinate kernel!
+      }
+   }
+   p_lkrg_close_rw();
+
+   return p_ret;
+}
 
 static int p_sysctl_heartbeat(struct ctl_table *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
