@@ -138,15 +138,6 @@ static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
                                     void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 
 
-struct ctl_table p_lkrg_sysctl_base[] = {
-   {
-      .procname    = "lkrg",
-      .mode        = 0600,
-      .child       = p_lkrg_sysctl_table,
-   },
-   { }
-};
-
 struct ctl_table p_lkrg_sysctl_table[] = {
    {
       .procname       = "kint_validate",
@@ -1265,7 +1256,7 @@ static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
 
 int p_register_comm_channel(void) {
 
-   if ( (p_sysctl_handle = register_sysctl_table(p_lkrg_sysctl_base)) == NULL) {
+   if ( (p_sysctl_handle = register_sysctl("lkrg", p_lkrg_sysctl_table)) == NULL) {
       return P_LKRG_GENERAL_ERROR;
    }
 
