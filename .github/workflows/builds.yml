@@ -25,16 +25,16 @@ jobs:
                     - image: registry.opensuse.org/opensuse/tumbleweed
                       run: zypper -n install -y gcc make kernel-default-devel awk
                     - image: registry.opensuse.org/opensuse/leap
-                      run: zypper -n install -y gcc make kernel-default-devel
+                      run: zypper -n install -y gcc make kernel-default-devel tar gzip
 
         container:
             image: ${{ matrix.image }}
             options: --security-opt seccomp=unconfined
 
         steps:
-            - uses: actions/checkout@v1
             - run: cat /etc/os-release
             - run: ${{ matrix.run }}
+            - uses: actions/checkout@v3
             - run: make -j$(nproc) KERNELRELEASE=$(cd /lib/modules; ls)
 
 # vim: sw=4

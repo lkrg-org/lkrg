@@ -30,14 +30,14 @@ jobs:
                       install: qemu-system-arm
 
         steps:
-            - uses: docker/setup-qemu-action@v1
+            - uses: docker/setup-qemu-action@v2
             - run: sudo apt-get update
               # It's possible to update QEMU to (6.0) on focal (ubuntu-20.04) with
               #   add-apt-repository ppa:canonical-server/server-backports
               # but this is still not enough to boot & power-off raspi2b properly.
             - run: sudo apt-get install -y qemu-utils e2fsprogs expect ${{ matrix.install }}
 
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v3
             - name: Enable LKRG debugging options
               run: |
                   sed -i '/P_LKRG_JUMP_LABEL_STEXT_DEBUG/s/\/\///' src/modules/print_log/p_lkrg_print_log.h

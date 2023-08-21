@@ -13,7 +13,7 @@ jobs:
                     - focal
                     - jammy
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
             - run: sudo apt-get update
             - run: sudo apt-get install -y debootstrap qemu-system-x86 systemd-container expect
             - name: Install mkosi from git
