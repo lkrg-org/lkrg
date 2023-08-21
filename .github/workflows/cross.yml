@@ -29,8 +29,8 @@ jobs:
                     - image: i386/ubuntu:bionic
                       packages: libelf-dev linux-headers-generic
         steps:
-            - uses: docker/setup-qemu-action@v1
-            - uses: actions/checkout@v1
+            - uses: docker/setup-qemu-action@v2
+            - uses: actions/checkout@v3
             - name: Create Dockerfile
               run: |
                   cat <<EOF >Dockerfile
