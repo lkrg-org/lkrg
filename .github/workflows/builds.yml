@@ -22,9 +22,9 @@ jobs:
                       run: dnf install -y kernel-devel kernel gcc make elfutils-libelf-devel
                     - image: alt:sisyphus
                       run: apt-get update; apt-get install -y kernel-headers-modules-un-def gcc make libelf-devel
-                    - image: opensuse/tumbleweed
+                    - image: registry.opensuse.org/opensuse/tumbleweed
                       run: zypper -n install -y gcc make kernel-default-devel awk
-                    - image: opensuse/leap
+                    - image: registry.opensuse.org/opensuse/leap
                       run: zypper -n install -y gcc make kernel-default-devel
 
         container:
