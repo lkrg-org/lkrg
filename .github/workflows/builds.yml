@@ -23,7 +23,7 @@ jobs:
                     - image: alt:sisyphus
                       run: apt-get update; apt-get install -y kernel-headers-modules-un-def gcc make libelf-devel
                     - image: opensuse/tumbleweed
-                      run: zypper -n install -y gcc make kernel-default-devel
+                      run: zypper -n install -y gcc make kernel-default-devel awk
                     - image: opensuse/leap
                       run: zypper -n install -y gcc make kernel-default-devel
 
