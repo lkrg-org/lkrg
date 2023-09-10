@@ -9,7 +9,9 @@ on top of a wide range of mainline and distros' kernels, without needing to
 patch those.  We currently support kernel versions ranging from as far back as
 RHEL7's (and its many clones/revisions) and Ubuntu 16.04's to latest mainline
 and distros' kernels.  We've tested this revision of LKRG with Linux kernels
-up to and including 6.1.
+up to and including 6.5, and slightly beyond.  Our latest release, LKRG 0.9.6,
+works on kernels up to 6.3 inclusive (but not 6.4+ nor latest RHEL 9 kernels,
+for which you need this git revision of LKRG).
 
 LKRG currently supports the x86-64, 32-bit x86, AArch64 (ARM64), and 32-bit ARM
 CPU architectures.
