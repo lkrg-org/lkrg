@@ -1,4 +1,4 @@
-The following major changes have been since LKRG 0.9.6:
+The following major changes have been made between LKRG 0.9.6 and 0.9.7:
 
  *) Support new mainline kernels 6.4 to 6.5.x, and hopefully beyond
  *) Support new RHEL 9.1 and 9.2 kernels, and hopefully beyond

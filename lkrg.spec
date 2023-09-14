@@ -4,7 +4,7 @@
 
 Summary: Linux Kernel Runtime Guard (LKRG)
 Name: lkrg
-Version: 0.9.6
+Version: 0.9.7
 Release: 1%{?dist}
 License: GPLv2
 URL: https://lkrg.org
@@ -55,7 +55,7 @@ echo 'To enable LKRG on bootup please use: systemctl enable lkrg'
 %_sysconfdir/sysctl.d/*
 
 %changelog
-* Wed Sep 13 2023 Solar Designer <solar@openwall.com> 0.9.6-1
+* Thu Sep 14 2023 Solar Designer <solar@openwall.com> 0.9.7-1
 - Wrote this rough RPM spec file for Red Hat'ish distros, seems to work fine on
 RHEL 7, 8, 9 rebuilds, but is only reliable when there's exactly one
 kernel-devel package installed at build time and it exactly matches the target
