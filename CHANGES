@@ -2,8 +2,10 @@ The following major changes have been since LKRG 0.9.6:
 
  *) Support new mainline kernels 6.4 to 6.5.x, and hopefully beyond
  *) Support new RHEL 9.1 and 9.2 kernels, and hopefully beyond
- *) Bootup script changes
+ *) Add RPM spec file for Red Hat'ish distros (usable via "rpmbuild -tb" on our
+    release tarball)
  *) Add Arch Linux's /usr/bin/modprobe path to usermodehelper allow list
+ *) Bootup script changes
  *) Continuous Integration updates
 
 
