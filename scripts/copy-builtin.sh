@@ -65,7 +65,7 @@ echo "and Makefile"
 echo "$MAKEFILE"
 echo "Commit msg: $COMMIT"
 echo "Ctrl+c to quit, any other key to continue"
-read CANCEL
+#removed
 # Execute copy
 mkdir -p "$LDIR"
 echo "$KCONFIG" > "$LDIR/Kconfig"
