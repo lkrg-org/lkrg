@@ -95,8 +95,12 @@ int hash_from_kernel_rodata(void) {
 
 #if !defined(CONFIG_GRKERNSEC)
 
-   p_db.kernel_rodata.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_rodata.p_addr,
-                                                (unsigned int)p_db.kernel_rodata.p_size);
+   if(p_db.kernel_rodata.p_size != 0x0) {
+      p_db.kernel_rodata.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_rodata.p_addr,
+                                                   (unsigned int)p_db.kernel_rodata.p_size);
+   } else {
+      p_db.kernel_rodata.p_hash = 0xFFFFFFFF;
+   }
 
 #else
 

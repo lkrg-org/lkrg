@@ -30,7 +30,7 @@ notrace uint64_t p_lkrg_fast_hash(const char *p_data, unsigned int p_len) {
 
    uint64_t p_tmp = 0;
 
-   p_lkrg_siphash(p_data, p_len, (uint8_t *)&p_global_siphash_key, (uint8_t *)&p_tmp, sizeof(p_tmp));
+   p_lkrg_siphash((uint8_t *)p_data, p_len, (uint8_t *)&p_global_siphash_key, (uint8_t *)&p_tmp, sizeof(p_tmp));
    return p_tmp;
 }
 
