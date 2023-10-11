@@ -137,6 +137,8 @@
    case P_LOG_FLOOD:                                                                       \
       p_print_ret = printk(KERN_DEBUG   P_LKRG_SIGNATURE "FLOOD: " p_fmt "\n", ## p_args); \
       break;                                                                               \
+   default:                                                                                \
+      break;                                                                               \
    }                                                                                       \
                                                                                            \
    p_print_ret;                                                                            \

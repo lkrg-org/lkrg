@@ -78,6 +78,6 @@ typedef struct uint128_t {
 
 extern uint128_t p_global_siphash_key;
 
-uint64_t p_lkrg_fast_hash(const char *data, unsigned int len);
+uint64_t p_lkrg_fast_hash(const unsigned char *data, unsigned int len);
 
 #endif
