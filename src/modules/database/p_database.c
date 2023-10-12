@@ -61,9 +61,15 @@ int hash_from_kernel_stext(void) {
    }
 
    p_db.kernel_stext.p_size = (unsigned long)(p_tmp - (unsigned long)p_db.kernel_stext.p_addr);
-   p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext.p_addr,
-                                               (unsigned int)p_db.kernel_stext.p_size);
 
+   if(p_db.kernel_stext.p_size != 0) {
+      p_db.kernel_stext.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext.p_addr,
+                                                (unsigned int)p_db.kernel_stext.p_size);
+   } else {
+      p_debug_log(P_LOG_DEBUG,
+          "hashing of _stext failed, is kptr_restrict set or CAP_SYSLOG missing?");
+      p_db.kernel_stext.p_hash = 0xFFFFFFFF;
+   }
 
 #if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
    if (!p_db.kernel_stext_copy) {
@@ -106,7 +112,7 @@ int hash_from_kernel_rodata(void) {
                                                    (unsigned int)p_db.kernel_rodata.p_size);
    } else {
       p_debug_log(P_LOG_DEBUG,
-          "hashing of _rodata failed, is kptr_restrict set or CAP_SYSLOG missing?"
+          "hashing of _rodata failed, is kptr_restrict set or CAP_SYSLOG missing?");
       p_db.kernel_rodata.p_hash = 0xFFFFFFFF;
    }
 
@@ -140,23 +146,25 @@ int hash_from_iommu_table(void) {
 
 
 #ifdef P_LKRG_IOMMU_HASH_ENABLED
-   p_db.kernel_iommu_table.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_iommu_table.p_addr,
+
+   if(p_db.kernel_iommu_table.p_size != 0) {
+      p_db.kernel_iommu_table.p_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_iommu_table.p_addr,
                                                      (unsigned int)p_db.kernel_iommu_table.p_size);
+   } else {
+      p_debug_log(P_LOG_DEBUG,
+          "hashing of iommu failed, is kptr_restrict set or CAP_SYSLOG missing?");
+      p_db.kernel_iommu_table.p_hash = 0xFFFFFFFF;
+   }
+
+   p_debug_log(P_LOG_DEBUG,
+      "hash [0x%llx] __iommu_table start [0x%lx] size [0x%lx]",p_db.kernel_iommu_table.p_hash,
+                                                               (long)p_db.kernel_iommu_table.p_addr,
+                                                               (long)p_db.kernel_iommu_table.p_size);
+
 #else
 // Static value - might change in normal system...
    p_db.kernel_iommu_table.p_hash = 0xFFFFFFFF;
 #endif
-
-   if(p_db.kernel_iommu_table.p_size != 0) {
-      p_debug_log(P_LOG_DEBUG,
-            "hash [0x%llx] __iommu_table start [0x%lx] size [0x%lx]",p_db.kernel_iommu_table.p_hash,
-                                                                        (long)p_db.kernel_iommu_table.p_addr,
-                                                                        (long)p_db.kernel_iommu_table.p_size);
-   } else {
-      p_debug_log(P_LOG_DEBUG,
-          "hashing of iommu failed, is kptr_restrict set or CAP_SYSLOG missing?"
-      p_db.kernel_iommu_table.p_hash = 0xFFFFFFFF;
-   }
 
 #else
 
