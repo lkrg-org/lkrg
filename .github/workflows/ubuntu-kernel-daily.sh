@@ -8,6 +8,7 @@
 #
 
 baseurl="https://kernel.ubuntu.com/~kernel-ppa"
+baseurl="https://kernel.ubuntu.com"
 for listurl in \
 	"$baseurl/mainline/daily/" \
 	"$baseurl/mainline/"
