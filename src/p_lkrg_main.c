@@ -403,8 +403,7 @@ static int __init p_lkrg_register(void) {
    /*
     * Generate random SipHash key
     */
-   p_global_siphash_key.p_low  = (uint64_t)get_random_long();
-   p_global_siphash_key.p_high = (uint64_t)get_random_long();
+   p_lkrg_set_siphash_key();
 
    p_parse_module_params();
    P_SYM(p_find_me) = THIS_MODULE;

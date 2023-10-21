@@ -9,6 +9,7 @@ modules.order
 *.o.ur-safe
 *.o
 .cache.mk
+lkrg.mod
 
 # kcov
 *.gcno

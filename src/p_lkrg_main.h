@@ -391,6 +391,36 @@ static inline int p_lkrg_counter_lock_val_read(p_lkrg_counter_lock *p_arg) {
 /* End */
 
 /*
+ * siphash
+ */
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
+   #include <linux/siphash.h>
+
+   typedef siphash_key_t p_global_siphash_key_t;
+
+   extern p_global_siphash_key_t p_global_siphash_key;
+
+   static inline void p_lkrg_set_siphash_key() {
+      p_global_siphash_key.key[0]  = (uint64_t)get_random_long();
+      p_global_siphash_key.key[1]  = (uint64_t)get_random_long();
+   }
+
+#else
+   typedef uint128_t p_global_siphash_key_t;
+
+   extern p_global_siphash_key_t p_global_siphash_key;
+
+   static inline void p_lkrg_set_siphash_key() {
+      p_global_siphash_key.p_low  = (uint64_t)get_random_long();
+      p_global_siphash_key.p_high = (uint64_t)get_random_long();
+   }
+
+#endif
+
+
+
+/*
  * LKRG modules
  */
 #include "modules/print_log/p_lkrg_print_log.h"               // printing, error and debug module

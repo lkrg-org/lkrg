@@ -28,7 +28,7 @@ static struct kretprobe p_lkrg_dummy_kretprobe = {
     .entry_handler = p_lkrg_dummy_entry,
 };
 
-__attribute__((optimize(0)))
+__attribute__ ((optnone))
 noinline int lkrg_dummy(int arg) {
 
    p_debug_log(P_LOG_DEBUG,

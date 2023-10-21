@@ -21,7 +21,7 @@
 
 #include "../../p_lkrg_main.h"
 
-uint128_t p_global_siphash_key;
+p_global_siphash_key_t p_global_siphash_key;
 
 inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const uint8_t *k,
                            uint8_t *out, const size_t outlen);
@@ -30,10 +30,16 @@ notrace uint64_t p_lkrg_fast_hash(const unsigned char *p_data, unsigned int p_le
 
    uint64_t p_tmp = 0;
 
-   p_lkrg_siphash((uint8_t *)p_data, (size_t)p_len, (uint8_t *)&p_global_siphash_key, (uint8_t *)&p_tmp, sizeof(p_tmp));
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
+   p_tmp = siphash((const void *)p_data, (size_t)p_len, &p_global_siphash_key);
+ #else
+   p_lkrg_siphash((uint8_t *)p_data, (size_t)p_len, (uint8_t *)&p_global_siphash_key, (uint8_t *)&p_tmp, sizeof(p_tmp));  
+#endif
+
    return p_tmp;
 }
 
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(5, 6, 0)
 notrace inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const uint8_t *k,
                                    uint8_t *out, const size_t outlen) {
 
@@ -47,7 +53,7 @@ notrace inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const 
    int i;
    const uint8_t *end = in + inlen - (inlen % 8);
    const uint8_t left = inlen & 7;
-   uint64_t b = ((uint64_t)inlen) << 56;
+   uint64_t b = ((uint64_t)(inlen)) << 56;
    v3 ^= k1;
    v2 ^= k0;
    v1 ^= k1;
@@ -65,25 +71,25 @@ notrace inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const 
 
    switch (left) {
       case 7:
-         b |= ((uint64_t)end[6]) << 48;
+         b |= ((uint64_t)(end[6])) << 48;
          P_FALL_THROUGH;
       case 6:
-         b |= ((uint64_t)end[5]) << 40;
+         b |= ((uint64_t)(end[5])) << 40;
          P_FALL_THROUGH;
       case 5:
-         b |= ((uint64_t)end[4]) << 32;
+         b |= ((uint64_t)(end[4])) << 32;
          P_FALL_THROUGH;
       case 4:
-         b |= ((uint64_t)end[3]) << 24;
+         b |= ((uint64_t)(end[3])) << 24;
          P_FALL_THROUGH;
       case 3:
-         b |= ((uint64_t)end[2]) << 16;
+         b |= ((uint64_t)(end[2])) << 16;
          P_FALL_THROUGH;
       case 2:
-         b |= ((uint64_t)end[1]) << 8;
+         b |= ((uint64_t)(end[1])) << 8;
          P_FALL_THROUGH;
       case 1:
-         b |= ((uint64_t)end[0]);
+         b |= ((uint64_t)((end)[0]));
          break;
       case 0:
          break;
@@ -104,3 +110,4 @@ notrace inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const 
    b = v0 ^ v1 ^ v2 ^ v3;
    U64TO8_LE(out, b);
 }
+#endif

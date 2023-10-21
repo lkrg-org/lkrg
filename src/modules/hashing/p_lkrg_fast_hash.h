@@ -53,10 +53,10 @@ typedef struct uint128_t {
     U32TO8_LE((p) + 4, (uint32_t)((v) >> 32));
 
 #define U8TO64_LE(p)                                                           \
-    (((uint64_t)((p)[0])) | ((uint64_t)((p)[1]) << 8) |                        \
-     ((uint64_t)((p)[2]) << 16) | ((uint64_t)((p)[3]) << 24) |                 \
-     ((uint64_t)((p)[4]) << 32) | ((uint64_t)((p)[5]) << 40) |                 \
-     ((uint64_t)((p)[6]) << 48) | ((uint64_t)((p)[7]) << 56))
+    (((uint64_t)(p[0])) | ((uint64_t)(p[1]) << 8) |                        \
+     ((uint64_t)(p[2]) << 16) | ((uint64_t)(p[3]) << 24) |                 \
+     ((uint64_t)(p[4]) << 32) | ((uint64_t)(p[5]) << 40) |                 \
+     ((uint64_t)(p[6]) << 48) | ((uint64_t)(p[7]) << 56))
 
 #define SIPROUND                                                               \
     do {                                                                       \
@@ -76,7 +76,7 @@ typedef struct uint128_t {
         v2 = ROTL(v2, 32);                                                     \
     } while (0)
 
-extern uint128_t p_global_siphash_key;
+extern p_global_siphash_key_t p_global_siphash_key;
 
 uint64_t p_lkrg_fast_hash(const unsigned char *data, unsigned int len);
 
