@@ -142,8 +142,7 @@ for OpenRC:
 
 for other:
 
-  sudo -s 
-  modprobe -v lkrg
+  sudo modprobe -v lkrg
 
 
 Autoload on bootup
