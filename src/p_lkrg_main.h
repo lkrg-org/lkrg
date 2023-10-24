@@ -392,9 +392,10 @@ static inline int p_lkrg_counter_lock_val_read(p_lkrg_counter_lock *p_arg) {
 
 /*
  * siphash
+ * introduced into the linux kernel with 4.1.1 rc1 on 1/9/2017
  */
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 1)
    #include <linux/siphash.h>
 
    typedef siphash_key_t p_global_siphash_key_t;
