@@ -295,7 +295,7 @@ void p_check_integrity(struct work_struct *p_work) {
       for (p_tmp = 0; p_tmp < p_db.kernel_stext.p_size; p_tmp++) {
          if (p_str2[p_tmp] != p_str1[p_tmp]) {
             sprint_symbol_no_offset(p_eh_buf,(unsigned long)((unsigned long)p_db.kernel_stext.p_addr+(unsigned long)p_tmp));
-            p_print_log(P_LOG_WATCH, "copy[0x%x] vs now[0x%x] offset[%d | 0x%x] symbol[%s]",
+            p_print_log(P_LOG_ISSUE, "copy[0x%x] vs now[0x%x] offset[%d | 0x%x] symbol[%s]",
                    p_str2[p_tmp],
                    p_str1[p_tmp],
                    p_tmp,
