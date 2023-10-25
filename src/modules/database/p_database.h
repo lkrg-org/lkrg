@@ -205,6 +205,7 @@ static inline void p_text_section_lock(void) {
    mutex_lock(P_SYM(p_module_mutex));
    while (mutex_is_locked(P_SYM(p_jump_label_mutex)))
       schedule();
+   mutex_lock(P_SYM(p_tracepoints_mutex));
 #if defined(P_LKRG_CI_ARCH_STATIC_CALL_TRANSFORM_H)
    do {
       p_lkrg_counter_lock_lock(&p_static_call_spinlock, &p_text_flags);
@@ -225,6 +226,7 @@ static inline void p_text_section_unlock(void) {
 #if defined(P_LKRG_CI_ARCH_STATIC_CALL_TRANSFORM_H)
    p_lkrg_counter_lock_val_dec(&p_static_call_spinlock);
 #endif
+   mutex_unlock(P_SYM(p_tracepoints_mutex));
    /* Release the 'module_mutex' */
    mutex_unlock(P_SYM(p_module_mutex));
 #if defined(CONFIG_DYNAMIC_FTRACE)

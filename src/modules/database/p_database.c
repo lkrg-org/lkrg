@@ -191,6 +191,7 @@ int p_create_database(void) {
 
    P_SYM_INIT(jump_label_mutex)
    P_SYM_INIT(text_mutex)
+   P_SYM_INIT(tracepoints_mutex)
 
    /*
     * First gather information about CPUs in the system - CRITICAL !!!
