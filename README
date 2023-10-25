@@ -53,19 +53,22 @@ To build LKRG, you will need the following software:
 
 - GNU make
 
-- A C compiler (ideally, the same that was used to build the kernel itself)
+- GCC, ideally the same version of it that was used to build the kernel itself
+  (some people manage with clang, but this is unsupported, so expect issues)
+
+- libelf, including its "development" sub-package, in case your target kernel
+  was built with CONFIG_UNWINDER_ORC=y
 
 - A kernel build directory corresponding to the Linux kernel image the module
-  is to run on.  For example, under Debian and Ubuntu, each linux-image package
-  containing a kernel binary has a corresponding linux-headers package with the
-  required build infrastructure, which you can install with:
+  is to run on.
 
-	sudo apt-get install linux-headers-$(uname -r)
+For example, under Debian and Ubuntu you can install all of these with:
 
-  Red Hat'ish (e.g. RHEL, CentOS, Fedora) distributions call this package
-  kernel-devel, which you can install with:
+	sudo apt-get install make gcc libelf-dev linux-headers-$(uname -r)
 
-	sudo yum install kernel-devel
+and under Red Hat'ish distributions (e.g. RHEL, CentOS, Fedora) with:
+
+	sudo yum install make gcc elfutils-libelf-devel kernel-devel
 
 (For documentation purposes, we prefix commands requiring root access with
 "sudo", but you may of course run them as root by different means.)
