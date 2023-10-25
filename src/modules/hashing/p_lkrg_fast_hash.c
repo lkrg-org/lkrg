@@ -51,8 +51,8 @@ notrace inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const 
    uint64_t k1 = U8TO64_LE(k + 8);
    uint64_t m;
    int i;
-   const uint8_t *end = in + inlen - (inlen % 8);
-   const uint8_t left = inlen & 7;
+   const uint8_t *end = in + inlen - (inlen % sizeof(uint64_t));
+   const uint8_t left = inlen & (sizeof(uint64_t) - 1);
    uint64_t b = ((uint64_t)(inlen)) << 56;
    v3 ^= k1;
    v2 ^= k0;
