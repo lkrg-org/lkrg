@@ -1,7 +1,10 @@
 The following major changes have been made since LKRG 0.9.7:
 
  *) RPM spec file improvements to make it work or properly fail in a wider set
-    of circumstances
+    of circumstances, and to use the "weak-modules" script if available so that
+    on RHEL and its rebuilds the same LKRG package build works across different
+    kABI-compatible kernel revisions/builds
+ *) More complete documentation of the build requirements
 
 
 The following major changes have been made between LKRG 0.9.6 and 0.9.7:
