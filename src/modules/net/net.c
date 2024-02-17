@@ -15,6 +15,7 @@
 #include <linux/inet.h>
 
 #include <linux/time.h>
+#include <linux/sched/clock.h> /* for local_clock() */
 
 #include <linux/mutex.h>
 #include <linux/workqueue.h>
@@ -49,12 +50,26 @@ static uint8_t server_static_pk[hydro_kx_PUBLICKEYBYTES];
 static uint8_t packet1[hydro_kx_N_PACKET1BYTES];
 static hydro_kx_session_keypair kp_client;
 
-#define TIMESTAMPS_MAX (20 + 1 + 20 + 1)
-#ifdef CONSOLE_EXT_LOG_MAX
-static char buf[TIMESTAMPS_MAX + CONSOLE_EXT_LOG_MAX];
+/*
+ * There are three cases:
+ * - Below 5.10: we don't need exact value, but it's 8192;
+ * - 5.10 to 6.2.x: we need exact value and it's 8192 and CONSOLE_EXT_LOG_MAX
+ *   is defined by the kernel (so we don't override);
+ * - 6.3+: we need exact value and it's actually PRINTK_MESSAGE_MAX 2048.
+ * We check for 5.10+ rather than 6.3+ in order to pick the right value on
+ * intermediary unreleased kernels between 6.2.x and 6.3 as well as with
+ * possible backports of the 6.3+ change to older-numbered kernel branches.
+ */
+#ifndef CONSOLE_EXT_LOG_MAX
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
+#define CONSOLE_EXT_LOG_MAX 2048
 #else
-static char buf[TIMESTAMPS_MAX + 0x2000];
+#define CONSOLE_EXT_LOG_MAX 8192
 #endif
+#endif
+
+#define TIMESTAMPS_MAX (20 + 1 + 20 + 1)
+static char buf[TIMESTAMPS_MAX + CONSOLE_EXT_LOG_MAX];
 static uint8_t ciphertext[4 + sizeof(buf) + hydro_secretbox_HEADERBYTES];
 static size_t buf_resend_size;
 
