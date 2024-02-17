@@ -5,30 +5,8 @@ static TLS struct {
     uint8_t  available;
 } hydro_random_context;
 
-#if defined(AVR) && !defined(__unix__)
-# include "random/avr.h"
-#elif (defined(ESP32) || defined(ESP8266)) && !defined(__unix__)
-# include "random/esp32.h"
-#elif defined(PARTICLE) && defined(PLATFORM_ID) && PLATFORM_ID > 2 && !defined(__unix__)
-# include "random/particle.h"
-#elif (defined(NRF52832_XXAA) || defined(NRF52832_XXAB)) && !defined(__unix__)
-# include "random/nrf52832.h"
-#elif defined(_WIN32)
-# include "random/windows.h"
-#elif defined(__wasi__)
-# include "random/wasi.h"
-#elif defined(__linux__) && defined(__KERNEL__)
+#if defined(__linux__) && defined(__KERNEL__)
 # include "random/linux_kernel.h"
-#elif defined(__unix__)
-# include "random/unix.h"
-#elif defined(TARGET_LIKE_MBED)
-# include "random/mbed.h"
-#elif defined(RIOT_VERSION)
-# include "random/riot.h"
-#elif defined(STM32F4)
-# include "random/stm32.h"
-#elif defined(__RTTHREAD__)
-# include "random/rtthread.h"
 #else
 # error Unsupported platform
 #endif
