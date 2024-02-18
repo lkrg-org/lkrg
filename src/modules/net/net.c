@@ -1,3 +1,21 @@
+/*
+ * pi3's Linux kernel Runtime Guard
+ *
+ * Component:
+ *  - Remote logging module
+ *
+ * Timeline:
+ *  - Initial implementation: October - November 2022
+ *  - Forward-port and publication: February 2024
+ *
+ * Author:
+ *  - Solar Designer
+ *
+ * Copyright:
+ *  - 2022, Binarly
+ *  - 2024, Solar Designer
+ */
+
 #include "net.h"
 
 #ifdef LKRG_WITH_NET
