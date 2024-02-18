@@ -1,3 +1,11 @@
+/*
+ * Process an LKRG logger output file.  This program currently derives each
+ * event's ISO timestamp from several recorded relative timestamps.
+ *
+ * Written in 2022 by Solar Designer
+ * Copyright (c) 2022 Binarly
+ */
+
 #include <time.h>
 #include <stdio.h>
 

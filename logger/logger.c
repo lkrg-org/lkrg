@@ -1,6 +1,9 @@
 /*
  * Standalone TCP server: accepts connections, checks the anti-flood limits,
  * logs and starts the actual sessions.
+ *
+ * Initially written for popa3d, reused for LKRG logger with minor changes
+ * Copyright (c) 1999-2022 Solar Designer
  */
 
 #include <stdio.h>

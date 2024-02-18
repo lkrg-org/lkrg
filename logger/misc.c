@@ -1,3 +1,10 @@
+/*
+ * Miscellaneous system and library call wrappers.
+ *
+ * Initially written for popa3d, reused for LKRG logger with various changes
+ * Copyright (c) 1998-2022 Solar Designer
+ */
+
 #include <limits.h>
 #include <unistd.h>
 #include <errno.h>
