@@ -7,6 +7,8 @@ static TLS struct {
 
 #if defined(__linux__) && defined(__KERNEL__)
 # include "random/linux_kernel.h"
+#elif defined(__unix__)
+# include "random/unix.h"
 #else
 # error Unsupported platform
 #endif
