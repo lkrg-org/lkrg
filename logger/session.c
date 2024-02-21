@@ -24,14 +24,13 @@ static hydro_kx_session_keypair kp_server;
 
 int session_prepare(void)
 {
-	const char *pk = getenv("LKRG_LOGGER_PK");
 	const char *sk = getenv("LKRG_LOGGER_SK");
-	if (!pk || !sk ||
+	if (!sk ||
 	    hydro_init() /* Currently can't fail */ ||
-	    hydro_hex2bin(server_static_kp.pk, sizeof(server_static_kp.pk), pk, 64, NULL, NULL) != 32 ||
-	    hydro_hex2bin(server_static_kp.sk, sizeof(server_static_kp.sk), sk, 64, NULL, NULL) != 32) {
+	    hydro_hex2bin(server_static_kp.sk, sizeof(server_static_kp.sk), sk, 64, NULL, NULL) != 32 ||
+	    hydro_x25519_scalarmult_base(server_static_kp.pk, server_static_kp.sk)) {
 		errno = 0;
-		return log_error("Invalid LKRG_LOGGER_PK and/or LKRG_LOGGER_SK");
+		return log_error("Invalid LKRG_LOGGER_SK");
 	}
 	return 0;
 }
