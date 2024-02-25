@@ -1,5 +1,6 @@
 The following major changes have been made since LKRG 0.9.7:
 
+ *) Add support for RHEL 8.8+
  *) RPM spec file improvements to make it work or properly fail in a wider set
     of circumstances, and to use the "weak-modules" script if available so that
     on RHEL and its rebuilds the same LKRG package build works across different
