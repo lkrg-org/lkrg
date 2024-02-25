@@ -275,11 +275,29 @@ Parameters can be specified on command-lines of "insmod", "modprobe", or in a
 file in the /etc/modprobe.d directory.
 
 For descriptions of the parameters and their default and possible values,
-please refer to the following section.
+please refer to the following two sections.
 
 
-Runtime configuration
----------------------
+Remote logging configuration (load-time only)
+---------------------------------------------
+
+LKRG supports the following module parameters (with default values or lack
+thereof specified in braces) to enable its optional remote logging.
+
+- net_server_addr (no default)
+  Log server IPv4 address (e.g., 127.0.0.1)
+
+- net_server_port (1515)
+  Log server TCP port number
+
+- net_server_pk (no default)
+  Log server public key (64 hexadecimal digits)
+
+Please refer to LOGGING on how to use the corresponding userspace components.
+
+
+Load-time and runtime configuration
+-----------------------------------
 
 Besides the parameters optionally specified when loading the module into the
 kernel, LKRG also supports a number of sysctl's, which can be used to adjust

@@ -1,5 +1,9 @@
 The following major changes have been made since LKRG 0.9.7:
 
+ *) Add optional remote kernel message logging, including the sending component
+    in LKRG itself and the receiving/logging counterpart in a userspace daemon,
+    as well as additional utilities to generate a public/secret keypair and to
+    process the logs, and documentation in LOGGING
  *) Add support for RHEL 8.8+
  *) RPM spec file improvements to make it work or properly fail in a wider set
     of circumstances, and to use the "weak-modules" script if available so that
