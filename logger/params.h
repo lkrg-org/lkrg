@@ -12,6 +12,7 @@
  */
 #define DAEMON_ADDR			"0.0.0.0"	/* INADDR_ANY */
 #define DAEMON_PORT			514
+#define DAEMON_USER			DAEMON_NAME
 
 /*
  * Limit the number of sessions we can handle at a time to reduce the impact of

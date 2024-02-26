@@ -78,7 +78,9 @@ lkrg-logger
 This is the receiving and logging userspace daemon.  Currently, it is to be run
 as root like this:
 
+	useradd -r lkrg-logger -d / -s /sbin/nologin
 	mkdir /var/log/lkrg-logger
+	chown lkrg-logger: /var/log/lkrg-logger
 	LKRG_LOGGER_SK=64hexdigitshere ./lkrg-logger
 
 Per-client log files will appear in the log directory once client connections

@@ -3,7 +3,7 @@
  * logs and starts the actual sessions.
  *
  * Initially written for popa3d, reused for LKRG logger with minor changes
- * Copyright (c) 1999-2022 Solar Designer
+ * Copyright (c) 1999-2024 Solar Designer
  */
 
 #include <stdio.h>
@@ -14,6 +14,8 @@
 #include <syslog.h>
 #include <time.h>
 #include <errno.h>
+#include <pwd.h>
+#include <grp.h>
 #include <sys/times.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -74,6 +76,34 @@ static void handle_child(int signum)
 	errno = saved_errno;
 }
 
+static int drop_root(void)
+{
+	struct passwd *pw;
+
+	errno = 0;
+	if (!(pw = getpwnam(DAEMON_USER))) {
+		syslog(SYSLOG_PRI_ERROR, "getpwnam(\"" DAEMON_USER "\"): %s",
+			errno ? strerror(errno) : "No such user");
+		return 1;
+	}
+	memset(pw->pw_passwd, 0, strlen(pw->pw_passwd));
+	endpwent();
+
+	if (!pw->pw_uid) {
+		syslog(SYSLOG_PRI_ERROR, "getpwnam(\"" DAEMON_USER "\"): Invalid user");
+		return 1;
+	}
+
+	if (setgroups(1, &pw->pw_gid))
+		return log_error("setgroups");
+	if (setgid(pw->pw_gid))
+		return log_error("setgid");
+	if (setuid(pw->pw_uid))
+		return log_error("setuid");
+
+	return 0;
+}
+
 int main(void)
 {
 	int true = 1;
@@ -86,9 +116,6 @@ int main(void)
 	int i, j, n;
 
 	openlog(SYSLOG_IDENT, SYSLOG_OPTIONS | LOG_PERROR, SYSLOG_FACILITY);
-
-	if (session_prepare())
-		return 1;
 
 	if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
 		return log_error("socket");
@@ -103,6 +130,9 @@ int main(void)
 	addr.sin_port = htons(DAEMON_PORT);
 	if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)))
 		return log_error("bind");
+
+	if (drop_root() || session_prepare())
+		return 1;
 
 	if (listen(sock, MAX_BACKLOG))
 		return log_error("listen");
