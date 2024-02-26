@@ -18,6 +18,7 @@
 #include <grp.h>
 #include <sys/times.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -114,6 +115,8 @@ int main(void)
 	struct tms buf;
 	clock_t min_delay, now, log;
 	int i, j, n;
+
+	umask(077);
 
 	openlog(SYSLOG_IDENT, SYSLOG_OPTIONS | LOG_PERROR, SYSLOG_FACILITY);
 
