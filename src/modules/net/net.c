@@ -48,9 +48,9 @@ static char net_server_addr[16];
 module_param_string(net_server_addr, net_server_addr, sizeof(net_server_addr), 0);
 MODULE_PARM_DESC(net_server_addr, "log server IPv4 address");
 
-static ushort net_server_port = 1515;
+static ushort net_server_port = 514;
 module_param(net_server_port, ushort, 0);
-MODULE_PARM_DESC(net_server_port, "log server TCP port number [1515 is default]");
+MODULE_PARM_DESC(net_server_port, "log server TCP port number [514 is default]");
 
 static char net_server_pk[65];
 module_param_string(net_server_pk, net_server_pk, sizeof(net_server_pk), 0);

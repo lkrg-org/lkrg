@@ -76,14 +76,10 @@ lkrg-logger
 -----------
 
 This is the receiving and logging userspace daemon.  Currently, it is to be run
-e.g. as follows:
+as root like this:
 
 	mkdir /var/log/lkrg-logger
-	cd logger
 	LKRG_LOGGER_SK=64hexdigitshere ./lkrg-logger
-
-It does not need to be run as root, but it does need write permissions to
-/var/log/lkrg-logger.
 
 Per-client log files will appear in the log directory once client connections
 encrypting to the right public key arrive.  The filenames correspond to each
