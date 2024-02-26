@@ -107,7 +107,6 @@ int main(void)
 	if (listen(sock, MAX_BACKLOG))
 		return log_error("listen");
 
-#if 0
 	chdir("/");
 	setsid();
 
@@ -123,7 +122,6 @@ int main(void)
 	}
 
 	setsid();
-#endif
 
 /* Drop LOG_PERROR */
 	closelog();
