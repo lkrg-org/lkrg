@@ -16,6 +16,7 @@
 #include "hydrogen/hydrogen.c"
 
 #include "misc.h"
+#include "params.h"
 #include "session.h"
 
 static hydro_kx_keypair server_static_kp;
@@ -50,8 +51,8 @@ int session_process(const char *from)
 	}
 
 	{
-		char fn[24];
-		snprintf(fn, sizeof(fn), "log/%s", from);
+		char fn[sizeof(LOG_PATH) + 16];
+		snprintf(fn, sizeof(fn), LOG_PATH "/%s", from);
 		fd = open(fn, O_CREAT | O_WRONLY | O_APPEND, 0640);
 		if (fd < 0)
 			return log_error("open");
