@@ -11,7 +11,7 @@
  * The address and port to listen on.
  */
 #define DAEMON_ADDR			"0.0.0.0"	/* INADDR_ANY */
-#define DAEMON_PORT			1515
+#define DAEMON_PORT			514
 
 /*
  * Limit the number of sessions we can handle at a time to reduce the impact of
