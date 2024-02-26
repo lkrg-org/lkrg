@@ -56,7 +56,23 @@ tools by simply running "make" in the "logger" directory, e.g. like this:
 
 	make -C logger -j8
 
-This will build three programs:
+This will build three programs described below.
+
+
+Installation
+------------
+
+To install the programs on the system globally, run:
+
+	sudo make install
+
+
+Uninstalling
+------------
+
+Similarly to installation, you can uninstall these programs with:
+
+	sudo make uninstall
 
 
 lkrg-keygen
@@ -81,7 +97,7 @@ as root like this:
 	useradd -r lkrg-logger -d / -s /sbin/nologin
 	mkdir /var/log/lkrg-logger
 	chown lkrg-logger: /var/log/lkrg-logger
-	LKRG_LOGGER_SK=64hexdigitshere ./lkrg-logger
+	LKRG_LOGGER_SK=64hexdigitshere lkrg-logger
 
 Per-client log files will appear in the log directory once client connections
 encrypting to the right public key arrive.  The filenames correspond to each
