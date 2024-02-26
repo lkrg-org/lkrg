@@ -3,6 +3,11 @@
  */
 
 /*
+ * Our name to use when talking to various interfaces.
+ */
+#define DAEMON_NAME			"lkrg-logger"
+
+/*
  * The address and port to listen on.
  */
 #define DAEMON_ADDR			"0.0.0.0"	/* INADDR_ANY */
@@ -18,9 +23,14 @@
 #define MIN_DELAY			10
 
 /*
+ * Directory where to store the received logs.
+ */
+#define LOG_PATH			"/var/log/" DAEMON_NAME
+
+/*
  * How do we talk to syslogd?  These should be fine for most systems.
  */
-#define SYSLOG_IDENT			"lkrg-logger"
+#define SYSLOG_IDENT			DAEMON_NAME
 #define SYSLOG_OPTIONS			LOG_PID
 #define SYSLOG_FACILITY			LOG_DAEMON
 #define SYSLOG_PRI_LO			LOG_INFO
