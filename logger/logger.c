@@ -105,7 +105,7 @@ static int drop_root(void)
 	return 0;
 }
 
-int main(void)
+int main(int argc, const char * const *argv)
 {
 	int true = 1;
 	int sock, new;
@@ -115,6 +115,13 @@ int main(void)
 	struct tms buf;
 	clock_t min_delay, now, log;
 	int i, j, n;
+
+/* Must have either no options or -D, which disables daemonization */
+	int daemonize = (argc != 2 || strcmp(argv[1], "-D"));
+	if (argc != 1 && daemonize) {
+		fputs("Usage: lkrg-logger [-D]\n", stderr);
+		return 1;
+	}
 
 	umask(077);
 
@@ -143,18 +150,20 @@ int main(void)
 	chdir("/");
 	setsid();
 
-	switch (fork()) {
-	case -1:
-		return log_error("fork");
+	if (daemonize) {
+		switch (fork()) {
+		case -1:
+			return log_error("fork");
 
-	case 0:
-		break;
+		case 0:
+			break;
 
-	default:
-		return 0;
+		default:
+			return 0;
+		}
+
+		setsid();
 	}
-
-	setsid();
 
 /* Drop LOG_PERROR */
 	closelog();
