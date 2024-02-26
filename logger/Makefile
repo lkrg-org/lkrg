@@ -1,8 +1,14 @@
 CC = gcc
 LD = $(CC)
 RM = rm -f
+MKDIR = mkdir -p
+INSTALL = install -c
 CFLAGS = -Wall -W -O2 -fomit-frame-pointer
 LDFLAGS = -s
+
+DESTDIR =
+PREFIX = /usr/local
+SBINDIR = $(PREFIX)/sbin
 
 PROJ = lkrg-logger lkrg-logctl lkrg-keygen
 LOGGER_OBJS = logger.o misc.o session.o
@@ -23,6 +29,15 @@ lkrg-keygen: $(KEYGEN_OBJS)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $*.c
+
+install: $(PROJ)
+	$(MKDIR) -m 755 $(DESTDIR)$(SBINDIR)
+	$(INSTALL) -m 700 lkrg-logger $(DESTDIR)$(SBINDIR)/
+	$(INSTALL) -m 700 lkrg-logctl $(DESTDIR)$(SBINDIR)/
+	$(INSTALL) -m 755 lkrg-keygen $(DESTDIR)$(SBINDIR)/
+
+uninstall:
+	$(RM) $(DESTDIR)$(SBINDIR)/lkrg-{logger,logctl,keygen}
 
 clean:
 	$(RM) $(PROJ) $(OBJS)
