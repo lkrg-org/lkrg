@@ -24,6 +24,12 @@ jobs:
                   sudo rm -f /dev/kvm
                   echo /usr/local/bin >> $GITHUB_PATH
 
+            - name: Install debootstrap from Ubuntu git
+              run: |
+                  sudo git clone --depth 1 https://git.launchpad.net/ubuntu/+source/debootstrap /debootstrap
+                  sudo chmod a+x /debootstrap/debootstrap
+                  sudo ln -s /debootstrap/debootstrap -t /usr/local/bin
+
             - name: Download mainline kernel from Kernel PPA
               run: .github/workflows/ubuntu-kernel-daily.sh
 
