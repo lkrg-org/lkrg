@@ -1,11 +1,11 @@
-%define kmod_headers_version	%(rpm -qa kernel-devel | sed 's/^kernel-devel-//' | sort -r | head -1)
+%define kmod_headers_version	%(rpm -qa kernel-devel | sed 's/^kernel-devel-//' | sort -rV | head -1)
 %define module_dir		/lib/modules/%kmod_headers_version/extra
 %global debug_package		%nil
 
 Summary: Linux Kernel Runtime Guard (LKRG)
 Name: lkrg
-Version: 0.9.7
-Release: 3%{?dist}
+Version: 0.9.8
+Release: 1%{?dist}
 License: GPLv2
 URL: https://lkrg.org
 Source: https://lkrg.org/download/%name-%version.tar.gz
@@ -24,17 +24,27 @@ processes (exploit detection).  For process credentials, LKRG attempts to
 detect the exploit and take action before the kernel would grant access (such
 as open a file) based on the unauthorized credentials.
 
+%package logger
+Summary: Linux Kernel Runtime Guard (LKRG) remote logging tools
+Requires(pre): /usr/sbin/useradd
+
+%description logger
+Userspace tools to support Linux Kernel Runtime Guard (LKRG) remote logging.
+
 %prep
 %setup -q
 
 %build
 make %{?_smp_mflags} KERNELRELEASE=%kmod_headers_version
+make -C logger %{?_smp_mflags} CFLAGS='%optflags'
 
 %install
 rm -rf %buildroot
 install -D -p -m 644 lkrg.ko %buildroot%module_dir/lkrg.ko
 install -D -p -m 644 scripts/bootup/systemd/lkrg.service %buildroot%_unitdir/lkrg.service
 install -D -p -m 644 scripts/bootup/lkrg.conf %buildroot%_sysconfdir/sysctl.d/01-lkrg.conf
+make -C logger install DESTDIR=%buildroot PREFIX=/usr UNITDIR=%_unitdir
+mkdir -p %buildroot/var/log/lkrg-logger
 
 %posttrans
 if [ -e %_sbindir/weak-modules ]; then
@@ -54,14 +64,37 @@ if [ -e %_sbindir/weak-modules ]; then
 fi
 %systemd_postun_with_restart lkrg.service
 
+%pre logger
+# Ignore errors so that we don't fail if the user already exists
+/usr/sbin/useradd -r lkrg-logger -d / -s /sbin/nologin || :
+# Don't remove this user on package uninstall because the user may still own
+# files under /var/log/lkrg-logger, which won't be removed if non-empty
+
 %files
 %defattr(-,root,root)
 %doc CHANGES CONCEPTS LICENSE PATREONS PERFORMANCE README
 %module_dir/*
-%_unitdir/*
-%_sysconfdir/sysctl.d/*
+%_unitdir/lkrg.service
+%config(noreplace) %_sysconfdir/sysctl.d/*
+
+%files logger
+%defattr(-,root,root)
+%doc LOGGING
+/usr/sbin/*
+%_unitdir/lkrg-logger.service
+%dir %attr(0750,lkrg-logger,lkrg-logger) /var/log/lkrg-logger
 
 %changelog
+* Tue Feb 27 2024 Solar Designer <solar@openwall.com> 0.9.8-1
+- Update to 0.9.8
+- Add logger sub-package
+- Mark the sysctl configuration file config(noreplace)
+- Use "sort -V" to build against the latest installed version of kernel-devel
+
+* Wed Nov  8 2023 Solar Designer <solar@openwall.com> 0.9.7-4
+- Add a couple of upstream patches, most notably to fix kINT false positives on
+EL 8.8.
+
 * Tue Oct 24 2023 Solar Designer <solar@openwall.com> 0.9.7-3
 - Use weak-modules if available so that on RHEL and its rebuilds the same LKRG
   package build works across different kABI-compatible kernel revisions/builds
