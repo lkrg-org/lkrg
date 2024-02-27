@@ -9,6 +9,7 @@ LDFLAGS = -s
 DESTDIR =
 PREFIX = /usr/local
 SBINDIR = $(PREFIX)/sbin
+UNITDIR = /etc/systemd/system
 
 PROJ = lkrg-logger lkrg-logctl lkrg-keygen
 LOGGER_OBJS = logger.o misc.o session.o
@@ -35,9 +36,13 @@ install: $(PROJ)
 	$(INSTALL) -m 700 lkrg-logger $(DESTDIR)$(SBINDIR)/
 	$(INSTALL) -m 700 lkrg-logctl $(DESTDIR)$(SBINDIR)/
 	$(INSTALL) -m 755 lkrg-keygen $(DESTDIR)$(SBINDIR)/
+	if [ -d $(DESTDIR)$(UNITDIR) ]; then \
+		umask 022; \
+		sed "s,/usr,$(PREFIX)," lkrg-logger.service > $(DESTDIR)$(UNITDIR)/lkrg-logger.service; \
+	fi
 
 uninstall:
-	$(RM) $(DESTDIR)$(SBINDIR)/lkrg-{logger,logctl,keygen}
+	$(RM) $(DESTDIR)$(SBINDIR)/lkrg-{logger,logctl,keygen} $(DESTDIR)$(UNITDIR)/lkrg-logger.service
 
 clean:
 	$(RM) $(PROJ) $(OBJS)
