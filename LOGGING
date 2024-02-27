@@ -66,11 +66,15 @@ To install the programs on the system globally, run:
 
 	sudo make install
 
+On systems with systemd, this also installs, but does not yet enable, a systemd
+unit file for lkrg-logger.
+
 
 Uninstalling
 ------------
 
-Similarly to installation, you can uninstall these programs with:
+Similarly to installation, you can uninstall these programs and the systemd
+unit file with:
 
 	sudo make uninstall
 
@@ -91,12 +95,20 @@ environment variable of this name for lkrg-logger.
 lkrg-logger
 -----------
 
-This is the receiving and logging userspace daemon.  Currently, it is to be run
-as root like this:
+This is the receiving and logging userspace daemon.  Currently, it is to be set
+up and started via systemd like this:
 
 	useradd -r lkrg-logger -d / -s /sbin/nologin
 	mkdir /var/log/lkrg-logger
 	chown lkrg-logger: /var/log/lkrg-logger
+
+	umask 077
+	lkrg-keygen > /etc/lkrg-logger.conf
+	systemctl enable lkrg-logger
+	systemctl start lkrg-logger
+
+or instead of the last 4 commands above, started manually as root like this:
+
 	LKRG_LOGGER_SK=64hexdigitshere lkrg-logger
 
 Per-client log files will appear in the log directory once client connections

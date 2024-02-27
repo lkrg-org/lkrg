@@ -1,0 +1,16 @@
+[Unit]
+Description=Linux Kernel Runtime Guard remote logging server
+Documentation=https://lkrg.org
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/lkrg-logger.conf
+ExecStart=/usr/sbin/lkrg-logger -D
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target
