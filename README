@@ -271,8 +271,8 @@ With LKRG installed on the system, you can list them with:
 
 (Depending on system configuration, "modinfo" might not require root.)
 
-Parameters can be specified on command-lines of "insmod", "modprobe", or in a
-file in the /etc/modprobe.d directory.
+Parameters can be specified on command-lines of "insmod", "modprobe", or after
+"options lkrg " in a file in the /etc/modprobe.d directory.
 
 For descriptions of the parameters and their default and possible values,
 please refer to the following two sections.
@@ -292,6 +292,12 @@ thereof specified in braces) to enable its optional remote logging.
 
 - net_server_pk (no default)
   Log server public key (64 hexadecimal digits)
+
+If you're starting LKRG via a systemd unit or startup script (such as those
+provided in here), our recommended way to specify the above parameters is by
+creating the file /etc/modprobe.d/lkrg.conf with something like this in it:
+
+options lkrg net_server_addr=127.0.0.1 net_server_pk=64hexdigitshere
 
 Please refer to LOGGING on how to use the corresponding userspace components.
 
