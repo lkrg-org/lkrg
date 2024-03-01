@@ -392,6 +392,37 @@ static inline int p_lkrg_counter_lock_val_read(p_lkrg_counter_lock *p_arg) {
 /* End */
 
 /*
+ * siphash
+ * introduced into the linux kernel with 4.1.1 rc1 on 1/9/2017
+ */
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 1)
+   #include <linux/siphash.h>
+
+   typedef siphash_key_t p_global_siphash_key_t;
+
+   extern p_global_siphash_key_t p_global_siphash_key;
+
+   static inline void p_lkrg_set_siphash_key() {
+      p_global_siphash_key.key[0]  = (uint64_t)get_random_long();
+      p_global_siphash_key.key[1]  = (uint64_t)get_random_long();
+   }
+
+#else
+   typedef uint128_t p_global_siphash_key_t;
+
+   extern p_global_siphash_key_t p_global_siphash_key;
+
+   static inline void p_lkrg_set_siphash_key() {
+      p_global_siphash_key.p_low  = (uint64_t)get_random_long();
+      p_global_siphash_key.p_high = (uint64_t)get_random_long();
+   }
+
+#endif
+
+
+
+/*
  * LKRG modules
  */
 #include "modules/print_log/p_lkrg_print_log.h"               // printing, error and debug module
@@ -442,7 +473,7 @@ static inline int p_lkrg_counter_lock_val_read(p_lkrg_counter_lock *p_arg) {
 #endif
 
 #if defined(CONFIG_TRIM_UNUSED_KSYMS) && !defined(CONFIG_SECURITY_LKRG)
- #error "LKRG requires CONFIG_TRIM_UNUSED_KSYMS to be disabled if it should be built as an out-of-tree kernel module"
+ #error "LKRG requires CONFIG_TRIM_UNUSED_KSYMS to be disabled if it should be built as a kernel module"
 #endif
 
 #endif
