@@ -358,12 +358,14 @@ void lkrg_register_net(void)
 
 void lkrg_deregister_net(void)
 {
-	unregister_console(&lkrg_console);
-	flush_work(&work);
-	cancel_work_sync(&work); /* Redundant unless the work re-queues */
-	if (kmsg_file)
+	if (kmsg_file) {
+		unregister_console(&lkrg_console);
+		flush_work(&work);
+		cancel_work_sync(&work); /* Redundant unless the work re-queues */
 		filp_close(kmsg_file, NULL);
-	disconnect();
+		kmsg_file = NULL;
+		disconnect();
+	}
 }
 
 #endif
