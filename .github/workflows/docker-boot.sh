@@ -35,7 +35,7 @@ WORKDIR /lkrg
 COPY . .
 RUN git clean -dxfq
 RUN DESTDIR= ./mkosi.build
-RUN depmod -a \$(cd /lib/modules; ls)
+RUN depmod -a \$(cd /lib/modules; ls | sort -V | tail -1)
 EOF
 
 # Convert Docker container into QEMU image (first extract rootfs).
