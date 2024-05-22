@@ -5,12 +5,12 @@
 Summary: Linux Kernel Runtime Guard (LKRG)
 Name: lkrg
 Version: 0.9.8
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 URL: https://lkrg.org
 Source: https://lkrg.org/download/%name-%version.tar.gz
 ExclusiveArch: x86_64 %arm32 %arm64
-BuildRequires: make, gcc, elfutils-libelf-devel, kernel, kernel-devel
+BuildRequires: make, gcc, elfutils-libelf-devel, kernel-devel, systemd
 BuildRoot: /override/%name-%version
 
 %description
@@ -35,7 +35,7 @@ Userspace tools to support Linux Kernel Runtime Guard (LKRG) remote logging.
 %setup -q
 
 %build
-make %{?_smp_mflags} KERNELRELEASE=%kmod_headers_version
+make %{?_smp_mflags} KERNEL=/usr/src/kernels/%kmod_headers_version
 make -C logger %{?_smp_mflags} CFLAGS='%optflags'
 
 %install
@@ -85,6 +85,12 @@ fi
 %dir %attr(0750,lkrg-logger,lkrg-logger) /var/log/lkrg-logger
 
 %changelog
+* Wed May 22 2024 Solar Designer <solar@openwall.com> 0.9.8-2
+- Pass direct kernel-devel's build path into make
+- Drop "BuildRequires: kernel" as we no longer need /lib/modules/*/build
+- Add "BuildRequires: systemd" for the _unitdir RPM macro (apparently this was
+  previously an indirect dependency via the kernel package)
+
 * Tue Feb 27 2024 Solar Designer <solar@openwall.com> 0.9.8-1
 - Update to 0.9.8
 - Add logger sub-package
