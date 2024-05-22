@@ -237,7 +237,9 @@ typedef struct _p_lkrg_global_symbols_structure {
    pmd_t *(*p_mm_find_pmd)(struct mm_struct *mm, unsigned long address);
    struct mutex *p_jump_label_mutex;
    struct mutex *p_text_mutex;
+#ifdef CONFIG_TRACEPOINTS
    struct mutex *p_tracepoints_mutex;
+#endif
    struct text_poke_loc **p_tp_vec;
    int *p_tp_vec_nr;
 #if defined(CONFIG_DYNAMIC_DEBUG)
