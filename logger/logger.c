@@ -147,7 +147,8 @@ int main(int argc, const char * const *argv)
 	if (listen(sock, MAX_BACKLOG))
 		return log_error("listen");
 
-	chdir("/");
+	if (chdir("/"))
+		return log_error("chdir");
 	setsid();
 
 	if (daemonize) {
