@@ -38,7 +38,7 @@ int p_kmod_init(void) {
    P_SYM_INIT(modules)
    P_SYM_INIT(module_kset)
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,12,0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,10,220)
    P_SYM_INIT(module_mutex)
    P_SYM_INIT(find_module)
 #else
