@@ -9,7 +9,9 @@ jobs:
             matrix:
                 include:
                     - image: centos:7
-                      run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
+                      run: |
+                          sed -i 's,^mirrorlist=,#,; s,^#baseurl=http://mirror\.centos\.org/centos/$releasever,baseurl=https://vault.centos.org/7.9.2009,' /etc/yum.repos.d/CentOS-Base.repo
+                          yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
                     - image: almalinux:8
                       run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
                     - image: rockylinux:8
