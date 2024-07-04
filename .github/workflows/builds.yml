@@ -14,8 +14,6 @@ jobs:
                       run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
                     - image: rockylinux:8
                       run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
-                    - image: quay.io/centos/centos:stream8
-                      run: dnf install -y kernel-devel kernel gcc make elfutils-libelf-devel
                     - image: quay.io/centos/centos:stream9
                       run: dnf install -y --nobest kernel-devel-matched gcc make
                     - image: fedora:latest
