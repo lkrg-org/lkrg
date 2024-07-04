@@ -88,7 +88,7 @@ static inline unsigned int p_get_gid(const kgid_t *p_from) {
 #endif
 
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0) || defined(mod_mem_type_is_init)
 
 static inline void *p_module_core(struct module *p_mod) {
    return p_mod->mem[MOD_TEXT].base;
@@ -198,7 +198,7 @@ static inline int p_ddebug_remove_module(const char *p_name) {
  * 'ddebug_remove_module' is not exported anymore and defined as 'static'.
  * However, we can implement the same logic by hand.
  */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0) || defined(mod_mem_type_is_init)
 
    struct p_ddebug_table {
        struct list_head link, maps;
