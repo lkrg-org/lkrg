@@ -332,7 +332,14 @@ struct ctl_table p_lkrg_sysctl_table[] = {
       .extra1         = &p_profile_enforce_min,
       .extra2         = &p_profile_enforce_max,
    },
+/*
+ * Empty element at the end of array was required when register_sysctl() was a
+ * function.  It's no longer required when it became a macro in 2023, and it's
+ * disallowed after further changes in 2024.
+ */
+#ifndef register_sysctl
    { }
+#endif
 };
 
 
