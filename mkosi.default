@@ -22,8 +22,7 @@ RootSize=4G
 [Packages]
 BuildPackages=
 	diffutils
-	gcc
-	make
+	dkms
 	linux-virtual
 Packages=
 	sysvbanner
