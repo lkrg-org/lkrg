@@ -90,51 +90,57 @@ static int p_profile_enforce_min = 0;
 static int p_profile_enforce_max = 9;
 
 
-static int p_sysctl_kint_validate(struct ctl_table *p_table, int p_write,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,11,0)
+#define P_STRUCT_CTL_TABLE const struct ctl_table
+#else
+#define P_STRUCT_CTL_TABLE struct ctl_table
+#endif
+
+static int p_sysctl_kint_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_kint_enforce(struct ctl_table *p_table, int p_write,
+static int p_sysctl_kint_enforce(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_pint_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_pint_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_pint_enforce(struct ctl_table *p_table, int p_write,
+static int p_sysctl_pint_enforce(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_interval(struct ctl_table *p_table, int p_write,
+static int p_sysctl_interval(P_STRUCT_CTL_TABLE *p_table, int p_write,
                              void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_block_modules(struct ctl_table *p_table, int p_write,
+static int p_sysctl_block_modules(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_log_level(struct ctl_table *p_table, int p_write,
+static int p_sysctl_log_level(P_STRUCT_CTL_TABLE *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_trigger(struct ctl_table *p_table, int p_write,
+static int p_sysctl_trigger(P_STRUCT_CTL_TABLE *p_table, int p_write,
                             void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #ifdef P_LKRG_UNHIDE
-static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
+static int p_sysctl_hide(P_STRUCT_CTL_TABLE *p_table, int p_write,
                          void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #endif
-static int p_sysctl_heartbeat(struct ctl_table *p_table, int p_write,
+static int p_sysctl_heartbeat(P_STRUCT_CTL_TABLE *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #if defined(CONFIG_X86)
-static int p_sysctl_smep_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_smep_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
+static int p_sysctl_smep_enforce(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_smap_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_smap_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_smap_enforce(struct ctl_table *p_table, int p_write,
+static int p_sysctl_smap_enforce(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #endif
-static int p_sysctl_umh_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_umh_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_umh_enforce(struct ctl_table *p_table, int p_write,
+static int p_sysctl_umh_enforce(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                 void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_msr_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_msr_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_pcfi_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_pcfi_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_pcfi_enforce(struct ctl_table *p_table, int p_write,
+static int p_sysctl_pcfi_enforce(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_profile_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                      void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
+static int p_sysctl_profile_enforce(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                     void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 
 
@@ -335,15 +341,15 @@ struct ctl_table p_lkrg_sysctl_table[] = {
 /*
  * Empty element at the end of array was required when register_sysctl() was a
  * function.  It's no longer required when it became a macro in 2023, and it's
- * disallowed after further changes in 2024.
+ * disallowed after further changes in 2024 (starting with 6.11-rc kernels).
  */
-#ifndef register_sysctl
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
    { }
 #endif
 };
 
 
-static int p_sysctl_kint_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_kint_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -376,7 +382,7 @@ static int p_sysctl_kint_validate(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-static int p_sysctl_kint_enforce(struct ctl_table *p_table, int p_write,
+static int p_sysctl_kint_enforce(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -411,7 +417,7 @@ static int p_sysctl_kint_enforce(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-static int p_sysctl_pint_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_pint_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -438,7 +444,7 @@ static int p_sysctl_pint_validate(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-static int p_sysctl_pint_enforce(struct ctl_table *p_table, int p_write,
+static int p_sysctl_pint_enforce(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -465,7 +471,7 @@ static int p_sysctl_pint_enforce(struct ctl_table *p_table, int p_write,
 }
 
 
-static int p_sysctl_interval(struct ctl_table *p_table, int p_write,
+static int p_sysctl_interval(P_STRUCT_CTL_TABLE *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
    int p_ret;
    unsigned int p_tmp;
@@ -483,7 +489,7 @@ static int p_sysctl_interval(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-static int p_sysctl_block_modules(struct ctl_table *p_table, int p_write,
+static int p_sysctl_block_modules(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -503,7 +509,7 @@ static int p_sysctl_block_modules(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-static int p_sysctl_log_level(struct ctl_table *p_table, int p_write,
+static int p_sysctl_log_level(P_STRUCT_CTL_TABLE *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
    int p_ret;
    unsigned int p_log_level_old;
@@ -539,7 +545,7 @@ static int p_sysctl_log_level(struct ctl_table *p_table, int p_write,
 }
 
 
-static int p_sysctl_trigger(struct ctl_table *p_table, int p_write,
+static int p_sysctl_trigger(P_STRUCT_CTL_TABLE *p_table, int p_write,
                             void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -558,7 +564,7 @@ static int p_sysctl_trigger(struct ctl_table *p_table, int p_write,
 }
 
 #ifdef P_LKRG_UNHIDE
-static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
+static int p_sysctl_hide(P_STRUCT_CTL_TABLE *p_table, int p_write,
                          void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -581,7 +587,7 @@ static int p_sysctl_hide(struct ctl_table *p_table, int p_write,
 }
 #endif
 
-static int p_sysctl_heartbeat(struct ctl_table *p_table, int p_write,
+static int p_sysctl_heartbeat(P_STRUCT_CTL_TABLE *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -602,7 +608,7 @@ static int p_sysctl_heartbeat(struct ctl_table *p_table, int p_write,
 }
 
 #if defined(CONFIG_X86)
-static int p_sysctl_smep_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_smep_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -633,7 +639,7 @@ static int p_sysctl_smep_validate(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
+static int p_sysctl_smep_enforce(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -667,7 +673,7 @@ static int p_sysctl_smep_enforce(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-static int p_sysctl_smap_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_smap_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -698,7 +704,7 @@ static int p_sysctl_smap_validate(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-static int p_sysctl_smap_enforce(struct ctl_table *p_table, int p_write,
+static int p_sysctl_smap_enforce(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -733,7 +739,7 @@ static int p_sysctl_smap_enforce(struct ctl_table *p_table, int p_write,
 }
 #endif
 
-static int p_sysctl_umh_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_umh_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -759,7 +765,7 @@ static int p_sysctl_umh_validate(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-static int p_sysctl_umh_enforce(struct ctl_table *p_table, int p_write,
+static int p_sysctl_umh_enforce(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -785,7 +791,7 @@ static int p_sysctl_umh_enforce(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-static int p_sysctl_msr_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_msr_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -820,7 +826,7 @@ static int p_sysctl_msr_validate(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-static int p_sysctl_pcfi_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_pcfi_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                   void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -846,7 +852,7 @@ static int p_sysctl_pcfi_validate(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-static int p_sysctl_pcfi_enforce(struct ctl_table *p_table, int p_write,
+static int p_sysctl_pcfi_enforce(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                  void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -872,7 +878,7 @@ static int p_sysctl_pcfi_enforce(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
+static int p_sysctl_profile_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                      void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
@@ -1115,7 +1121,7 @@ static int p_sysctl_profile_validate(struct ctl_table *p_table, int p_write,
    return p_ret;
 }
 
-static int p_sysctl_profile_enforce(struct ctl_table *p_table, int p_write,
+static int p_sysctl_profile_enforce(P_STRUCT_CTL_TABLE *p_table, int p_write,
                                      void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 
    int p_ret;
