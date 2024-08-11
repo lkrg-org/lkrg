@@ -1,0 +1,11 @@
+name: general
+
+on: [push, pull_request]
+
+jobs:
+  whitespace-errors:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: check
+      run: git diff-index --check --cached 4b825dc642cb6eb9a060e54bf8d69288fbee4904

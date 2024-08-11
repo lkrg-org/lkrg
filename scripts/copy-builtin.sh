@@ -46,7 +46,7 @@ lkrg-objs += modules/print_log/p_lkrg_debug_log.o
 endif
 
 $(sed -n '/^$(TARGET)-objs += .* \\/,/[^\]$/ {s|src/||; s|$(TARGET)|lkrg|; p}' "$BASEDIR/../Makefile")
- 
+
 EOC
 )
 
