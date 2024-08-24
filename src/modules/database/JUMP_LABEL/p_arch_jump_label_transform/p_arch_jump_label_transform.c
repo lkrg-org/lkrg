@@ -32,7 +32,11 @@ char p_arch_jump_label_transform_kretprobe_state = 0;
 p_lkrg_counter_lock p_jl_lock;
 
 static struct kretprobe p_arch_jump_label_transform_kretprobe = {
+#if defined(CONFIG_ARM64) && defined(HAVE_JUMP_LABEL_BATCH)
+    .kp.symbol_name = "arch_jump_label_transform_queue",
+#else
     .kp.symbol_name = "arch_jump_label_transform",
+#endif
     .handler = p_arch_jump_label_transform_ret,
     .entry_handler = p_arch_jump_label_transform_entry,
     .data_size = sizeof(struct p_arch_jump_label_transform_data),
