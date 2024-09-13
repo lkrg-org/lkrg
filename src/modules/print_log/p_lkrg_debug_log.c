@@ -139,7 +139,9 @@ static struct p_addr_name {
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_add_key),
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_request_key),
    P_LKRG_DEBUG_RULE_KPROBE(p_capable),
+#ifdef CONFIG_SECURITY_SELINUX_DEVELOP
    P_LKRG_DEBUG_RULE_KPROBE(p_sel_write_enforce),
+#endif
    P_LKRG_DEBUG_RULE_KPROBE(p_pcfi___queue_work),
    P_LKRG_DEBUG_RULE_KPROBE(p_pcfi_schedule),
    P_LKRG_DEBUG_RULE_KPROBE(p_pcfi_lookup_fast),
