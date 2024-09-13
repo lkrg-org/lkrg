@@ -52,7 +52,11 @@ int p_offload_cache_init(void) {
 
 void p_offload_cache_delete(void) {
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 6, 0)
+   __flush_workqueue(system_unbound_wq);
+#else
    flush_workqueue(system_unbound_wq);
+#endif
    if (p_offload_cache) {
       kmem_cache_destroy(p_offload_cache);
       p_offload_cache = NULL;
