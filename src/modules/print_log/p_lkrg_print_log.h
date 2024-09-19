@@ -112,6 +112,8 @@
       p_print_ret = printk(KERN_CRIT    P_LKRG_SIGNATURE "ALERT: " p_fmt "\n", ## p_args); \
    else if (P_CTRL(p_log_level) >= (p_level & 7))                                          \
    switch (p_level) {                                                                      \
+   default: /* Pacify clang warning about no case P_LOG_ALERT, which we handle above */    \
+      break;                                                                               \
    case P_LOG_ALIVE:                                                                       \
       p_print_ret = printk(KERN_NOTICE  P_LKRG_SIGNATURE "ALIVE: " p_fmt "\n", ## p_args); \
       break;                                                                               \
