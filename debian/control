@@ -8,7 +8,7 @@ Vcs-Git: https://github.com/lkrg-org/lkrg.git
 Standards-Version: 4.5.1.1
 Rules-Requires-Root: no
 Build-Depends: debhelper-compat (= 13),
- dkms
+ dh-dkms
 
 Package: lkrg
 Architecture: all
