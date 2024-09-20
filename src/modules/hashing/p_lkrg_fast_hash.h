@@ -24,6 +24,8 @@
 
 #if defined(fallthrough)
  #define P_FALL_THROUGH fallthrough
+#elif defined(__GNUC__)
+ #define P_FALL_THROUGH __attribute__ ((fallthrough))
 #else
  #define P_FALL_THROUGH /* FALLTHROUGH */
 #endif
@@ -78,6 +80,6 @@ typedef struct p_global_siphash_key_t {
 
 extern p_global_siphash_key_t p_global_siphash_key;
 
-uint64_t p_lkrg_fast_hash(const char *data, unsigned int len);
+uint64_t p_lkrg_fast_hash(const unsigned char *data, unsigned int len);
 
 #endif

@@ -19,23 +19,19 @@
  *
  */
 
+#ifdef __KERNEL__
 #include "../../p_lkrg_main.h"
+#else
+/* For building/testing just this file in userspace */
+#include <stdint.h>
+#include <stdlib.h>
+#include "p_lkrg_fast_hash.h"
+#define notrace
+#endif
 
 p_global_siphash_key_t p_global_siphash_key;
 
-inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const uint8_t *k,
-                           uint8_t *out, const size_t outlen);
-
-notrace uint64_t p_lkrg_fast_hash(const char *p_data, unsigned int p_len) {
-
-   uint64_t p_tmp = 0;
-
-   p_lkrg_siphash(p_data, p_len, (uint8_t *)&p_global_siphash_key, (uint8_t *)&p_tmp, sizeof(p_tmp));
-   return p_tmp;
-}
-
-notrace inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const uint8_t *k,
-                                   uint8_t *out, const size_t outlen) {
+static notrace inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const uint8_t *k, uint8_t *out) {
 
    uint64_t v0 = 0x736f6d6570736575ULL;
    uint64_t v1 = 0x646f72616e646f6dULL;
@@ -103,4 +99,12 @@ notrace inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const 
 
    b = v0 ^ v1 ^ v2 ^ v3;
    U64TO8_LE(out, b);
+}
+
+notrace uint64_t p_lkrg_fast_hash(const unsigned char *p_data, unsigned int p_len) {
+
+   uint64_t p_tmp = 0;
+
+   p_lkrg_siphash(p_data, p_len, (uint8_t *)&p_global_siphash_key, (uint8_t *)&p_tmp);
+   return p_tmp;
 }
