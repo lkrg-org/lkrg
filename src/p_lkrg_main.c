@@ -197,7 +197,7 @@ static void p_uninit_page_attr(void) {
    p_attr_init ^= p_attr_init;
 }
 
-void p_parse_module_params(void) {
+static void p_parse_module_params(void) {
 
    /* Interval */
    if (interval > 1800) {

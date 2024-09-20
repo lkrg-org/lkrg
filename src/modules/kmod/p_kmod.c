@@ -164,7 +164,7 @@ static int p_list_from_module_list(p_module_list_mem *p_arg, char p_flag) {
 /*
  * 'module_mutex' must be taken by calling function!
  */
-unsigned int p_count_modules_from_sysfs_kobj(void) {
+static unsigned int p_count_modules_from_sysfs_kobj(void) {
 
    struct module *p_mod = NULL;
    struct kset *p_kset = *P_SYM(p_module_kset);
