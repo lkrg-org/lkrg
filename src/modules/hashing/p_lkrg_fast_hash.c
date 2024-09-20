@@ -21,7 +21,7 @@
 
 #include "../../p_lkrg_main.h"
 
-uint128_t p_global_siphash_key;
+p_global_siphash_key_t p_global_siphash_key;
 
 inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const uint8_t *k,
                            uint8_t *out, const size_t outlen);

@@ -29,12 +29,12 @@
 #endif
 
 
-typedef struct uint128_t {
+typedef struct p_global_siphash_key_t {
 
    uint64_t p_low;
    uint64_t p_high;
 
-} uint128_t;
+} p_global_siphash_key_t;
 
 /* default: SipHash-2-4 */
 #define cROUNDS 2
@@ -76,7 +76,7 @@ typedef struct uint128_t {
         v2 = ROTL(v2, 32);                                                     \
     } while (0)
 
-extern uint128_t p_global_siphash_key;
+extern p_global_siphash_key_t p_global_siphash_key;
 
 uint64_t p_lkrg_fast_hash(const char *data, unsigned int len);
 
