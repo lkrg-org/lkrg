@@ -33,7 +33,9 @@
 #include <linux/inet.h>
 
 #include <linux/time.h>
-#include <linux/sched/clock.h> /* for local_clock() */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#include <linux/sched/clock.h> /* for local_clock(), was in sched.h before */
+#endif
 
 #include <linux/mutex.h>
 #include <linux/workqueue.h>
