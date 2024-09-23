@@ -24,7 +24,7 @@
 
 #if defined(fallthrough)
  #define P_FALL_THROUGH fallthrough
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) && __GNUC__ > 6
  #define P_FALL_THROUGH __attribute__ ((fallthrough))
 #else
  #define P_FALL_THROUGH /* FALLTHROUGH */
