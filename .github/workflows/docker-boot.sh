@@ -3,6 +3,7 @@
 PATH=$PATH:/sbin
 
 image=ubuntu:jammy
+platform=linux/amd64
 qemu=qemu-system-x86_64
 opts="-bios bios.bin"
 console=ttyS0
@@ -23,7 +24,7 @@ td=$(mktemp -d)
 # Generate system and build in the Docker.
 docker build --tag test -f - . <<EOF
 # bionic is the latest Ubuntu with i386 support.
-FROM $image
+FROM --platform=$platform $image
 ENV DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update -y && \
     apt-get install -y \
