@@ -23,10 +23,13 @@ jobs:
             matrix:
                 include:
                     - image: arm64v8/ubuntu:jammy
+                      platform: linux/arm64
                       packages: libelf-dev linux-headers-generic
                     - image: arm32v7/alt:latest
+                      platform: linux/arm/v7
                       packages: elfutils kernel-headers-modules-std-def
                     - image: i386/ubuntu:bionic
+                      platform: linux/386
                       packages: libelf-dev linux-headers-generic
         steps:
             - uses: docker/setup-qemu-action@v2
@@ -44,6 +47,6 @@ jobs:
                   RUN make -j\$(nproc) KERNELRELEASE=\$(cd /lib/modules; ls)
                   RUN file lkrg.ko
                   EOF
-            - run: docker build .
+            - run: docker build --platform=${{ matrix.platform }} .
 
 # vim: sw=4

@@ -13,6 +13,7 @@ jobs:
 #                      install: qemu-system-x86
 
                     - args: image=arm64v8/ubuntu:jammy
+                            platform=linux/arm64
                             opts="-M virt,gic-version=3 -cpu cortex-a57"
                             console=ttyAMA0
                             root=/dev/vda
@@ -22,6 +23,7 @@ jobs:
                     # It's possible to use: opts="-M raspi2b" dtb=bcm2709-rpi-2-b.dtb root=/dev/mmcblk0
                     # but since power-off is unreliable anyway (until QEMU 6.2) use simpler virt machine.
                     - args: image=arm32v7/ubuntu:jammy
+                            platform=linux/arm/v7
                             opts="-M virt"
                             console=ttyAMA0
                             root=/dev/vda
