@@ -1,4 +1,4 @@
-The following major changes have been made since 0.9.8:
+The following major changes have been made between LKRG 0.9.8 and 0.9.9:
 
  *) Support Linux 6.11+ and stable 6.10.10+
  *) Support new longterm kernels 5.10.220+
@@ -6,6 +6,7 @@ The following major changes have been made since 0.9.8:
  *) Support CONFIG_JUMP_LABEL batch mode also on ARM64
  *) Re-support build without CONFIG_TRACEPOINTS (was broken in 0.9.8)
  *) pCFI: Upgrade "Frame pointer is not on the stack" to ALERT with enforcement
+ *) Simplify seccomp validation (should help portability to more kernel builds)
 
 
 The following major changes have been made between LKRG 0.9.7 and 0.9.8:

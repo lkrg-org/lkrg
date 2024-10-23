@@ -4,8 +4,8 @@
 
 Summary: Linux Kernel Runtime Guard (LKRG)
 Name: lkrg
-Version: 0.9.8
-Release: 2%{?dist}
+Version: 0.9.9
+Release: 1%{?dist}
 License: GPLv2
 URL: https://lkrg.org
 Source: https://lkrg.org/download/%name-%version.tar.gz
@@ -85,6 +85,9 @@ fi
 %dir %attr(0750,lkrg-logger,lkrg-logger) /var/log/lkrg-logger
 
 %changelog
+* Wed Oct 23 2024 Solar Designer <solar@openwall.com> 0.9.9-1
+- Update to 0.9.9
+
 * Wed May 22 2024 Solar Designer <solar@openwall.com> 0.9.8-2
 - Pass direct kernel-devel's build path into make
 - Drop "BuildRequires: kernel" as we no longer need /lib/modules/*/build
