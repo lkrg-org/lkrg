@@ -1,5 +1,5 @@
 Linux Kernel Runtime Guard (LKRG)
-Copyright (c) 2015-2023 Adam 'pi3' Zabrocki
+Copyright (c) 2015-2024 Adam 'pi3' Zabrocki
 Copyright (c) 2020-2022 Mariusz Zaborski
 Copyright (c) 2020-2024 Solar Designer
 
@@ -17,7 +17,7 @@ scripts/bootup/openrc/*
 Copyright (c) 2022 Jakub 'mrl5' Kołodziejczak
 
 mkosi.* and .github/workflows/*
-Copyright (c) 2021-2023 Vitaly Chikunov
+Copyright (c) 2021-2024 Vitaly Chikunov
 
 debian/*
 Copyright (c) 2020-2021 Mikhail Morfikov

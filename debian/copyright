@@ -4,7 +4,7 @@ Upstream-Contact: Adam 'pi3' Zabrocki <pi3@pi3.com.pl>
 Source: https://lkrg.org
 
 Files: *
-Copyright: 2015-2023 Adam 'pi3' Zabrocki <pi3@pi3.com.pl>
+Copyright: 2015-2024 Adam 'pi3' Zabrocki <pi3@pi3.com.pl>
            2020-2022 Mariusz Zaborski
            2020-2024 Solar Designer
 License: GPL-2.0
@@ -28,7 +28,7 @@ License: GPL-2.0
 
 Files: mkosi.*
        .github/workflows/*
-Copyright: 2021-2023 Vitaly Chikunov
+Copyright: 2021-2024 Vitaly Chikunov
 License: GPL-2.0
 
 License: GPL-2.0
