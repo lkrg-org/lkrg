@@ -24,7 +24,9 @@ jobs:
                     - image: fedora:latest
                       run: dnf install -y kernel-devel kernel gcc make elfutils-libelf-devel
                     - image: alt:sisyphus
-                      run: apt-get update; apt-get install -y kernel-headers-modules-un-def gcc make libelf-devel
+                      run: |
+                          apt-get update && apt-get install -y gcc make libelf-devel && \
+                          apt-get install -y kernel-headers-modules-mainline || apt-get install -y kernel-headers-modules-latest1
                     - image: registry.opensuse.org/opensuse/tumbleweed
                       run: zypper -n install -y gcc make kernel-default-devel awk
                     - image: registry.opensuse.org/opensuse/leap
