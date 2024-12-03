@@ -4,17 +4,10 @@ on: [push, pull_request]
 jobs:
     build:
         runs-on: ubuntu-22.04
-        env:
-            ACTIONS_RUNNER_FORCE_ACTIONS_NODE_VERSION: node16
-            ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         strategy:
             fail-fast: false
             matrix:
                 include:
-                    - image: centos:7
-                      run: |
-                          sed -i 's,^mirrorlist=,#,; s,^#baseurl=http://mirror\.centos\.org/centos/$releasever,baseurl=https://vault.centos.org/7.9.2009,' /etc/yum.repos.d/CentOS-Base.repo
-                          yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
                     - image: almalinux:8
                       run: yum install -y kernel-devel kernel gcc make elfutils-libelf-devel
                     - image: rockylinux:8
