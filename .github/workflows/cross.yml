@@ -24,13 +24,20 @@ jobs:
                 include:
                     - image: arm64v8/ubuntu:jammy
                       platform: linux/arm64
-                      packages: libelf-dev linux-headers-generic
+                      run: apt-get -y update && apt-get install -y git file gcc make  libelf-dev linux-headers-generic
                     - image: arm32v7/alt:latest
                       platform: linux/arm/v7
-                      packages: elfutils kernel-headers-modules-std-def
+                      run: apt-get -y update && apt-get install -y git file gcc make  elfutils kernel-headers-modules-std-def
                     - image: i386/ubuntu:bionic
                       platform: linux/386
-                      packages: libelf-dev linux-headers-generic
+                      run: apt-get -y update && apt-get install -y git file gcc make  libelf-dev linux-headers-generic
+                    - image: centos:7
+                      platform: linux/amd64
+                      run: |
+                          sed -i -e 's,^mirrorlist=,#,' \
+                                 -e 's,^#baseurl=http://mirror\.centos\.org/centos/\$releasever,baseurl=https://vault.centos.org/7.9.2009,' \
+                                /etc/yum.repos.d/CentOS-Base.repo && \
+                          yum install -y git file gcc make  kernel-devel kernel elfutils-libelf-devel
         steps:
             - uses: docker/setup-qemu-action@v2
             - uses: actions/checkout@v3
@@ -38,8 +45,7 @@ jobs:
               run: |
                   cat <<EOF >Dockerfile
                   FROM ${{ matrix.image }}
-                  RUN apt-get -y update && \
-                      apt-get install -y git file gcc make ${{ matrix.packages }}
+                  RUN ${{ matrix.run }}
                   WORKDIR /src
                   COPY . .
                   RUN git clean -dxfq
