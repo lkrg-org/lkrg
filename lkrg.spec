@@ -5,7 +5,7 @@
 Summary: Linux Kernel Runtime Guard (LKRG)
 Name: lkrg
 Version: 0.9.9
-Release: 1%{?dist}
+Release: 4%{?dist}
 License: GPLv2
 URL: https://lkrg.org
 Source: https://lkrg.org/download/%name-%version.tar.gz
@@ -36,7 +36,7 @@ Userspace tools to support Linux Kernel Runtime Guard (LKRG) remote logging.
 
 %build
 make %{?_smp_mflags} KERNEL=/usr/src/kernels/%kmod_headers_version
-make -C logger %{?_smp_mflags} CFLAGS='%optflags'
+make -C logger %{?_smp_mflags} CFLAGS='%optflags' LDFLAGS='-s -pie -Wl,-z,defs -Wl,-z,relro -Wl,-z,now %optflags'
 
 %install
 rm -rf %buildroot
@@ -85,6 +85,10 @@ fi
 %dir %attr(0750,lkrg-logger,lkrg-logger) /var/log/lkrg-logger
 
 %changelog
+* Fri Jan 31 2025 Solar Designer <solar@openwall.com> 0.9.9-4
+- Pass -s -pie -Wl,-z,defs -Wl,-z,relro -Wl,-z,now and optflags into LDFLAGS
+  when building the logger userspace binaries
+
 * Wed Oct 23 2024 Solar Designer <solar@openwall.com> 0.9.9-1
 - Update to 0.9.9
 
