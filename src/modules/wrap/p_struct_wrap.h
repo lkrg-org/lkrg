@@ -506,9 +506,6 @@ static inline void p_lkrg_close_rw_x86(void) {
 }
 
 static inline void p_lkrg_open_rw(void) {
-
-   unsigned long p_flags;
-
    mutex_lock(&p_ro_page_mutex);
 
 //   preempt_disable();
@@ -517,9 +514,9 @@ static inline void p_lkrg_open_rw(void) {
    barrier();
    /* It's a good time to verify if everything is fine */
    p_ed_pcfi_cpu(1);
-   p_tasks_write_lock(&p_flags);
+   p_tasks_write_lock();
    p_ed_validate_current();
-   p_tasks_write_unlock(&p_flags);
+   p_tasks_write_unlock();
 }
 
 static inline void p_lkrg_close_rw(void) {
@@ -646,9 +643,6 @@ static inline int p_set_memory_ro(unsigned long p_addr, int p_numpages) {
 }
 
 static inline void p_lkrg_open_rw(void) {
-
-   unsigned long p_flags;
-
    mutex_lock(&p_ro_page_mutex);
 
    preempt_disable();
@@ -657,9 +651,9 @@ static inline void p_lkrg_open_rw(void) {
    barrier();
    /* It's a good time to verify if everything is fine */
    p_ed_pcfi_cpu(1);
-   p_tasks_write_lock(&p_flags);
+   p_tasks_write_lock();
    p_ed_validate_current();
-   p_tasks_write_unlock(&p_flags);
+   p_tasks_write_unlock();
 }
 
 static inline void p_lkrg_close_rw(void) {
@@ -808,9 +802,6 @@ static inline int p_set_memory_p(unsigned long p_addr, int p_numpages) {
 }
 
 static inline void p_lkrg_open_rw(void) {
-
-   unsigned long p_flags;
-
    mutex_lock(&p_ro_page_mutex);
 
    preempt_disable();
@@ -819,9 +810,9 @@ static inline void p_lkrg_open_rw(void) {
    barrier();
    /* It's a good time to verify if everything is fine */
    p_ed_pcfi_cpu(1);
-   p_tasks_write_lock(&p_flags);
+   p_tasks_write_lock();
    p_ed_validate_current();
-   p_tasks_write_unlock(&p_flags);
+   p_tasks_write_unlock();
 }
 
 static inline void p_lkrg_close_rw(void) {

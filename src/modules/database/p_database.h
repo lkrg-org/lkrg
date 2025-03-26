@@ -191,10 +191,6 @@ int hash_from_iommu_table(void);
 
 static inline void p_text_section_lock(void) {
 
-#if defined(P_LKRG_CI_ARCH_STATIC_CALL_TRANSFORM_H)
-   unsigned long p_text_flags;
-#endif
-
 #if !defined(P_LKRG_DEBUG_BUILD)
    lockdep_off();
 #endif
@@ -210,14 +206,14 @@ static inline void p_text_section_lock(void) {
 #endif
 #if defined(P_LKRG_CI_ARCH_STATIC_CALL_TRANSFORM_H)
    do {
-      p_lkrg_counter_lock_lock(&p_static_call_spinlock, &p_text_flags);
+      p_lkrg_counter_lock_lock(&p_static_call_spinlock);
       if (!p_lkrg_counter_lock_val_read(&p_static_call_spinlock))
          break;
-      p_lkrg_counter_lock_unlock(&p_static_call_spinlock, &p_text_flags);
+      p_lkrg_counter_lock_unlock(&p_static_call_spinlock);
       schedule();
    } while(1);
    p_lkrg_counter_lock_val_inc(&p_static_call_spinlock);
-   p_lkrg_counter_lock_unlock(&p_static_call_spinlock, &p_text_flags);
+   p_lkrg_counter_lock_unlock(&p_static_call_spinlock);
 #endif
    mutex_lock(P_SYM(p_text_mutex));
 }
