@@ -50,20 +50,19 @@ notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p
    int p_nr = *P_SYM(p_tp_vec_nr);
    int p_cnt = 0;
    p_text_poke_loc *p_tmp;
-   unsigned long p_flags;
 
    p_debug_kprobe_log(
           "p_arch_jump_label_transform_apply_entry: comm[%s] Pid:%d",current->comm,current->pid);
 
    do {
-      p_lkrg_counter_lock_lock(&p_jl_lock, &p_flags);
+      p_lkrg_counter_lock_lock(&p_jl_lock);
       if (!p_lkrg_counter_lock_val_read(&p_jl_lock))
          break;
-      p_lkrg_counter_lock_unlock(&p_jl_lock, &p_flags);
+      p_lkrg_counter_lock_unlock(&p_jl_lock);
       cpu_relax();
    } while(1);
    p_lkrg_counter_lock_val_inc(&p_jl_lock);
-   p_lkrg_counter_lock_unlock(&p_jl_lock, &p_flags);
+   p_lkrg_counter_lock_unlock(&p_jl_lock);
 
    p_print_log(P_LOG_WATCH,
                "[JUMP_LABEL <batch mode>] New modifications => %d",p_nr);

@@ -48,20 +48,19 @@ notrace int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, s
    struct jump_entry *p_tmp = (struct jump_entry *)p_regs_get_arg1(p_regs);
    unsigned long p_addr = p_jump_entry_code(p_tmp);
    struct module *p_module = NULL;
-   unsigned long p_flags;
 
    p_debug_kprobe_log(
           "p_arch_jump_label_transform_entry: comm[%s] Pid:%d",current->comm,current->pid);
 
    do {
-      p_lkrg_counter_lock_lock(&p_jl_lock, &p_flags);
+      p_lkrg_counter_lock_lock(&p_jl_lock);
       if (!p_lkrg_counter_lock_val_read(&p_jl_lock))
          break;
-      p_lkrg_counter_lock_unlock(&p_jl_lock, &p_flags);
+      p_lkrg_counter_lock_unlock(&p_jl_lock);
       cpu_relax();
    } while(1);
    p_lkrg_counter_lock_val_inc(&p_jl_lock);
-   p_lkrg_counter_lock_unlock(&p_jl_lock, &p_flags);
+   p_lkrg_counter_lock_unlock(&p_jl_lock);
 
    p_print_log(P_LOG_WATCH,
                "[JUMP_LABEL] New modification: type[%s] code[0x%lx] target[0x%lx] key[0x%lx]!",
