@@ -514,9 +514,7 @@ static inline void p_lkrg_open_rw(void) {
    barrier();
    /* It's a good time to verify if everything is fine */
    p_ed_pcfi_cpu(1);
-   p_tasks_write_lock();
-   p_ed_validate_current();
-   p_tasks_write_unlock();
+   p_ed_find_validate_current();
 }
 
 static inline void p_lkrg_close_rw(void) {
@@ -651,9 +649,7 @@ static inline void p_lkrg_open_rw(void) {
    barrier();
    /* It's a good time to verify if everything is fine */
    p_ed_pcfi_cpu(1);
-   p_tasks_write_lock();
-   p_ed_validate_current();
-   p_tasks_write_unlock();
+   p_ed_find_validate_current();
 }
 
 static inline void p_lkrg_close_rw(void) {
@@ -810,9 +806,7 @@ static inline void p_lkrg_open_rw(void) {
    barrier();
    /* It's a good time to verify if everything is fine */
    p_ed_pcfi_cpu(1);
-   p_tasks_write_lock();
-   p_ed_validate_current();
-   p_tasks_write_unlock();
+   p_ed_find_validate_current();
 }
 
 static inline void p_lkrg_close_rw(void) {
