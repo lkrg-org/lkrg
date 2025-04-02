@@ -32,9 +32,10 @@ static int process_log(const char *pathname)
 	while (fgets(buf, sizeof(buf), f)) {
 		unsigned long long tr, ts, tsu, seq, teu;
 		unsigned int sev;
+		char type;
 		int msgofs = 0;
-		int n = sscanf(buf, "%llu,%llu,%llu,%u,%llu,%llu,-;%n", &tr, &ts, &tsu, &sev, &seq, &teu, &msgofs);
-		if (n < 6 || !msgofs) {
+		int n = sscanf(buf, "%llu,%llu,%llu,%u,%llu,%llu,%c;%n", &tr, &ts, &tsu, &sev, &seq, &teu, &type, &msgofs);
+		if (n < 7 || !msgofs || (type != '-' && type != 'c')) {
 			if (!(retval & 2)) {
 				fputs("Warning: Skipping misformatted line(s)\n", stderr);
 				retval |= 2;
@@ -56,7 +57,7 @@ static int process_log(const char *pathname)
 		}
 
 		char ste[21];
-		printf("%s %s", format_time(ste, sizeof(ste), te), msg);
+		printf("%s %c %s", format_time(ste, sizeof(ste), te), type, msg);
 	}
 
 	if (ferror(f)) {
