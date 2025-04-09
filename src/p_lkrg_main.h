@@ -49,7 +49,6 @@
 #include <linux/namei.h>
 #include <linux/dcache.h>
 #include <linux/limits.h>
-#include <linux/slab.h>
 #include <linux/uaccess.h>
 #include <linux/rbtree.h>
 
@@ -66,6 +65,12 @@
 #include <linux/ftrace.h>
 
 #include <linux/preempt.h>
+
+#include <linux/timer.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,15,0)
+#define del_timer_sync(x) timer_delete_sync(x)
+#endif
+
 #ifndef RHEL_RELEASE_VERSION
 #define RHEL_RELEASE_VERSION(a, b) (((a) << 8) + (b))
 #endif
