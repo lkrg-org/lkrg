@@ -1,5 +1,10 @@
 The following major changes have been made since 0.9.9:
 
+ *) Overhaul locking of per-task shadow data, using finer-grain locks
+ *) Improve performance of per-task shadow data lookups by making them lockless
+ *) Fix several lethal race conditions involving SECCOMP_FILTER_FLAG_TSYNC
+ *) Fix integrity violation misattribution to the wrong task when pint_enforce=0
+ *) Fix several integrity violation race conditions when pint_enforce=0
  *) Support building against (but not yet loading into) Linux 6.15-rc1+
  *) Build and link the userspace logger tools with hardening flags, and pass
     distributions' RPM packaging hardening flags to the compiler and linker
