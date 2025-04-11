@@ -33,12 +33,15 @@ static struct p_addr_name {
     uintptr_t	addr;
     const char *name;
 } p_addr_name_array[] = {
-   P_LKRG_DEBUG_RULE(p_rb_add_ed_pid),
-   P_LKRG_DEBUG_RULE(p_rb_del_ed_pid),
-   P_LKRG_DEBUG_RULE(p_init_rb_ed_pids),
-   P_LKRG_DEBUG_RULE(p_delete_rb_ed_pids),
+   P_LKRG_DEBUG_RULE(init_ed_task_cache),
+   P_LKRG_DEBUG_RULE(destroy_ed_task_cache),
+   P_LKRG_DEBUG_RULE(alloc_ed_task),
+   P_LKRG_DEBUG_RULE(free_ed_task),
+   P_LKRG_DEBUG_RULE(ed_task_add),
+   P_LKRG_DEBUG_RULE(ed_task_del_current),
+   P_LKRG_DEBUG_RULE(__ed_task_find_rcu),
+   P_LKRG_DEBUG_RULE(__ed_task_current),
    P_LKRG_DEBUG_RULE(p_dump_task_f),
-   P_LKRG_DEBUG_RULE(p_remove_task_pid_f),
    P_LKRG_DEBUG_RULE(p_ed_enforce_validation),
    P_LKRG_DEBUG_RULE(p_ed_enforce_validation_paranoid),
    P_LKRG_DEBUG_RULE(p_exploit_detection_init),

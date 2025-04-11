@@ -48,7 +48,7 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/modules/database/p_database.o \
                   src/modules/notifiers/p_notifiers.o \
                   src/modules/self-defense/hiding/p_hiding.o \
-                  src/modules/exploit_detection/p_rb_ed_trees/p_rb_ed_pids/p_rb_ed_pids_tree.o \
+                  src/modules/exploit_detection/ed_task_tree.o \
                   src/modules/exploit_detection/syscalls/p_install.o \
                   src/modules/exploit_detection/syscalls/exec/p_security_bprm_committing_creds/p_security_bprm_committing_creds.o \
                   src/modules/exploit_detection/syscalls/exec/p_security_bprm_committed_creds/p_security_bprm_committed_creds.o \

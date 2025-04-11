@@ -45,20 +45,19 @@ notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, 
    unsigned long p_site = p_regs_get_arg1(p_regs);
    unsigned long p_tramp = p_regs_get_arg2(p_regs);
    unsigned int p_tmp;
-   unsigned long p_flags;
 
    p_debug_kprobe_log(
           "p_arch_static_call_transform_entry: comm[%s] Pid:%d",current->comm,current->pid);
 
    do {
-      p_lkrg_counter_lock_lock(&p_static_call_spinlock, &p_flags);
+      p_lkrg_counter_lock_lock(&p_static_call_spinlock);
       if (!p_lkrg_counter_lock_val_read(&p_static_call_spinlock))
          break;
-      p_lkrg_counter_lock_unlock(&p_static_call_spinlock, &p_flags);
+      p_lkrg_counter_lock_unlock(&p_static_call_spinlock);
       cpu_relax();
    } while(1);
    p_lkrg_counter_lock_val_inc(&p_static_call_spinlock);
-   p_lkrg_counter_lock_unlock(&p_static_call_spinlock, &p_flags);
+   p_lkrg_counter_lock_unlock(&p_static_call_spinlock);
 
 
    p_module1_idx = p_module2_idx = p_tracepoint_tmp_text = 0;
