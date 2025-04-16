@@ -15,7 +15,7 @@ jobs:
                     - image: quay.io/centos/centos:stream9
                       run: dnf install -y --nobest kernel-devel-matched gcc make
                     - image: fedora:latest
-                      run: dnf install -y kernel-devel kernel gcc make elfutils-libelf-devel
+                      run: dnf install -y kernel-devel kernel gcc make elfutils-libelf-devel awk
                     - image: alt:sisyphus
                       run: |
                           apt-get update && apt-get install -y gcc make libelf-devel && \
