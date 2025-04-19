@@ -26,6 +26,7 @@ struct timer_list p_timer;
 unsigned int p_time_stamp = 15; /* timeout in seconds */
 /* God mode variables ;) */
 DEFINE_SPINLOCK(p_db_lock);
+DEFINE_RWLOCK(p_config_lock);
 unsigned long p_db_flags;
 unsigned int p_manual = 0;
 
@@ -178,6 +179,7 @@ void p_check_integrity(struct work_struct *p_work) {
    /*
     * Checking all online CPUs critical data
     */
+   read_lock(&p_config_lock);
    p_read_cpu_lock();
 
 //   for_each_present_cpu(p_tmp) {
@@ -220,7 +222,22 @@ void p_check_integrity(struct work_struct *p_work) {
    /* Now we are safe to disable IRQs on current core */
 
    p_tmp_hash = hash_from_CPU_data(p_tmp_cpus);
+
+   if (p_db.p_CPU_metadata_hashes != p_tmp_hash) {
+      /* I'm hacked! ;( */
+      p_print_log(P_LOG_ALERT, "DETECT: CPU: Hash of CPU metadata has changed unexpectedly");
+#define P_KINT_IF_ACCEPT(old, new) \
+      if (!P_CTRL(p_kint_enforce)) \
+         old = new; \
+      p_hack_check++;
+      P_KINT_IF_ACCEPT(p_db.p_CPU_metadata_hashes, p_tmp_hash)
+   }
+
+   p_print_log(P_LOG_WATCH, "Hash of CPU metadata expected 0x%llx vs. actual 0x%llx",
+      p_db.p_CPU_metadata_hashes, p_tmp_hash);
+
    p_read_cpu_unlock();
+   read_unlock(&p_config_lock);
 
    /* Verify kprobes now */
    if (lkrg_verify_kprobes()) {
@@ -250,19 +267,6 @@ void p_check_integrity(struct work_struct *p_work) {
 
    spin_lock_irqsave(&p_db_lock,p_db_flags);
 //   spin_lock(&p_db_lock);
-
-   if (p_db.p_CPU_metadata_hashes != p_tmp_hash) {
-      /* I'm hacked! ;( */
-      p_print_log(P_LOG_ALERT, "DETECT: CPU: Hash of CPU metadata has changed unexpectedly");
-#define P_KINT_IF_ACCEPT(old, new) \
-      if (!P_CTRL(p_kint_enforce)) \
-         old = new; \
-      p_hack_check++;
-      P_KINT_IF_ACCEPT(p_db.p_CPU_metadata_hashes, p_tmp_hash)
-   }
-
-   p_print_log(P_LOG_WATCH, "Hash of CPU metadata expected 0x%llx vs. actual 0x%llx",
-      p_db.p_CPU_metadata_hashes, p_tmp_hash);
 
    /*
     * Checking memory block:

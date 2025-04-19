@@ -798,13 +798,13 @@ static int p_sysctl_msr_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
    int p_cpu;
    unsigned int p_tmp;
 
+   write_lock(&p_config_lock);
    p_tmp = P_CTRL(p_msr_validate);
    p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
       if (P_CTRL(p_msr_validate) && !p_tmp) {
          P_CTRL(p_profile_validate) = 9;
          p_print_log(P_LOG_STATE, "Enabling 'msr_validate'");
-         spin_lock(&p_db_lock);
          memset(p_db.p_CPU_metadata_array,0,sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids);
          for_each_present_cpu(p_cpu) {
             if (cpu_online(p_cpu)) {
@@ -812,16 +812,14 @@ static int p_sysctl_msr_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
             }
          }
          p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
-         spin_unlock(&p_db_lock);
       } else if (p_tmp && !P_CTRL(p_msr_validate)) {
          P_CTRL(p_profile_validate) = 9;
          p_print_log(P_LOG_STATE, "Disabling 'msr_validate'");
-         spin_lock(&p_db_lock);
          p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
-         spin_unlock(&p_db_lock);
       }
    }
    p_lkrg_close_rw();
+   write_unlock(&p_config_lock);
 
    return p_ret;
 }
@@ -916,10 +914,10 @@ static int p_sysctl_profile_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                   P_CTRL(p_umh_validate) = 0;   // Disabled
                   /* msr_validate */
                   if (P_CTRL(p_msr_validate)) {
-                     spin_lock(&p_db_lock);
+                     write_lock(&p_config_lock);
                      P_CTRL(p_msr_validate) = 0; // Disable
                      p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
-                     spin_unlock(&p_db_lock);
+                     write_unlock(&p_config_lock);
                   }
 #if defined(CONFIG_X86)
                   /* smep_validate */
@@ -942,10 +940,10 @@ static int p_sysctl_profile_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                   P_CTRL(p_umh_validate) = 1;   // Allow specific paths
                   /* msr_validate */
                   if (P_CTRL(p_msr_validate)) {
-                     spin_lock(&p_db_lock);
+                     write_lock(&p_config_lock);
                      P_CTRL(p_msr_validate) = 0; // Disable
                      p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
-                     spin_unlock(&p_db_lock);
+                     write_unlock(&p_config_lock);
                   }
 #if defined(CONFIG_X86)
                   /* smep_validate */
@@ -984,10 +982,10 @@ static int p_sysctl_profile_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                   P_CTRL(p_umh_validate) = 1;   // Allow specific paths
                   /* msr_validate */
                   if (P_CTRL(p_msr_validate)) {
-                     spin_lock(&p_db_lock);
+                     write_lock(&p_config_lock);
                      P_CTRL(p_msr_validate) = 0; // Disable
                      p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
-                     spin_unlock(&p_db_lock);
+                     write_unlock(&p_config_lock);
                   }
 #if defined(CONFIG_X86)
                   /* smep_validate */
@@ -1026,10 +1024,10 @@ static int p_sysctl_profile_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                   P_CTRL(p_umh_validate) = 1;   // Allow specific paths
                   /* msr_validate */
                   if (P_CTRL(p_msr_validate)) {
-                     spin_lock(&p_db_lock);
+                     write_lock(&p_config_lock);
                      P_CTRL(p_msr_validate) = 0; // Disable
                      p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
-                     spin_unlock(&p_db_lock);
+                     write_unlock(&p_config_lock);
                   }
 #if defined(CONFIG_X86)
                   /* smep_validate */
@@ -1068,7 +1066,7 @@ static int p_sysctl_profile_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                   P_CTRL(p_umh_validate) = 2;   // Full lock-down
                   /* msr_validate */
                   if (!P_CTRL(p_msr_validate)) {
-                     spin_lock(&p_db_lock);
+                     write_lock(&p_config_lock);
                      P_CTRL(p_msr_validate) = 1; // Enable
                      memset(p_db.p_CPU_metadata_array,0,sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids);
                      for_each_present_cpu(p_cpu) {
@@ -1077,7 +1075,7 @@ static int p_sysctl_profile_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                         }
                      }
                      p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
-                     spin_unlock(&p_db_lock);
+                     write_unlock(&p_config_lock);
                   }
 #if defined(CONFIG_X86)
                   /* smep_validate */

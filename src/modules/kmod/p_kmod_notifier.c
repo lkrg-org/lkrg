@@ -101,10 +101,12 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
 //   if (p_tmp->state == MODULE_STATE_GOING) { <- Linux kernel bug - might not update state value :(
    if (p_event == MODULE_STATE_GOING) {
 
+      read_lock(&p_config_lock);
       p_read_cpu_lock();
       on_each_cpu(p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
       p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
       p_read_cpu_unlock();
+      read_unlock(&p_config_lock);
 
       /*
        * Now recalculate modules information in database!
@@ -173,10 +175,12 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
 //      if (p_tmp->state == MODULE_STATE_LIVE) { <- Linux kernel bug - might not update state value :(
       if (p_event == MODULE_STATE_LIVE) {
 
+         read_lock(&p_config_lock);
          p_read_cpu_lock();
          on_each_cpu(p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
          p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
          p_read_cpu_unlock();
+         read_unlock(&p_config_lock);
 
          /*
           * Now recalculate modules information in database! Since blocking module is disabled
