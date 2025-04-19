@@ -38,6 +38,7 @@ static struct kretprobe p_switch_idt_kretprobe = {
 int p_switch_idt_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
    spin_lock(&p_db_lock);
+   read_lock(&p_config_lock);
 
    /* A dump_stack() here will give a stack backtrace */
    return 0;
@@ -53,6 +54,7 @@ int p_switch_idt_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
    smp_call_function_single(smp_processor_id(),p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
    p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
 
+   read_unlock(&p_config_lock);
    spin_unlock(&p_db_lock);
 
    return 0;
