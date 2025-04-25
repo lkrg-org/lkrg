@@ -589,7 +589,6 @@ p_main_error:
    if (p_freeze) {
       // Thaw all non-kernel processes
       P_SYM(p_thaw_processes)();
-      p_freeze = 0;
    }
 
    if (p_ret != P_LKRG_SUCCESS)
