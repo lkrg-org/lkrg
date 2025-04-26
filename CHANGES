@@ -1,5 +1,7 @@
 The following major changes have been made since 0.9.9:
 
+ *) Support Linux 6.14+ where we can't hook {override,revert}_creds() anymore,
+    by limiting detection of cred pointer overwrite attacks on those kernels
  *) Overhaul locking of per-task shadow data, using finer-grain locks
  *) Improve performance of per-task shadow data lookups by making them lockless
  *) Fix several lethal race conditions involving SECCOMP_FILTER_FLAG_TSYNC
@@ -10,7 +12,6 @@ The following major changes have been made since 0.9.9:
     between profile_validate=4 and others
  *) Make kprobes testing via LKRG's own dummy function hooking optional (works
     around issue seen on recent Gentoo)
- *) Support building against (but not yet loading into) Linux 6.15-rc1+
  *) Build and link the userspace logger tools with hardening flags, and pass
     distributions' RPM packaging hardening flags to the compiler and linker
  *) lkrg-logctl: Support and report continuation lines (an extra one-character
