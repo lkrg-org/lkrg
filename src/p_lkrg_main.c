@@ -418,10 +418,8 @@ static int __init p_lkrg_register(void) {
     */
 
    /* Register kprobes hooks necessary to verify kprobes itself */
-   if (p_install_lkrg_dummy_hook(0)) {
-      p_print_log(P_LOG_FATAL, "Can't hook 'lkrg_dummy'");
-      return P_LKRG_GENERAL_ERROR;
-   }
+   if (p_install_lkrg_dummy_hook(0))
+      p_print_log(P_LOG_ISSUE, "Can't hook 'lkrg_dummy'");
 
    /* Verify kprobes now */
    if (lkrg_verify_kprobes()) {
