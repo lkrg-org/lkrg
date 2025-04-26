@@ -51,6 +51,9 @@ int lkrg_verify_kprobes(void) {
 
    int p_ret = 0, ret = -1;
 
+   if (!p_lkrg_dummy_kretprobe_state)
+      return 0;
+
    /* Verify kprobes now */
    if ( (ret = lkrg_dummy(0)) != 3) {
       /* I'm hacked! ;( */
