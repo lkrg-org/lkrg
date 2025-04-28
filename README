@@ -7,10 +7,12 @@ security vulnerability exploits against the kernel.
 LKRG is a kernel module (not a kernel patch), so it can be built for and loaded
 on top of a wide range of mainline and distros' kernels, without needing to
 patch those.  We currently support kernel versions ranging from as far back as
-RHEL7's (and its many clones/revisions) and Ubuntu 16.04's to latest mainline
-and distros' kernels.  Our Continuous Integration setup has tested this version
-of LKRG with up to latest mainline kernel 6.11.0-061100daily20240916-generic
-as available for Ubuntu on the release date.
+RHEL7's (and its many clones/revisions) to latest mainline and distros kernels.
+
+LKRG 0.9.9 should work correctly with Linux kernels up to 6.12.y, and mostly
+with 6.13.y.  The current git revision has been updated to also work correctly
+with 6.13+.  We've tested it with Arch Linux's 6.14.3-arch1-1, and we expect it
+to also work with 6.15 once it's released.
 
 LKRG currently supports the x86-64, 32-bit x86, AArch64 (ARM64), and 32-bit ARM
 CPU architectures.
@@ -57,19 +59,29 @@ To build LKRG, you will need the following software:
 - GCC, ideally the same version of it that was used to build the kernel itself
   (some people manage with clang, but this is unsupported, so expect issues)
 
+- awk, as needed by recent Linux kernel Makefile
+
 - libelf, including its "development" sub-package, in case your target kernel
   was built with CONFIG_UNWINDER_ORC=y
 
 - A kernel build directory corresponding to the Linux kernel image the module
-  is to run on.
+  is to run on
 
 For example, under Debian and Ubuntu you can install all of these with:
 
-	sudo apt-get install make gcc libelf-dev linux-headers-$(uname -r)
+	sudo apt-get install make gcc awk libelf-dev linux-headers-$(uname -r)
 
-and under Red Hat'ish distributions (e.g. RHEL, CentOS, Fedora) with:
+under Red Hat'ish distributions (e.g. RHEL, CentOS, Fedora) with:
 
-	sudo yum install make gcc elfutils-libelf-devel kernel-devel
+	sudo yum install make gcc awk elfutils-libelf-devel kernel-devel
+
+under openSUSE with:
+
+	sudo zypper -n install make gcc awk kernel-default-devel
+
+and under Arch Linux with:
+
+	sudo pacman -S make gcc awk libelf linux-headers
 
 (For documentation purposes, we prefix commands requiring root access with
 "sudo", but you may of course run them as root by different means.)
