@@ -1,10 +1,13 @@
 Linux Kernel Runtime Guard (LKRG)
 Copyright (c) 2015-2024 Adam 'pi3' Zabrocki
 Copyright (c) 2020-2022 Mariusz Zaborski
-Copyright (c) 2020-2024 Solar Designer
+Copyright (c) 2020-2025 Solar Designer
+
+src/modules/exploit_detection/ed_task_tree.*
+Copyright (c) 2025 Ctrl IQ, Inc. (Author: Sultan Alsawaf)
 
 src/modules/net/net.*, logger
-Copyright (c) 2022 Binarly
+Copyright (c) 2022 Binarly (Author: Solar Designer)
 Copyright (c) 2024 Solar Designer
 
 src/modules/net/hydrogen/*

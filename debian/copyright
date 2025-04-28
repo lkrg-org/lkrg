@@ -6,11 +6,16 @@ Source: https://lkrg.org
 Files: *
 Copyright: 2015-2024 Adam 'pi3' Zabrocki <pi3@pi3.com.pl>
            2020-2022 Mariusz Zaborski
-           2020-2024 Solar Designer
+           2020-2025 Solar Designer
+License: GPL-2.0
+
+Files: src/modules/exploit_detection/ed_task_tree.*
+Copyright: 2025 Ctrl IQ, Inc. (Author: Sultan Alsawaf)
 License: GPL-2.0
 
 Files: src/modules/net/net.*
-Copyright: 2022 Binarly
+       logger
+Copyright: 2022 Binarly (Author: Solar Designer)
            2024 Solar Designer
 License: GPL-2.0
 
@@ -18,17 +23,22 @@ Files: src/modules/net/hydrogen/*
 Copyright: 2017-2022 Frank Denis
 License: ISC or GPL-2.0
 
-Files: debian/*
-Copyright: 2020-2021 Mikhail Morfikov <mmorfikov@gmail.com>
+Files: scripts/copy-builtin.sh
+       scripts/add-exports.sh
+Copyright: 2021-2022 RageLtMan
 License: GPL-2.0
 
-Files: scripts/copy-builtin.sh
-Copyright: 2021-2022 RageLtMan
+Files: scripts/bootup/openrc/*
+Copyright: 2022 Jakub 'mrl5' Kołodziejczak
 License: GPL-2.0
 
 Files: mkosi.*
        .github/workflows/*
 Copyright: 2021-2024 Vitaly Chikunov
+License: GPL-2.0
+
+Files: debian/*
+Copyright: 2020-2021 Mikhail Morfikov <mmorfikov@gmail.com>
 License: GPL-2.0
 
 License: GPL-2.0
