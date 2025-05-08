@@ -2,6 +2,8 @@ The following major changes have been made since 0.9.9:
 
  *) Support Linux 6.13+ by not hooking {override,revert}_creds() anymore, and
     limiting detection of cred pointer overwrite attacks on those kernels
+ *) Switch many hooks from kretprobes to simple kprobes for greater reliability
+    and improved performance
  *) Overhaul locking of per-task shadow data, using finer-grain locks
  *) Improve performance of per-task shadow data lookups by making them lockless
  *) Fix several lethal race conditions involving SECCOMP_FILTER_FLAG_TSYNC
