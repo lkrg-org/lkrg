@@ -35,7 +35,6 @@ static struct kretprobe p_ftrace_enable_sysctl_kretprobe = {
     .kp.symbol_name = "ftrace_enable_sysctl",
     .handler = p_ftrace_enable_sysctl_ret,
     .entry_handler = p_ftrace_enable_sysctl_entry,
-    .data_size = sizeof(struct p_ftrace_enable_sysctl_data),
 };
 
 notrace int p_ftrace_enable_sysctl_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {

@@ -89,11 +89,6 @@ typedef struct text_poke_loc p_text_poke_loc;
 
 #define P_TP_VEC_MAX (PAGE_SIZE / sizeof(p_text_poke_loc))
 
-/* per-instance private data */
-struct p_arch_jump_label_transform_apply_data {
-    ktime_t entry_stamp;
-};
-
 
 int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs);
 int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs);

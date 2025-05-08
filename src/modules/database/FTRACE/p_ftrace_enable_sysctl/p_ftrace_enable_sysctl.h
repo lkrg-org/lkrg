@@ -30,11 +30,6 @@
 #ifndef P_LKRG_FTRACE_ENABLE_SYSCTL_H
 #define P_LKRG_FTRACE_ENABLE_SYSCTL_H
 
-/* per-instance private data */
-struct p_ftrace_enable_sysctl_data {
-    ktime_t entry_stamp;
-};
-
 
 int p_ftrace_enable_sysctl_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs);
 int p_ftrace_enable_sysctl_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs);

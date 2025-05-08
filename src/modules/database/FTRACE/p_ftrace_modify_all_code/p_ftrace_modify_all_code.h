@@ -30,11 +30,6 @@
 #ifndef P_LKRG_FTRACE_MODIFY_ALL_CODE_H
 #define P_LKRG_FTRACE_MODIFY_ALL_CODE_H
 
-/* per-instance private data */
-struct p_ftrace_modify_all_code_data {
-    ktime_t entry_stamp;
-};
-
 #define p_for_ftrace_rec_iter(iter)                    \
    for (iter = P_SYM(p_ftrace_rec_iter_start)();       \
         iter;                                          \

@@ -29,7 +29,6 @@ static struct kretprobe p_arch_static_call_transform_kretprobe = {
     .kp.symbol_name = "arch_static_call_transform",
     .handler = p_arch_static_call_transform_ret,
     .entry_handler = p_arch_static_call_transform_entry,
-    .data_size = sizeof(struct p_arch_static_call_transform_data),
 };
 
 static unsigned long p_tracepoint_tmp_text;

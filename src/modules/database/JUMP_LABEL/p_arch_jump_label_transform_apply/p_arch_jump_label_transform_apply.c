@@ -41,7 +41,6 @@ static struct kretprobe p_arch_jump_label_transform_apply_kretprobe = {
     .kp.symbol_name = "arch_jump_label_transform_apply",
     .handler = p_arch_jump_label_transform_apply_ret,
     .entry_handler = p_arch_jump_label_transform_apply_entry,
-    .data_size = sizeof(struct p_arch_jump_label_transform_apply_data),
 };
 
 
