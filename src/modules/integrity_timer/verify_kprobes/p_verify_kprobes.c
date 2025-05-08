@@ -20,12 +20,13 @@
 static int p_lkrg_dummy_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs);
 static int p_lkrg_dummy_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs);
 
-static char p_lkrg_dummy_kretprobe_state = 0;
-
-static struct kretprobe p_lkrg_dummy_kretprobe = {
+static struct lkrg_probe p_lkrg_dummy_probe = {
+  .type = LKRG_KRETPROBE,
+    .krp = {
     .kp.symbol_name = "lkrg_dummy",
     .handler = p_lkrg_dummy_ret,
     .entry_handler = p_lkrg_dummy_entry,
+  }
 };
 
 #ifdef __clang__
@@ -51,7 +52,7 @@ int lkrg_verify_kprobes(void) {
 
    int p_ret = 0, ret = -1;
 
-   if (!p_lkrg_dummy_kretprobe_state)
+   if (p_lkrg_dummy_probe.state == LKRG_PROBE_OFF)
       return 0;
 
    /* Verify kprobes now */
