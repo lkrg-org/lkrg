@@ -31,7 +31,6 @@ static struct kretprobe p_switch_idt_kretprobe = {
     .kp.symbol_name = "switch_idt",
     .handler = p_switch_idt_ret,
     .entry_handler = p_switch_idt_entry,
-    .data_size = sizeof(struct p_switch_idt_data),
 };
 
 

@@ -35,7 +35,6 @@ static struct kretprobe p_ftrace_modify_all_code_kretprobe = {
     .kp.symbol_name = "ftrace_modify_all_code",
     .handler = p_ftrace_modify_all_code_ret,
     .entry_handler = p_ftrace_modify_all_code_entry,
-    .data_size = sizeof(struct p_ftrace_modify_all_code_data),
 };
 
 /*

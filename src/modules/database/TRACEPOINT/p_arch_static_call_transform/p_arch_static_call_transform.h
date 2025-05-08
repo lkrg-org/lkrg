@@ -24,11 +24,6 @@
 #ifndef P_LKRG_CI_ARCH_STATIC_CALL_TRANSFORM_H
 #define P_LKRG_CI_ARCH_STATIC_CALL_TRANSFORM_H
 
-/* per-instance private data */
-struct p_arch_static_call_transform_data {
-    ktime_t entry_stamp;
-};
-
 extern p_lkrg_counter_lock p_static_call_spinlock;
 
 int p_arch_static_call_transform_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs);
