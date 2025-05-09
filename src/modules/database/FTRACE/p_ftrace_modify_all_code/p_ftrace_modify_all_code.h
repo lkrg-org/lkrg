@@ -32,11 +32,6 @@
 
 #include "../../../exploit_detection/syscalls/p_install.h"
 
-#define p_for_ftrace_rec_iter(iter)                    \
-   for (iter = P_SYM(p_ftrace_rec_iter_start)();       \
-        iter;                                          \
-        iter = P_SYM(p_ftrace_rec_iter_next)(iter))
-
 GENERATE_INSTALL_FUNC_PROTO(ftrace_modify_all_code)
 
 #endif
