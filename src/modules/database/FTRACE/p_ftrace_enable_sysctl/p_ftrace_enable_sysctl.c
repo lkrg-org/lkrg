@@ -29,62 +29,23 @@
 
 #if defined(P_LKRG_FTRACE_ENABLE_SYSCTL_H)
 
-char p_ftrace_enable_sysctl_kretprobe_state = 0;
+#include "../../../exploit_detection/syscalls/p_install.h"
 
-static struct kretprobe p_ftrace_enable_sysctl_kretprobe = {
-    .kp.symbol_name = "ftrace_enable_sysctl",
-    .handler = p_ftrace_enable_sysctl_ret,
-    .entry_handler = p_ftrace_enable_sysctl_entry,
-};
-
-notrace int p_ftrace_enable_sysctl_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
+static notrace int p_ftrace_enable_sysctl_entry(struct kprobe *p_ri, struct pt_regs *p_regs) {
 
    p_regs_set_arg2(p_regs, 0x0);
 
    return 0;
 }
 
+static struct lkrg_probe p_ftrace_enable_sysctl_probe = {
+  .type = LKRG_KPROBE,
+  .krp = {
+    .kp.symbol_name = "ftrace_enable_sysctl",
+    .kp.pre_handler = p_ftrace_enable_sysctl_entry,
+  }
+};
 
-notrace int p_ftrace_enable_sysctl_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
-
-   return 0;
-}
-
-
-int p_install_ftrace_enable_sysctl_hook(void) {
-
-   int p_tmp;
-
-   p_ftrace_enable_sysctl_kretprobe.maxactive = p_get_kprobe_maxactive();
-   if ( (p_tmp = register_kretprobe(&p_ftrace_enable_sysctl_kretprobe)) != 0) {
-      p_print_log(P_LOG_FATAL, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
-                  p_ftrace_enable_sysctl_kretprobe.kp.symbol_name,
-                  p_tmp);
-      return P_LKRG_GENERAL_ERROR;
-   }
-   p_print_log(P_LOG_WATCH, "Planted [kretprobe] <%s> at: 0x%lx",
-               p_ftrace_enable_sysctl_kretprobe.kp.symbol_name,
-               (unsigned long)p_ftrace_enable_sysctl_kretprobe.kp.addr);
-   p_ftrace_enable_sysctl_kretprobe_state = 1;
-
-   return P_LKRG_SUCCESS;
-}
-
-
-void p_uninstall_ftrace_enable_sysctl_hook(void) {
-
-   if (!p_ftrace_enable_sysctl_kretprobe_state) {
-      p_print_log(P_LOG_WATCH, "[kretprobe] <%s> at 0x%lx is NOT installed",
-                  p_ftrace_enable_sysctl_kretprobe.kp.symbol_name,
-                  (unsigned long)p_ftrace_enable_sysctl_kretprobe.kp.addr);
-   } else {
-      unregister_kretprobe(&p_ftrace_enable_sysctl_kretprobe);
-      p_print_log(P_LOG_WATCH, "Removing [kretprobe] <%s> at 0x%lx nmissed[%d]",
-                  p_ftrace_enable_sysctl_kretprobe.kp.symbol_name,
-                  (unsigned long)p_ftrace_enable_sysctl_kretprobe.kp.addr,
-                  p_ftrace_enable_sysctl_kretprobe.nmissed);
-      p_ftrace_enable_sysctl_kretprobe_state = 0;
-   }
-}
+GENERATE_INSTALL_FUNC(ftrace_enable_sysctl)
 
 #endif

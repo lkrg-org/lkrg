@@ -28,11 +28,10 @@
 #ifndef P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_H
 #define P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_H
 
+#include "../../../exploit_detection/syscalls/p_install.h"
+
 extern p_lkrg_counter_lock p_jl_lock;
 
-int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs);
-int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs);
-int p_install_arch_jump_label_transform_hook(void);
-void p_uninstall_arch_jump_label_transform_hook(void);
+GENERATE_INSTALL_FUNC_PROTO(arch_jump_label_transform)
 
 #endif
