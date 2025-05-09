@@ -20,7 +20,6 @@
 
 int lkrg_verify_kprobes(void);
 
-int p_install_lkrg_dummy_hook(int p_isra);
-void p_uninstall_lkrg_dummy_hook(void);
+GENERATE_INSTALL_FUNC_PROTO(lkrg_dummy)
 
 #endif

@@ -30,16 +30,14 @@
 #ifndef P_LKRG_FTRACE_MODIFY_ALL_CODE_H
 #define P_LKRG_FTRACE_MODIFY_ALL_CODE_H
 
+#include "../../../exploit_detection/syscalls/p_install.h"
+
 #define p_for_ftrace_rec_iter(iter)                    \
    for (iter = P_SYM(p_ftrace_rec_iter_start)();       \
         iter;                                          \
         iter = P_SYM(p_ftrace_rec_iter_next)(iter))
 
-
-int p_ftrace_modify_all_code_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs);
-int p_ftrace_modify_all_code_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs);
-int p_install_ftrace_modify_all_code_hook(void);
-void p_uninstall_ftrace_modify_all_code_hook(void);
+GENERATE_INSTALL_FUNC_PROTO(ftrace_modify_all_code)
 
 #endif
 

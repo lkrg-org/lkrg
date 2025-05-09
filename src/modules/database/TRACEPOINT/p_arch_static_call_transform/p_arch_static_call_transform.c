@@ -20,16 +20,9 @@
  */
 
 #include "../../../../p_lkrg_main.h"
+#include "../../../exploit_detection/syscalls/p_install.h"
 
 #if defined(P_LKRG_CI_ARCH_STATIC_CALL_TRANSFORM_H)
-
-static char p_arch_static_call_transform_kretprobe_state = 0;
-
-static struct kretprobe p_arch_static_call_transform_kretprobe = {
-    .kp.symbol_name = "arch_static_call_transform",
-    .handler = p_arch_static_call_transform_ret,
-    .entry_handler = p_arch_static_call_transform_entry,
-};
 
 static unsigned long p_tracepoint_tmp_text;
 static struct module *p_module1;
@@ -39,7 +32,7 @@ static unsigned int p_module2_idx;
 
 p_lkrg_counter_lock p_static_call_spinlock;
 
-notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
+static notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
    unsigned long p_site = p_regs_get_arg1(p_regs);
    unsigned long p_tramp = p_regs_get_arg2(p_regs);
@@ -135,7 +128,7 @@ notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, 
 }
 
 
-notrace int p_arch_static_call_transform_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
+static notrace int p_arch_static_call_transform_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
 
    unsigned int p_tmp;
    unsigned char p_flag = 0;
@@ -260,42 +253,15 @@ notrace int p_arch_static_call_transform_ret(struct kretprobe_instance *ri, stru
 }
 
 
-int p_install_arch_static_call_transform_hook(void) {
+static struct lkrg_probe p_arch_static_call_transform_probe = {
+  .type = LKRG_KRETPROBE,
+  .krp = {
+    .kp.symbol_name = "arch_static_call_transform",
+    .handler = p_arch_static_call_transform_ret,
+    .entry_handler = p_arch_static_call_transform_entry,
+  }
+};
 
-   int p_tmp;
-
-   p_lkrg_counter_lock_init(&p_static_call_spinlock);
-
-   p_arch_static_call_transform_kretprobe.maxactive = p_get_kprobe_maxactive();
-   if ( (p_tmp = register_kretprobe(&p_arch_static_call_transform_kretprobe)) != 0) {
-      p_print_log(P_LOG_FATAL, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
-                  p_arch_static_call_transform_kretprobe.kp.symbol_name,
-                  p_tmp);
-      return P_LKRG_GENERAL_ERROR;
-   }
-   p_print_log(P_LOG_WATCH, "Planted [kretprobe] <%s> at: 0x%lx",
-               p_arch_static_call_transform_kretprobe.kp.symbol_name,
-               (unsigned long)p_arch_static_call_transform_kretprobe.kp.addr);
-   p_arch_static_call_transform_kretprobe_state = 1;
-
-   return P_LKRG_SUCCESS;
-}
-
-
-void p_uninstall_arch_static_call_transform_hook(void) {
-
-   if (!p_arch_static_call_transform_kretprobe_state) {
-      p_print_log(P_LOG_WATCH, "[kretprobe] <%s> at 0x%lx is NOT installed",
-                  p_arch_static_call_transform_kretprobe.kp.symbol_name,
-                  (unsigned long)p_arch_static_call_transform_kretprobe.kp.addr);
-   } else {
-      unregister_kretprobe(&p_arch_static_call_transform_kretprobe);
-      p_print_log(P_LOG_WATCH, "Removing [kretprobe] <%s> at 0x%lx nmissed[%d]",
-                  p_arch_static_call_transform_kretprobe.kp.symbol_name,
-                  (unsigned long)p_arch_static_call_transform_kretprobe.kp.addr,
-                  p_arch_static_call_transform_kretprobe.nmissed);
-      p_arch_static_call_transform_kretprobe_state = 0;
-   }
-}
+GENERATE_INSTALL_FUNC(arch_static_call_transform)
 
 #endif

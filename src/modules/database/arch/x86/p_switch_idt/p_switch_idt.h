@@ -28,11 +28,9 @@
 #ifndef P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
 #define P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
 
+#include "../../../../exploit_detection/syscalls/p_install.h"
 
-int p_switch_idt_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs);
-int p_switch_idt_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs);
-int p_install_switch_idt_hook(void);
-void p_uninstall_switch_idt_hook(void);
+GENERATE_INSTALL_FUNC_PROTO(switch_idt)
 
 #endif
 

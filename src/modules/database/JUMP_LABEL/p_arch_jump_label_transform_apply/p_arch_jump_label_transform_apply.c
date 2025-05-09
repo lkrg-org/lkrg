@@ -29,22 +29,15 @@
  */
 
 #include "../../../../p_lkrg_main.h"
+#include "../../../exploit_detection/syscalls/p_install.h"
 
 #ifdef P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_APPLY_H
 
 static unsigned long p_jl_batch_addr[P_TP_VEC_MAX];
 static unsigned int p_jl_batch_nr;
 
-char p_arch_jump_label_transform_apply_kretprobe_state = 0;
 
-static struct kretprobe p_arch_jump_label_transform_apply_kretprobe = {
-    .kp.symbol_name = "arch_jump_label_transform_apply",
-    .handler = p_arch_jump_label_transform_apply_ret,
-    .entry_handler = p_arch_jump_label_transform_apply_entry,
-};
-
-
-notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
+static notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
    int p_nr = *P_SYM(p_tp_vec_nr);
    int p_cnt = 0;
@@ -115,7 +108,7 @@ notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p
 }
 
 
-notrace int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
+static notrace int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
 
    struct module *p_module = NULL;
    unsigned int p_cnt;
@@ -241,52 +234,15 @@ notrace int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri,
 }
 
 
-int p_install_arch_jump_label_transform_apply_hook(void) {
+static struct lkrg_probe p_arch_jump_label_transform_apply_probe = {
+  .type = LKRG_KRETPROBE,
+  .krp = {
+    .kp.symbol_name = "arch_jump_label_transform_apply",
+    .handler = p_arch_jump_label_transform_apply_ret,
+    .entry_handler = p_arch_jump_label_transform_apply_entry,
+  }
+};
 
-   int p_tmp;
-
-   P_SYM_INIT(tp_vec)
-   P_SYM_INIT(tp_vec_nr)
-
-// DEBUG
-   p_debug_log(P_LOG_DEBUG, "<p_install_arch_jump_label_transform_apply_hook> "
-                           "p_tp_vec[0x%lx] p_tp_vec_nr[0x%lx]",
-                           (unsigned long)P_SYM(p_tp_vec),
-                           (unsigned long)P_SYM(p_tp_vec_nr));
-
-   p_arch_jump_label_transform_apply_kretprobe.maxactive = p_get_kprobe_maxactive();
-   if ( (p_tmp = register_kretprobe(&p_arch_jump_label_transform_apply_kretprobe)) != 0) {
-      p_print_log(P_LOG_FATAL, "[kretprobe] register_kretprobe() for <%s> failed! [err=%d]",
-                  p_arch_jump_label_transform_apply_kretprobe.kp.symbol_name,
-                  p_tmp);
-      return P_LKRG_GENERAL_ERROR;
-   }
-   p_print_log(P_LOG_WATCH, "Planted [kretprobe] <%s> at: 0x%lx",
-               p_arch_jump_label_transform_apply_kretprobe.kp.symbol_name,
-               (unsigned long)p_arch_jump_label_transform_apply_kretprobe.kp.addr);
-   p_arch_jump_label_transform_apply_kretprobe_state = 1;
-
-   return P_LKRG_SUCCESS;
-
-p_sym_error:
-   return P_LKRG_GENERAL_ERROR;
-}
-
-
-void p_uninstall_arch_jump_label_transform_apply_hook(void) {
-
-   if (!p_arch_jump_label_transform_apply_kretprobe_state) {
-      p_print_log(P_LOG_WATCH, "[kretprobe] <%s> at 0x%lx is NOT installed",
-                  p_arch_jump_label_transform_apply_kretprobe.kp.symbol_name,
-                  (unsigned long)p_arch_jump_label_transform_apply_kretprobe.kp.addr);
-   } else {
-      unregister_kretprobe(&p_arch_jump_label_transform_apply_kretprobe);
-      p_print_log(P_LOG_WATCH, "Removing [kretprobe] <%s> at 0x%lx nmissed[%d]",
-                  p_arch_jump_label_transform_apply_kretprobe.kp.symbol_name,
-                  (unsigned long)p_arch_jump_label_transform_apply_kretprobe.kp.addr,
-                  p_arch_jump_label_transform_apply_kretprobe.nmissed);
-      p_arch_jump_label_transform_apply_kretprobe_state = 0;
-   }
-}
+GENERATE_INSTALL_FUNC(arch_jump_label_transform_apply)
 
 #endif
