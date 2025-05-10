@@ -254,7 +254,7 @@ p_module_event_notifier_activity_out:
 void p_verify_module_live(struct module *p_mod) {
 
 #if P_OVL_OVERRIDE_SYNC_MODE
-   if (p_ovl_override_sync_kretprobe_state) {
+   if (p_ovl_override_sync_probe.state != LKRG_PROBE_OFF) {
       /* We do not need to do anything for now */
       return;
    }
@@ -289,7 +289,7 @@ void p_verify_module_live(struct module *p_mod) {
 void p_verify_module_going(struct module *p_mod) {
 
 #if P_OVL_OVERRIDE_SYNC_MODE
-   if (!p_ovl_override_sync_kretprobe_state) {
+   if (p_ovl_override_sync_probe.state == LKRG_PROBE_OFF) {
       /* We do not need to do anything for now */
       return;
    }
