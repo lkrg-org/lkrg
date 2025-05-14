@@ -45,7 +45,7 @@ static int p_block_module_max = 1;
 static int p_trigger_min = 0;
 static int p_trigger_max = 1;
 
-#ifdef P_LKRG_UNHIDE
+#ifdef LKRG_WITH_HIDE
 static int p_hide_lkrg_min = 0;
 static int p_hide_lkrg_max = 1;
 #endif
@@ -112,7 +112,7 @@ static int p_sysctl_log_level(P_STRUCT_CTL_TABLE *p_table, int p_write,
                               void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 static int p_sysctl_trigger(P_STRUCT_CTL_TABLE *p_table, int p_write,
                             void __user *p_buffer, size_t *p_len, loff_t *p_pos);
-#ifdef P_LKRG_UNHIDE
+#ifdef LKRG_WITH_HIDE
 static int p_sysctl_hide(P_STRUCT_CTL_TABLE *p_table, int p_write,
                          void __user *p_buffer, size_t *p_len, loff_t *p_pos);
 #endif
@@ -217,7 +217,7 @@ struct ctl_table p_lkrg_sysctl_table[] = {
       .extra1         = &p_trigger_min,
       .extra2         = &p_trigger_max,
    },
-#ifdef P_LKRG_UNHIDE
+#ifdef LKRG_WITH_HIDE
    {
       .procname       = "hide",
       .data           = &P_CTRL(p_hide_lkrg),
@@ -563,7 +563,7 @@ static int p_sysctl_trigger(P_STRUCT_CTL_TABLE *p_table, int p_write,
    return p_ret;
 }
 
-#ifdef P_LKRG_UNHIDE
+#ifdef LKRG_WITH_HIDE
 static int p_sysctl_hide(P_STRUCT_CTL_TABLE *p_table, int p_write,
                          void __user *p_buffer, size_t *p_len, loff_t *p_pos) {
 

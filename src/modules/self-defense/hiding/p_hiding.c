@@ -65,7 +65,7 @@ void p_hide_itself(void) {
    mutex_unlock(P_SYM(p_module_mutex));
 }
 
-#ifdef P_LKRG_UNHIDE
+#ifdef LKRG_WITH_HIDE
 void p_unhide_itself(void) {
 
    struct module     *p_tmp_mod    = P_GLOBAL_TO_MODULE(P_SYM(p_modules));

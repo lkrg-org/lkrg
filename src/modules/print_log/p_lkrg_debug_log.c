@@ -88,7 +88,7 @@ static struct p_addr_name {
    P_LKRG_DEBUG_RULE(p_deregister_notifiers),
    P_LKRG_DEBUG_RULE(p_hide_itself),
 
-#ifdef P_LKRG_UNHIDE
+#ifdef LKRG_WITH_HIDE
    P_LKRG_DEBUG_RULE(p_unhide_itself),
 #endif
 

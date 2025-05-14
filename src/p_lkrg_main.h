@@ -18,7 +18,7 @@
 #ifndef P_LKRG_MAIN_H
 #define P_LKRG_MAIN_H
 
-#define P_LKRG_UNHIDE
+#define LKRG_WITH_HIDE
 #define P_BOOT_DISABLE_LKRG "nolkrg"
 
 #include <linux/kernel.h>
