@@ -12,6 +12,7 @@
 #include <arpa/inet.h>
 
 #include <sys/time.h>
+#include <sys/stat.h>
 
 #include "hydrogen/hydrogen.c"
 
@@ -53,9 +54,11 @@ int session_process(const char *from)
 	{
 		char fn[sizeof(LOG_PATH) + 16];
 		snprintf(fn, sizeof(fn), LOG_PATH "/%s", from);
+		umask(027);
 		fd = open(fn, O_CREAT | O_WRONLY | O_APPEND, 0640);
 		if (fd < 0)
 			return log_error("open");
+		umask(077);
 	}
 
 	while (1) {

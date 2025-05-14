@@ -42,7 +42,7 @@ lkrg-keygen: $(KEYGEN_OBJS)
 install: $(PROJ)
 	$(MKDIR) -m 755 $(DESTDIR)$(SBINDIR)
 	$(INSTALL) -m 700 lkrg-logger $(DESTDIR)$(SBINDIR)/
-	$(INSTALL) -m 700 lkrg-logctl $(DESTDIR)$(SBINDIR)/
+	$(INSTALL) -m 755 lkrg-logctl $(DESTDIR)$(SBINDIR)/
 	$(INSTALL) -m 755 lkrg-keygen $(DESTDIR)$(SBINDIR)/
 	if [ -d $(DESTDIR)$(UNITDIR) ]; then \
 		umask 022; \
