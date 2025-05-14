@@ -17,6 +17,8 @@
 
 #include "../../../p_lkrg_main.h"
 
+#ifdef LKRG_WITH_HIDE
+
 /*
 struct kobject            *p_find_kobj_parent;
 struct module_sect_attrs  *p_find_sect_attrs;
@@ -65,7 +67,6 @@ void p_hide_itself(void) {
    mutex_unlock(P_SYM(p_module_mutex));
 }
 
-#ifdef LKRG_WITH_HIDE
 void p_unhide_itself(void) {
 
    struct module     *p_tmp_mod    = P_GLOBAL_TO_MODULE(P_SYM(p_modules));
@@ -105,4 +106,5 @@ p_unhide_itself_exit:
    /* Release the 'module_mutex' */
    mutex_unlock(P_SYM(p_module_mutex));
 }
+
 #endif

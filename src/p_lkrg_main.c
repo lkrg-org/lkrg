@@ -63,7 +63,9 @@ p_ro_page p_ro __p_lkrg_read_only = {
       .p_log_level = 3,                   // log_level
       .p_trigger = 0,                     // trigger
       .p_block_modules = 0,               // block_modules
+#ifdef LKRG_WITH_HIDE
       .p_hide_lkrg = 0,                   // hide_lkrg
+#endif
       .p_heartbeat = 0,                   // heartbeat
 #if defined(CONFIG_X86)
       .p_smep_validate = 1,               // smep_validate
@@ -531,9 +533,11 @@ static int __init p_lkrg_register(void) {
       goto p_main_error;
    }
 
+#ifdef LKRG_WITH_HIDE
    if (P_CTRL(p_hide_lkrg)) {
       p_hide_itself();
    }
+#endif
 
    p_integrity_timer();
    p_register_notifiers();

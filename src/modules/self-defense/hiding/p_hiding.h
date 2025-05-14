@@ -18,6 +18,8 @@
 #ifndef P_LKRG_HIDING_MODULE_H
 #define P_LKRG_HIDING_MODULE_H
 
+#ifdef LKRG_WITH_HIDE
+
 #define P_HIDE_FROM_MODULE_LIST(p_arg)                                     \
 do {                                                                       \
    p_debug_log(P_LOG_DEBUG, "Hiding module [%s | 0x%lx]",                  \
@@ -137,8 +139,8 @@ do {                                                                       \
 
 
 void p_hide_itself(void);
-#ifdef LKRG_WITH_HIDE
 void p_unhide_itself(void);
+
 #endif
 
 #endif
