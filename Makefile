@@ -102,9 +102,11 @@ all:
 	mkdir -p $(P_OUTPUT)
 	cp $(P_PWD)/$(TARGET).ko $(P_OUTPUT)
 
-install:
+install-module: all
 	$(MAKE) -C $(KERNEL) M=$(P_PWD) modules_install
-	depmod -a
+
+install: install-module
+	depmod $(KERNELRELEASE)
 	$(P_PWD)/$(P_BOOTUP_SCRIPT) install
 
 uninstall:
@@ -116,3 +118,5 @@ clean:
 	$(RM) $(P_PWD)/src/modules/kmod/client/kmod/Module.markers
 	$(RM) $(P_PWD)/src/modules/kmod/client/kmod/modules.order
 	$(RM) -rf $(P_OUTPUT)
+
+.PHONY: clean uninstall install install-module all
