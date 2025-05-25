@@ -45,7 +45,7 @@ int lkrg_verify_kprobes(void) {
       return 0;
 
    /* Verify kprobes now */
-   if ( (ret = lkrg_dummy(0)) != 3) {
+   if (unlikely((ret = lkrg_dummy(0)) != 3)) {
       /* I'm hacked! ;( */
       p_print_log(P_LOG_ALERT, "DETECT: Kprobes: Don't work as intended (disabled?)");
       p_ret = -1;

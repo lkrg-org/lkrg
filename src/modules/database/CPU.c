@@ -70,7 +70,7 @@ int p_cmp_cpus(p_cpu_info *p_orig, p_cpu_info *p_current) {
    int p_flag = 0;
 
 #define P_CMP_CPU(which) \
-   if (p_orig->which ## _CPUs != p_current->which ## _CPUs) { \
+   if (unlikely(p_orig->which ## _CPUs != p_current->which ## _CPUs)) { \
       p_print_log(P_LOG_FAULT, "Number of " #which " CPUs changed unexpectedly (expected %u, actual %u)", \
          p_orig->which ## _CPUs, p_current->which ## _CPUs); \
       p_flag++; \
@@ -81,7 +81,7 @@ int p_cmp_cpus(p_cpu_info *p_orig, p_cpu_info *p_current) {
    P_CMP_CPU(present)
    P_CMP_CPU(active)
 
-   if (p_orig->p_nr_cpu_ids != p_current->p_nr_cpu_ids) {
+   if (unlikely(p_orig->p_nr_cpu_ids != p_current->p_nr_cpu_ids)) {
       p_print_log(P_LOG_FAULT, "'nr_cpu_ids' changed unexpectedly (expected %u, actual %u)",
          p_orig->p_nr_cpu_ids, p_current->p_nr_cpu_ids);
       p_flag++;
