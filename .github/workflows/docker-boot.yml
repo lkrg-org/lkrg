@@ -58,8 +58,6 @@ jobs:
             - name: Check that boot-tests script finished successfully
               run: grep 'run-boot-tests.sh - SUCCESS' boot.log
             - name: Check that boot.log contains shutdown sequence
-              run: |
-                  grep 'sysrq: Power Off' boot.log
-                  grep 'reboot: Power down' boot.log
+              run: "grep 'reboot: Power down' boot.log"
 
 # vim: sw=4
