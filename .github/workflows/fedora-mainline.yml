@@ -1,0 +1,74 @@
+name: Fedora boot (mainline)
+on:
+    push:
+    pull_request:
+    schedule:
+        - cron: '0 10 * * *'
+
+jobs:
+    mainline:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+            - name: Enable LKRG debugging options
+              run: |
+                  sed -i '/P_LKRG_JUMP_LABEL_STEXT_DEBUG/s/\/\///' src/modules/print_log/p_lkrg_print_log.h
+                  git diff
+            - name: Build everything in Fedora container 🏭
+              run: |
+                  echo "::group::Prepare Docker container for build"
+                  docker run --name=fedora \
+                      -v ${{ github.workspace }}:/workspace \
+                      -w /workspace fedora:rawhide bash -ex -c '
+                          cat /etc/os-release
+                          dnf install --exclude=linux-firmware -y kernel kernel-devel gcc make elfutils-libelf-devel awk
+                          export KERNELRELEASE=$(ls /lib/modules)
+                          echo "::notice title=Kernel version::$KERNELRELEASE"
+                          echo "::group::Building LKRG for $KERNELRELEASE 🏃"
+                          make -O -j$(nproc) all install-module
+                          echo "::group::Generate initrd image"
+                          dracut -f --add virtfs --force-drivers "9p 9pnet_virtio lkrg" /boot/initrd.img $KERNELRELEASE
+                      '
+            - name: Extracting container to the filesystem
+              run: |
+                  mkdir -p /tmp/fedora
+                  docker export fedora | tar x -C /tmp/fedora
+                  cp -a .github/workflows/run-boot-tests.sh -t /tmp/fedora
+                  echo "KERNELRELEASE=$(ls /tmp/fedora/lib/modules)" >> $GITHUB_ENV
+
+            - name: Installing QEMU on GA host
+              run: |
+                  sudo apt-get -y update
+                  sudo apt-get install -y qemu-kvm man-db-
+                  sudo chmod -v 666 /dev/kvm
+
+            - name: Boot ${{ env.KERNELRELEASE }} 🙏
+              run: |
+                  timeout 60 qemu-system-x86_64 \
+                      -enable-kvm \
+                      -cpu host \
+                      -smp cores=$(nproc) \
+                      -m 2G \
+                      -nographic \
+                      -no-reboot \
+                      -fsdev local,id=foo,path=/tmp/fedora,security_model=none,multidevs=remap \
+                      -device virtio-9p-pci,fsdev=foo,mount_tag=virtfs:foo \
+                      -device virtio-rng-pci \
+                      -kernel /tmp/fedora/lib/modules/*/vmlinuz \
+                      -initrd /tmp/fedora/boot/initrd.img \
+                      -append "console=ttyS0 root=virtfs:foo rootfstype=9p rootflags=trans=virtio init=/run-boot-tests.sh \
+                               panic=1 oops=panic panic_on_warn=1 softlockup_panic=1 hung_task_panic=1 mitigations=off" \
+                      | tee boot.log
+
+            - name: Check boot.log for 'LKRG initialized successfully'
+              run: |
+                  grep 'Linux version' boot.log
+                  grep 'LKRG initialized successfully' boot.log
+            - name: Check that boot.log does not contain problems
+              run: "! grep -E 'Kernel panic|BUG:|WARNING:|ALERT:|FAULT:|FATAL:|Oops|Call Trace' boot.log"
+            - name: Check that boot-tests script finished successfully
+              run: grep 'run-boot-tests.sh - SUCCESS' boot.log
+            - name: Check that boot.log contains shutdown sequence
+              run: "grep 'reboot: Power down' boot.log"
+# vim: sw=4
