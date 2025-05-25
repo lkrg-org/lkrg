@@ -223,7 +223,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
    p_tmp_hash = hash_from_CPU_data(p_tmp_cpus);
 
-   if (p_db.p_CPU_metadata_hashes != p_tmp_hash) {
+   if (unlikely(p_db.p_CPU_metadata_hashes != p_tmp_hash)) {
       /* I'm hacked! ;( */
       p_print_log(P_LOG_ALERT, "DETECT: CPU: Hash of CPU metadata has changed unexpectedly");
 #define P_KINT_IF_ACCEPT(old, new) \
@@ -240,7 +240,7 @@ void p_check_integrity(struct work_struct *p_work) {
    read_unlock(&p_config_lock);
 
    /* Verify kprobes now */
-   if (lkrg_verify_kprobes()) {
+   if (unlikely(lkrg_verify_kprobes())) {
       /* I'm hacked! ;( */
       p_hack_check++;
    }
@@ -276,7 +276,7 @@ void p_check_integrity(struct work_struct *p_work) {
       p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_ex_table.p_addr,
                                     (unsigned int)p_db.kernel_ex_table.p_size);
 
-      if (p_db.kernel_ex_table.p_hash != p_tmp_hash) {
+      if (unlikely(p_db.kernel_ex_table.p_hash != p_tmp_hash)) {
          /* I'm hacked! ;( */
          p_print_log(P_LOG_ALERT, "DETECT: Kernel: Exception table hash changed unexpectedly");
          P_KINT_IF_ACCEPT(p_db.kernel_ex_table.p_hash, p_tmp_hash)
@@ -293,7 +293,7 @@ void p_check_integrity(struct work_struct *p_work) {
    p_tmp_hash = p_lkrg_fast_hash((unsigned char *)p_db.kernel_stext.p_addr,
                                  (unsigned int)p_db.kernel_stext.p_size);
 
-   if (p_db.kernel_stext.p_hash != p_tmp_hash) {
+   if (unlikely(p_db.kernel_stext.p_hash != p_tmp_hash)) {
 #if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
       unsigned char *p_str1 = (unsigned char *)p_db.kernel_stext.p_addr;
       unsigned char *p_str2 = (unsigned char *)p_db.kernel_stext_copy;
@@ -333,7 +333,7 @@ void p_check_integrity(struct work_struct *p_work) {
       p_tmp_hash = 0xFFFFFFFF;
 #endif
 
-      if (p_db.kernel_rodata.p_hash != p_tmp_hash) {
+      if (unlikely(p_db.kernel_rodata.p_hash != p_tmp_hash)) {
          /* I'm hacked! ;( */
          p_print_log(P_LOG_ALERT, "DETECT: Kernel: _rodata hash changed unexpectedly");
          P_KINT_IF_ACCEPT(p_db.kernel_rodata.p_hash, p_tmp_hash)
@@ -356,7 +356,7 @@ void p_check_integrity(struct work_struct *p_work) {
       p_tmp_hash = 0xFFFFFFFF;
 #endif
 
-      if (p_db.kernel_iommu_table.p_hash != p_tmp_hash) {
+      if (unlikely(p_db.kernel_iommu_table.p_hash != p_tmp_hash)) {
          /* I'm hacked! ;( */
          p_print_log(P_LOG_ALERT, "DETECT: Kernel: IOMMU table hash changed unexpectedly");
          P_KINT_IF_ACCEPT(p_db.kernel_iommu_table.p_hash, p_tmp_hash)
@@ -380,7 +380,7 @@ void p_check_integrity(struct work_struct *p_work) {
     * TODO: dump as much info about this module as possible e.g.
     * core-dump image, ddebug_table information, symbol table, etc.
     */
-   if (p_module_list_nr_tmp != p_module_kobj_nr_tmp) {
+   if (unlikely(p_module_list_nr_tmp != p_module_kobj_nr_tmp)) {
       unsigned int p_tmp_cnt,p_tmp_diff = 0;
       char p_tmp_flag,p_tmp_flag_cnt = 0;
 
@@ -582,7 +582,7 @@ void p_check_integrity(struct work_struct *p_work) {
     * TODO: dump as much info about this module as possible e.g.
     * core-dump image, ddebug_table information, symbol table, etc.
     */
-   if (p_module_list_nr_tmp != p_db.p_module_list_nr) {
+   if (unlikely(p_module_list_nr_tmp != p_db.p_module_list_nr)) {
       unsigned int p_tmp_cnt,p_tmp_diff = 0;
       char p_tmp_flag,p_tmp_flag_cnt = 0;
 
@@ -734,7 +734,7 @@ void p_check_integrity(struct work_struct *p_work) {
     * TODO: dump as much info about this module as possible e.g.
     * core-dump image, ddebug_table information, symbol table, etc.
     */
-   if (p_module_kobj_nr_tmp != p_db.p_module_kobj_nr) {
+   if (unlikely(p_module_kobj_nr_tmp != p_db.p_module_kobj_nr)) {
       unsigned int p_tmp_cnt,p_tmp_diff = 0;
       char p_tmp_flag,p_tmp_flag_cnt = 0;
 
@@ -884,7 +884,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
    p_print_log(P_LOG_WATCH, "Hash from 'module list' => [0x%llx]", p_tmp_hash);
 
-   if (p_tmp_hash != p_db.p_module_list_hash) {
+   if (unlikely(p_tmp_hash != p_db.p_module_list_hash)) {
       unsigned int p_tmp_cnt,p_local_hack_check = 0;
 
       for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
@@ -935,7 +935,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
    p_print_log(P_LOG_WATCH, "Hash from 'module kobj(s)' => [0x%llx]", p_tmp_hash);
 
-   if (p_tmp_hash != p_db.p_module_kobj_hash) {
+   if (unlikely(p_tmp_hash != p_db.p_module_kobj_hash)) {
 
       /*
        * OK, we know hash will be different if there is inconsistency in the number
