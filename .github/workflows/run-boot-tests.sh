@@ -26,6 +26,6 @@ echo "$0 - SUCCESS"
 
 # If there is no systemd shutdown manually.
 if [ ! -d /run/systemd/system ]; then
-	echo o > /proc/sysrq-trigger
+	poweroff -f || echo o > /proc/sysrq-trigger
 	sleep 11
 fi
