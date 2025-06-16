@@ -78,7 +78,12 @@ typedef struct _p_text_poke_loc {
     s32 disp;
     u8 len;
     u8 opcode;
+/* The TEXT_POKE_MAX_OPCODE_SIZE name is used since 6.16-rc */
+  #ifdef TEXT_POKE_MAX_OPCODE_SIZE
+    const u8 text[TEXT_POKE_MAX_OPCODE_SIZE];
+  #else
     const u8 text[POKE_MAX_OPCODE_SIZE];
+  #endif
     /* see text_poke_bp_batch() */
     u8 old;
 } p_text_poke_loc;
