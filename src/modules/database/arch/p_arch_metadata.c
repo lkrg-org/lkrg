@@ -75,8 +75,12 @@ int p_register_arch_metadata(void) {
    /*
     * These symbols are used in our hook of arch_jump_label_transform_apply().
     */
+#ifdef TEXT_POKE_MAX_OPCODE_SIZE
+   P_SYM_INIT(text_poke_array)
+#else
    P_SYM_INIT(tp_vec)
    P_SYM_INIT(tp_vec_nr)
+#endif
 
    /*
     * This is not an arch specific hook, but it's a good place to register it

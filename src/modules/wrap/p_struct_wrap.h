@@ -453,7 +453,7 @@ static inline int p_set_memory_ro(unsigned long p_addr, int p_numpages) {
 #else
    return P_SYM(p_change_page_attr_set_clr)(&p_addr, p_numpages,
                                             __pgprot(0),
-                                            __pgprot(_PAGE_RW),
+                                            __pgprot(_PAGE_RW|_PAGE_DIRTY),
                                             0, 0, NULL);
 #endif
 }

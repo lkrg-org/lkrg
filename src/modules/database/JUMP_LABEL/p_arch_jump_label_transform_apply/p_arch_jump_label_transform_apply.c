@@ -39,7 +39,11 @@ static unsigned int p_jl_batch_nr;
 
 static notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
+#ifdef TEXT_POKE_MAX_OPCODE_SIZE
+   int p_nr = P_SYM(p_text_poke_array)->nr_entries;
+#else
    int p_nr = *P_SYM(p_tp_vec_nr);
+#endif
    int p_cnt = 0;
    p_text_poke_loc *p_tmp;
 
@@ -60,7 +64,11 @@ static notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_inst
                "[JUMP_LABEL <batch mode>] New modifications => %d",p_nr);
 
    for (p_jl_batch_nr = 0; p_cnt < p_nr; p_cnt++) {
+#ifdef TEXT_POKE_MAX_OPCODE_SIZE
+      p_tmp = &P_SYM(p_text_poke_array)->vec[p_jl_batch_nr];
+#else
       p_tmp = (p_text_poke_loc *)&P_SYM(p_tp_vec)[p_jl_batch_nr*sizeof(p_text_poke_loc)];
+#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0) || \
     defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL)
       if ( (p_tmp->opcode == CALL_INSN_OPCODE

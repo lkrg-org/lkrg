@@ -237,8 +237,12 @@ typedef struct _p_lkrg_global_symbols_structure {
 #ifdef CONFIG_TRACEPOINTS
    struct mutex *p_tracepoints_mutex;
 #endif
+#ifdef TEXT_POKE_MAX_OPCODE_SIZE
+   struct p_text_poke_array *p_text_poke_array;
+#else
    struct text_poke_loc **p_tp_vec;
    int *p_tp_vec_nr;
+#endif
 #if defined(CONFIG_DYNAMIC_DEBUG)
    struct list_head *p_ddebug_tables;
    struct mutex *p_ddebug_lock;
