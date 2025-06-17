@@ -110,6 +110,8 @@ static inline unsigned long get_random_long(void) {
 #include <linux/sched/task_stack.h>
 #endif
 
+#include "modules/database/JUMP_LABEL/p_arch_jump_label_transform_apply/p_arch_jump_label_transform_apply.h"
+
 /*
  * Define kmem_cache_create() flags:
  *  - LKRG has used to leverage SLAB_HWCACHE_ALIGN but memory overhead
@@ -237,11 +239,13 @@ typedef struct _p_lkrg_global_symbols_structure {
 #ifdef CONFIG_TRACEPOINTS
    struct mutex *p_tracepoints_mutex;
 #endif
+#ifdef P_LKRG_CI_ARCH_JUMP_LABEL_TRANSFORM_APPLY_H
 #ifdef TEXT_POKE_MAX_OPCODE_SIZE
    struct p_text_poke_array *p_text_poke_array;
 #else
-   struct text_poke_loc **p_tp_vec;
+   p_text_poke_loc *p_tp_vec;
    int *p_tp_vec_nr;
+#endif
 #endif
 #if defined(CONFIG_DYNAMIC_DEBUG)
    struct list_head *p_ddebug_tables;
