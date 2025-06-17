@@ -65,9 +65,9 @@ static notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_inst
 
    for (p_jl_batch_nr = 0; p_cnt < p_nr; p_cnt++) {
 #ifdef TEXT_POKE_MAX_OPCODE_SIZE
-      p_tmp = &P_SYM(p_text_poke_array)->vec[p_jl_batch_nr];
+      p_tmp = &P_SYM(p_text_poke_array)->vec[p_cnt];
 #else
-      p_tmp = (p_text_poke_loc *)&P_SYM(p_tp_vec)[p_jl_batch_nr*sizeof(p_text_poke_loc)];
+      p_tmp = &P_SYM(p_tp_vec)[p_cnt];
 #endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0) || \
     defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL)
