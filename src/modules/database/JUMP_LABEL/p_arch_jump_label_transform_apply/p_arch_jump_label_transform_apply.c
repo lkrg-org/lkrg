@@ -69,38 +69,7 @@ static notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_inst
 #else
       p_tmp = &P_SYM(p_tp_vec)[p_cnt];
 #endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0) || \
-    defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL)
-      if ( (p_tmp->opcode == CALL_INSN_OPCODE
-            || p_tmp->opcode == JMP32_INSN_OPCODE
-            || p_tmp->opcode == INT3_INSN_OPCODE
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0) || \
-    defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL)
-            || p_tmp->opcode == RET_INSN_OPCODE
-#endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0) || \
-    defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL)
-            || p_tmp->opcode == JMP8_INSN_OPCODE
-#endif
-            ) &&
-          p_tmp->rel_addr) {
-#else
-      if ( (p_tmp->len == 5
-#if P_LKRG_KERNEL_HAS_VAR_LEN_JUMP_LABEL
-            || p_tmp->len == 2
-#endif
-            ) &&
-          p_tmp->addr
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 5, 0) || \
-   (defined(RHEL_RELEASE_CODE) && RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8, 3)) || \
-   (defined(CONFIG_SUSE_PRODUCT_CODE) && CONFIG_SUSE_PRODUCT_CODE == 1)
-          && p_tmp->opcode) {
-#else
-          && p_tmp->detour) {
-#endif
-
-#endif
-         p_jl_batch_addr[p_jl_batch_nr++] =
+      p_jl_batch_addr[p_jl_batch_nr++] =
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0) || \
     defined(P_LKRG_KERNEL_RHEL_VAR_LEN_JUMP_LABEL)
                   (unsigned long)p_tmp->rel_addr +
@@ -108,7 +77,6 @@ static notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_inst
 #else
                   (unsigned long)p_tmp->addr;
 #endif
-      }
    }
 
    /* A dump_stack() here will give a stack backtrace */
