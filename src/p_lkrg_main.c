@@ -636,8 +636,8 @@ static void __exit p_lkrg_deregister(void) {
    cpuhp_remove_state_nocalls(p_hot_cpus);
 #endif
 
-   p_exploit_detection_exit();
    p_unregister_arch_metadata();
+   p_exploit_detection_exit();
    p_offload_cache_delete();
    p_deregister_module_notifier();
    p_uninstall_lkrg_dummy_hook();
