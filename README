@@ -11,8 +11,8 @@ RHEL7's (and its many clones/revisions) to latest mainline and distros kernels.
 
 LKRG 0.9.9 should work correctly with Linux kernels up to 6.12.y, and mostly
 with 6.13.y.  The current git revision has been updated to also work correctly
-with 6.13+.  We've tested it with Arch Linux's 6.14.3-arch1-1, and we expect it
-to also work with 6.15 once it's released.
+with 6.13+ and our CI setup has tested it with kernels up to Fedora's build of
+6.16.0-0.rc1.250613g27605c8c0f69.21.fc43.x86_64.
 
 LKRG currently supports the x86-64, 32-bit x86, AArch64 (ARM64), and 32-bit ARM
 CPU architectures.
