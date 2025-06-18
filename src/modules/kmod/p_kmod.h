@@ -35,6 +35,7 @@ typedef struct p_module_list_mem {
    void *p_module_core;
    unsigned int p_core_text_size;
    uint64_t p_mod_core_text_hash;
+   bool p_stale;
 
 } p_module_list_mem;
 
