@@ -65,7 +65,6 @@ static notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_inst
                "[JUMP_LABEL <batch mode>] New modifications => %d",p_nr);
 
    p_text = p_mod = false;
-   bitmap_zero(p_db.p_jump_label.p_mod_mask, p_db.p_module_list_nr);
 
    for (p_cnt = 0; p_cnt < p_nr; p_cnt++) {
 #ifdef TEXT_POKE_MAX_OPCODE_SIZE
@@ -88,13 +87,14 @@ static notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_inst
             if (p_db.p_module_list_array[p_mod_id].p_mod == p_module) {
                /*
                 * OK, we found this module on our internal tracking list.
-                * Set bit in bitmask
                 */
-               set_bit(p_mod_id, p_db.p_jump_label.p_mod_mask);
-               p_mod = true;
-               break;
-            }
+               p_db.p_module_list_array[p_mod_id].p_stale = true;
+               if (p_mod) /* the rest of p_stale fields already initialized */
+                  break;
+            } else if (!p_mod) /* need to initialize them all */
+               p_db.p_module_list_array[p_mod_id].p_stale = false;
          }
+         p_mod = true;
       } else {
          /*
           * FTRACE might generate dynamic trampoline which is not part of .text section.
@@ -134,7 +134,7 @@ static notrace int p_arch_jump_label_transform_apply_ret(struct kretprobe_instan
 
    if (p_mod) {
       for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
-         if (test_bit(p_tmp, p_db.p_jump_label.p_mod_mask)) {
+         if (p_db.p_module_list_array[p_tmp].p_stale) {
 
             /*
              * OK, we found this module on our internal tracking list.
