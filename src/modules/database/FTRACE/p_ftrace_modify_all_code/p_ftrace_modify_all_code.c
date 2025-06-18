@@ -60,7 +60,7 @@ static notrace int p_ftrace_modify_all_code_entry(struct kretprobe_instance *p_r
    spin_lock(&p_db_lock);
    p_ftrace_tmp_mod = p_ftrace_tmp_text = 0;
    /* text_mutex lock should do the sync work here... */
-   bitmap_zero(p_db.p_jump_label.p_mod_mask, p_db.p_module_list_nr);
+   /* ...including against concurrent use of p_stale fields by JUMP_LABEL? */
 
    if (p_command & FTRACE_UPDATE_TRACE_FUNC ||
        p_command & FTRACE_START_FUNC_RET ||
@@ -80,13 +80,14 @@ static notrace int p_ftrace_modify_all_code_entry(struct kretprobe_instance *p_r
             if (p_db.p_module_list_array[p_tmp].p_mod == p_module) {
                /*
                 * OK, we found this module on our internal tracking list.
-                * Set bit in bitmask
                 */
-               set_bit(p_tmp, p_db.p_jump_label.p_mod_mask);
-               p_ftrace_tmp_mod++;
-               break;
-            }
+               p_db.p_module_list_array[p_tmp].p_stale = true;
+               if (p_ftrace_tmp_mod) /* the rest of p_stale fields already initialized */
+                  break;
+            } else if (!p_ftrace_tmp_mod) /* need to initialize them all */
+               p_db.p_module_list_array[p_tmp].p_stale = false;
          }
+         p_ftrace_tmp_mod++;
 
       } else {
          /*
@@ -134,7 +135,7 @@ static notrace int p_ftrace_modify_all_code_ret(struct kretprobe_instance *ri, s
    if (p_ftrace_tmp_mod) {
 
       for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++) {
-         if (test_bit(p_tmp, p_db.p_jump_label.p_mod_mask)) {
+         if (p_db.p_module_list_array[p_tmp].p_stale) {
 
             /*
              * OK, we found this module on our internal tracking list.
