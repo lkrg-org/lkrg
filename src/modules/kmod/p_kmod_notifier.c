@@ -340,8 +340,4 @@ void p_deregister_module_notifier(void) {
       p_kzfree(p_db.p_module_kobj_array);
       p_db.p_module_kobj_array = NULL;
    }
-   if (p_db.p_jump_label.p_mod_mask) {
-      kfree(p_db.p_jump_label.p_mod_mask);
-      p_db.p_jump_label.p_mod_mask = NULL;
-   }
 }
