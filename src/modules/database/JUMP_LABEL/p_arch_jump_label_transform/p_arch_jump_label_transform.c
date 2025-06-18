@@ -138,6 +138,7 @@ static notrace int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri
                /*
                 * Because we update module's .text section hash we need to update KOBJs as well.
                 */
+               p_flag = 0;
                for (p_tmp2 = 0; p_tmp2 < p_db.p_module_kobj_nr; p_tmp2++) {
                   if (p_db.p_module_kobj_array[p_tmp2].p_mod == p_db.p_jump_label.p_mod) {
                      p_db.p_module_kobj_array[p_tmp2].p_mod_core_text_hash =

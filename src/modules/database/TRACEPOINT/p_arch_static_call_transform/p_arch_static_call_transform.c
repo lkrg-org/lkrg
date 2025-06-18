@@ -172,6 +172,7 @@ static notrace int p_arch_static_call_transform_ret(struct kretprobe_instance *r
       /*
        * Because we update module's .text section hash we need to update KOBJs as well.
        */
+      p_flag = 0;
       for (p_tmp = 0; p_tmp < p_db.p_module_kobj_nr; p_tmp++) {
          if (p_db.p_module_kobj_array[p_tmp].p_mod == p_module1) {
             p_db.p_module_kobj_array[p_tmp].p_mod_core_text_hash =
@@ -220,6 +221,7 @@ static notrace int p_arch_static_call_transform_ret(struct kretprobe_instance *r
       /*
        * Because we update module's .text section hash we need to update KOBJs as well.
        */
+      p_flag = 0;
       for (p_tmp = 0; p_tmp < p_db.p_module_kobj_nr; p_tmp++) {
          if (p_db.p_module_kobj_array[p_tmp].p_mod == p_module2) {
             p_db.p_module_kobj_array[p_tmp].p_mod_core_text_hash =
