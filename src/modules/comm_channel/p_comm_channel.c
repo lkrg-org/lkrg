@@ -805,7 +805,7 @@ static int p_sysctl_msr_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
       if (P_CTRL(p_msr_validate) && !p_tmp) {
          P_CTRL(p_profile_validate) = 9;
          p_print_log(P_LOG_STATE, "Enabling 'msr_validate'");
-         memset(p_db.p_CPU_metadata_array,0,sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids);
+         memset(p_db.p_CPU_metadata_array,0,sizeof(p_CPU_metadata_hash_mem)*nr_cpu_ids);
          for_each_present_cpu(p_cpu) {
             if (cpu_online(p_cpu)) {
                   smp_call_function_single(p_cpu,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
@@ -1068,7 +1068,7 @@ static int p_sysctl_profile_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
                   if (!P_CTRL(p_msr_validate)) {
                      write_lock(&p_config_lock);
                      P_CTRL(p_msr_validate) = 1; // Enable
-                     memset(p_db.p_CPU_metadata_array,0,sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids);
+                     memset(p_db.p_CPU_metadata_array,0,sizeof(p_CPU_metadata_hash_mem)*nr_cpu_ids);
                      for_each_present_cpu(p_cpu) {
                         if (cpu_online(p_cpu)) {
                               smp_call_function_single(p_cpu,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
