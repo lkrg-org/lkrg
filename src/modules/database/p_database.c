@@ -211,7 +211,7 @@ int p_create_database(void) {
     * __GFP_NOFAIL flag will always generate slowpath warn because developers
     * decided to depreciate this flag ;/
     */
-   if ( (p_db.p_CPU_metadata_array = kzalloc(sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids,
+   if ( (p_db.p_CPU_metadata_array = kzalloc(sizeof(p_CPU_metadata_hash_mem)*nr_cpu_ids,
                                                                   GFP_KERNEL | __GFP_REPEAT)) == NULL) {
       /*
        * I should NEVER be here!
@@ -223,10 +223,10 @@ int p_create_database(void) {
      else {
         p_debug_log(P_LOG_FLOOD,
                "<p_create_database> p_db.p_CPU_metadata_array[0x%lx] with requested size[%d] "
-               "= sizeof(p_CPU_metadata_hash_mem)[%d] * p_db.p_cpu.p_nr_cpu_ids[%d]",
+               "= sizeof(p_CPU_metadata_hash_mem)[%d] * nr_cpu_ids[%d]",
                (unsigned long)p_db.p_CPU_metadata_array,
-               (int)(sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids),
-               (int)sizeof(p_CPU_metadata_hash_mem),p_db.p_cpu.p_nr_cpu_ids);
+               (int)(sizeof(p_CPU_metadata_hash_mem)*nr_cpu_ids),
+               (int)sizeof(p_CPU_metadata_hash_mem),nr_cpu_ids);
    }
 
    /*

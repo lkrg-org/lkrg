@@ -57,12 +57,10 @@ void p_get_cpus(p_cpu_info *p_arg) {
    p_arg->present_CPUs = num_present_cpus();
    p_arg->active_CPUs = num_active_cpus();
 
-   p_arg->p_nr_cpu_ids = nr_cpu_ids;
-
    p_debug_log(P_LOG_DEBUG,
           "<p_get_cpus> online[%d] possible[%d] present[%d] active[%d] nr_cpu_ids[%d]",
           p_arg->online_CPUs,p_arg->possible_CPUs,p_arg->present_CPUs,p_arg->active_CPUs,
-          p_arg->p_nr_cpu_ids);
+          nr_cpu_ids);
 }
 
 int p_cmp_cpus(p_cpu_info *p_orig, p_cpu_info *p_current) {
@@ -80,12 +78,6 @@ int p_cmp_cpus(p_cpu_info *p_orig, p_cpu_info *p_current) {
    P_CMP_CPU(possible)
    P_CMP_CPU(present)
    P_CMP_CPU(active)
-
-   if (unlikely(p_orig->p_nr_cpu_ids != p_current->p_nr_cpu_ids)) {
-      p_print_log(P_LOG_FAULT, "'nr_cpu_ids' changed unexpectedly (expected %u, actual %u)",
-         p_orig->p_nr_cpu_ids, p_current->p_nr_cpu_ids);
-      p_flag++;
-   }
 
    return p_flag;
 }

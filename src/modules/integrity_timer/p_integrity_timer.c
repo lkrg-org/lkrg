@@ -138,16 +138,7 @@ void p_check_integrity(struct work_struct *p_work) {
     * First allocate temporary buffer for per CPU data. Number of possible CPUs
     * is per kernel compilation. Hot plug-in/off won't change that value so it is
     * safe to preallocate buffer here - before lock and before recounting CPUs info.
-    */
-
-   /*
-    * __GFP_NOFAIL flag will always generate slowpath warn because developers
-    * decided to depreciate this flag ;/
-    */
-//   while ( (p_tmp_cpus = kzalloc(sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids,
-//                              GFP_KERNEL | GFP_ATOMIC | GFP_NOFS | __GFP_REPEAT)) == NULL);
-
-   /*
+    *
     * We are in the off-loaded WQ context. We can sleep here (because we must be able to
     * take 'mutex' lock which is 'sleeping' lock), so it is not strictly time-critical code.
     * This allocation is made before we take 'spinlock' for internal database (and before
@@ -157,7 +148,7 @@ void p_check_integrity(struct work_struct *p_work) {
     * Emergency pools will be consumed in 'kmod' module (because we will be under 'spinlock'
     * timing pressure).
     */
-   while ( (p_tmp_cpus = kzalloc(sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids,
+   while ( (p_tmp_cpus = kzalloc(sizeof(p_CPU_metadata_hash_mem)*nr_cpu_ids,
                                              GFP_KERNEL | GFP_NOFS | __GFP_REPEAT)) == NULL);
 
 
