@@ -151,14 +151,6 @@ void p_check_integrity(struct work_struct *p_work) {
    while ( (p_tmp_cpus = kzalloc(sizeof(p_CPU_metadata_hash_mem)*nr_cpu_ids,
                                              GFP_KERNEL | GFP_NOFS | __GFP_REPEAT)) == NULL);
 
-
-
-   /* Find information about current CPUs in the system */
-   p_get_cpus(&p_tmp_cpu_info);
-   if (p_cmp_cpus(&p_db.p_cpu,&p_tmp_cpu_info)) {
-      p_print_log(P_LOG_ISSUE, "Using CPU number from original database");
-   }
-
    /*
     * Check which core did we lock and do not send IPI to yourself.
     * It will cause internal bug in smp_call_function_single() which
@@ -172,6 +164,12 @@ void p_check_integrity(struct work_struct *p_work) {
     */
    read_lock(&p_config_lock);
    p_read_cpu_lock();
+
+   /* Find information about current CPUs in the system */
+   p_get_cpus(&p_tmp_cpu_info);
+   if (p_cmp_cpus(&p_db.p_cpu,&p_tmp_cpu_info)) {
+      p_print_log(P_LOG_ISSUE, "Using CPU number from original database");
+   }
 
 //   for_each_present_cpu(p_tmp) {
    //for_each_online_cpu(p_tmp) {
