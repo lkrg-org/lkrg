@@ -196,11 +196,6 @@ int p_create_database(void) {
 #endif
 
    /*
-    * First gather information about CPUs in the system - CRITICAL !!!
-    */
-   p_get_cpus(&p_db.p_cpu);
-
-   /*
     * OK, we now know what is the maximum number of supported CPUs
     * in this kernel, let's allocate data here...
     */
@@ -219,15 +214,20 @@ int p_create_database(void) {
       p_print_log(P_LOG_FATAL, "Can't allocate memory for CPU metadata");
       return P_LKRG_GENERAL_ERROR;
    }
-// STRONG_DEBUG
-     else {
-        p_debug_log(P_LOG_FLOOD,
-               "<p_create_database> p_db.p_CPU_metadata_array[0x%lx] with requested size[%d] "
-               "= sizeof(p_CPU_metadata_hash_mem)[%d] * nr_cpu_ids[%d]",
-               (unsigned long)p_db.p_CPU_metadata_array,
-               (int)(sizeof(p_CPU_metadata_hash_mem)*nr_cpu_ids),
-               (int)sizeof(p_CPU_metadata_hash_mem),nr_cpu_ids);
-   }
+
+   p_read_cpu_lock();
+
+   /*
+    * First gather information about CPUs in the system - CRITICAL !!!
+    */
+   p_get_cpus(&p_db.p_cpu);
+
+   p_debug_log(P_LOG_FLOOD,
+          "<p_create_database> p_db.p_CPU_metadata_array[0x%lx] with requested size[%d] "
+          "= sizeof(p_CPU_metadata_hash_mem)[%d] * nr_cpu_ids[%d]",
+          (unsigned long)p_db.p_CPU_metadata_array,
+          (int)(sizeof(p_CPU_metadata_hash_mem)*nr_cpu_ids),
+          (int)sizeof(p_CPU_metadata_hash_mem),nr_cpu_ids);
 
    /*
     * OK, we have prepared all necessary memory. Let's try X86 specific
@@ -269,6 +269,7 @@ int p_create_database(void) {
 //   smp_call_function_single(p_tmp_cpu,p_dump_CPU_metadata,p_db.p_CPU_metadata_array,true);
 
    p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
+   p_read_cpu_unlock();
 
    /* Some arch needs extra hooks */
    if (p_register_arch_metadata() != P_LKRG_SUCCESS) {
