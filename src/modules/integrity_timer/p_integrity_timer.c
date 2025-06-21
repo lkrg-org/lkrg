@@ -138,16 +138,7 @@ void p_check_integrity(struct work_struct *p_work) {
     * First allocate temporary buffer for per CPU data. Number of possible CPUs
     * is per kernel compilation. Hot plug-in/off won't change that value so it is
     * safe to preallocate buffer here - before lock and before recounting CPUs info.
-    */
-
-   /*
-    * __GFP_NOFAIL flag will always generate slowpath warn because developers
-    * decided to depreciate this flag ;/
-    */
-//   while ( (p_tmp_cpus = kzalloc(sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids,
-//                              GFP_KERNEL | GFP_ATOMIC | GFP_NOFS | __GFP_REPEAT)) == NULL);
-
-   /*
+    *
     * We are in the off-loaded WQ context. We can sleep here (because we must be able to
     * take 'mutex' lock which is 'sleeping' lock), so it is not strictly time-critical code.
     * This allocation is made before we take 'spinlock' for internal database (and before
@@ -157,16 +148,8 @@ void p_check_integrity(struct work_struct *p_work) {
     * Emergency pools will be consumed in 'kmod' module (because we will be under 'spinlock'
     * timing pressure).
     */
-   while ( (p_tmp_cpus = kzalloc(sizeof(p_CPU_metadata_hash_mem)*p_db.p_cpu.p_nr_cpu_ids,
+   while ( (p_tmp_cpus = kzalloc(sizeof(p_CPU_metadata_hash_mem)*nr_cpu_ids,
                                              GFP_KERNEL | GFP_NOFS | __GFP_REPEAT)) == NULL);
-
-
-
-   /* Find information about current CPUs in the system */
-   p_get_cpus(&p_tmp_cpu_info);
-   if (p_cmp_cpus(&p_db.p_cpu,&p_tmp_cpu_info)) {
-      p_print_log(P_LOG_ISSUE, "Using CPU number from original database");
-   }
 
    /*
     * Check which core did we lock and do not send IPI to yourself.
@@ -181,6 +164,12 @@ void p_check_integrity(struct work_struct *p_work) {
     */
    read_lock(&p_config_lock);
    p_read_cpu_lock();
+
+   /* Find information about current CPUs in the system */
+   p_get_cpus(&p_tmp_cpu_info);
+   if (p_cmp_cpus(&p_db.p_cpu,&p_tmp_cpu_info)) {
+      p_print_log(P_LOG_ISSUE, "Using CPU number from original database");
+   }
 
 //   for_each_present_cpu(p_tmp) {
    //for_each_online_cpu(p_tmp) {

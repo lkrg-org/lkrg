@@ -50,19 +50,6 @@ typedef struct p_cpu_info {
                       // when CPU is hotplug
    int active_CPUs;   // Currently active CPUs - can execute tasks
 
-/*
- * "include/linux/cpumask.h"
- * ...
- * 34 #if NR_CPUS == 1
- * 35 #define nr_cpu_ids              1
- * 36 #else
- * 37 extern int nr_cpu_ids;
- * 38 #endif
- * ...
- */
-
-   int p_nr_cpu_ids;  // Should be the same as possible_CPUs
-
 } p_cpu_info;
 
 #define P_CPU_OFFLINE 0
