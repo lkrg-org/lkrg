@@ -226,7 +226,7 @@ static inline void p_text_section_unlock(void) {
 
 int p_create_database(void);
 void p_get_cpus(p_cpu_info *p_arg);
-int p_cmp_cpus(p_cpu_info *p_arg1, p_cpu_info *p_arg2);
+void p_cmp_cpus(p_cpu_info *p_arg1, p_cpu_info *p_arg2);
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
 int p_cpu_callback(struct notifier_block *p_block, unsigned long p_action, void *p_hcpu);
 #endif

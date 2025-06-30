@@ -63,23 +63,18 @@ void p_get_cpus(p_cpu_info *p_arg) {
           nr_cpu_ids);
 }
 
-int p_cmp_cpus(p_cpu_info *p_orig, p_cpu_info *p_current) {
-
-   int p_flag = 0;
+void p_cmp_cpus(p_cpu_info *p_orig, p_cpu_info *p_current) {
 
 #define P_CMP_CPU(which) \
    if (unlikely(p_orig->which ## _CPUs != p_current->which ## _CPUs)) { \
       p_print_log(P_LOG_FAULT, "Number of " #which " CPUs changed unexpectedly (expected %u, actual %u)", \
          p_orig->which ## _CPUs, p_current->which ## _CPUs); \
-      p_flag++; \
    }
 
    P_CMP_CPU(online)
    P_CMP_CPU(possible)
    P_CMP_CPU(present)
    P_CMP_CPU(active)
-
-   return p_flag;
 }
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)

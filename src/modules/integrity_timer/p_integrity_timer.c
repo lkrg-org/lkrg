@@ -167,9 +167,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
    /* Find information about current CPUs in the system */
    p_get_cpus(&p_tmp_cpu_info);
-   if (p_cmp_cpus(&p_db.p_cpu,&p_tmp_cpu_info)) {
-      p_print_log(P_LOG_ISSUE, "Using CPU number from original database");
-   }
+   p_cmp_cpus(&p_db.p_cpu,&p_tmp_cpu_info);
 
 //   for_each_present_cpu(p_tmp) {
    //for_each_online_cpu(p_tmp) {
