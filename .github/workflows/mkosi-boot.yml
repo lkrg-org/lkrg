@@ -12,6 +12,10 @@ jobs:
                     - bionic
                     - focal
                     - jammy
+                    - noble
+                    - oracular
+                    - plucky
+                    - questing
         steps:
             - uses: actions/checkout@v3
             - run: sudo apt-get update
