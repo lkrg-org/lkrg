@@ -68,6 +68,14 @@ do {                                                                       \
    list_add_rcu(&x->list, y);                                              \
 } while(0)
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,17,0)
+/* Moved from include/linux/module.h to kernel/module/internal.h */
+struct module_use {
+   struct list_head source_list;
+   struct list_head target_list;
+   struct module *source, *target;
+};
+#endif
 
 #define P_UNHIDE_FROM_KOBJ(p_mod,p_kset,p_ktype)                           \
 do {                                                                       \
