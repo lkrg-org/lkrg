@@ -18,8 +18,8 @@ jobs:
                       run: dnf install -y kernel-devel kernel gcc make elfutils-libelf-devel awk
                     - image: alt:sisyphus
                       run: |
-                          apt-get update && apt-get install -y gcc make libelf-devel && \
-                          apt-get install -y kernel-headers-modules-mainline || apt-get install -y kernel-headers-modules-latest1
+                          apt-get update && apt-get install -y gcc make libelf-devel update-kernel && \
+                          update-kernel -y -t mainline --headers --no-kernel
                     - image: registry.opensuse.org/opensuse/tumbleweed
                       run: zypper -n install -y gcc make kernel-default-devel awk
                     - image: registry.opensuse.org/opensuse/leap
