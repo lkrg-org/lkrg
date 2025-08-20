@@ -5,6 +5,7 @@ The following major changes have been made since 0.9.9:
  *) To compensate for the above and as an enhancement on older kernels, check
     for cred pointer overwrites in certain other places where we did not before
  *) Do not track those credentials that we currently do not validate anyway
+ *) Support (or rather be compatible with the kernel's use of) Intel CET IBT
  *) Switch many hooks from kretprobes to simple kprobes for greater reliability
     and improved performance
  *) Overhaul locking of per-task shadow data, using finer-grain locks

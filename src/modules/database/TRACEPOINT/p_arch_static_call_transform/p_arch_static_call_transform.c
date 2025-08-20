@@ -61,7 +61,7 @@ static notrace int p_arch_static_call_transform_entry(struct kretprobe_instance 
                   "[TRACEPOINT] New modification: code[0x%lx]!",
                   (unsigned long)p_tramp);
 
-      if (P_SYM(p_core_kernel_text)(p_tramp)) {
+      if (P_SYM_CALL(p_core_kernel_text, p_tramp)) {
 
          p_tracepoint_tmp_text++;
 
@@ -95,7 +95,7 @@ static notrace int p_arch_static_call_transform_entry(struct kretprobe_instance 
                   "[TRACEPOINT] New modification: code[0x%lx]!",
                   (unsigned long)p_site);
 
-      if (P_SYM(p_core_kernel_text)(p_site)) {
+      if (P_SYM_CALL(p_core_kernel_text, p_site)) {
 
          p_tracepoint_tmp_text++;
 

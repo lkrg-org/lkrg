@@ -80,7 +80,7 @@ static notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_inst
 #else
                   (unsigned long)p_tmp->addr;
 #endif
-      if (P_SYM(p_core_kernel_text)(p_addr)) {
+      if (P_SYM_CALL(p_core_kernel_text, p_addr)) {
          p_text = true;
       } else if ((p_module = LKRG_P_MODULE_TEXT_ADDRESS(p_addr))) {
          for (p_mod_id = 0; p_mod_id < p_db.p_module_list_nr; p_mod_id++) {

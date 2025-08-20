@@ -23,8 +23,8 @@ int hash_from_ex_table(void) {
 
    unsigned long p_tmp = 0;
 
-   p_db.kernel_ex_table.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("__start___ex_table");
-   p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("__stop___ex_table");
+   p_db.kernel_ex_table.p_addr = (unsigned long *)P_SYM_CALL(p_kallsyms_lookup_name, "__start___ex_table");
+   p_tmp = (unsigned long)P_SYM_CALL(p_kallsyms_lookup_name, "__stop___ex_table");
 
    if (!p_db.kernel_ex_table.p_addr || !p_tmp || p_tmp < (unsigned long)p_db.kernel_ex_table.p_addr) {
       return P_LKRG_GENERAL_ERROR;
@@ -47,8 +47,8 @@ int hash_from_kernel_stext(void) {
 
    unsigned long p_tmp = 0;
 
-   p_db.kernel_stext.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("_stext");
-   p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("_etext");
+   p_db.kernel_stext.p_addr = (unsigned long *)P_SYM_CALL(p_kallsyms_lookup_name, "_stext");
+   p_tmp = (unsigned long)P_SYM_CALL(p_kallsyms_lookup_name, "_etext");
 
    if (!p_db.kernel_stext.p_addr || !p_tmp || p_tmp < (unsigned long)p_db.kernel_stext.p_addr) {
       return P_LKRG_GENERAL_ERROR;
@@ -84,8 +84,8 @@ int hash_from_kernel_rodata(void) {
 
    unsigned long p_tmp = 0;
 
-   p_db.kernel_rodata.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("__start_rodata");
-   p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("__end_rodata");
+   p_db.kernel_rodata.p_addr = (unsigned long *)P_SYM_CALL(p_kallsyms_lookup_name, "__start_rodata");
+   p_tmp = (unsigned long)P_SYM_CALL(p_kallsyms_lookup_name, "__end_rodata");
 
    if (!p_db.kernel_rodata.p_addr || !p_tmp || p_tmp < (unsigned long)p_db.kernel_rodata.p_addr) {
       return P_LKRG_GENERAL_ERROR;
@@ -117,8 +117,8 @@ int hash_from_iommu_table(void) {
 #ifdef CONFIG_X86
    unsigned long p_tmp = 0;
 
-   p_db.kernel_iommu_table.p_addr = (unsigned long *)P_SYM(p_kallsyms_lookup_name)("__iommu_table");
-   p_tmp = (unsigned long)P_SYM(p_kallsyms_lookup_name)("__iommu_table_end");
+   p_db.kernel_iommu_table.p_addr = (unsigned long *)P_SYM_CALL(p_kallsyms_lookup_name, "__iommu_table");
+   p_tmp = (unsigned long)P_SYM_CALL(p_kallsyms_lookup_name, "__iommu_table_end");
 
    if (!p_db.kernel_iommu_table.p_addr || !p_tmp || p_tmp < (unsigned long)p_db.kernel_iommu_table.p_addr) {
       return P_LKRG_GENERAL_ERROR;
@@ -300,7 +300,7 @@ int p_create_database(void) {
 #endif
 
 #if defined(CONFIG_OPTPROBES)
-   P_SYM(p_wait_for_kprobe_optimizer)();
+   P_SYM_CALL(p_wait_for_kprobe_optimizer);
 #endif
    smp_mb();
 
@@ -335,7 +335,7 @@ int p_create_database(void) {
 
    P_SYM(p_state_init) = 1;
 #if defined(CONFIG_OPTPROBES)
-   P_SYM(p_wait_for_kprobe_optimizer)();
+   P_SYM_CALL(p_wait_for_kprobe_optimizer);
 #endif
    smp_mb();
 

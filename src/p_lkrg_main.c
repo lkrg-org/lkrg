@@ -90,10 +90,60 @@ p_ro_page p_ro __p_lkrg_read_only = {
 
 };
 
+#ifdef GENERATE_CALL_FUNC
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+GENERATE_CALL_FUNC(unsigned long, p_kallsyms_lookup_name, const char *name)
+GENERATE_CALL_FUNC(int, p_freeze_processes, void)
+GENERATE_CALL_FUNC(void, p_thaw_processes, void)
+#if !defined(CONFIG_ARM64)
+ GENERATE_CALL_FUNC(void, p_flush_tlb_all, void)
+#endif
+#if defined(P_KERNEL_AGGRESSIVE_INLINING)
+ GENERATE_CALL_FUNC(int, p_set_memory_ro, unsigned long addr, int numpages)
+ GENERATE_CALL_FUNC(int, p_set_memory_rw, unsigned long addr, int numpages)
+ #if defined(CONFIG_ARM64)
+   GENERATE_CALL_FUNC(int, p_set_memory_valid, unsigned long addr, int numpages, int enable)
+ #endif
+#else
+ #if defined(CONFIG_X86)
+  GENERATE_CALL_FUNC(int, p_change_page_attr_set_clr, unsigned long *addr, int numpages,
+     pgprot_t mask_set, pgprot_t mask_clr, int force_split, int in_flag, struct page **pages)
+ #elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)
+  GENERATE_CALL_FUNC(int, p_change_memory_common, unsigned long addr, int numpages,
+     pgprot_t set_mask, pgprot_t clear_mask)
+ #endif
+#endif
+GENERATE_CALL_FUNC(int, p___kernel_text_address, unsigned long p_addr)
+GENERATE_CALL_FUNC(int, p_core_kernel_text, unsigned long p_addr)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(6, 4, 0) && !defined(mod_mem_type_is_init)
+ GENERATE_CALL_FUNC(int, p_ddebug_remove_module, const char *p_name)
+#endif
+#if defined(CONFIG_X86)
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,8,0)
+  GENERATE_CALL_FUNC(void, p_native_write_cr4, unsigned long p_val)
+ #endif
+#endif
+#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
+ GENERATE_CALL_FUNC(struct module *, p___module_address, unsigned long p_val)
+ GENERATE_CALL_FUNC(struct module *, p___module_text_address, unsigned long p_val)
+#endif
+GENERATE_CALL_FUNC(struct module *, p_find_module, const char *name)
+GENERATE_CALL_FUNC(int, p_kallsyms_on_each_symbol, int (*fn)(void *, const char *, struct module *, unsigned long), void *data)
+#if defined(CONFIG_FUNCTION_TRACER)
+ GENERATE_CALL_FUNC(struct ftrace_rec_iter *, p_ftrace_rec_iter_start, void)
+ GENERATE_CALL_FUNC(struct ftrace_rec_iter *, p_ftrace_rec_iter_next, struct ftrace_rec_iter *iter)
+ GENERATE_CALL_FUNC(struct dyn_ftrace *, p_ftrace_rec_iter_record, struct ftrace_rec_iter *iter)
+#endif
+#if defined(CONFIG_OPTPROBES)
+ GENERATE_CALL_FUNC(void, p_wait_for_kprobe_optimizer, void)
+#endif
+#pragma GCC diagnostic pop
+#endif
 
 static char *p_verify_boot_params(void) {
 
-   char **p_params_ptr = (char **)P_SYM(p_kallsyms_lookup_name)("saved_command_line");
+   char **p_params_ptr = (char **)P_SYM_CALL(p_kallsyms_lookup_name, "saved_command_line");
    char *p_params;
 
    p_params = (p_params_ptr) ? *p_params_ptr : NULL;
@@ -137,7 +187,7 @@ static void p_init_page_attr(void) {
 #endif
 
 #if !defined(CONFIG_ARM64)
-         P_SYM(p_flush_tlb_all)();
+         P_SYM_CALL(p_flush_tlb_all);
 #else
          flush_tlb_all();
 #endif
@@ -187,7 +237,7 @@ static void p_uninit_page_attr(void) {
 #endif
 
 #if !defined(CONFIG_ARM64)
-      P_SYM(p_flush_tlb_all)();
+      P_SYM_CALL(p_flush_tlb_all);
 #else
       flush_tlb_all();
 #endif
@@ -448,7 +498,7 @@ static int __init p_lkrg_register(void) {
 #endif
 
    // Freeze all non-kernel processes
-   while (P_SYM(p_freeze_processes)())
+   while (P_SYM_CALL(p_freeze_processes))
       schedule();
 
    p_freeze = 1;
@@ -590,7 +640,7 @@ p_main_error:
 
    if (p_freeze) {
       // Thaw all non-kernel processes
-      P_SYM(p_thaw_processes)();
+      P_SYM_CALL(p_thaw_processes);
    }
 
    if (p_ret != P_LKRG_SUCCESS)
@@ -619,7 +669,7 @@ static void __exit p_lkrg_deregister(void) {
 
 
    // Freeze all non-kernel processes
-   while (P_SYM(p_freeze_processes)())
+   while (P_SYM_CALL(p_freeze_processes))
       schedule();
 
    p_deregister_comm_channel();
@@ -651,7 +701,7 @@ static void __exit p_lkrg_deregister(void) {
 #endif
 
    // Thaw all non-kernel processes
-   P_SYM(p_thaw_processes)();
+   P_SYM_CALL(p_thaw_processes);
 
    p_print_log(P_LOG_DYING, "LKRG unloaded");
 

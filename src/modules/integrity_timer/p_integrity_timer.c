@@ -425,7 +425,7 @@ void p_check_integrity(struct work_struct *p_work) {
                            p_module_kobj_nr_tmp, p_module_kobj_tmp, "KOBJ")
                         P_PRINT_ONGOING("Lost")
                      } else {
-                        p_tmp_mod = P_SYM(p_find_module(p_module_kobj_tmp[p_tmp_hash].p_name));
+                        p_tmp_mod = P_SYM_CALL(p_find_module, p_module_kobj_tmp[p_tmp_hash].p_name);
                         if (p_tmp_mod) {
                            P_PRINT_WATCH_FEWER("Lost",
                               p_module_list_nr_tmp, "module list",
@@ -464,7 +464,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         }
                      }
                   } else {
-                     p_tmp_mod = P_SYM(p_find_module(p_module_kobj_tmp[p_tmp_hash].p_name));
+                     p_tmp_mod = P_SYM_CALL(p_find_module, p_module_kobj_tmp[p_tmp_hash].p_name);
                      if (p_tmp_mod) {
                         P_PRINT_WATCH_FEWER("Lost",
                            p_module_list_nr_tmp, "module list",
@@ -526,7 +526,7 @@ void p_check_integrity(struct work_struct *p_work) {
                      if (p_module_list_tmp[p_tmp_hash].p_mod == p_module_activity_ptr) {
                         P_PRINT_ONGOING("Lost")
                      } else {
-                        p_tmp_mod = P_SYM(p_find_module(p_module_list_tmp[p_tmp_hash].p_name));
+                        p_tmp_mod = P_SYM_CALL(p_find_module, p_module_list_tmp[p_tmp_hash].p_name);
                         if (p_tmp_mod) {
                            P_PRINT_LIVE_OR_NOT
                         } else {
@@ -537,7 +537,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         }
                      }
                   } else {
-                     p_tmp_mod = P_SYM(p_find_module(p_module_list_tmp[p_tmp_hash].p_name));
+                     p_tmp_mod = P_SYM_CALL(p_find_module, p_module_list_tmp[p_tmp_hash].p_name);
                      if (p_tmp_mod) {
                         P_PRINT_LIVE_OR_NOT
                      } else {
@@ -624,7 +624,7 @@ void p_check_integrity(struct work_struct *p_work) {
                      if (p_db.p_module_list_array[p_tmp_hash].p_mod == p_module_activity_ptr) {
                         P_PRINT_ONGOING("Lost")
                      } else {
-                        p_tmp_mod = P_SYM(p_find_module(p_db.p_module_list_array[p_tmp_hash].p_name));
+                        p_tmp_mod = P_SYM_CALL(p_find_module, p_db.p_module_list_array[p_tmp_hash].p_name);
                         if (p_tmp_mod) {
                            P_PRINT_LIVE_OR_NOT
                         } else {
@@ -635,7 +635,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         }
                      }
                   } else {
-                     p_tmp_mod = P_SYM(p_find_module(p_db.p_module_list_array[p_tmp_hash].p_name));
+                     p_tmp_mod = P_SYM_CALL(p_find_module, p_db.p_module_list_array[p_tmp_hash].p_name);
                      if (p_tmp_mod) {
                         P_PRINT_LIVE_OR_NOT
                      } else {
@@ -693,13 +693,13 @@ void p_check_integrity(struct work_struct *p_work) {
                      if (p_module_list_tmp[p_tmp_hash].p_mod == p_module_activity_ptr) {
                         P_PRINT_ONGOING("Extra")
                      } else {
-                        p_tmp_mod = P_SYM(p_find_module(p_module_list_tmp[p_tmp_hash].p_name));
+                        p_tmp_mod = P_SYM_CALL(p_find_module, p_module_list_tmp[p_tmp_hash].p_name);
                         if (p_tmp_mod) {
                            P_PRINT_LIVE_OR_NOT
                         }
                      }
                   } else {
-                     p_tmp_mod = P_SYM(p_find_module(p_module_list_tmp[p_tmp_hash].p_name));
+                     p_tmp_mod = P_SYM_CALL(p_find_module, p_module_list_tmp[p_tmp_hash].p_name);
                      if (p_tmp_mod) {
                         P_PRINT_LIVE_OR_NOT
                      }
@@ -775,7 +775,7 @@ void p_check_integrity(struct work_struct *p_work) {
                      if (p_db.p_module_kobj_array[p_tmp_hash].p_mod == p_module_activity_ptr) {
                         P_PRINT_ONGOING("Lost")
                      } else {
-                        p_tmp_mod = P_SYM(p_find_module(p_db.p_module_kobj_array[p_tmp_hash].p_name));
+                        p_tmp_mod = P_SYM_CALL(p_find_module, p_db.p_module_kobj_array[p_tmp_hash].p_name);
                         if (p_tmp_mod) {
                            P_PRINT_LIVE_OR_NOT
                         } else {
@@ -783,7 +783,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         }
                      }
                   } else {
-                     p_tmp_mod = P_SYM(p_find_module(p_db.p_module_kobj_array[p_tmp_hash].p_name));
+                     p_tmp_mod = P_SYM_CALL(p_find_module, p_db.p_module_kobj_array[p_tmp_hash].p_name);
                      if (p_tmp_mod) {
                         P_PRINT_LIVE_OR_NOT
                      } else {
@@ -840,7 +840,7 @@ void p_check_integrity(struct work_struct *p_work) {
                      if (p_module_kobj_tmp[p_tmp_hash].p_mod == p_module_activity_ptr) {
                         P_PRINT_ONGOING("Extra")
                      } else {
-                        p_tmp_mod = P_SYM(p_find_module(p_module_kobj_tmp[p_tmp_hash].p_name));
+                        p_tmp_mod = P_SYM_CALL(p_find_module, p_module_kobj_tmp[p_tmp_hash].p_name);
                         if (p_tmp_mod) {
                            P_PRINT_LIVE_OR_NOT
                         } else {
@@ -851,7 +851,7 @@ void p_check_integrity(struct work_struct *p_work) {
                         }
                      }
                   } else {
-                     p_tmp_mod = P_SYM(p_find_module(p_module_kobj_tmp[p_tmp_hash].p_name));
+                     p_tmp_mod = P_SYM_CALL(p_find_module, p_module_kobj_tmp[p_tmp_hash].p_name);
                      if (p_tmp_mod) {
                         P_PRINT_LIVE_OR_NOT
                      } else {

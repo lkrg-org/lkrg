@@ -280,8 +280,8 @@ typedef struct _p_lkrg_global_symbols_structure {
 } p_lkrg_global_syms;
 
 #ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
-#define LKRG_P_MODULE_ADDRESS(p_addr)      P_SYM(p___module_address)(p_addr)
-#define LKRG_P_MODULE_TEXT_ADDRESS(p_addr) P_SYM(p___module_text_address)(p_addr)
+#define LKRG_P_MODULE_ADDRESS(p_addr)      P_SYM_CALL(p___module_address, p_addr)
+#define LKRG_P_MODULE_TEXT_ADDRESS(p_addr) P_SYM_CALL(p___module_text_address, p_addr)
 #else
 #define LKRG_P_MODULE_ADDRESS(p_addr)      __module_address(p_addr)
 #define LKRG_P_MODULE_TEXT_ADDRESS(p_addr) __module_text_address(p_addr)
@@ -324,8 +324,105 @@ extern p_ro_page p_ro;
 #define P_CTRL(p_field) p_ro.p_lkrg_global_ctrl.ctrl.p_field
 #define P_CTRL_ADDR &p_ro.p_lkrg_global_ctrl
 
+#ifdef CONFIG_X86_KERNEL_IBT
+
+/*
+ * When Intel CET IBT is in use, we can't call non-exported kernel functions
+ * indirectly via pointers because there's generally no ENDBR64 instruction
+ * at their start.  However, when CET SS is not in use, like it currently is
+ * not by the kernel, we can bypass IBT by using RET as our indirect branch
+ * instruction (RET is exempt from IBT and is assumed to be protected by SS).
+ * We cannot use the NOTRACK prefix for this purpose because the kernel does
+ * not enable its support in the CPU, but this wouldn't make much difference.
+ *
+ * We use macros to generate wrapper functions for making CET IBT compatible
+ * indirect calls via PUSH/RET, one wrapper function per function pointer.
+ *
+ * We rely on these functions having no prologue/epilogue, but having a return
+ * instruction or a branch to a return thunk.  __attribute__ ((naked)) would
+ * more reliably avoid prologue/epilogue, but then it'd be our job to invoke
+ * the right return thunk for a given build.
+ *
+ * It is important to prevent inlining and other interprocedural optimizations
+ * at least because the indirect function call isn't exposed to the compiler,
+ * so the compiler wouldn't know it may clobber registers.  Having this wrapper
+ * function intact and called as a whole without analysis of its contents tells
+ * the compiler the same thing - that an arbitrary opaque function was called.
+ *
+ * __attribute__ ((noipa)) isn't recognized by older compilers, which is a
+ * problem if the kernel is nevertheless recent enough to be built with IBT
+ * support.  In testing, noinline along with noclone wasn't good enough.  We
+ * could improve upon this by having these functions in their own translation
+ * unit, ideally coming from an assembly rather than C source file.
+ */
+#define GENERATE_CALL_FUNC(type, name, ...) \
+   notrace __attribute__ ((noipa)) type call_##name(__VA_ARGS__) { \
+      __asm__ __volatile__ ("pushq %0" :: "m" (P_SYM(name))); \
+   } \
+   STACK_FRAME_NON_STANDARD(call_##name);
+
+#define GENERATE_CALL_FUNC_PROTO(type, name, ...) \
+   extern type call_##name(__VA_ARGS__);
+
+GENERATE_CALL_FUNC_PROTO(unsigned long, p_kallsyms_lookup_name, const char *name)
+GENERATE_CALL_FUNC_PROTO(int, p_freeze_processes, void)
+GENERATE_CALL_FUNC_PROTO(void, p_thaw_processes, void)
+#if !defined(CONFIG_ARM64)
+ GENERATE_CALL_FUNC_PROTO(void, p_flush_tlb_all, void)
+#endif
+#if defined(P_KERNEL_AGGRESSIVE_INLINING)
+ GENERATE_CALL_FUNC_PROTO(int, p_set_memory_ro, unsigned long addr, int numpages)
+ GENERATE_CALL_FUNC_PROTO(int, p_set_memory_rw, unsigned long addr, int numpages)
+ #if defined(CONFIG_ARM64)
+   GENERATE_CALL_FUNC_PROTO(int, p_set_memory_valid, unsigned long addr, int numpages, int enable)
+ #endif
+#else
+ #if defined(CONFIG_X86)
+  GENERATE_CALL_FUNC_PROTO(int, p_change_page_attr_set_clr, unsigned long *addr, int numpages,
+     pgprot_t mask_set, pgprot_t mask_clr, int force_split, int in_flag, struct page **pages)
+ #elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)
+  GENERATE_CALL_FUNC_PROTO(int, p_change_memory_common, unsigned long addr, int numpages,
+     pgprot_t set_mask, pgprot_t clear_mask)
+ #endif
+#endif
+GENERATE_CALL_FUNC_PROTO(int, p___kernel_text_address, unsigned long p_addr)
+GENERATE_CALL_FUNC_PROTO(int, p_core_kernel_text, unsigned long p_addr)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(6, 4, 0) && !defined(mod_mem_type_is_init)
+ GENERATE_CALL_FUNC_PROTO(int, p_ddebug_remove_module, const char *p_name)
+#endif
+#if defined(CONFIG_X86)
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,8,0)
+  GENERATE_CALL_FUNC_PROTO(void, p_native_write_cr4, unsigned long p_val)
+ #endif
+#endif
+#ifdef P_LKRG_UNEXPORTED_MODULE_ADDRESS
+ GENERATE_CALL_FUNC_PROTO(struct module *, p___module_address, unsigned long p_val)
+ GENERATE_CALL_FUNC_PROTO(struct module *, p___module_text_address, unsigned long p_val)
+#endif
+GENERATE_CALL_FUNC_PROTO(struct module *, p_find_module, const char *name)
+GENERATE_CALL_FUNC_PROTO(int, p_kallsyms_on_each_symbol,
+   int (*fn)(void *, const char *, struct module *, unsigned long), void *data)
+#if defined(CONFIG_FUNCTION_TRACER)
+ GENERATE_CALL_FUNC_PROTO(struct ftrace_rec_iter *, p_ftrace_rec_iter_start, void)
+ GENERATE_CALL_FUNC_PROTO(struct ftrace_rec_iter *, p_ftrace_rec_iter_next, struct ftrace_rec_iter *iter)
+ GENERATE_CALL_FUNC_PROTO(struct dyn_ftrace *, p_ftrace_rec_iter_record, struct ftrace_rec_iter *iter)
+#endif
+#if defined(CONFIG_OPTPROBES)
+ GENERATE_CALL_FUNC_PROTO(void, p_wait_for_kprobe_optimizer, void)
+#endif
+
+#define P_SYM_CALL(name, ...) \
+   call_##name(__VA_ARGS__)
+
+#else
+
+#define P_SYM_CALL(name, ...) \
+   P_SYM(name)(__VA_ARGS__)
+
+#endif
+
 #define P_SYM_INIT(sym) \
-   if (!(P_SYM(p_ ## sym) = (typeof(P_SYM(p_ ## sym)))P_SYM(p_kallsyms_lookup_name)(#sym))) { \
+   if (!(P_SYM(p_ ## sym) = (typeof(P_SYM(p_ ## sym)))P_SYM_CALL(p_kallsyms_lookup_name, #sym))) { \
       p_print_log(P_LOG_FATAL, "Can't find '" #sym "'"); \
       goto p_sym_error; \
    }
