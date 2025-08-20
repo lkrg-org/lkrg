@@ -55,7 +55,7 @@ static int p_find_isra_name(void *p_isra_argg, const char *name,
 
 int p_try_isra_name(struct p_isra_argument *p_isra_arg) {
 
-   return P_SYM(p_kallsyms_on_each_symbol)(p_find_isra_name, p_isra_arg);
+   return P_SYM_CALL(p_kallsyms_on_each_symbol, p_find_isra_name, p_isra_arg);
 }
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,7,0))
@@ -113,7 +113,7 @@ long get_kallsyms_address(void) {
    unregister_kprobe(&p_kprobe);
    P_SYM(p_kallsyms_on_each_symbol) = (int (*)(int (*)(void *, const char *, struct module *,
                                               unsigned long), void *))
-                                       P_SYM(p_kallsyms_lookup_name)("kallsyms_on_each_symbol");
+                                       P_SYM_CALL(p_kallsyms_lookup_name, "kallsyms_on_each_symbol");
 
 #else
 

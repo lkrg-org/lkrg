@@ -59,7 +59,7 @@ static notrace int p_arch_jump_label_transform_entry(struct kretprobe_instance *
                p_jump_entry_target(p_tmp),
                (unsigned long)p_jump_entry_key(p_tmp));
 
-   if (P_SYM(p_core_kernel_text)(p_addr)) {
+   if (P_SYM_CALL(p_core_kernel_text, p_addr)) {
       /*
        * OK, *_JUMP_LABEL tries to modify kernel core .text section
        */

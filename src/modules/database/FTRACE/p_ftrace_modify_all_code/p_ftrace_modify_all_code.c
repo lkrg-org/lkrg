@@ -68,10 +68,10 @@ static notrace int p_ftrace_modify_all_code_entry(struct kretprobe_instance *p_r
       p_ftrace_tmp_text++;
    }
 
-   for (p_iter = P_SYM(p_ftrace_rec_iter_start)(); p_iter; p_iter = P_SYM(p_ftrace_rec_iter_next)(p_iter)) {
-      p_rec = P_SYM(p_ftrace_rec_iter_record)(p_iter);
+   for (p_iter = P_SYM_CALL(p_ftrace_rec_iter_start); p_iter; p_iter = P_SYM_CALL(p_ftrace_rec_iter_next, p_iter)) {
+      p_rec = P_SYM_CALL(p_ftrace_rec_iter_record, p_iter);
 
-      if (P_SYM(p_core_kernel_text)(p_rec->ip)) {
+      if (P_SYM_CALL(p_core_kernel_text, p_rec->ip)) {
 
          p_ftrace_tmp_text++;
 
