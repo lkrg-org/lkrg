@@ -267,7 +267,8 @@ typedef struct _p_lkrg_global_symbols_structure {
 #endif
    struct module* (*p_find_module)(const char *name);
    struct mutex *p_module_mutex;
-   int (*p_kallsyms_on_each_symbol)(int (*)(void *, const char *, struct module *, unsigned long), void *);
+   /* We use old kernels' prototype.  Newer have no "struct module *" here. */
+   int (*p_kallsyms_on_each_symbol)(int (*fn)(void *, const char *, struct module *, unsigned long), void *data);
 #if defined(CONFIG_FUNCTION_TRACER)
    struct ftrace_rec_iter *(*p_ftrace_rec_iter_start)(void);
    struct ftrace_rec_iter *(*p_ftrace_rec_iter_next)(struct ftrace_rec_iter *iter);

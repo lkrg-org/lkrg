@@ -18,9 +18,11 @@
 
 #include "../../p_lkrg_main.h"
 
-//unsigned long (*p_kallsyms_lookup_name)(const char *name) = 0;
-
-
+/*
+ * This callback function's prototype has changed between kernel versions.  We
+ * keep the prototype used by older kernels.  On newer kernels, mod is missing,
+ * so addr will also be wrong - and neither mod nor addr may be used here.
+ */
 static int p_find_isra_name(void *p_isra_argg, const char *name,
                             struct module *mod, unsigned long addr) {
 
@@ -37,7 +39,7 @@ static int p_find_isra_name(void *p_isra_argg, const char *name,
          return 0;
       }
       memcpy(p_isra_arg->p_isra_name, name, strlen(name));
-      return addr;
+      return 1;
    } else if (strncmp(p_buf2, name, strlen(p_buf2)) == 0) {
       p_print_log(P_LOG_ISSUE, "Found CONSTPROP version of function <%s>", name);
       if ( (p_isra_arg->p_isra_name = kzalloc(strlen(name)+1, GFP_KERNEL)) == NULL) {
@@ -45,7 +47,7 @@ static int p_find_isra_name(void *p_isra_argg, const char *name,
          return 0;
       }
       memcpy(p_isra_arg->p_isra_name, name, strlen(name));
-      return addr;
+      return 1;
    }
 
    return 0;
@@ -69,7 +71,7 @@ static int p_lookup_syms_hack(void *unused, const char *name,
 
    if (strcmp("kallsyms_lookup_name", name) == 0) {
       P_SYM(p_kallsyms_lookup_name) = (unsigned long (*)(const char*)) (addr);
-      return addr;
+      return 1;
    }
 
    return 0;
