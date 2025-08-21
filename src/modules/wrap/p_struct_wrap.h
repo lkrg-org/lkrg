@@ -462,7 +462,6 @@ static inline int p_set_memory_np(unsigned long p_addr, int p_numpages) {
 
 #if defined(P_KERNEL_AGGRESSIVE_INLINING)
    return 0x0;
-//   return P_SYM(p_set_memory_np)(p_addr, p_numpages);
 #else
    return P_SYM(p_change_page_attr_set_clr)(&p_addr, p_numpages,
                                             __pgprot(0),
