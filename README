@@ -69,7 +69,7 @@ To build LKRG, you will need the following software:
 
 For example, under Debian and Ubuntu you can install all of these with:
 
-	sudo apt-get install make gcc awk libelf-dev linux-headers-$(uname -r)
+	sudo apt-get install make gcc gawk libelf-dev linux-headers-$(uname -r)
 
 under Red Hat'ish distributions (e.g. RHEL, CentOS, Fedora) with:
 
