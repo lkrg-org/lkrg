@@ -48,7 +48,7 @@ unsigned int p_attr_init = 0;
 
 DEFINE_MUTEX(p_ro_page_mutex);
 
-p_ro_page p_ro __p_lkrg_read_only = {
+p_ro_page p_ro = {
 
 #if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
    .p_marker_np1 = P_LKRG_MARKER1,

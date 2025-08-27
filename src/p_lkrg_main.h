@@ -135,9 +135,6 @@ static inline unsigned long get_random_long(void) {
  */
 //#define P_KERNEL_AGGRESSIVE_INLINING 1
 
-//#define p_lkrg_read_only __attribute__((__section__(".data..p_lkrg_read_only"),aligned(PAGE_SIZE)))
-#define __p_lkrg_read_only __attribute__((__section__(".p_lkrg_read_only")))
-
 #if defined(CONFIG_X86_64) || defined(CONFIG_ARM64)
  #define P_LKRG_MARKER1 0x3369705f6d616441
  #define P_LKRG_MARKER2 0xdeadbabedeadbabe
