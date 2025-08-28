@@ -64,7 +64,6 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/modules/exploit_detection/syscalls/p_sys_setregid/p_sys_setregid.o \
                   src/modules/exploit_detection/syscalls/p_sys_setresgid/p_sys_setresgid.o \
                   src/modules/exploit_detection/syscalls/p_sys_setfsgid/p_sys_setfsgid.o \
-                  src/modules/exploit_detection/syscalls/p_set_current_groups/p_set_current_groups.o \
                   src/modules/exploit_detection/syscalls/p_generic_permission/p_generic_permission.o \
                   src/modules/exploit_detection/syscalls/p_sel_write_enforce/p_sel_write_enforce.o \
                   src/modules/exploit_detection/syscalls/p_seccomp/p_seccomp.o \

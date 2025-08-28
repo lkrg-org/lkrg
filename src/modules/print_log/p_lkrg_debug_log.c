@@ -121,7 +121,6 @@ static struct p_addr_name {
    P_LKRG_DEBUG_RULE_KPROBE(p_security_ptrace_access),
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setfsgid),
    P_LKRG_DEBUG_RULE_KPROBE(p_call_usermodehelper_exec),
-   P_LKRG_DEBUG_RULE_KPROBE(p_set_current_groups),
 #if P_OVL_OVERRIDE_SYNC_MODE
    P_LKRG_DEBUG_RULE_KPROBE(p_ovl_override_sync),
 #endif
