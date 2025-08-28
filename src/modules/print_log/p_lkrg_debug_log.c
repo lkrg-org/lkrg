@@ -108,8 +108,6 @@ static struct p_addr_name {
 #endif
 
 #ifdef P_LKRG_STRONG_KPROBE_DEBUG
-   P_LKRG_DEBUG_RULE_KPROBE(p_cap_task_prctl),
-   P_LKRG_DEBUG_RULE_KPROBE(p_sys_capset),
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setuid),
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setregid),
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setns),
@@ -121,7 +119,6 @@ static struct p_addr_name {
 #endif
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setresgid),
    P_LKRG_DEBUG_RULE_KPROBE(p_security_ptrace_access),
-   P_LKRG_DEBUG_RULE_KPROBE(p_compat_sys_capset),
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setfsgid),
    P_LKRG_DEBUG_RULE_KPROBE(p_call_usermodehelper_exec),
    P_LKRG_DEBUG_RULE_KPROBE(p_set_current_groups),
