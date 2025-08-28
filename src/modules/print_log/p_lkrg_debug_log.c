@@ -121,10 +121,7 @@ static struct p_addr_name {
 #endif
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setresgid),
    P_LKRG_DEBUG_RULE_KPROBE(p_security_ptrace_access),
-   P_LKRG_DEBUG_RULE_KPROBE(p_compat_sys_add_key),
    P_LKRG_DEBUG_RULE_KPROBE(p_compat_sys_capset),
-   P_LKRG_DEBUG_RULE_KPROBE(p_compat_sys_keyctl),
-   P_LKRG_DEBUG_RULE_KPROBE(p_compat_sys_request_key),
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setfsgid),
    P_LKRG_DEBUG_RULE_KPROBE(p_call_usermodehelper_exec),
    P_LKRG_DEBUG_RULE_KPROBE(p_set_current_groups),
@@ -137,10 +134,6 @@ static struct p_addr_name {
    // Next function does not have matching entry one.
    P_LKRG_DEBUG_RULE(p_security_bprm_committed_creds_ret),
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setresuid),
-   P_LKRG_DEBUG_RULE_KPROBE(p_sys_keyctl),
-   P_LKRG_DEBUG_RULE_KPROBE(p_key_change_session_keyring),
-   P_LKRG_DEBUG_RULE_KPROBE(p_sys_add_key),
-   P_LKRG_DEBUG_RULE_KPROBE(p_sys_request_key),
    P_LKRG_DEBUG_RULE_KPROBE(p_capable),
 #ifdef CONFIG_SECURITY_SELINUX_DEVELOP
    P_LKRG_DEBUG_RULE_KPROBE(p_sel_write_enforce),
@@ -152,7 +145,6 @@ static struct p_addr_name {
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setreuid),
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setgid),
    P_LKRG_DEBUG_RULE_KPROBE(p_call_usermodehelper),
-   P_LKRG_DEBUG_RULE_KPROBE(p_x32_sys_keyctl),
    P_LKRG_DEBUG_RULE_KPROBE(p_sys_setfsuid),
    P_LKRG_DEBUG_RULE_KPROBE(p_do_exit),
    P_LKRG_DEBUG_RULE_KPROBE(p_wake_up_new_task),

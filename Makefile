@@ -72,16 +72,8 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/modules/exploit_detection/syscalls/p_sys_setns/p_sys_setns.o \
                   src/modules/exploit_detection/syscalls/caps/p_sys_capset/p_sys_capset.o \
                   src/modules/exploit_detection/syscalls/caps/p_cap_task_prctl/p_cap_task_prctl.o \
-                  src/modules/exploit_detection/syscalls/keyring/p_key_change_session_keyring/p_key_change_session_keyring.o \
-                  src/modules/exploit_detection/syscalls/keyring/p_sys_add_key/p_sys_add_key.o \
-                  src/modules/exploit_detection/syscalls/keyring/p_sys_request_key/p_sys_request_key.o \
-                  src/modules/exploit_detection/syscalls/keyring/p_sys_keyctl/p_sys_keyctl.o \
                   src/modules/exploit_detection/syscalls/p_security_ptrace_access/p_security_ptrace_access.o \
-                  src/modules/exploit_detection/syscalls/compat/p_compat_sys_keyctl/p_compat_sys_keyctl.o \
                   src/modules/exploit_detection/syscalls/compat/p_compat_sys_capset/p_compat_sys_capset.o \
-                  src/modules/exploit_detection/syscalls/compat/p_compat_sys_add_key/p_compat_sys_add_key.o \
-                  src/modules/exploit_detection/syscalls/compat/p_compat_sys_request_key/p_compat_sys_request_key.o \
-                  src/modules/exploit_detection/syscalls/__x32/p_x32_sys_keyctl/p_x32_sys_keyctl.o \
                   src/modules/exploit_detection/syscalls/override/p_override_creds/p_override_creds.o \
                   src/modules/exploit_detection/syscalls/override/p_revert_creds/p_revert_creds.o \
                   src/modules/exploit_detection/syscalls/override/overlayfs/p_ovl_override_sync/p_ovl_override_sync.o \
