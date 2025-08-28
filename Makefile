@@ -70,10 +70,7 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/modules/exploit_detection/syscalls/p_seccomp/p_seccomp.o \
                   src/modules/exploit_detection/syscalls/p_sys_unshare/p_sys_unshare.o \
                   src/modules/exploit_detection/syscalls/p_sys_setns/p_sys_setns.o \
-                  src/modules/exploit_detection/syscalls/caps/p_sys_capset/p_sys_capset.o \
-                  src/modules/exploit_detection/syscalls/caps/p_cap_task_prctl/p_cap_task_prctl.o \
                   src/modules/exploit_detection/syscalls/p_security_ptrace_access/p_security_ptrace_access.o \
-                  src/modules/exploit_detection/syscalls/compat/p_compat_sys_capset/p_compat_sys_capset.o \
                   src/modules/exploit_detection/syscalls/override/p_override_creds/p_override_creds.o \
                   src/modules/exploit_detection/syscalls/override/p_revert_creds/p_revert_creds.o \
                   src/modules/exploit_detection/syscalls/override/overlayfs/p_ovl_override_sync/p_ovl_override_sync.o \
