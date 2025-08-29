@@ -108,9 +108,9 @@
 ({                                                                                         \
    int p_print_ret = 0;                                                                    \
                                                                                            \
-   if (p_level == P_LOG_ALERT)                                                             \
+   if ((p_level) == P_LOG_ALERT)                                                           \
       p_print_ret = printk(KERN_CRIT    P_LKRG_SIGNATURE "ALERT: " p_fmt "\n", ## p_args); \
-   else if (P_CTRL(p_log_level) >= (p_level & 7))                                          \
+   else if (P_CTRL(p_log_level) >= ((p_level) & 7))                                        \
    switch (p_level) {                                                                      \
    default: /* Pacify clang warning about no case P_LOG_ALERT, which we handle above */    \
       break;                                                                               \
