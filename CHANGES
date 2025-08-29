@@ -6,6 +6,7 @@ The following major changes have been made since 0.9.9:
     for cred pointer overwrites in certain other places where we did not before
  *) Do not track those credentials that we currently do not validate anyway
  *) Support (or rather be compatible with the kernel's use of) Intel CET IBT
+    (CONFIG_X86_KERNEL_IBT) and/or KCFI (CONFIG_CFI_CLANG) for now on x86_64
  *) Switch many hooks from kretprobes to simple kprobes for greater reliability
     and improved performance
  *) Overhaul locking of per-task shadow data, using finer-grain locks
