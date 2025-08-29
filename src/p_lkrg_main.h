@@ -324,7 +324,7 @@ extern p_ro_page p_ro;
 #define P_CTRL(p_field) p_ro.p_lkrg_global_ctrl.ctrl.p_field
 #define P_CTRL_ADDR &p_ro.p_lkrg_global_ctrl
 
-#ifdef CONFIG_X86_KERNEL_IBT
+#if defined(CONFIG_X86_KERNEL_IBT) || defined(CONFIG_CFI_CLANG)
 
 /*
  * When Intel CET IBT is in use, we can't call non-exported kernel functions
@@ -338,10 +338,10 @@ extern p_ro_page p_ro;
  * We use macros to generate wrapper functions for making CET IBT compatible
  * indirect calls via PUSH/RET, one wrapper function per function pointer.
  *
- * We rely on these functions having no prologue/epilogue, but having a return
- * instruction or a branch to a return thunk.  __attribute__ ((naked)) would
- * more reliably avoid prologue/epilogue, but then it'd be our job to invoke
- * the right return thunk for a given build.
+ * With gcc, we rely on these functions having no prologue/epilogue, but having
+ * a return instruction or a branch to a return thunk.  __attribute__ ((naked))
+ * would more reliably avoid prologue/epilogue, but then it'd be our job to
+ * invoke the right return thunk for a given build.
  *
  * It is important to prevent inlining and other interprocedural optimizations
  * at least because the indirect function call isn't exposed to the compiler,
@@ -354,10 +354,33 @@ extern p_ro_page p_ro;
  * support.  In testing, noinline along with noclone wasn't good enough.  We
  * could improve upon this by having these functions in their own translation
  * unit, ideally coming from an assembly rather than C source file.
+ *
+ * With clang not supporting __attribute__ ((noipa)), we use a combination of
+ * attributes including __attribute__ ((naked)), which means that for CET IBT
+ * (unlike solely clang software CFI) we use an explicit return instruction,
+ * which unfortunately produces this sort of objtool warnings:
+ * vmlinux.o: warning: objtool: call_p_kallsyms_lookup_name+0xa: 'naked' return found in MITIGATION_RETHUNK build
  */
+
+#ifdef CONFIG_X86_64
+ #ifdef __clang__
+  #define GENERATE_CALL_FUNC_ATTR __attribute__ ((noduplicate)) __attribute__ ((naked)) __attribute__ ((optnone))
+  #ifdef CONFIG_X86_KERNEL_IBT
+   #define GENERATE_CALL_FUNC_ASM "pushq %0\n\tret"
+  #else
+   #define GENERATE_CALL_FUNC_ASM "jmpq *%0"
+  #endif
+ #else /* gcc */
+  #define GENERATE_CALL_FUNC_ATTR __attribute__ ((noipa))
+  #define GENERATE_CALL_FUNC_ASM "pushq %0"
+ #endif
+#else
+#error "CONFIG_X86_KERNEL_IBT and/or CONFIG_CFI_CLANG not yet supported on this architecture"
+#endif
+
 #define GENERATE_CALL_FUNC(type, name, ...) \
-   notrace __attribute__ ((noipa)) type call_##name(__VA_ARGS__) { \
-      __asm__ __volatile__ ("pushq %0" :: "m" (P_SYM(name))); \
+   notrace noinline GENERATE_CALL_FUNC_ATTR type call_##name(__VA_ARGS__) { \
+      __asm__ __volatile__ (GENERATE_CALL_FUNC_ASM :: "m" (P_SYM(name))); \
    } \
    STACK_FRAME_NON_STANDARD(call_##name);
 
