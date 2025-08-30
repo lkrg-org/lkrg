@@ -131,7 +131,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
    if (unlikely(!P_CTRL(p_kint_validate)) ||
        unlikely(!p_manual && P_CTRL(p_kint_validate) == 1) ||
-       unlikely(!(P_SYM(p_state_init) & 2)))
+       unlikely(P_SYM(p_state_init) < 2))
       goto p_check_integrity_tasks;
 
    /*
