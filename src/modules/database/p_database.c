@@ -310,7 +310,7 @@ int p_create_database(void) {
     * Memory allocation may fail... let's loop here!
     */
    while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
-                     &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x1) != P_LKRG_SUCCESS)
+                     &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 1) != P_LKRG_SUCCESS)
       schedule();
 
    /* Hash */

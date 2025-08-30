@@ -142,7 +142,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
 
       /* OK, now recalculate hashes again! */
       while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
-                        &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x2) != P_LKRG_SUCCESS)
+                        &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 2) != P_LKRG_SUCCESS)
          schedule();
 
       /* Update global module list/kobj hash */
@@ -211,7 +211,7 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
 
          /* OK, now recalculate hashes again! */
          while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
-                           &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x2) != P_LKRG_SUCCESS)
+                           &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 2) != P_LKRG_SUCCESS)
             schedule();
 
          /* Update global module list/kobj hash */

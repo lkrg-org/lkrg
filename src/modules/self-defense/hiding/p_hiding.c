@@ -50,7 +50,7 @@ void p_hide_itself(void) {
 
    /* OK, now recalculate hashes again! */
    while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
-                     &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x2) != P_LKRG_SUCCESS)
+                     &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 2) != P_LKRG_SUCCESS)
       schedule();
 
    /* Update global module list/kobj hash */
@@ -89,7 +89,7 @@ void p_unhide_itself(void) {
 
    /* OK, now recalculate hashes again! */
    while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
-                     &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 0x2) != P_LKRG_SUCCESS)
+                     &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 2) != P_LKRG_SUCCESS)
       schedule();
 
    /* Update global module list/kobj hash */

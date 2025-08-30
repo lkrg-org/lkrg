@@ -131,7 +131,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
    if (unlikely(!P_CTRL(p_kint_validate)) ||
        unlikely(!p_manual && P_CTRL(p_kint_validate) == 1) ||
-       unlikely(!(P_SYM(p_state_init) & 0x2)))
+       unlikely(!(P_SYM(p_state_init) & 2)))
       goto p_check_integrity_tasks;
 
    /*
@@ -238,7 +238,7 @@ void p_check_integrity(struct work_struct *p_work) {
     * Memory allocation may fail... let's loop here!
     */
    while( (p_ret = p_kmod_hash(&p_module_list_nr_tmp,&p_module_list_tmp,
-                               &p_module_kobj_nr_tmp,&p_module_kobj_tmp, 0x0)) != P_LKRG_SUCCESS) {
+                               &p_module_kobj_nr_tmp,&p_module_kobj_tmp, 0)) != P_LKRG_SUCCESS) {
       if (p_ret == P_LKRG_KMOD_DUMP_RACE) {
          p_print_log(P_LOG_FAULT,
                 "Function <p_check_integrity> won race with module activity thread... We need to cancel this context!");
