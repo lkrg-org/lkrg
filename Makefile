@@ -5,7 +5,6 @@
 #  - Adam 'pi3' Zabrocki (http://pi3.com.pl)
 ##
 
-P_OUTPUT = output
 P_PWD ?= $(shell pwd)
 P_KVER ?= $(shell uname -r)
 P_BOOTUP_SCRIPT ?= scripts/bootup/lkrg-bootup.sh
@@ -87,8 +86,6 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
 all:
 #	$(MAKE) -C $(KERNEL) M=$(P_PWD) modules CONFIG_DEBUG_SECTION_MISMATCH=y
 	$(MAKE) -C $(KERNEL) M=$(P_PWD) modules
-	mkdir -p $(P_OUTPUT)
-	cp $(P_PWD)/$(TARGET).ko $(P_OUTPUT)
 
 install-module: all
 	$(MAKE) -C $(KERNEL) M=$(P_PWD) modules_install
@@ -105,6 +102,5 @@ clean:
 	$(RM) Module.markers modules.order
 	$(RM) $(P_PWD)/src/modules/kmod/client/kmod/Module.markers
 	$(RM) $(P_PWD)/src/modules/kmod/client/kmod/modules.order
-	$(RM) -rf $(P_OUTPUT)
 
 .PHONY: clean uninstall install install-module all
