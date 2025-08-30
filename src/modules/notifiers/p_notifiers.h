@@ -19,10 +19,6 @@
 #define P_LKRG_NOTIFIERS_MODULE_H
 
 /* MAX unsigned int         4294967295  */
-//#define P_OFTEN_RATE        5000000
-//#define P_SUPER_OFTEN_RATE  250000
-//#define P_RARE_RATE         80000000
-//#define P_SUPER_RARE_RATE   3000000000
 
 #define P_ALWAYS_RATE             4294967295U   /*  100%     */
 #define P_SUPER_RARE_RATE         2147483647    /*   50%     */
