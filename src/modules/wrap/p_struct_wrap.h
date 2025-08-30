@@ -484,7 +484,7 @@ static inline int p_set_memory_p(unsigned long p_addr, int p_numpages) {
 
 static inline void p_lkrg_open_rw_x86(void) {
 
-   register unsigned long p_cr0;
+   unsigned long p_cr0;
 
    preempt_disable();
    barrier();
@@ -495,7 +495,7 @@ static inline void p_lkrg_open_rw_x86(void) {
 
 static inline void p_lkrg_close_rw_x86(void) {
 
-   register unsigned long p_cr0;
+   unsigned long p_cr0;
 
    barrier();
    p_cr0 = read_cr0() ^ X86_CR0_WP;

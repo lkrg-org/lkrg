@@ -497,7 +497,7 @@ static inline void p_lkrg_counter_lock_val_dec(p_lkrg_counter_lock *p_arg) {
 
 static inline int p_lkrg_counter_lock_val_read(p_lkrg_counter_lock *p_arg) {
 
-   register int p_ret;
+   int p_ret;
 
    smp_mb();
    p_ret = atomic_read(&p_arg->p_counter);
