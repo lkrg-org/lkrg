@@ -39,6 +39,9 @@ case "`readlink -e /proc/1/exe`" in
 		exec "$P_LKRG_OPENRC" "$@"
 		;;
 	*)
-		echo -e "  ${P_RED}[-] Unsupported init system or not running as root?${P_NC}"
+		echo -e "  ${P_RED}[-] Unsupported init system?${P_NC}"
 		;;
 esac
+
+# Normally unreached due to use of "exec" above
+exit 1
