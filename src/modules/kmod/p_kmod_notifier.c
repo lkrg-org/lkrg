@@ -17,7 +17,6 @@
 
 
 static int p_module_event_notifier(struct notifier_block *p_this, unsigned long p_event, void *p_kmod);
-static void p_module_notifier_wrapper(unsigned long p_event, struct module *p_kmod);
 
 DEFINE_MUTEX(p_module_activity);
 struct module *p_module_activity_ptr;
@@ -49,6 +48,13 @@ static void p_module_notifier_wrapper(unsigned long p_event, struct module *p_km
    return;
 }
 
+#if P_OVL_OVERRIDE_SYNC_MODE
+static notrace void p_verify_module_live(struct module *p_mod);
+static notrace void p_verify_module_going(struct module *p_mod);
+#else
+#define p_verify_module_live(p_mod)
+#define p_verify_module_going(p_mod)
+#endif
 
 /*
  * This function is called when module is load/unloaded
@@ -251,9 +257,9 @@ p_module_event_notifier_activity_out:
    return NOTIFY_DONE;
 }
 
-void p_verify_module_live(struct module *p_mod) {
-
 #if P_OVL_OVERRIDE_SYNC_MODE
+static notrace void p_verify_module_live(struct module *p_mod) {
+
    if (p_ovl_override_sync_probe.state != LKRG_PROBE_OFF) {
       /* We do not need to do anything for now */
       return;
@@ -283,12 +289,10 @@ void p_verify_module_live(struct module *p_mod) {
       P_CTRL(p_kint_validate) = p_tmp_val;
       p_lkrg_close_rw();
    }
-#endif
 }
 
-void p_verify_module_going(struct module *p_mod) {
+static notrace void p_verify_module_going(struct module *p_mod) {
 
-#if P_OVL_OVERRIDE_SYNC_MODE
    if (p_ovl_override_sync_probe.state == LKRG_PROBE_OFF) {
       /* We do not need to do anything for now */
       return;
@@ -314,9 +318,8 @@ void p_verify_module_going(struct module *p_mod) {
       P_CTRL(p_kint_validate) = p_tmp_val;
       p_lkrg_close_rw();
    }
-#endif
-
 }
+#endif
 
 void p_register_module_notifier(void) {
 
