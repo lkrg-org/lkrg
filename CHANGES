@@ -1,29 +1,46 @@
 The following major changes have been made since 0.9.9:
 
+ *) Support latest mainline Linux kernels, currently tested up to 6.17-rc*
  *) Support Linux 6.13+ by not hooking {override,revert}_creds() anymore, and
     limiting detection of cred pointer overwrite attacks on those kernels
  *) To compensate for the above and as an enhancement on older kernels, check
     for cred pointer overwrites in certain other places where we did not before
- *) Do not track those credentials that we currently do not validate anyway
+ *) Do not track those credentials that we currently do not validate anyway,
+    and do not hook kernel functions that would only update such credentials
+    (shrunk the codebase by approximately 1500 lines)
+ *) Support OverlayFS ovl_tmpfile introduced in Linux 6.10 (such support was
+    needed to avoid false positives with containers on 6.10 to 6.12.y), but
+    don't hook anything OverlayFS on 6.13+ (is unneeded there)
  *) Support (or rather be compatible with the kernel's use of) Intel CET IBT
     (CONFIG_X86_KERNEL_IBT) and/or KCFI (CONFIG_CFI_CLANG) for now on x86_64
+ *) Support clang in more cases (fix some of the portability issues), but for
+    now continue to only support GCC officially
  *) Switch many hooks from kretprobes to simple kprobes for greater reliability
-    and improved performance
+    and improved performance, and also reduce source code duplication in how
+    hooks are installed (approximately +650 -1550 lines, so -900 lines overall)
  *) Overhaul locking of per-task shadow data, using finer-grain locks
  *) Improve performance of per-task shadow data lookups by making them lockless
+ *) Wrap integrity violation checks in unlikely(), so that the cold attack
+    response code doesn't clutter caches in the hot paths
  *) Fix several lethal race conditions involving SECCOMP_FILTER_FLAG_TSYNC
+ *) Fix false positive "seccomp mode corruption" involving SECCOMP_MODE_DEAD
+    (was possible on 5.17+ and stable/longterm kernels that backported this)
  *) Fix integrity violation misattribution to a wrong task when pint_enforce=0
  *) Fix several integrity violation race conditions when pint_enforce=0
  *) Fix race condition (possible NULL dereference) with namespace validation
  *) Fix race condition on msr_validate sysctl changes as well as on transitions
     between profile_validate=4 and others
+ *) Fix various other bugs that typically had no externally visible effect
  *) Make kprobes testing via LKRG's own dummy function hooking optional (works
-    around issue seen on recent Gentoo)
+    around issue seen on recent Gentoo) and improve reporting of failures
  *) Build and link the userspace logger tools with hardening flags, and pass
     distributions' RPM packaging hardening flags to the compiler and linker
  *) lkrg-logctl: Support and report continuation lines (an extra one-character
     field indicating whether the line is a new message or a continuation)
  *) lkrg-logger: Make logs group-readable
+ *) Continuous Integration: switch from Ubuntu to Fedora for latest mainline
+    kernel boot test, add Ubuntu 24.04, 24.10, 25.04, 25.10 boot tests, repair
+    CentOS 7 build test to survive this distro's EOL and GitHub's deprecation
 
 
 The following major changes have been made between LKRG 0.9.8 and 0.9.9:
