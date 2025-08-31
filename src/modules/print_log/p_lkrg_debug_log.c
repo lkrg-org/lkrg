@@ -19,9 +19,6 @@
 #include "../database/p_database.h"
 
 #define P_LKRG_DEBUG_RULE(fname) { (uintptr_t)fname, #fname }
-#define P_LKRG_DEBUG_RULE_KPROBE(fname)                        \
-   P_LKRG_DEBUG_RULE(fname##_entry),                           \
-   P_LKRG_DEBUG_RULE(fname##_ret)
 
 void __cyg_profile_func_enter(void *this_fn, void *call_site)
 __attribute__((no_instrument_function));
@@ -106,59 +103,6 @@ static struct p_addr_name {
 #if defined(CONFIG_ARM64)
    P_LKRG_DEBUG_RULE(p_dump_arm64_metadata),
 #endif
-
-#ifdef P_LKRG_STRONG_KPROBE_DEBUG
-   P_LKRG_DEBUG_RULE_KPROBE(p_sys_setuid),
-   P_LKRG_DEBUG_RULE_KPROBE(p_sys_setregid),
-   P_LKRG_DEBUG_RULE_KPROBE(p_sys_setns),
-   P_LKRG_DEBUG_RULE_KPROBE(p_sys_unshare),
-   P_LKRG_DEBUG_RULE_KPROBE(p_generic_permission),
-   P_LKRG_DEBUG_RULE_KPROBE(p_scm_send),
-#if defined(CONFIG_SECCOMP)
-   P_LKRG_DEBUG_RULE_KPROBE(p_seccomp),
-#endif
-   P_LKRG_DEBUG_RULE_KPROBE(p_sys_setresgid),
-   P_LKRG_DEBUG_RULE_KPROBE(p_security_ptrace_access),
-   P_LKRG_DEBUG_RULE_KPROBE(p_sys_setfsgid),
-   P_LKRG_DEBUG_RULE_KPROBE(p_call_usermodehelper_exec),
-#if P_OVL_OVERRIDE_SYNC_MODE
-   P_LKRG_DEBUG_RULE_KPROBE(p_ovl_override_sync),
-#endif
-   P_LKRG_DEBUG_RULE_KPROBE(p_revert_creds),
-   P_LKRG_DEBUG_RULE_KPROBE(p_override_creds),
-   P_LKRG_DEBUG_RULE_KPROBE(p_security_bprm_committing_creds),
-   // Next function does not have matching entry one.
-   P_LKRG_DEBUG_RULE(p_security_bprm_committed_creds_ret),
-   P_LKRG_DEBUG_RULE_KPROBE(p_sys_setresuid),
-   P_LKRG_DEBUG_RULE_KPROBE(p_capable),
-#ifdef CONFIG_SECURITY_SELINUX_DEVELOP
-   P_LKRG_DEBUG_RULE_KPROBE(p_sel_write_enforce),
-#endif
-   P_LKRG_DEBUG_RULE_KPROBE(p_pcfi___queue_work),
-   P_LKRG_DEBUG_RULE_KPROBE(p_pcfi_schedule),
-   P_LKRG_DEBUG_RULE_KPROBE(p_pcfi_lookup_fast),
-   P_LKRG_DEBUG_RULE_KPROBE(p_pcfi_mark_inode_dirty),
-   P_LKRG_DEBUG_RULE_KPROBE(p_sys_setreuid),
-   P_LKRG_DEBUG_RULE_KPROBE(p_sys_setgid),
-   P_LKRG_DEBUG_RULE_KPROBE(p_call_usermodehelper),
-   P_LKRG_DEBUG_RULE_KPROBE(p_sys_setfsuid),
-   P_LKRG_DEBUG_RULE_KPROBE(p_do_exit),
-   P_LKRG_DEBUG_RULE_KPROBE(p_wake_up_new_task),
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
-   P_LKRG_DEBUG_RULE_KPROBE(p_switch_idt),
-#endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,3,0)
-   P_LKRG_DEBUG_RULE_KPROBE(p_arch_jump_label_transform),
-   P_LKRG_DEBUG_RULE_KPROBE(p_arch_jump_label_transform_apply),
-#endif
-#endif
-
-   // Disable to noisy.
-   // P_LKRG_DEBUG_RULE(p_ed_enforce_pcfi),
-   // P_LKRG_DEBUG_RULE(p_rb_find_ed_pid),
-   // P_LKRG_DEBUG_RULE(p_validate_task_f),
-   // P_LKRG_DEBUG_RULE(p_ed_wq_valid_cache_init),
-   // P_LKRG_DEBUG_RULE(p_ed_pcfi_validate_sp),
 
    { 0, NULL }
 };

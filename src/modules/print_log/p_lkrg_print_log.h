@@ -40,10 +40,6 @@
 // not recommended - will be too noisy for some notifiers! :)
 //#define P_LKRG_NOTIFIER_DBG
 
-// Debug every time we enter/exit *kprobed* function?
-// not recommended - will be very noisy...
-//#define P_LKRG_STRONG_KPROBE_DEBUG
-
 
 /*
  * Error codes
