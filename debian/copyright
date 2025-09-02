@@ -34,7 +34,7 @@ License: GPL-2.0
 
 Files: mkosi.*
        .github/workflows/*
-Copyright: 2021-2024 Vitaly Chikunov
+Copyright: 2021-2025 Vitaly Chikunov
 License: GPL-2.0
 
 Files: debian/*

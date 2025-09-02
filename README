@@ -9,10 +9,8 @@ on top of a wide range of mainline and distros' kernels, without needing to
 patch those.  We currently support kernel versions ranging from as far back as
 RHEL7's (and its many clones/revisions) to latest mainline and distros kernels.
 
-LKRG 0.9.9 should work correctly with Linux kernels up to 6.12.y, and mostly
-with 6.13.y.  The current git revision has been updated to also work correctly
-with 6.13+ and our CI setup has tested it with kernels up to Fedora's build of
-6.17.0-0.rc0.250808g37816488247d.14.fc43.x86_64.
+LKRG 1.0.0 has been tested with Linux kernels from RHEL/CentOS 7's 3.10.0-1160
+and up to Fedora's build of 6.17.0-0.rc4.36.fc44.x86_64.
 
 LKRG currently supports the x86-64, 32-bit x86, AArch64 (ARM64), and 32-bit ARM
 CPU architectures.
@@ -36,9 +34,9 @@ like the below:
 
 	wget https://www.openwall.com/signatures/openwall-offline-signatures.asc
 	gpg --import openwall-offline-signatures.asc
-	wget https://lkrg.org/download/lkrg-0.9.9.tar.gz.sign
-	wget https://lkrg.org/download/lkrg-0.9.9.tar.gz
-	gpg --verify lkrg-0.9.9.tar.gz.sign lkrg-0.9.9.tar.gz
+	wget https://lkrg.org/download/lkrg-1.0.0.tar.gz.sign
+	wget https://lkrg.org/download/lkrg-1.0.0.tar.gz
+	gpg --verify lkrg-1.0.0.tar.gz.sign lkrg-1.0.0.tar.gz
 
 Please preserve the GnuPG key above and also use it to verify future releases,
 which will most likely work in a similar manner.
@@ -192,12 +190,12 @@ What this means in effect is that on kernel upgrades the module is rebuilt.
 You can install LKRG using DKMS as well.  For instance, on Red Hat'ish
 distributions after following the shared download instructions above:
 
-	sudo tar -xzf lkrg-0.9.9.tar.gz -C /usr/src/
+	sudo tar -xzf lkrg-1.0.0.tar.gz -C /usr/src/
 	sudo dnf update -y
 	sudo dnf install kernel-devel dkms openssl
-	sudo dkms add -m lkrg -v 0.9.9
-	sudo dkms build -m lkrg -v 0.9.9
-	sudo dkms install -m lkrg -v 0.9.9
+	sudo dkms add -m lkrg -v 1.0.0
+	sudo dkms build -m lkrg -v 1.0.0
+	sudo dkms install -m lkrg -v 1.0.0
 
 The only difference on other distributions should be the installation of the
 kernel headers, the DKMS utility, and OpenSSL.  Install the headers for the
@@ -209,7 +207,7 @@ You can then query the status with:
 
 If everything is right, you should get similar output to the following:
 
-	lkrg/0.9.9, 5.18.9-200.fc36.x86_64, x86_64: installed
+	lkrg/1.0.0, 5.18.9-200.fc36.x86_64, x86_64: installed
 
 Please refer to the previous two sections for how to start the LKRG service or
 have it started on system bootup.  If you wish to use the unit/init file, you
@@ -228,7 +226,7 @@ while you're in the top level source code directory of the installed version.
 
 If you installed using DKMS, you'd uninstall with:
 
-	sudo dkms remove -m lkrg/0.9.9 --all
+	sudo dkms remove -m lkrg/1.0.0 --all
 
 You can also use the following command to temporarily stop the LKRG service
 without uninstalling it, for systemd:

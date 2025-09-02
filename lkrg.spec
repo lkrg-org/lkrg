@@ -4,8 +4,8 @@
 
 Summary: Linux Kernel Runtime Guard (LKRG)
 Name: lkrg
-Version: 0.9.9
-Release: 5%{?dist}
+Version: 1.0.0
+Release: 1%{?dist}
 License: GPLv2
 URL: https://lkrg.org
 Source: https://lkrg.org/download/%name-%version.tar.gz
@@ -85,6 +85,15 @@ fi
 %dir %attr(0750,lkrg-logger,lkrg-logger) /var/log/lkrg-logger
 
 %changelog
+* Tue Sep  2 2025 Solar Designer <solar@openwall.com> 1.0.0-1
+- Update to 1.0.0
+
+* Thu May 15 2025 Solar Designer <solar@openwall.com> 0.9.9-8
+- Update to latest git as of today (aa6f685005bb27eccb060ed552877ba5677012d4)
+
+* Fri May  2 2025 Solar Designer <solar@openwall.com> 0.9.9-7
+- Update to latest git as of today (1bde9e5489268d877c07fd7a5fd91085e69a4fb5)
+
 * Mon Feb  3 2025 Solar Designer <solar@openwall.com> 0.9.9-5
 - Add -fPIE to logger CFLAGS for consistency with -pie in LDFLAGS
   (but no issues were seen on Rocky Linux 8 and 9 even without this change)
