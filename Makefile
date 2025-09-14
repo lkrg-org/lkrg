@@ -25,6 +25,13 @@ ccflags-y := ${ccflags-m}
 $(TARGET)-objs += src/modules/print_log/p_lkrg_debug_log.o
 endif
 
+#
+# Allow overriding LKRG_UNLOAD_PROTECT via Make.
+#
+ifneq ($(LKRG_UNLOAD_PROTECT),)
+ccflags-y += -DLKRG_UNLOAD_PROTECT=$(LKRG_UNLOAD_PROTECT)
+endif
+
 obj-m += $(TARGET).o
 $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/modules/hashing/p_lkrg_fast_hash.o \
