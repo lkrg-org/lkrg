@@ -18,6 +18,10 @@
 #ifndef P_LKRG_MAIN_H
 #define P_LKRG_MAIN_H
 
+#ifndef LKRG_UNLOAD_PROTECT
+#define LKRG_UNLOAD_PROTECT 1
+#endif
+
 #define LKRG_WITH_HIDE
 #define P_BOOT_DISABLE_LKRG "nolkrg"
 
@@ -559,6 +563,10 @@ static inline int p_lkrg_counter_lock_val_read(p_lkrg_counter_lock *p_arg) {
 
 #if defined(CONFIG_TRIM_UNUSED_KSYMS) && !defined(CONFIG_SECURITY_LKRG)
  #error "LKRG requires CONFIG_TRIM_UNUSED_KSYMS to be disabled if it should be built as a kernel module"
+#endif
+
+#if LKRG_UNLOAD_PROTECT != 0 && LKRG_UNLOAD_PROTECT != 1
+#error "LKRG_UNLOAD_PROTECT must be 0 or 1"
 #endif
 
 #endif
