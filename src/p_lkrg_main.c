@@ -593,9 +593,19 @@ static int __init p_lkrg_register(void) {
    p_register_notifiers();
    p_init_page_attr();
 
-   p_print_log(P_LOG_ALIVE, "LKRG initialized successfully");
+#ifdef LKRG_UNLOAD_PROTECT
+   if (try_module_get(THIS_MODULE)) {
+      p_debug_log(P_LOG_DEBUG, "LKRG unload protection enabled");
+   } else {
+      p_print_log(P_LOG_FATAL, "Can't increment module refcount to protect from unloading");
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_main_error;
+   }
+#endif
 
-   p_ret = P_LKRG_SUCCESS;
+p_print_log(P_LOG_ALIVE, "LKRG initialized successfully");
+
+p_ret = P_LKRG_SUCCESS;
 
 p_main_error:
 
@@ -656,8 +666,9 @@ p_sym_error:
 /*
  * This function normally should never be called - unloading module cleanup
  */
-static void __exit p_lkrg_deregister(void) {
-
+static void __exit p_lkrg_deregister(void)
+{
+#if !LKRG_UNLOAD_PROTECT
    p_print_log(P_LOG_DYING, "Unloading LKRG");
 
    p_uninit_page_attr();
@@ -706,8 +717,8 @@ static void __exit p_lkrg_deregister(void) {
    p_print_log(P_LOG_DYING, "LKRG unloaded");
 
    lkrg_deregister_net();
+#endif
 }
-
 
 #ifdef MODULE
 module_init(p_lkrg_register);
