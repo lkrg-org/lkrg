@@ -26,10 +26,17 @@ $(TARGET)-objs += src/modules/print_log/p_lkrg_debug_log.o
 endif
 
 #
-# Allow overriding LKRG_UNLOAD_PROTECT via Make.
+# Allow overriding LKRG_LOCKED_DOWN via Make.
 #
-ifneq ($(LKRG_UNLOAD_PROTECT),)
-ccflags-y += -DLKRG_UNLOAD_PROTECT=$(LKRG_UNLOAD_PROTECT)
+ifneq ($(LKRG_LOCKED_DOWN),)
+ccflags-y += -DLKRG_LOCKED_DOWN=$(LKRG_LOCKED_DOWN)
+endif
+
+#
+# Allow overriding LKRG_LOCKDOWN_BY_KERNEL via Make.
+#
+ifneq ($(LKRG_LOCKDOWN_BY_KERNEL),)
+ccflags-y += -DLKRG_LOCKDOWN_BY_KERNEL=$(LKRG_LOCKDOWN_BY_KERNEL)
 endif
 
 obj-m += $(TARGET).o
