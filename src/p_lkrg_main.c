@@ -149,7 +149,9 @@ static char *p_verify_boot_params(void) {
    p_params = (p_params_ptr) ? *p_params_ptr : NULL;
 
    if (!p_params) {
+
       p_print_log(P_LOG_FAULT, "Can't find kernel boot parameters, not checking for '" P_BOOT_DISABLE_LKRG "'");
+
       return NULL;
    }
 
@@ -167,21 +169,28 @@ static void p_init_page_attr(void) {
 
 #if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
    if (*(p_long_tmp-p_long_offset) == P_LKRG_MARKER1) {
+
       p_debug_log(P_LOG_DEBUG, "Found marker before configuration page");
+
       if (*(p_long_tmp+p_long_offset) == P_LKRG_MARKER1) {
          p_debug_log(P_LOG_DEBUG, "Found marker after configuration page");
 #endif
          P_SYM(p_state_init) = 2;
          p_set_memory_ro((unsigned long)p_long_tmp,1);
          p_debug_log(P_LOG_DEBUG, "Configuration page marked read-only");
+
          p_attr_init++;
 #if !defined(CONFIG_ARM) && (!defined(P_KERNEL_AGGRESSIVE_INLINING) && defined(CONFIG_X86))
+
          p_set_memory_np((unsigned long)(p_long_tmp-p_long_offset),1);
          p_debug_log(P_LOG_DEBUG, "Setup guard page before configuration page");
+
          if (*(p_long_tmp+p_long_offset*2) == P_LKRG_MARKER2) {
+
             p_debug_log(P_LOG_DEBUG, "Found next marker after configuration page");
             p_set_memory_np((unsigned long)(p_long_tmp+p_long_offset),1);
             p_debug_log(P_LOG_DEBUG, "Setup guard page after configuration page");
+
             p_attr_init++;
          }
 #endif
@@ -446,6 +455,63 @@ static int __init p_lkrg_register(void) {
    p_debug_log(P_LOG_DEBUG, "kallsyms_lookup_name() => 0x%lx", (unsigned long)P_SYM(p_kallsyms_lookup_name));
 
    /*
+    * Get state of kernel lockdown
+    */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,4,0)
+   int k_lockdown = is_kernel_locked_down();
+#else
+   int k_lockdown = 0;
+#endif
+
+   /*
+    * LKRG lockdown handling
+    */
+#if LKRG_LOCKED_DOWN == 0
+   if (k_lockdown == 1) {
+      
+      p_print_log(P_LOG_ALIVE, "Kernel lockdown is enabled: LKRG is locked down");
+
+      int incr_refc = try_module_get(THIS_MODULE);
+
+      if (incr_refc) {
+
+         int p_lkrg_lockdown = 1;
+         p_print_log(P_LOG_ALIVE, "LKRG lockdown enabled: Unloading LKRG is disallowed");
+      } else {
+
+         p_print_log(P_LOG_FATAL, "LKRG lockdown failed: Can't increment module refcount");
+
+         p_ret = P_LKRG_GENERAL_ERROR;
+         goto p_main_error;
+      }
+   } else if (k_lockdown == 0) {
+      p_print_log(P_LOG_ALIVE, "Kernel lockdown is disabled: LKRG lockdown disabled");
+   } else {
+
+      p_print_log(P_LOG_FATAL, "LKRG failed to get kernel lockdown status, is kernel compiled with lockdown?");
+      
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_main_error;
+   }
+#else
+   p_print_log(P_LOG_ALIVE, "LKRG is locked down: Module was built with lockdown enabled");
+
+   int incr_refc = try_module_get(THIS_MODULE);
+
+   if (incr_refc) {
+
+      int p_lkrg_lockdown = 1;
+      p_print_log(P_LOG_ALIVE, "LKRG lockdown enabled: Unloading LKRG is disallowed");
+   } else {
+
+      p_print_log(P_LOG_FATAL, "LKRG lockdown failed: Can't increment module refcount");
+
+      p_ret = P_LKRG_GENERAL_ERROR;
+      goto p_main_error;
+   }
+#endif
+
+   /*
     * Verify if user disabled loading LKRG from boot parameters
     */
    if (p_verify_boot_params()) {
@@ -592,44 +658,6 @@ static int __init p_lkrg_register(void) {
    p_integrity_timer();
    p_register_notifiers();
    p_init_page_attr();
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,4,0) && LKRG_WITH_NO_UNLOAD == 0
-
-   int lockdown = is_kernel_locked_down();
-
-   if (lockdown == 1) {
-      
-      int incr_refc = try_module_get(THIS_MODULE);
-
-      if (incr_refc) {
-         p_debug_log(P_LOG_DEBUG, "LKRG unload protection enabled");
-         p_print_log(P_LOG_ALIVE, "Kernel lockdown is enabled: Unloading LKRG is not allowed");
-      } else {
-   
-         p_print_log(P_LOG_FATAL, "Can't increment module refcount to protect from unloading");
-         p_ret = P_LKRG_GENERAL_ERROR;
-         goto p_main_error;
-      }
-   } else if (lockdown == 0) {
-      p_debug_log(P_LOG_DEBUG, "LKRG is running on a kernel with lockdown disabled");
-   } else {
-      p_print_log(P_LOG_ISSUE, "LKRG failed to get kernel lockdown status, is kernel compiled with lockdown?");
-   }
-#endif
-
-#if LKRG_WITH_NO_UNLOAD == 1
-
-   int incr_refc = try_module_get(THIS_MODULE);
-
-   if (incr_refc) {
-      p_debug_log(P_LOG_DEBUG, "LKRG is built with 'LKRG_WITH_NO_UNLOAD=1': Unload protection enabled");
-   } else {
-
-      p_print_log(P_LOG_FATAL, "Can't increment module refcount to protect from unloading");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
-#endif
 
 p_print_log(P_LOG_ALIVE, "LKRG initialized successfully");
 
