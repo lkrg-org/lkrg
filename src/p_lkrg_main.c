@@ -449,7 +449,7 @@ static int __init p_lkrg_register(void) {
     * Verify if user disabled loading LKRG from boot parameters
     */
    if (p_verify_boot_params()) {
-      p_print_log(P_LOG_DYING, "Not loading LKRG ('" P_BOOT_DISABLE_LKRG "' kernel boot parameter detected)");
+      p_print_log(P_LOG_DYING, "Not loading LKRG: '" P_BOOT_DISABLE_LKRG "' kernel boot parameter detected");
       lkrg_deregister_net();
       return P_LKRG_BOOT_DISABLE_LKRG;
    }
@@ -593,10 +593,38 @@ static int __init p_lkrg_register(void) {
    p_register_notifiers();
    p_init_page_attr();
 
-#ifdef LKRG_UNLOAD_PROTECT
-   if (try_module_get(THIS_MODULE)) {
-      p_debug_log(P_LOG_DEBUG, "LKRG unload protection enabled");
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,4,0) && LKRG_WITH_NO_UNLOAD == 0
+
+   int lockdown = is_kernel_locked_down();
+
+   if (lockdown == 1) {
+      
+      int incr_refc = try_module_get(THIS_MODULE);
+
+      if (incr_refc) {
+         p_debug_log(P_LOG_DEBUG, "LKRG unload protection enabled");
+         p_print_log(P_LOG_ALIVE, "Kernel lockdown is enabled: Unloading LKRG is not allowed");
+      } else {
+   
+         p_print_log(P_LOG_FATAL, "Can't increment module refcount to protect from unloading");
+         p_ret = P_LKRG_GENERAL_ERROR;
+         goto p_main_error;
+      }
+   } else if (lockdown == 0) {
+      p_debug_log(P_LOG_DEBUG, "LKRG is running on a kernel with lockdown disabled");
    } else {
+      p_print_log(P_LOG_ISSUE, "LKRG failed to get kernel lockdown status, is kernel compiled with lockdown?");
+   }
+#endif
+
+#if LKRG_WITH_NO_UNLOAD == 1
+
+   int incr_refc = try_module_get(THIS_MODULE);
+
+   if (incr_refc) {
+      p_debug_log(P_LOG_DEBUG, "LKRG is built with 'LKRG_WITH_NO_UNLOAD=1': Unload protection enabled");
+   } else {
+
       p_print_log(P_LOG_FATAL, "Can't increment module refcount to protect from unloading");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
@@ -610,7 +638,7 @@ p_ret = P_LKRG_SUCCESS;
 p_main_error:
 
    if (p_ret != P_LKRG_SUCCESS) {
-      p_print_log(P_LOG_DYING, "Not loading LKRG (initialization failed)");
+      p_print_log(P_LOG_DYING, "Not loading LKRG: Initialization failed");
       P_CTRL(p_kint_validate) = 0;
       p_deregister_notifiers();
       if (p_timer.function)
@@ -668,7 +696,8 @@ p_sym_error:
  */
 static void __exit p_lkrg_deregister(void)
 {
-#if !LKRG_UNLOAD_PROTECT
+#if !LKRG_WITH_NO_UNLOAD
+
    p_print_log(P_LOG_DYING, "Unloading LKRG");
 
    p_uninit_page_attr();
