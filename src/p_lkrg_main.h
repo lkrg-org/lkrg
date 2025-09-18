@@ -18,8 +18,12 @@
 #ifndef P_LKRG_MAIN_H
 #define P_LKRG_MAIN_H
 
-#ifndef LKRG_UNLOAD_PROTECT
-#define LKRG_UNLOAD_PROTECT 1
+#ifndef LKRG_LOCKED_DOWN
+#define LKRG_LOCKED_DOWN 0
+#endif
+
+#ifndef LKRG_LOCKDOWN_BY_KERNEL
+#define LKRG_LOCKDOWN_BY_KERNEL 0
 #endif
 
 #define LKRG_WITH_HIDE
@@ -512,7 +516,14 @@ static inline int p_lkrg_counter_lock_val_read(p_lkrg_counter_lock *p_arg) {
 }
 /* End */
 
-/* Kernel lockdown API */
+/* 
+ * LKRG lockdown global
+ */
+extern int p_lkrg_lockdown __ro_after_init;
+
+/* 
+ * Kernel lockdown API 
+ */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,4,0)
 
 typedef bool (*kernel_is_locked_down_t)(const struct cred *, unsigned int);
@@ -592,8 +603,12 @@ static inline int is_kernel_locked_down(void)
  #error "LKRG requires CONFIG_TRIM_UNUSED_KSYMS to be disabled if it should be built as a kernel module"
 #endif
 
-#if LKRG_UNLOAD_PROTECT != 0 && LKRG_UNLOAD_PROTECT != 1
-#error "LKRG_UNLOAD_PROTECT must be 0 or 1"
+#if LKRG_LOCKED_DOWN != 0 && LKRG_LOCKED_DOWN != 1
+#error "LKRG_LOCKED_DOWN must be 0 or 1"
+#endif
+
+#if LKRG_LOCKDOWN_BY_KERNEL != 0 && LKRG_LOCKDOWN_BY_KERNEL != 1
+#error "LKRG_LOCKDOWN_BY_KERNEL must be 0 or 1"
 #endif
 
 #endif
