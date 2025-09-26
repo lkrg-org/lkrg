@@ -13,7 +13,6 @@ jobs:
                     - focal
                     - jammy
                     - noble
-                    - oracular
                     - plucky
                     - questing
         steps:
