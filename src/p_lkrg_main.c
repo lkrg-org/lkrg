@@ -601,6 +601,7 @@ p_main_error:
 
    if (p_ret != P_LKRG_SUCCESS) {
       p_print_log(P_LOG_DYING, "Not loading LKRG (initialization failed)");
+      p_deregister_comm_channel();
       if (p_attr_init)
          p_uninit_page_attr();
       P_CTRL(p_kint_validate) = 0;
