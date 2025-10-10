@@ -601,6 +601,8 @@ p_main_error:
 
    if (p_ret != P_LKRG_SUCCESS) {
       p_print_log(P_LOG_DYING, "Not loading LKRG (initialization failed)");
+      if (p_attr_init)
+         p_uninit_page_attr();
       P_CTRL(p_kint_validate) = 0;
       p_deregister_notifiers();
       if (p_timer.function)
@@ -630,8 +632,6 @@ p_main_error:
          p_kzfree(p_db.p_CPU_metadata_array);
          p_db.p_CPU_metadata_array = NULL;
       }
-      if (p_attr_init)
-         p_uninit_page_attr();
 #if defined(P_LKRG_JUMP_LABEL_STEXT_DEBUG)
       if (p_db.kernel_stext_copy)
          vfree(p_db.kernel_stext_copy);
