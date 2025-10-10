@@ -1276,5 +1276,7 @@ int p_register_comm_channel(void) {
 
 void p_deregister_comm_channel(void) {
 
-   unregister_sysctl_table(p_sysctl_handle);
+   if (p_sysctl_handle)
+      unregister_sysctl_table(p_sysctl_handle);
+   p_sysctl_handle = NULL;
 }
