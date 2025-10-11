@@ -583,12 +583,6 @@ static int __init p_lkrg_register(void) {
       goto p_main_error;
    }
 
-#ifdef LKRG_WITH_HIDE
-   if (P_CTRL(p_hide_lkrg)) {
-      p_hide_itself();
-   }
-#endif
-
    p_integrity_timer();
    p_register_notifiers();
    p_init_page_attr();
