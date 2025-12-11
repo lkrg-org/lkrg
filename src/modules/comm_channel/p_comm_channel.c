@@ -798,9 +798,9 @@ static int p_sysctl_msr_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
    int p_cpu;
    unsigned int p_tmp;
 
+   p_lkrg_open_rw();
    write_lock(&p_config_lock);
    p_tmp = P_CTRL(p_msr_validate);
-   p_lkrg_open_rw();
    if ( (p_ret = proc_dointvec_minmax(p_table, p_write, p_buffer, p_len, p_pos)) == 0 && p_write) {
       if (P_CTRL(p_msr_validate) && !p_tmp) {
          P_CTRL(p_profile_validate) = 9;
@@ -818,8 +818,8 @@ static int p_sysctl_msr_validate(P_STRUCT_CTL_TABLE *p_table, int p_write,
          p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
       }
    }
-   p_lkrg_close_rw();
    write_unlock(&p_config_lock);
+   p_lkrg_close_rw();
 
    return p_ret;
 }
