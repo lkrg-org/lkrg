@@ -140,7 +140,13 @@ static void maybe_reconnect(void)
 	saddr.sin_family = AF_INET;
 	saddr.sin_port = htons(net_server_port);
 	saddr.sin_addr.s_addr = net_server_addr_n;
-	switch ((err = sk->ops->connect(sk, (struct sockaddr *)&saddr, sizeof(saddr), O_WRONLY))) {
+	switch ((err = sk->ops->connect(sk,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
+	    (struct sockaddr_unsized *)
+#else
+	    (struct sockaddr *)
+#endif
+	    &saddr, sizeof(saddr), O_WRONLY))) {
 	case 0:
 	case -EINPROGRESS:
 		break;
