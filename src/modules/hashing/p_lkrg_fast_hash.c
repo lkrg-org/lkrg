@@ -26,12 +26,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "p_lkrg_fast_hash.h"
-#define notrace
 #endif
 
 p_global_siphash_key_t p_global_siphash_key;
 
-static notrace inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const uint8_t *k, uint8_t *out) {
+static inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen, const uint8_t *k, uint8_t *out) {
 
    uint64_t v0 = 0x736f6d6570736575ULL;
    uint64_t v1 = 0x646f72616e646f6dULL;
@@ -101,7 +100,7 @@ static notrace inline void p_lkrg_siphash(const uint8_t *in, const size_t inlen,
    U64TO8_LE(out, b);
 }
 
-notrace uint64_t p_lkrg_fast_hash(const unsigned char *p_data, unsigned int p_len) {
+uint64_t p_lkrg_fast_hash(const unsigned char *p_data, unsigned int p_len) {
 
    uint64_t p_tmp = 0;
 

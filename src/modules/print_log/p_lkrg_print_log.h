@@ -150,8 +150,6 @@
    panic(p_fmt, ## p_args); \
 })
 
-#define LKRG_DEBUG_TRACE notrace
-
 #ifdef P_LKRG_DEBUG
 
 #ifdef P_LKRG_NOTIFIER_DBG
@@ -164,8 +162,6 @@
 #ifdef P_LKRG_STRONG_KPROBE_DEBUG
  #define p_debug_kprobe_log(p_fmt, p_args...)                                            \
                   p_debug_log(P_LOG_FLOOD, p_fmt, ## p_args)
- #undef LKRG_DEBUG_TRACE
- #define LKRG_DEBUG_TRACE
 #else
  #define p_debug_kprobe_log(p_fmt, p_args...)    ({ 0; })
 #endif

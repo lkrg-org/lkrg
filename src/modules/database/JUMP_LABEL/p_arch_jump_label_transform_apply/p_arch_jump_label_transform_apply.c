@@ -36,7 +36,7 @@
 static bool p_text, p_mod;
 
 
-static notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
+static int p_arch_jump_label_transform_apply_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
 #ifdef TEXT_POKE_MAX_OPCODE_SIZE
    int p_nr = P_SYM(p_text_poke_array)->nr_entries;
@@ -109,7 +109,7 @@ static notrace int p_arch_jump_label_transform_apply_entry(struct kretprobe_inst
 }
 
 
-static notrace int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
+static int p_arch_jump_label_transform_apply_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
 
    struct module *p_module = NULL;
    unsigned int p_tmp,p_tmp2;

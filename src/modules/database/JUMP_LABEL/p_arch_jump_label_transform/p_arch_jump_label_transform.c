@@ -31,7 +31,7 @@
 p_lkrg_counter_lock p_jl_lock;
 
 
-static notrace int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
+static int p_arch_jump_label_transform_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
    struct jump_entry *p_tmp = (struct jump_entry *)p_regs_get_arg1(p_regs);
    unsigned long p_addr = p_jump_entry_code(p_tmp);
@@ -85,7 +85,7 @@ static notrace int p_arch_jump_label_transform_entry(struct kretprobe_instance *
 }
 
 
-static notrace int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
+static int p_arch_jump_label_transform_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
 
    unsigned int p_tmp,p_tmp2;
    unsigned char p_flag = 0;
