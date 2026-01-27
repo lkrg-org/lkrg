@@ -46,7 +46,7 @@ unsigned int p_ftrace_tmp_mod;
  * static int ftrace_modify_all_code(unsigned long pc, unsigned long old,
  *                                   unsigned long new, bool validate)
  */
-static notrace int p_ftrace_modify_all_code_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
+static int p_ftrace_modify_all_code_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
    struct ftrace_rec_iter *p_iter;
    struct dyn_ftrace *p_rec;
@@ -103,7 +103,7 @@ static notrace int p_ftrace_modify_all_code_entry(struct kretprobe_instance *p_r
 }
 
 
-static notrace int p_ftrace_modify_all_code_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
+static int p_ftrace_modify_all_code_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
 
    unsigned int p_tmp,p_tmp2;
    unsigned char p_flag = 0;
