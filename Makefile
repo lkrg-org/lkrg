@@ -9,12 +9,7 @@ P_PWD ?= $(shell pwd)
 P_KVER ?= $(shell uname -r)
 P_BOOTUP_SCRIPT ?= scripts/bootup/lkrg-bootup.sh
 TARGET := lkrg
-ifneq ($(KERNELRELEASE),)
-    KERNEL := /lib/modules/$(KERNELRELEASE)/build
-else
-    ## KERNELRELEASE not set.
-    KERNEL := /lib/modules/$(P_KVER)/build
-endif
+KERNEL ?= /lib/modules/$(P_KVER)/build
 
 #
 # Use DEBUG=on for debug build.
@@ -91,7 +86,7 @@ install-module: all
 	$(MAKE) -C $(KERNEL) M=$(P_PWD) modules_install
 
 install: install-module
-	depmod $(KERNELRELEASE)
+	depmod $(P_KVER)
 	$(P_PWD)/$(P_BOOTUP_SCRIPT) install
 
 uninstall:
