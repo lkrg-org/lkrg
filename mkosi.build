@@ -1,17 +1,17 @@
 #!/bin/bash -eux
 # mkosi.build - Compile and install compiled module and the source into DESTDIR.
 
-KERNELRELEASE=$(ls -d /lib/modules/* | sort -V | tail -1)
-KERNELRELEASE=${KERNELRELEASE##/lib/modules/}
-export KERNELRELEASE
+P_KVER=$(ls -d /lib/modules/* | sort -V | tail -1)
+P_KVER=${P_KVER##/lib/modules/}
+export P_KVER
 
 # No sysv banner on opensuse and centos9.
-type banner >/dev/null 2>&1 && banner build $KERNELRELEASE >&2
+type banner >/dev/null 2>&1 && banner build $P_KVER >&2
 
 # Allow manual run with make arguments, like 'clean'.
 make -j$(nproc) $@
 
 # Install if compiled.
 [ -e lkrg.ko ] && [ -v DESTDIR ] &&
-install -Dpm 644 lkrg.ko $DESTDIR/lib/modules/$KERNELRELEASE/extra/lkrg.ko &&
+install -Dpm 644 lkrg.ko $DESTDIR/lib/modules/$P_KVER/extra/lkrg.ko &&
 cp -av ./ $DESTDIR/lkrg/ || :

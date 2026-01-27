@@ -50,7 +50,7 @@ jobs:
                   COPY . .
                   RUN git clean -dxfq
                   RUN gcc -v; cat /etc/os-release
-                  RUN make -j\$(nproc) KERNELRELEASE=\$(cd /lib/modules; ls)
+                  RUN make -j\$(nproc) P_KVER=\$(cd /lib/modules; ls)
                   RUN file lkrg.ko
                   EOF
             - run: docker build --platform=${{ matrix.platform }} .
