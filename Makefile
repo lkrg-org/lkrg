@@ -9,12 +9,7 @@ P_PWD ?= $(shell pwd)
 P_KVER ?= $(shell uname -r)
 P_BOOTUP_SCRIPT ?= scripts/bootup/lkrg-bootup.sh
 TARGET := lkrg
-ifneq ($(KERNELRELEASE),)
-    KERNEL := /lib/modules/$(KERNELRELEASE)/build
-else
-    ## KERNELRELEASE not set.
-    KERNEL := /lib/modules/$(P_KVER)/build
-endif
+KERNEL ?= /lib/modules/$(P_KVER)/build
 
 #
 # Use DEBUG=on for debug build.
@@ -23,6 +18,10 @@ ifeq ($(DEBUG), on)
 ccflags-m := -ggdb -DP_LKRG_DEBUG_BUILD -finstrument-functions
 ccflags-y := ${ccflags-m}
 $(TARGET)-objs += src/modules/print_log/p_lkrg_debug_log.o
+else
+# Remove trace-related flags so ftrace cannot probe LKRG's functions.
+# This is equivalent to specifying 'notrace' on every function.
+REMOVE_FLAGS := -fpatchable-function-entry -finstrument-functions -mhotpatch -pg
 endif
 
 obj-m += $(TARGET).o
@@ -83,15 +82,21 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/p_lkrg_main.o
 
 
+ifeq ($(KERNELRELEASE),)
+# Runs first during the "make" pass
+ifneq ($(REMOVE_FLAGS),)
+CFLAG_REMOVAL_OPTS := $(foreach x,$($(TARGET)-objs),CFLAGS_REMOVE_$(x)="$(REMOVE_FLAGS)")
+endif
+
 all:
-#	$(MAKE) -C $(KERNEL) M=$(P_PWD) modules CONFIG_DEBUG_SECTION_MISMATCH=y
-	$(MAKE) -C $(KERNEL) M=$(P_PWD) modules
+	$(MAKE) -C $(KERNEL) $(CFLAG_REMOVAL_OPTS) M=$(P_PWD) modules
+endif
 
 install-module: all
 	$(MAKE) -C $(KERNEL) M=$(P_PWD) modules_install
 
 install: install-module
-	depmod $(KERNELRELEASE)
+	depmod $(P_KVER)
 	$(P_PWD)/$(P_BOOTUP_SCRIPT) install
 
 uninstall:

@@ -49,8 +49,8 @@ static void p_module_notifier_wrapper(unsigned long p_event, struct module *p_km
 }
 
 #if P_OVL_OVERRIDE_SYNC_MODE
-static notrace void p_verify_module_live(struct module *p_mod);
-static notrace void p_verify_module_going(struct module *p_mod);
+static void p_verify_module_live(struct module *p_mod);
+static void p_verify_module_going(struct module *p_mod);
 #else
 #define p_verify_module_live(p_mod)
 #define p_verify_module_going(p_mod)
@@ -258,7 +258,7 @@ p_module_event_notifier_activity_out:
 }
 
 #if P_OVL_OVERRIDE_SYNC_MODE
-static notrace void p_verify_module_live(struct module *p_mod) {
+static void p_verify_module_live(struct module *p_mod) {
 
    if (p_ovl_override_sync_probe.state != LKRG_PROBE_OFF) {
       /* We do not need to do anything for now */
@@ -291,7 +291,7 @@ static notrace void p_verify_module_live(struct module *p_mod) {
    }
 }
 
-static notrace void p_verify_module_going(struct module *p_mod) {
+static void p_verify_module_going(struct module *p_mod) {
 
    if (p_ovl_override_sync_probe.state == LKRG_PROBE_OFF) {
       /* We do not need to do anything for now */

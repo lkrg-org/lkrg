@@ -35,17 +35,27 @@ config SECURITY_LKRG_DEBUG
 EOC
 )
 
+TARGET_OBJS=$(sed -n '/^$(TARGET)-objs += .* \\/,/[^\]$/ {s|src/||; s|$(TARGET)|lkrg|; p}' "$BASEDIR/../Makefile")
+REMOVE_FLAGS=$(grep -Pzo '(?<=REMOVE_FLAGS := )[\S\s]*?\n(?=\S)' "$BASEDIR/../Makefile")
+CFLAG_REMOVAL_OPTS=()
+mapfile -t OBJS < <(echo "$TARGET_OBJS" | grep -Po '\S+\.o')
+for obj in "${OBJS[@]}"; do
+    CFLAG_REMOVAL_OPTS+=("CFLAGS_REMOVE_$obj := $REMOVE_FLAGS")
+done
+
 MAKEFILE=$(cat <<EOC
 # SPDX-License-Identifier: GPL-2.0-only
 
 obj-\$(CONFIG_SECURITY_LKRG) := lkrg.o
-ifeq (\$(SECURITY_LKRG_DEBUG), on)
+ifneq (\$(CONFIG_SECURITY_LKRG_DEBUG),)
 ccflags-m := -ggdb -DP_LKRG_DEBUG_BUILD -finstrument-functions
 ccflags-y := \${ccflags-m}
 lkrg-objs += modules/print_log/p_lkrg_debug_log.o
+else
+$(for opt in "${CFLAG_REMOVAL_OPTS[@]}"; do echo "$opt"; done)
 endif
 
-$(sed -n '/^$(TARGET)-objs += .* \\/,/[^\]$/ {s|src/||; s|$(TARGET)|lkrg|; p}' "$BASEDIR/../Makefile")
+$(echo "$TARGET_OBJS")
 
 EOC
 )

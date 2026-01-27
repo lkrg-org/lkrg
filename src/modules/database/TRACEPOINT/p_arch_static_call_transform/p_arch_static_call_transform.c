@@ -32,7 +32,7 @@ static unsigned int p_module2_idx;
 
 p_lkrg_counter_lock p_static_call_spinlock;
 
-static notrace int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
+static int p_arch_static_call_transform_entry(struct kretprobe_instance *p_ri, struct pt_regs *p_regs) {
 
    unsigned long p_site = p_regs_get_arg1(p_regs);
    unsigned long p_tramp = p_regs_get_arg2(p_regs);
@@ -128,7 +128,7 @@ static notrace int p_arch_static_call_transform_entry(struct kretprobe_instance 
 }
 
 
-static notrace int p_arch_static_call_transform_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
+static int p_arch_static_call_transform_ret(struct kretprobe_instance *ri, struct pt_regs *p_regs) {
 
    unsigned int p_tmp;
    unsigned char p_flag = 0;

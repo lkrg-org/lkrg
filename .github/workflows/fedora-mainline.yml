@@ -23,19 +23,19 @@ jobs:
                       -w /workspace fedora:rawhide bash -ex -c '
                           cat /etc/os-release
                           dnf install --exclude=linux-firmware -y kernel kernel-devel gcc make elfutils-libelf-devel awk
-                          export KERNELRELEASE=$(ls /lib/modules)
-                          echo "::notice title=Kernel version::$KERNELRELEASE"
-                          echo "::group::Building LKRG for $KERNELRELEASE 🏃"
+                          export P_KVER=$(ls /lib/modules)
+                          echo "::notice title=Kernel version::$P_KVER"
+                          echo "::group::Building LKRG for $P_KVER 🏃"
                           make -O -j$(nproc) all install-module
                           echo "::group::Generate initrd image"
-                          dracut -f --add virtfs --force-drivers "9p 9pnet_virtio lkrg" /boot/initrd.img $KERNELRELEASE
+                          dracut -f --add virtfs --force-drivers "9p 9pnet_virtio lkrg" /boot/initrd.img $P_KVER
                       '
             - name: Extracting container to the filesystem
               run: |
                   mkdir -p /tmp/fedora
                   docker export fedora | tar x -C /tmp/fedora
                   cp -a .github/workflows/run-boot-tests.sh -t /tmp/fedora
-                  echo "KERNELRELEASE=$(ls /tmp/fedora/lib/modules)" >> $GITHUB_ENV
+                  echo "P_KVER=$(ls /tmp/fedora/lib/modules)" >> $GITHUB_ENV
 
             - name: Installing QEMU on GA host
               run: |
@@ -43,7 +43,7 @@ jobs:
                   sudo apt-get install -y qemu-kvm man-db-
                   sudo chmod -v 666 /dev/kvm
 
-            - name: Boot ${{ env.KERNELRELEASE }} 🙏
+            - name: Boot ${{ env.P_KVER }} 🙏
               run: |
                   timeout 60 qemu-system-x86_64 \
                       -enable-kvm \

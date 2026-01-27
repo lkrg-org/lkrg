@@ -31,7 +31,7 @@
 
 #include "../../../exploit_detection/syscalls/p_install.h"
 
-static notrace int p_ftrace_enable_sysctl_entry(struct kprobe *p_ri, struct pt_regs *p_regs) {
+static int p_ftrace_enable_sysctl_entry(struct kprobe *p_ri, struct pt_regs *p_regs) {
 
    p_regs_set_arg2(p_regs, 0);
 

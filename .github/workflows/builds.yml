@@ -33,6 +33,6 @@ jobs:
             - run: cat /etc/os-release
             - run: ${{ matrix.run }}
             - uses: actions/checkout@v3
-            - run: make -j$(nproc) KERNELRELEASE=$(cd /lib/modules; ls)
+            - run: make -j$(nproc) P_KVER=$(cd /lib/modules; ls)
 
 # vim: sw=4
