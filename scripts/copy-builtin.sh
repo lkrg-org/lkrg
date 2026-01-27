@@ -39,7 +39,7 @@ MAKEFILE=$(cat <<EOC
 # SPDX-License-Identifier: GPL-2.0-only
 
 obj-\$(CONFIG_SECURITY_LKRG) := lkrg.o
-ifeq (\$(SECURITY_LKRG_DEBUG), on)
+ifneq (\$(CONFIG_SECURITY_LKRG_DEBUG),)
 ccflags-m := -ggdb -DP_LKRG_DEBUG_BUILD -finstrument-functions
 ccflags-y := \${ccflags-m}
 lkrg-objs += modules/print_log/p_lkrg_debug_log.o
