@@ -23,6 +23,22 @@ ifeq ($(DEBUG), on)
 ccflags-m := -ggdb -DP_LKRG_DEBUG_BUILD -finstrument-functions
 ccflags-y := ${ccflags-m}
 $(TARGET)-objs += src/modules/print_log/p_lkrg_debug_log.o
+else
+# Remove trace-related flags so ftrace cannot probe LKRG's functions. This is
+# akin to specifying 'notrace' on every function, except that this removes even
+# more code transformations than 'notrace' alone.
+#
+# The '%' is a wildcard to match any number of characters in a word. This covers
+# variations of these flags that have an optional argument assigned via '='.
+REMOVE_FLAGS := -finstrument-functions% \
+		-flive-patching% \
+		-fpatchable-function-entry% \
+		-fprofile% \
+		-mhotpatch% \
+		-p \
+		-pg
+
+KBUILD_CFLAGS := $(filter-out $(REMOVE_FLAGS),$(KBUILD_CFLAGS))
 endif
 
 obj-m += $(TARGET).o
