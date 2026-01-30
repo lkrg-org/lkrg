@@ -43,6 +43,9 @@ ifneq (\$(CONFIG_SECURITY_LKRG_DEBUG),)
 ccflags-m := -ggdb -DP_LKRG_DEBUG_BUILD -finstrument-functions
 ccflags-y := \${ccflags-m}
 lkrg-objs += modules/print_log/p_lkrg_debug_log.o
+else
+$(grep -Pzo 'REMOVE_FLAGS := [\S\s]*?\n(?=\S)' "$BASEDIR/../Makefile")
+KBUILD_CFLAGS := \$(filter-out \$(REMOVE_FLAGS),\$(KBUILD_CFLAGS))
 endif
 
 $(sed -n '/^$(TARGET)-objs += .* \\/,/[^\]$/ {s|src/||; s|$(TARGET)|lkrg|; p}' "$BASEDIR/../Makefile")
