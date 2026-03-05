@@ -19,6 +19,7 @@ jobs:
               run: |
                   echo "::group::Prepare Docker container for build"
                   docker run --name=fedora \
+                      --security-opt seccomp=unconfined \
                       -v ${{ github.workspace }}:/workspace \
                       -w /workspace fedora:rawhide bash -ex -c '
                           cat /etc/os-release
