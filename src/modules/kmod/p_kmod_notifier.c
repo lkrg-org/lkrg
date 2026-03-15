@@ -85,7 +85,7 @@ static inline void p_verify_added_module(struct module *p_kmod) {
        *  - calculate hash from .text and behave like AV?
        *  - more...
        */
-      if (P_CTRL(p_kint_enforce >= 2)) {
+      if (P_CTRL(p_kint_enforce) >= 2) {
          // OK, we need to crash the kernel now
          p_panic("Kernel: Newly loaded module [name: %s] in LIVE state is hidden!", p_kmod->name);
       }
