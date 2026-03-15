@@ -48,6 +48,51 @@ static void p_module_notifier_wrapper(unsigned long p_event, struct module *p_km
    return;
 }
 
+static inline void p_verify_added_module(struct module *p_kmod) {
+
+   unsigned int p_tmp;
+   unsigned int p_found_mod = 0;
+   unsigned int p_found_obj = 0;
+   static const char * const p_mod_strings[] = {
+                             "New module is LIVE",
+                             "New module is COMING",
+                             "Module is GOING AWAY",
+                             "New module is UNFORMED yet" };
+
+   for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++)
+      if (p_db.p_module_list_array[p_tmp].p_mod == p_kmod)
+         p_found_mod = 1;
+
+   for (p_tmp = 0; p_tmp < p_db.p_module_kobj_nr; p_tmp++)
+      if (p_db.p_module_kobj_array[p_tmp].p_mod == p_kmod)
+         p_found_obj = 1;
+
+   if (!p_found_mod || !p_found_obj) {
+      p_print_log(P_LOG_ALERT, "DETECT: Newly loaded module in LIVE state is hidden!");
+      /* Singularity rootkit is hooking print function
+       * and removes any messages containing "LKRG" string.
+       * Because of that, we are using here raw printk()
+       */
+      printk(KERN_CRIT "Hidden module:\n");
+      printk(KERN_CRIT "\tPointer to struct module: [0x%lx]\n", (unsigned long)p_kmod);
+      printk(KERN_CRIT "\tName: [%s]\n", p_kmod->name);
+      printk(KERN_CRIT "\tState: [%d: %s]\n", p_kmod->state,
+                                              (p_kmod->state > MODULE_STATE_UNFORMED) ?
+                                              "WRONG STATE VALUE" :
+                                              p_mod_strings[p_kmod->state]);
+      /* We can do more here, e.g.,
+       *  - dump the entire module
+       *  - calculate hash from .text and behave like AV?
+       *  - more...
+       */
+      if (P_CTRL(p_kint_enforce >= 2)) {
+         // OK, we need to crash the kernel now
+         p_panic("Kernel: Newly loaded module [name: %s] in LIVE state is hidden!", p_kmod->name);
+      }
+   }
+}
+
+
 #if P_OVL_OVERRIDE_SYNC_MODE
 static void p_verify_module_live(struct module *p_mod);
 static void p_verify_module_going(struct module *p_mod);
@@ -219,6 +264,8 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
          while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
                            &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 2) != P_LKRG_SUCCESS)
             schedule();
+
+         p_verify_added_module(p_module_activity_ptr);
 
          /* Update global module list/kobj hash */
          p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
