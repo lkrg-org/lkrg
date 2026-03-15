@@ -963,7 +963,7 @@ void p_check_integrity(struct work_struct *p_work) {
 
    if (p_hack_check) {
       p_print_log(P_LOG_ALERT, "DETECT: Kernel: %u checksums changed unexpectedly", p_hack_check);
-      if (P_CTRL(p_kint_enforce >= 2)) {
+      if (P_CTRL(p_kint_enforce) >= 2) {
          // OK, we need to crash the kernel now
          p_panic("Kernel: %u checksums changed unexpectedly", p_hack_check);
       }
