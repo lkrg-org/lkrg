@@ -68,7 +68,7 @@ static inline void p_verify_added_module(struct module *p_kmod) {
          p_found_obj = 1;
 
    if (!p_found_mod || !p_found_obj) {
-      p_print_log(P_LOG_ALERT, "DETECT: Newly loaded module in LIVE state is hidden!");
+      p_print_log(P_LOG_ALERT, "DETECT: Newly loaded module entering LIVE state is hidden!");
       /* Singularity rootkit is hooking print function
        * and removes any messages containing "LKRG" string.
        * Because of that, we are using here raw printk()
