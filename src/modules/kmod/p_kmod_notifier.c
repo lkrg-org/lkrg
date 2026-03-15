@@ -29,6 +29,11 @@ static struct notifier_block p_module_block_notifier = {
 
 };
 
+static const char * const p_mod_strings[] = {
+                          "New module is LIVE",
+                          "New module is COMING",
+                          "Module is GOING AWAY",
+                          "New module is UNFORMED yet" };
 
 static int p_block_always(void) {
 
@@ -53,11 +58,6 @@ static inline void p_verify_added_module(struct module *p_kmod) {
    unsigned int p_tmp;
    unsigned int p_found_mod = 0;
    unsigned int p_found_obj = 0;
-   static const char * const p_mod_strings[] = {
-                             "New module is LIVE",
-                             "New module is COMING",
-                             "Module is GOING AWAY",
-                             "New module is UNFORMED yet" };
 
    for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++)
       if (p_db.p_module_list_array[p_tmp].p_mod == p_kmod)
@@ -116,12 +116,6 @@ static void p_verify_module_going(struct module *p_mod);
 static int p_module_event_notifier(struct notifier_block *p_this, unsigned long p_event, void *p_kmod) {
 
    struct module *p_tmp = p_kmod;
-
-   static const char * const p_mod_strings[] = {
-                             "New module is LIVE",
-                             "New module is COMING",
-                             "Module is GOING AWAY",
-                             "New module is UNFORMED yet" };
 
 // STRONG_DEBUG
    p_debug_log(P_LOG_FLOOD,
