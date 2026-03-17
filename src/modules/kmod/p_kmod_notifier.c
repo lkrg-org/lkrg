@@ -57,17 +57,12 @@ static inline void p_verify_added_module(struct module *p_kmod) {
 
    unsigned int p_tmp;
    unsigned int p_found_mod = 0;
-   unsigned int p_found_obj = 0;
 
    for (p_tmp = 0; p_tmp < p_db.p_module_list_nr; p_tmp++)
       if (p_db.p_module_list_array[p_tmp].p_mod == p_kmod)
          p_found_mod = 1;
 
-   for (p_tmp = 0; p_tmp < p_db.p_module_kobj_nr; p_tmp++)
-      if (p_db.p_module_kobj_array[p_tmp].p_mod == p_kmod)
-         p_found_obj = 1;
-
-   if (!p_found_mod || !p_found_obj) {
+   if (!p_found_mod) {
       p_print_log(P_LOG_ALERT, "DETECT: Newly loaded module entering LIVE state is hidden!");
       /* Singularity rootkit is hooking print function
        * and removes any messages containing "LKRG" string.
