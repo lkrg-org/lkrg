@@ -254,7 +254,8 @@ static int p_module_event_notifier(struct notifier_block *p_this, unsigned long 
                            &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 2) != P_LKRG_SUCCESS)
             schedule();
 
-         p_verify_added_module(p_module_activity_ptr);
+         if (p_module_core(p_tmp) && p_core_text_size(p_tmp))
+            p_verify_added_module(p_tmp);
 
          /* Update global module list/kobj hash */
          p_db.p_module_list_hash = p_lkrg_fast_hash((unsigned char *)p_db.p_module_list_array,
