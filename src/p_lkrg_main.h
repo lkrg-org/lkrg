@@ -190,6 +190,7 @@ typedef struct _p_lkrg_global_conf_structure {
 typedef struct _p_lkrg_global_symbols_structure {
 
    unsigned long (*p_kallsyms_lookup_name)(const char *name);
+   unsigned int *p_freeze_timeout_msecs;
    int (*p_freeze_processes)(void);
    void (*p_thaw_processes)(void);
 #if !defined(CONFIG_ARM64)
