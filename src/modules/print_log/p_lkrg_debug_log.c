@@ -38,7 +38,7 @@ static struct p_addr_name {
    P_LKRG_DEBUG_RULE(ed_task_del_current),
    P_LKRG_DEBUG_RULE(__ed_task_find_rcu),
    P_LKRG_DEBUG_RULE(__ed_task_current),
-   P_LKRG_DEBUG_RULE(p_dump_task_f),
+   P_LKRG_DEBUG_RULE(p_dump_task_work_add),
    P_LKRG_DEBUG_RULE(p_ed_enforce_validation),
    P_LKRG_DEBUG_RULE(p_ed_enforce_validation_paranoid),
    P_LKRG_DEBUG_RULE(p_exploit_detection_init),
