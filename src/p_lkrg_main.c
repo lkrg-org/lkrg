@@ -432,7 +432,7 @@ static void __init p_freeze_userspace(void) {
    orig_timeout = *P_SYM(p_freeze_timeout_msecs);
 
    /* Start with a freeze timeout of 500 ms and a sleep duration of 50 ms */
-   timeout = min(500, orig_timeout);
+   timeout = min(500U, orig_timeout);
    sleep_ms = 50;
 
    /*
@@ -460,7 +460,7 @@ static void __init p_freeze_userspace(void) {
       /* Scale up after every 3 failed attempts */
       if (!(tries % 3)) {
          /* Don't sleep longer than 500 ms at a time (it probably won't help) */
-         sleep_ms = min(sleep_ms + 50, 500);
+         sleep_ms = min(sleep_ms + 50, 500U);
 
          /* Increase the timeout, capping it to the original timeout duration */
          timeout = min(timeout * 2, orig_timeout);
