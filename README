@@ -474,7 +474,7 @@ The sysctl's are (with default values specified in braces):
   without achieving a corresponding security improvement, except that it might
   provide logs for post-mortem detection and analysis of a security compromise.
 
-- lkrg.pint_validate (2)
+- lkrg.pint_validate (1)
   Whether and when to validate process credentials integrity.  Allowed values
   are 0 (disabled), 1 (validate a task's credentials just before it'd make use
   of the credentials), 2 (currently, it has the same meaning as 1), and 3
