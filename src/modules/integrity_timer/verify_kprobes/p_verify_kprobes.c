@@ -19,24 +19,6 @@
 
 static struct lkrg_probe p_lkrg_dummy_probe;
 
-#ifdef __clang__
-__attribute__((optnone))
-#else
-__attribute__((optimize(0)))
-#endif
-static noinline int lkrg_dummy(int arg) {
-
-   p_debug_log(P_LOG_DEBUG,
-          "[lkrg_dummy] Argument value: [%d]\n",arg);
-
-   /*
-    * TODO:
-    * We can verify integrity of the internal kprobe structures here
-    */
-
-   return arg + 0x2200;
-}
-
 int lkrg_verify_kprobes(void) {
 
    int p_ret = 0, ret = -1;

@@ -19,6 +19,7 @@
 #define P_LKRG_INTEGRITY_VERIFY_KPROBES_H
 
 int lkrg_verify_kprobes(void);
+int lkrg_dummy(int arg);
 
 GENERATE_INSTALL_FUNC_PROTO(lkrg_dummy)
 
