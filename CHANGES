@@ -1,3 +1,23 @@
+The following major changes have been made between LKRG 1.0.0 and 1.0.1:
+
+ *) Support Linux 6.19+ (tested up to and including 7.0)
+ *) Verify newly loaded modules do appear in the module list (catches e.g.
+    the Singularity rootkit hiding itself on load, stops it by kernel panic)
+ *) Try harder at killing compromised tasks (beyond SIGKILL sent by usual
+    means, so e.g. Singularity's attempt to suppress SIGKILL doesn't help it)
+ *) Replace inconsistent uses of notrace in the source files with removal of
+    trace-related CFLAGS in Makefile (so a rootkit can't place ftrace hooks on
+    LKRG functions, which an older revision of Singularity did)
+ *) Fix possible livelock when freezing inter-dependent tasks on LKRG load
+    (was observed with systemd-userd vs. proc-sys-fs-binfmt_misc.mount)
+ *) Fix possible use-after-free when accessing another task's shadow data on
+    kernels since 3.17 but below 4.20
+ *) Fix possible sleeping-in-atomic on lkrg.msr_validate sysctl updates
+ *) pCFI: Fix potential kernel stack out of bounds read (which didn't matter)
+ *) Fix possible seccomp deadlock when a thread's off flag is corrupted (which
+    can't happen without another issue or kernel compromise)
+
+
 The following major changes have been made between LKRG 0.9.9 and 1.0.0:
 
  *) Support latest mainline Linux kernels, currently tested up to 6.17-rc*
