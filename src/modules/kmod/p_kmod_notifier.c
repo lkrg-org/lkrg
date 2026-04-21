@@ -69,7 +69,8 @@ static inline void p_verify_added_module(struct module *p_kmod) {
        * Because of that, we are using here raw printk()
        */
       printk(KERN_CRIT "Hidden module:\n");
-      printk(KERN_CRIT "\tPointer to struct module: [0x%lx]\n", (unsigned long)p_kmod);
+      if (P_CTRL(p_log_level) >= P_LOG_WATCH)
+         printk(KERN_CRIT "\tPointer to struct module: [0x%lx]\n", (unsigned long)p_kmod);
       printk(KERN_CRIT "\tName: [%s]\n", p_kmod->name);
       printk(KERN_CRIT "\tState: [%d: %s]\n", p_kmod->state,
                                               (p_kmod->state > MODULE_STATE_UNFORMED) ?
