@@ -22,7 +22,7 @@ __attribute__((optnone))
 #else
 __attribute__((optimize(0)))
 #endif
-int lkrg_dummy(int arg) {
+noinline int lkrg_dummy(int arg) {
 
    p_debug_log(P_LOG_DEBUG,
           "[lkrg_dummy] Argument value: [%d]\n",arg);
