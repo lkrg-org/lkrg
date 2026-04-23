@@ -4,7 +4,7 @@
 
 Summary: Linux Kernel Runtime Guard (LKRG)
 Name: lkrg
-Version: 1.0.0
+Version: 1.0.1
 Release: 1%{?dist}
 License: GPLv2
 URL: https://lkrg.org
@@ -85,6 +85,9 @@ fi
 %dir %attr(0750,lkrg-logger,lkrg-logger) /var/log/lkrg-logger
 
 %changelog
+* Thu Apr 23 2026 Solar Designer <solar@openwall.com> 1.0.1-1
+- Update to 1.0.1
+
 * Tue Sep  2 2025 Solar Designer <solar@openwall.com> 1.0.0-1
 - Update to 1.0.0
 
