@@ -44,6 +44,7 @@
 #include <linux/usb.h>
 #include <linux/acpi.h>
 #include <linux/profile.h>
+#include <linux/task_work.h>
 
 #include <linux/kprobes.h>
 #include <linux/namei.h>
@@ -196,9 +197,6 @@ typedef struct _p_lkrg_global_conf_structure {
 typedef struct _p_lkrg_global_symbols_structure {
 
    unsigned long (*p_kallsyms_lookup_name)(const char *name);
-   unsigned int *p_freeze_timeout_msecs;
-   int (*p_freeze_processes)(void);
-   void (*p_thaw_processes)(void);
 #if !defined(CONFIG_ARM64)
    void (*p_flush_tlb_all)(void);
 #endif
@@ -280,6 +278,26 @@ typedef struct _p_lkrg_global_symbols_structure {
 #endif
    struct module *p_find_me;
    unsigned int p_state_init;
+
+   /*
+    * There are three variants for the type of the notify argument to
+    * task_work_add(): bool, int, and enum task_work_notify_mode. On newer
+    * kernels which have either int or enum task_work_notify_mode, we want to
+    * pass TWA_RESUME. On older kernels which have bool, we want to pass true.
+    * As it happens, TWA_RESUME is 1, so we can use a single prototype that's
+    * compatible with all variants by just using int. These changes to the type
+    * of the notify argument were backported to stable kernels, so it would be
+    * difficult to try and create a kernel version #if check for the right type.
+    *
+    * Always using int is safe because bool, int, and enum are all passed
+    * interchangeably in function calls on every Linux arch. An enum is the same
+    * size as an int since the kernel doesn't use -fshort-enums, so passing 1 as
+    * an int works whether the function takes a bool, int, or enum.
+    */
+   int (*p_task_work_add)(struct task_struct *task, struct callback_head *work,
+                          int notify);
+   struct callback_head *(*p_task_work_cancel_func)(struct task_struct *task,
+                                                    task_work_func_t func);
 
 } p_lkrg_global_syms;
 
@@ -392,8 +410,6 @@ extern p_ro_page p_ro;
    extern type call_##name(__VA_ARGS__);
 
 GENERATE_CALL_FUNC_PROTO(unsigned long, p_kallsyms_lookup_name, const char *name)
-GENERATE_CALL_FUNC_PROTO(int, p_freeze_processes, void)
-GENERATE_CALL_FUNC_PROTO(void, p_thaw_processes, void)
 #if !defined(CONFIG_ARM64)
  GENERATE_CALL_FUNC_PROTO(void, p_flush_tlb_all, void)
 #endif
@@ -437,6 +453,8 @@ GENERATE_CALL_FUNC_PROTO(int, p_kallsyms_on_each_symbol,
 #if defined(CONFIG_OPTPROBES)
  GENERATE_CALL_FUNC_PROTO(void, p_wait_for_kprobe_optimizer, void)
 #endif
+GENERATE_CALL_FUNC_PROTO(int, p_task_work_add, struct task_struct *, struct callback_head *, int)
+GENERATE_CALL_FUNC_PROTO(struct callback_head *, p_task_work_cancel_func, struct task_struct *, task_work_func_t)
 
 #define P_SYM_CALL(name, ...) \
    call_##name(__VA_ARGS__)
@@ -448,11 +466,20 @@ GENERATE_CALL_FUNC_PROTO(int, p_kallsyms_on_each_symbol,
 
 #endif
 
-#define P_SYM_INIT(sym) \
-   if (!(P_SYM(p_ ## sym) = (typeof(P_SYM(p_ ## sym)))P_SYM_CALL(p_kallsyms_lookup_name, #sym))) { \
+#define P_SYM_INIT_VAR_NO_ERROR(var, sym) \
+   (P_SYM(p_ ## var) = (typeof(P_SYM(p_ ## var)))P_SYM_CALL(p_kallsyms_lookup_name, #sym))
+
+#define P_SYM_INIT_NO_ERROR(sym) \
+   P_SYM_INIT_VAR_NO_ERROR(sym, sym)
+
+#define P_SYM_INIT_VAR(var, sym) \
+   if (!P_SYM_INIT_VAR_NO_ERROR(var, sym)) { \
       p_print_log(P_LOG_FATAL, "Can't find '" #sym "'"); \
       goto p_sym_error; \
    }
+
+#define P_SYM_INIT(sym) \
+   P_SYM_INIT_VAR(sym, sym)
 
 /*
  * LKRG counter lock
