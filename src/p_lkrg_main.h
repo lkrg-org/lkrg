@@ -100,6 +100,12 @@ static inline unsigned long get_random_long(void) {
 #define p_read_cpu_unlock cpus_read_unlock
 #endif
 
+/* for_each_process_thread() was introduced in v3.14 */
+#ifndef for_each_process_thread
+#define for_each_process_thread(p, t)	\
+   for_each_process(p) for_each_thread(p, t)
+#endif
+
 #include <linux/stacktrace.h>
 #include <asm/stacktrace.h>
 #include <asm/tlbflush.h>
