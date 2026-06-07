@@ -107,7 +107,7 @@ static int drop_root(void)
 
 int main(int argc, const char * const *argv)
 {
-	int true = 1;
+	int one = 1;
 	int sock, new;
 	struct sockaddr_in addr;
 	socklen_t addrlen;
@@ -131,7 +131,7 @@ int main(int argc, const char * const *argv)
 		return log_error("socket");
 
 	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR,
-	    (void *)&true, sizeof(true)))
+	    (void *)&one, sizeof(one)))
 		return log_error("setsockopt");
 
 	memset(&addr, 0, sizeof(addr));
