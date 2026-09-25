@@ -71,6 +71,10 @@ For example, under Debian and Ubuntu you can install all of these with:
 
 under Red Hat'ish distributions (e.g. RHEL, CentOS, Fedora) with:
 
+	sudo dnf install make gcc gawk elfutils-libelf-devel kernel-devel
+
+or for older ones (RHEL 7, CentOS 7):
+
 	sudo yum install make gcc awk elfutils-libelf-devel kernel-devel
 
 under openSUSE with:
