@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "configure" ]; then
+    if [ ! -d /var/log/lkrg-logger ]; then
+        mkdir -p /var/log/lkrg-logger
+        chown root:root /var/log/lkrg-logger
+        chmod 750 /var/log/lkrg-logger
+    fi
+fi
+
+#DEBHELPER#
+
+exit 0
