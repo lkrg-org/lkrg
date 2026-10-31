@@ -714,6 +714,13 @@ static void __exit p_lkrg_deregister(void) {
 
    p_print_log(P_LOG_DYING, "Unloading LKRG");
 
+   /*
+    * Remove the sysctls first, which also waits for their handlers to finish. A
+    * sysctl handler can register the notifiers, which would otherwise undo the
+    * deregistration below.
+    */
+   p_deregister_comm_channel();
+
    p_uninit_page_attr();
 
    P_CTRL(p_kint_validate) = 0;
@@ -725,8 +732,6 @@ static void __exit p_lkrg_deregister(void) {
    // Freeze all non-kernel processes
    while (P_SYM_CALL(p_freeze_processes))
       schedule();
-
-   p_deregister_comm_channel();
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
