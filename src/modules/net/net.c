@@ -96,8 +96,13 @@ static size_t buf_resend_size;
 static void log_issue(int err)
 {
 	static DEFINE_RATELIMIT_STATE(state, 180 * HZ, 3);
+/*
+ * __p_print_log(), not p_print_log(), which queues our work even after
+ * unregister_console(), so this would re-queue the work from within itself
+ * while lkrg_deregister_net() is flushing it.
+ */
 	if (___ratelimit(&state, "LKRG: ISSUE: Net: Rate limit"))
-		p_print_log(P_LOG_ISSUE, "Net: Connection error %d", err);
+		__p_print_log(P_LOG_ISSUE, "Net: Connection error %d", err);
 }
 
 static void disconnect(void)
@@ -375,7 +380,6 @@ void lkrg_deregister_net(void)
 	if (kmsg_file) {
 		unregister_console(&lkrg_console);
 		flush_work(&work);
-		cancel_work_sync(&work); /* Redundant unless the work re-queues */
 		filp_close(kmsg_file, NULL);
 		kmsg_file = NULL;
 		disconnect();
