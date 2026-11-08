@@ -128,9 +128,14 @@ void p_check_integrity(struct work_struct *p_work) {
    struct module *p_tmp_mod;
    unsigned int p_tmp = 0;
    int p_ret;
+   /*
+    * Consume a manual request up front, so that one made while we're running
+    * is left for the check it queued rather than cleared by us when we finish.
+    */
+   unsigned int p_manual_run = xchg(&p_manual, 0);
 
    if (unlikely(!P_CTRL(p_kint_validate)) ||
-       unlikely(!p_manual && P_CTRL(p_kint_validate) == 1) ||
+       unlikely(!p_manual_run && P_CTRL(p_kint_validate) == 1) ||
        unlikely(P_SYM(p_state_init) < 2))
       goto p_check_integrity_tasks;
 
@@ -996,13 +1001,10 @@ p_check_integrity_tasks:
 
    if (!p_ed_enforce_validation_paranoid()) {
       if (P_CTRL(p_heartbeat) && P_CTRL(p_pint_validate) &&
-          (!P_CTRL(p_kint_validate) || (!p_manual && P_CTRL(p_kint_validate) == 1))) {
+          (!P_CTRL(p_kint_validate) || (!p_manual_run && P_CTRL(p_kint_validate) == 1))) {
          p_print_log(P_LOG_ALIVE, "Tasks are clean");
       }
    }
-
-   if (p_manual)
-      p_manual = 0;
 
    /* Free the worker struct */
    if (p_work) {
