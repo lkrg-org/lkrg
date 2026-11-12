@@ -41,7 +41,7 @@ jobs:
             - name: Installing QEMU on GA host
               run: |
                   sudo apt-get -y update
-                  sudo apt-get install -y qemu-kvm man-db-
+                  sudo apt-get install -y qemu-system-x86 man-db-
                   sudo chmod -v 666 /dev/kvm
 
             - name: Boot ${{ env.KERNELRELEASE }} 🙏
