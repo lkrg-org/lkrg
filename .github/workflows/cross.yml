@@ -39,8 +39,8 @@ jobs:
                                 /etc/yum.repos.d/CentOS-Base.repo && \
                           yum install -y git file gcc make  kernel-devel kernel elfutils-libelf-devel
         steps:
-            - uses: docker/setup-qemu-action@v2
-            - uses: actions/checkout@v3
+            - uses: docker/setup-qemu-action@v4
+            - uses: actions/checkout@v7
             - name: Create Dockerfile
               run: |
                   cat <<EOF >Dockerfile
