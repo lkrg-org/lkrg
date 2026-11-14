@@ -30,43 +30,18 @@ DEFINE_RWLOCK(p_config_lock);
 unsigned long p_db_flags;
 unsigned int p_manual = 0;
 
-/* kmem_cache for offloding WQ */
-struct kmem_cache *p_offload_cache = NULL;
+/* Work item for offloading integrity checks to a WQ */
+static DECLARE_WORK(p_offload_worker, p_check_integrity);
 
-
-static void p_offload_cache_zero(void *p_arg) {
-
-   struct work_struct *p_struct = p_arg;
-
-   memset(p_struct, 0, sizeof(struct work_struct));
-}
-
-int p_offload_cache_init(void) {
-
-   if ( (p_offload_cache = kmem_cache_create("p_offload_cache", sizeof(struct work_struct),
-                                             0, P_LKRG_CACHE_FLAGS, p_offload_cache_zero)) == NULL) {
-      return P_LKRG_GENERAL_ERROR;
-   }
-
-   return P_LKRG_SUCCESS;
-}
-
-void p_offload_cache_delete(void) {
-
-#ifdef flush_workqueue
 /*
- * When flush_workqueue became a macro, it started emitting warnings and the
- * below function was introduced in place of the original function.  We should
- * avoid flushing a system queue, but meanwhile we just suppress the warnings.
+ * Cancel a queued integrity check and wait for a running one to finish.
+ * Must be called only after everything that may call p_offload_work() (the
+ * timer, the notifiers and the communication channel) has been shut down, so
+ * that the work can't be re-queued behind our back.
  */
-   __flush_workqueue(system_unbound_wq);
-#else
-   flush_workqueue(system_unbound_wq);
-#endif
-   if (p_offload_cache) {
-      kmem_cache_destroy(p_offload_cache);
-      p_offload_cache = NULL;
-   }
+void p_offload_work_sync(void) {
+
+   cancel_work_sync(&p_offload_worker);
 }
 
 void p_integrity_timer(void) {
@@ -90,8 +65,6 @@ void p_offload_work(unsigned long p_timer) {
 void p_offload_work(struct timer_list *p_timer) {
 #endif
 
-   struct work_struct *p_worker;
-
    p_debug_log(P_LOG_FLOOD,
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0)
           "p_timer => %ld",p_timer);
@@ -99,10 +72,11 @@ void p_offload_work(struct timer_list *p_timer) {
           "p_timer => %lx",(unsigned long)p_timer);
 #endif
 
-   while ( (p_worker = p_alloc_offload()) == NULL); // Should never be NULL
-   INIT_WORK(p_worker, p_check_integrity);
-   /* schedule for execution */
-   queue_work(system_unbound_wq, p_worker);
+   /*
+    * Schedule for execution.  If a check is already pending, this request is
+    * merged into it; if one is currently running, another full check follows.
+    */
+   queue_work(P_SYSTEM_UNBOUND_WQ, &p_offload_worker);
    lkrg_queue_net();
    if (p_timer)
       p_integrity_timer();
@@ -128,9 +102,14 @@ void p_check_integrity(struct work_struct *p_work) {
    struct module *p_tmp_mod;
    unsigned int p_tmp = 0;
    int p_ret;
+   /*
+    * Consume a manual request up front, so that one made while we're running
+    * is left for the check it queued rather than cleared by us when we finish.
+    */
+   unsigned int p_manual_run = xchg(&p_manual, 0);
 
    if (unlikely(!P_CTRL(p_kint_validate)) ||
-       unlikely(!p_manual && P_CTRL(p_kint_validate) == 1) ||
+       unlikely(!p_manual_run && P_CTRL(p_kint_validate) == 1) ||
        unlikely(P_SYM(p_state_init) < 2))
       goto p_check_integrity_tasks;
 
@@ -996,16 +975,8 @@ p_check_integrity_tasks:
 
    if (!p_ed_enforce_validation_paranoid()) {
       if (P_CTRL(p_heartbeat) && P_CTRL(p_pint_validate) &&
-          (!P_CTRL(p_kint_validate) || (!p_manual && P_CTRL(p_kint_validate) == 1))) {
+          (!P_CTRL(p_kint_validate) || (!p_manual_run && P_CTRL(p_kint_validate) == 1))) {
          p_print_log(P_LOG_ALIVE, "Tasks are clean");
       }
-   }
-
-   if (p_manual)
-      p_manual = 0;
-
-   /* Free the worker struct */
-   if (p_work) {
-      p_free_offload(p_work);
    }
 }

@@ -67,6 +67,17 @@
 #include <linux/preempt.h>
 
 #include <linux/timer.h>
+
+/*
+ * Linux 6.17 added system_dfl_wq (and system_percpu_wq); later kernels mark
+ * system_unbound_wq __WQ_DEPRECATED, so queue_work() on it prints
+ * "work func p_check_integrity [lkrg] enqueued on deprecated workqueue".
+ */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,17,0)
+#define P_SYSTEM_UNBOUND_WQ system_dfl_wq
+#else
+#define P_SYSTEM_UNBOUND_WQ system_unbound_wq
+#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6,15,0)
 #define del_timer_sync(x) timer_delete_sync(x)
 #endif

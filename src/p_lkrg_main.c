@@ -571,12 +571,6 @@ static int __init p_lkrg_register(void) {
       goto p_main_error;
    }
 
-   if (p_offload_cache_init()) {
-      p_print_log(P_LOG_FATAL, "Can't initialize cache for system integrity WQ");
-      p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
-
    /*
     * Initialize kmod module
     */
@@ -677,9 +671,9 @@ p_main_error:
          cpuhp_remove_state_nocalls(p_hot_cpus);
 #endif
 
+      p_offload_work_sync();
       p_exploit_detection_exit();
       p_unregister_arch_metadata();
-      p_offload_cache_delete();
       p_deregister_module_notifier();
       p_uninstall_lkrg_dummy_hook();
       if (p_db.p_CPU_metadata_array) {
@@ -740,9 +734,9 @@ static void __exit p_lkrg_deregister(void) {
    cpuhp_remove_state_nocalls(p_hot_cpus);
 #endif
 
+   p_offload_work_sync();
    p_unregister_arch_metadata();
    p_exploit_detection_exit();
-   p_offload_cache_delete();
    p_deregister_module_notifier();
    p_uninstall_lkrg_dummy_hook();
 
