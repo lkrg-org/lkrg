@@ -323,7 +323,7 @@ static void work_do(struct work_struct *work)
 void lkrg_queue_net(void)
 {
 	if (kmsg_file)
-		queue_work(system_unbound_wq, &work);
+		queue_work(P_SYSTEM_UNBOUND_WQ, &work);
 }
 
 static void write_msg(struct console *con, const char *str, unsigned int len)

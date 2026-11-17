@@ -59,9 +59,9 @@ void p_offload_cache_delete(void) {
  * below function was introduced in place of the original function.  We should
  * avoid flushing a system queue, but meanwhile we just suppress the warnings.
  */
-   __flush_workqueue(system_unbound_wq);
+   __flush_workqueue(P_SYSTEM_UNBOUND_WQ);
 #else
-   flush_workqueue(system_unbound_wq);
+   flush_workqueue(P_SYSTEM_UNBOUND_WQ);
 #endif
    if (p_offload_cache) {
       kmem_cache_destroy(p_offload_cache);
@@ -102,7 +102,7 @@ void p_offload_work(struct timer_list *p_timer) {
    while ( (p_worker = p_alloc_offload()) == NULL); // Should never be NULL
    INIT_WORK(p_worker, p_check_integrity);
    /* schedule for execution */
-   queue_work(system_unbound_wq, p_worker);
+   queue_work(P_SYSTEM_UNBOUND_WQ, p_worker);
    lkrg_queue_net();
    if (p_timer)
       p_integrity_timer();
