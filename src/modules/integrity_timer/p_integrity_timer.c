@@ -128,11 +128,14 @@ void p_check_integrity(struct work_struct *p_work) {
    struct module *p_tmp_mod;
    unsigned int p_tmp = 0;
    int p_ret;
+   unsigned int p_manual_run = p_manual;
 
    if (unlikely(!P_CTRL(p_kint_validate)) ||
-       unlikely(!p_manual && P_CTRL(p_kint_validate) == 1) ||
+       unlikely(!p_manual_run && P_CTRL(p_kint_validate) == 1) ||
        unlikely(P_SYM(p_state_init) < 2))
       goto p_check_integrity_tasks;
+
+   p_manual = 0;
 
    /*
     * First allocate temporary buffer for per CPU data. Number of possible CPUs
@@ -996,13 +999,10 @@ p_check_integrity_tasks:
 
    if (!p_ed_enforce_validation_paranoid()) {
       if (P_CTRL(p_heartbeat) && P_CTRL(p_pint_validate) &&
-          (!P_CTRL(p_kint_validate) || (!p_manual && P_CTRL(p_kint_validate) == 1))) {
+          (!P_CTRL(p_kint_validate) || (!p_manual_run && P_CTRL(p_kint_validate) == 1))) {
          p_print_log(P_LOG_ALIVE, "Tasks are clean");
       }
    }
-
-   if (p_manual)
-      p_manual = 0;
 
    /* Free the worker struct */
    if (p_work) {
