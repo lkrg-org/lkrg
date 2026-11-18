@@ -304,13 +304,28 @@ int p_create_database(void) {
 #endif
    smp_mb();
 
+   /*
+    * Register the module notifier before recording the loaded modules, so that
+    * no module can change state unnoticed in between. The kernel sets a
+    * module's state before it calls the notifiers, so if a change comes too
+    * early for our notifier to be called, then the module is recorded in its
+    * new state below.
+    *
+    * This must be done outside of p_text_section_lock(): registering waits for
+    * notifier calls in progress, and the notifier takes that lock.
+    */
+   p_register_module_notifier();
+
    p_text_section_lock();
 
    /*
     * Memory allocation may fail... let's loop here!
+    *
+    * The notifier may have run already and allocated the arrays, so reuse them
+    * like it does instead of leaking them.
     */
    while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
-                     &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 1) != P_LKRG_SUCCESS)
+                     &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 2) != P_LKRG_SUCCESS)
       schedule();
 
    /* Hash */
@@ -337,9 +352,6 @@ int p_create_database(void) {
    P_SYM(p_state_init) = 1;
 
    p_text_section_unlock();
-
-   /* Register module notification routine - must be outside p_text_section_(un)lock */
-   p_register_module_notifier();
 
    p_debug_log(P_LOG_DEBUG,
           "p_module_list_hash => [0x%llx] p_module_kobj_hash => [0x%llx]",
