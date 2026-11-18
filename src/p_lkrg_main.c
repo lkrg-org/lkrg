@@ -637,15 +637,21 @@ static int __init p_lkrg_register(void) {
  #endif
 #endif
 
+   p_integrity_timer();
+   p_register_notifiers();
+   p_init_page_attr();
+
+   /*
+    * Register the sysctls last, mirroring p_lkrg_deregister(). Userspace can
+    * write to them as soon as they're registered, and their handlers expect
+    * LKRG to be fully initialized. For example, they can register and
+    * deregister the notifiers.
+    */
    if (p_register_comm_channel()) {
       p_print_log(P_LOG_FATAL, "Can't initialize sysctl");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
-
-   p_integrity_timer();
-   p_register_notifiers();
-   p_init_page_attr();
 
    p_print_log(P_LOG_ALIVE, "LKRG initialized successfully");
 
