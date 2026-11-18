@@ -215,6 +215,29 @@ int p_create_database(void) {
       return P_LKRG_GENERAL_ERROR;
    }
 
+   /* Some arch needs extra hooks */
+   if (p_register_arch_metadata() != P_LKRG_SUCCESS) {
+      p_print_log(P_LOG_FATAL, "Can't register CPU architecture specific metadata");
+      return P_LKRG_GENERAL_ERROR;
+   }
+
+   /*
+    * Register the CPU hotplug callbacks before recording the CPUs' state, so
+    * that no CPU can go online or offline unnoticed in between. The state is
+    * recorded with p_read_cpu_lock() held, which keeps CPUs from going online
+    * or offline meanwhile. As such, a CPU that changes state before that is
+    * recorded in its new state, and one that changes state afterwards runs the
+    * callbacks. The callbacks can also run before the state is recorded, which
+    * is harmless since everything they store is recorded again below.
+    *
+    * The callbacks take p_text_section_lock(), which uses locks that
+    * p_register_arch_metadata() sets up, so this must come after it.
+    */
+   if (p_register_cpu_hotplug() != P_LKRG_SUCCESS) {
+      p_print_log(P_LOG_FATAL, "Can't register hot CPU plug[in/out] handler");
+      return P_LKRG_GENERAL_ERROR;
+   }
+
    p_read_cpu_lock();
 
    /*
@@ -270,13 +293,6 @@ int p_create_database(void) {
 
    p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
    p_read_cpu_unlock();
-
-   /* Some arch needs extra hooks */
-   if (p_register_arch_metadata() != P_LKRG_SUCCESS) {
-      p_print_log(P_LOG_FATAL, "Can't register CPU architecture specific metadata");
-      return P_LKRG_GENERAL_ERROR;
-   }
-
 
    if (hash_from_ex_table() != P_LKRG_SUCCESS) {
       p_print_log(P_LOG_FAULT, "Exception table can't be found (skipping)");

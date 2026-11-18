@@ -41,9 +41,6 @@ unsigned int profile_validate = 3;
 unsigned int profile_enforce = 2;
 
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
-static enum cpuhp_state p_hot_cpus;
-#endif
 unsigned int p_attr_init = 0;
 
 DEFINE_MUTEX(p_ro_page_mutex);
@@ -489,7 +486,6 @@ static void __init p_freeze_userspace(void) {
 static int __init p_lkrg_register(void) {
 
    int p_ret = P_LKRG_SUCCESS;
-   char p_cpu = 0;
    char p_freeze = 0;
 
    lkrg_register_net();
@@ -593,26 +589,6 @@ static int __init p_lkrg_register(void) {
       goto p_main_error;
    }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
-   register_hotcpu_notifier(&p_cpu_notifier);
-#else
-   cpu_notifier_register_begin();
-   __register_hotcpu_notifier(&p_cpu_notifier);
-   cpu_notifier_register_done();
-#endif
-#else
-   if ( (p_hot_cpus = cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
-                         "x86/lkrg:online",
-                         p_cpu_online_action,
-                         p_cpu_dead_action)) < 0) {
-      p_print_log(P_LOG_FATAL, "Can't register hot CPU plug[in/out] handler");
-      p_ret = P_LKRG_HPCPU_ERROR;
-      goto p_main_error;
-   }
-#endif
-   p_cpu = 1;
-
 #if !defined(CONFIG_ARM64)
    P_SYM_INIT(flush_tlb_all)
 #endif
@@ -674,22 +650,7 @@ p_main_error:
        * explained in p_lkrg_deregister().
        */
       p_offload_cache_delete();
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
-      if (p_cpu)
-         unregister_hotcpu_notifier(&p_cpu_notifier);
-#else
-      if (p_cpu) {
-         cpu_notifier_register_begin();
-         __unregister_hotcpu_notifier(&p_cpu_notifier);
-         cpu_notifier_register_done();
-      }
-#endif
-#else
-      if (p_cpu)
-         cpuhp_remove_state_nocalls(p_hot_cpus);
-#endif
-
+      p_deregister_cpu_hotplug();
       p_exploit_detection_exit();
       p_unregister_arch_metadata();
       p_deregister_module_notifier();
@@ -762,18 +723,7 @@ static void __exit p_lkrg_deregister(void) {
     * after it starts.
     */
    p_offload_cache_delete();
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
-   unregister_hotcpu_notifier(&p_cpu_notifier);
-#else
-   cpu_notifier_register_begin();
-   __unregister_hotcpu_notifier(&p_cpu_notifier);
-   cpu_notifier_register_done();
-#endif
-#else
-   cpuhp_remove_state_nocalls(p_hot_cpus);
-#endif
-
+   p_deregister_cpu_hotplug();
    p_unregister_arch_metadata();
    p_exploit_detection_exit();
    p_deregister_module_notifier();
