@@ -1,0 +1,26 @@
+#!/bin/sh
+set -e
+
+conf="/etc/lkrg-logger.conf"
+
+case "$1" in
+    purge)
+        if [ -f "$conf" ]; then
+            rm $conf
+        fi
+        ;;
+
+    remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+        # Do nothing on normal removal or upgrades
+        ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+        ;;
+esac
+
+# Always include this so debhelper can inject automatic cleanup code
+#DEBHELPER#
+
+exit 0

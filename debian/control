@@ -55,3 +55,18 @@ Description: Systemd integration for Linux Kernel Runtime Guard (LKRG)
  patch those.
  .
  This package provides systemd integration for the LKRG kernel module.
+
+Package: lkrg-logger
+Architecture: any
+Depends: ${misc:Depends},
+ lkrg-dkms (= ${source:Version}),
+ systemd
+Description: Logging integration for Linux Kernel Runtime Guard (LKRG)
+ LKRG performs runtime integrity checking of the Linux kernel and detection of
+ security vulnerability exploits against the kernel.
+ .
+ LKRG is a kernel module (not a kernel patch), so it can be built for and loaded
+ on top of a wide range of mainline and distros' kernels, without needing to
+ patch those.
+ .
+ This package provides logger integration for the LKRG kernel module.

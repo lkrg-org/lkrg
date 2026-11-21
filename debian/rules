@@ -11,6 +11,7 @@ include /usr/share/dpkg/pkg-info.mk
 	dh $@ --with dkms
 
 override_dh_install:
+	cp logger/lkrg-logger.service debian/
 	dh_install -p lkrg-dkms    scripts/ usr/src/$(DEB_SOURCE)-$(DEB_VERSION_UPSTREAM)
 	dh_install -p lkrg-dkms    src/ usr/src/$(DEB_SOURCE)-$(DEB_VERSION_UPSTREAM)
 	dh_install -p lkrg-dkms    Makefile usr/src/$(DEB_SOURCE)-$(DEB_VERSION_UPSTREAM)
@@ -21,15 +22,23 @@ override_dh_install:
 	cp debian/lkrg-dkms.modules debian/tmp/etc/modules-load.d/lkrg-dkms.conf
 	dh_install -p lkrg-dkms    debian/tmp/etc/sysctl.d/01-lkrg.conf etc/sysctl.d
 	dh_install -p lkrg-dkms    debian/tmp/etc/modules-load.d/lkrg-dkms.conf etc/modules-load.d
+	dh_install -p lkrg-logger  logger/lkrg-keygen usr/sbin
+	dh_install -p lkrg-logger  logger/lkrg-logctl usr/sbin
+	dh_install -p lkrg-logger  logger/lkrg-logger usr/sbin
 
 override_dh_dkms:
 	dh_dkms -V $(DEB_VERSION_UPSTREAM)
 
 override_dh_auto_configure:
 override_dh_auto_build:
+	dh_auto_build
+	$(MAKE) -C logger/
+
 override_dh_auto_test:
 override_dh_auto_install:
 override_dh_auto_clean:
+	dh_auto_clean
+	$(MAKE) -C logger/ clean
 
 override_dh_installsystemd:
 	dh_installsystemd --no-enable --no-stop-on-upgrade
