@@ -563,6 +563,16 @@ static int __init p_lkrg_register(void) {
    p_freeze = 1;
 
    /*
+    * Initialize kmod module. This comes before ED initialization since the
+    * OverlayFS hook, which ED installs, looks up the OverlayFS module.
+    */
+   if (p_kmod_init()) {
+      p_print_log(P_LOG_FATAL, "Can't initialize kernel module handling");
+      p_ret = P_LKRG_KMOD_ERROR;
+      goto p_main_error;
+   }
+
+   /*
     * First, we need to plant *kprobes... Before DB is created!
     */
    if (p_exploit_detection_init()) {
@@ -574,15 +584,6 @@ static int __init p_lkrg_register(void) {
    if (p_offload_cache_init()) {
       p_print_log(P_LOG_FATAL, "Can't initialize cache for system integrity WQ");
       p_ret = P_LKRG_GENERAL_ERROR;
-      goto p_main_error;
-   }
-
-   /*
-    * Initialize kmod module
-    */
-   if (p_kmod_init()) {
-      p_print_log(P_LOG_FATAL, "Can't initialize kernel module handling");
-      p_ret = P_LKRG_KMOD_ERROR;
       goto p_main_error;
    }
 
