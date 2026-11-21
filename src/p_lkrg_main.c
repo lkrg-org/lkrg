@@ -661,6 +661,12 @@ p_main_error:
       p_deregister_notifiers();
       if (p_timer.function)
          del_timer_sync(&p_timer);
+
+      /*
+       * Integrity workers must finish before the rest of the teardown, as
+       * explained in p_lkrg_deregister().
+       */
+      p_offload_cache_delete();
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
       if (p_cpu)
@@ -679,7 +685,6 @@ p_main_error:
 
       p_exploit_detection_exit();
       p_unregister_arch_metadata();
-      p_offload_cache_delete();
       p_deregister_module_notifier();
       p_uninstall_lkrg_dummy_hook();
       if (p_db.p_CPU_metadata_array) {
@@ -733,6 +738,23 @@ static void __exit p_lkrg_deregister(void) {
    while (P_SYM_CALL(p_freeze_processes))
       schedule();
 
+   /*
+    * The integrity workers validate every tracked task and queue ED validation
+    * works. Wait for them to finish before tearing down ED, since a worker that
+    * runs during teardown could kill a task over a stale shadow or allocate a
+    * validation work from a destroyed cache.
+    *
+    * The workers also compare the system's state against LKRG's database, so
+    * wait for them before removing anything that keeps the database up to date
+    * as well, such as the CPU hotplug callbacks. Otherwise, a CPU could go
+    * offline without the database getting updated, and a worker that's still
+    * running would then detect a mismatch.
+    *
+    * The timer, notifiers and sysctls must be stopped first because they queue
+    * integrity workers, and the flush doesn't wait for a worker that's queued
+    * after it starts.
+    */
+   p_offload_cache_delete();
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
    unregister_hotcpu_notifier(&p_cpu_notifier);
@@ -747,7 +769,6 @@ static void __exit p_lkrg_deregister(void) {
 
    p_unregister_arch_metadata();
    p_exploit_detection_exit();
-   p_offload_cache_delete();
    p_deregister_module_notifier();
    p_uninstall_lkrg_dummy_hook();
 
