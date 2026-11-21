@@ -137,6 +137,58 @@ p_sym_error:
 
 int p_unregister_arch_metadata(void) {
 
+   /*
+    * Some hooks take a lock in their entry handler and only release it in their
+    * return handler: the hooks of ftrace_modify_all_code() and switch_idt()
+    * take p_db_lock, and the hook of arch_static_call_transform() takes
+    * p_static_call_spinlock. Once a hook is removed, its return handler doesn't
+    * run for the calls of the hooked function that are still in progress, which
+    * would leave the lock held forever.
+    *
+    * As such, disable those hooks and wait for the calls in progress to return
+    * before removing them. A disabled hook's entry handler is no longer called,
+    * while its return handler still runs for the calls in progress.
+    *
+    * The jump label hooks take p_jl_lock the same way, but they're left alone.
+    * Only their own entry handlers wait for that lock, and a given kernel only
+    * calls one of the two hooked functions, so nothing waits for it once that
+    * hook is removed.
+    */
+#if defined(CONFIG_DYNAMIC_FTRACE)
+   p_disable_ftrace_modify_all_code_hook();
+#endif
+#ifdef P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
+   p_disable_switch_idt_hook();
+#endif
+#if defined(CONFIG_HAVE_STATIC_CALL)
+   p_disable_arch_static_call_transform_hook();
+#endif
+
+   /*
+    * Wait for the entry handlers that are already running to finish. They run
+    * with preemption disabled, which synchronize_rcu() is only guaranteed to
+    * wait for since 4.20. RHEL 8.2 and later have that change too, and don't
+    * have synchronize_sched() anymore.
+    */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,20,0) || \
+   (defined(RHEL_RELEASE_CODE) && RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8, 2))
+   synchronize_rcu();
+#else
+   synchronize_sched();
+#endif
+
+   /*
+    * Wait for the calls in progress to release both locks. p_db_lock must be
+    * taken with interrupts enabled here, since the call that holds it may be
+    * waiting for every CPU to handle an IPI.
+    */
+#if defined(CONFIG_HAVE_STATIC_CALL)
+   while (p_lkrg_counter_lock_val_read(&p_static_call_spinlock))
+      schedule();
+#endif
+   spin_lock(&p_db_lock);
+   spin_unlock(&p_db_lock);
+
 #ifdef P_LKRG_RUNTIME_CODE_INTEGRITY_SWITCH_IDT_H
    p_uninstall_switch_idt_hook();
 #endif
