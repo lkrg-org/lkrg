@@ -296,6 +296,14 @@ void p_register_module_notifier(void) {
 void p_deregister_module_notifier(void) {
 
    unregister_module_notifier(&p_module_block_notifier);
+}
+
+/*
+ * Frees the database's module arrays. This must only be called once everything
+ * that uses them is gone, which includes the CPU hotplug callbacks in addition
+ * to the module notifier.
+ */
+void p_free_module_arrays(void) {
 
    if (p_db.p_module_list_array) {
       p_kzfree(p_db.p_module_list_array);

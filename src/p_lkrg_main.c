@@ -646,14 +646,17 @@ p_main_error:
          del_timer_sync(&p_timer);
 
       /*
-       * Integrity workers must finish before the rest of the teardown, as
-       * explained in p_lkrg_deregister().
+       * Integrity workers must finish before the rest of the teardown, the
+       * module notifier must be deregistered before the CPU hotplug callbacks,
+       * and ED's probes must only be removed after the callbacks are
+       * deregistered, as explained in p_lkrg_deregister().
        */
       p_offload_cache_delete();
-      p_deregister_cpu_hotplug();
-      p_exploit_detection_exit();
       p_unregister_arch_metadata();
       p_deregister_module_notifier();
+      p_deregister_cpu_hotplug();
+      p_free_module_arrays();
+      p_exploit_detection_exit();
       p_uninstall_lkrg_dummy_hook();
       if (p_db.p_CPU_metadata_array) {
          p_kzfree(p_db.p_CPU_metadata_array);
@@ -723,10 +726,36 @@ static void __exit p_lkrg_deregister(void) {
     * after it starts.
     */
    p_offload_cache_delete();
-   p_deregister_cpu_hotplug();
    p_unregister_arch_metadata();
-   p_exploit_detection_exit();
+
+   /*
+    * Deregister the module notifier before the CPU hotplug callbacks, since the
+    * notifier reads the CPUs' state from the database whenever a module is
+    * loaded or unloaded, and the callbacks are what keep that state up to date.
+    * Otherwise, a CPU could go offline without the database getting updated,
+    * and the notifier would then report that CPU as unexpectedly offline.
+    *
+    * The callbacks can also rebuild the database's module arrays, so those
+    * arrays are only freed once the callbacks are gone.
+    */
    p_deregister_module_notifier();
+   p_deregister_cpu_hotplug();
+   p_free_module_arrays();
+
+   /*
+    * Remove ED's probes only after the CPU hotplug callbacks are deregistered.
+    * The callbacks take module_mutex with the CPU hotplug lock held, and on
+    * kernels older than 4.13, unregistering a kprobe can make the kprobe
+    * optimizer take those two locks in the opposite order. Removing ED's probes
+    * with the callbacks still registered could therefore deadlock with a CPU
+    * going online or offline.
+    *
+    * The probes that p_unregister_arch_metadata() removes are still exposed to
+    * this deadlock. Their handlers use the module arrays and the CPUs' state in
+    * the database, which the module notifier and the callbacks keep up to date,
+    * so they must be removed while both are still registered.
+    */
+   p_exploit_detection_exit();
    p_uninstall_lkrg_dummy_hook();
 
    if (p_db.p_CPU_metadata_array)
