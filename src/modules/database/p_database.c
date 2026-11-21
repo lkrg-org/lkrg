@@ -324,6 +324,18 @@ int p_create_database(void) {
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
 */
 
+   /*
+    * Set p_state_init before p_text_section_unlock(), which releases
+    * ftrace_lock. Our hook of ftrace_modify_all_code() doesn't update the
+    * module hashes recorded above while p_state_init is zero, and the kernel
+    * only calls ftrace_modify_all_code() with ftrace_lock held. This way, the
+    * hook cannot miss a code modification made after the hashes were recorded.
+    * p_state_init also cannot change in the middle of a hooked call, which
+    * would make the hook's return handler release p_db_lock without its entry
+    * handler having taken it.
+    */
+   P_SYM(p_state_init) = 1;
+
    p_text_section_unlock();
 
    /* Register module notification routine - must be outside p_text_section_(un)lock */
@@ -333,7 +345,6 @@ int p_create_database(void) {
           "p_module_list_hash => [0x%llx] p_module_kobj_hash => [0x%llx]",
           p_db.p_module_list_hash,p_db.p_module_kobj_hash);
 
-   P_SYM(p_state_init) = 1;
 #if defined(CONFIG_OPTPROBES)
    P_SYM_CALL(p_wait_for_kprobe_optimizer);
 #endif
