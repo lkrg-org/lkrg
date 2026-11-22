@@ -92,7 +92,6 @@ $(TARGET)-objs += src/modules/ksyms/p_resolve_ksym.o \
                   src/modules/exploit_detection/syscalls/p_security_ptrace_access/p_security_ptrace_access.o \
                   src/modules/exploit_detection/syscalls/override/p_override_creds/p_override_creds.o \
                   src/modules/exploit_detection/syscalls/override/p_revert_creds/p_revert_creds.o \
-                  src/modules/exploit_detection/syscalls/override/overlayfs/p_ovl_override_sync/p_ovl_override_sync.o \
                   src/modules/exploit_detection/syscalls/pCFI/p_mark_inode_dirty/p_mark_inode_dirty.o \
                   src/modules/exploit_detection/syscalls/pCFI/p_schedule/p_schedule.o \
                   src/modules/exploit_detection/syscalls/pCFI/p___queue_work/p___queue_work.o \
