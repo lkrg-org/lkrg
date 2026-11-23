@@ -166,7 +166,6 @@ typedef struct p_hash_database {
 
 
 extern p_hash_database p_db;
-extern struct notifier_block p_cpu_notifier;
 
 int hash_from_ex_table(void);
 int hash_from_kernel_stext(void);
@@ -232,6 +231,8 @@ int p_cpu_callback(struct notifier_block *p_block, unsigned long p_action, void 
 #endif
 int p_cpu_online_action(unsigned int p_cpu);
 int p_cpu_dead_action(unsigned int p_cpu);
+int p_register_cpu_hotplug(void);
+void p_deregister_cpu_hotplug(void);
 uint64_t hash_from_CPU_data(p_CPU_metadata_hash_mem *p_arg);
 
 

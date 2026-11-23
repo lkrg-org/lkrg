@@ -41,9 +41,6 @@ unsigned int profile_validate = 3;
 unsigned int profile_enforce = 2;
 
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
-static enum cpuhp_state p_hot_cpus;
-#endif
 unsigned int p_attr_init = 0;
 
 DEFINE_MUTEX(p_ro_page_mutex);
@@ -94,8 +91,6 @@ p_ro_page p_ro = {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 GENERATE_CALL_FUNC(unsigned long, p_kallsyms_lookup_name, const char *name)
-GENERATE_CALL_FUNC(int, p_freeze_processes, void)
-GENERATE_CALL_FUNC(void, p_thaw_processes, void)
 #if !defined(CONFIG_ARM64)
  GENERATE_CALL_FUNC(void, p_flush_tlb_all, void)
 #endif
@@ -137,6 +132,12 @@ GENERATE_CALL_FUNC(int, p_kallsyms_on_each_symbol, int (*fn)(void *, const char 
 #endif
 #if defined(CONFIG_OPTPROBES)
  GENERATE_CALL_FUNC(void, p_wait_for_kprobe_optimizer, void)
+#endif
+GENERATE_CALL_FUNC(int, p_task_work_add, struct task_struct *, struct callback_head *, int)
+GENERATE_CALL_FUNC(struct callback_head *, p_task_work_cancel_func, struct task_struct *, task_work_func_t)
+GENERATE_CALL_FUNC(void, p_synchronize_rcu_tasks, void)
+#ifndef P_TWA_SIGNAL
+ GENERATE_CALL_FUNC(void, p_signal_wake_up_state, struct task_struct *, unsigned int)
 #endif
 #pragma GCC diagnostic pop
 #endif
@@ -424,73 +425,12 @@ static void p_parse_module_params(void) {
 
 }
 
-static void __init p_freeze_userspace(void) {
-
-   unsigned int timeout, tries, orig_timeout, sleep_ms;
-
-   /* Save the original freeze timeout that may have been set by the user */
-   orig_timeout = *P_SYM(p_freeze_timeout_msecs);
-
-   /* Start with a freeze timeout of 2000 ms and a sleep duration of 100 ms */
-   timeout = min(2000U, orig_timeout);
-   sleep_ms = 100;
-
-   /*
-    * Freeze all user tasks with incremental timeouts and sleeps in between. The
-    * reason for starting with a shorter timeout is that a task blocking the
-    * freeze may depend on work from an already-frozen task in order to become
-    * unblocked. In this case, the freeze attempt will always continue until the
-    * timeout is reached, resulting in a long stall where most of userspace is
-    * frozen. The blocking task will always be running somewhere in the kernel,
-    * which is why it is blocking in the first place: it can't just teleport
-    * into the refrigerator when it's already stuck in some other kernel code.
-    *
-    * Some systems may legitimately require more time in order to freeze all
-    * user tasks, which is accommodated by incrementally scaling up the timeout
-    * duration.
-    *
-    * After a failed freeze attempt, we must wait a little bit to allow the
-    * blocking tasks to hopefully make enough forward progress to become
-    * unblocked. There's no precise way to track this, as the freezer is
-    * completely unaware of inter-process dependencies that must be satisfied to
-    * unblock a task.
-    */
-   *P_SYM(p_freeze_timeout_msecs) = timeout;
-   for (tries = 1; P_SYM_CALL(p_freeze_processes); tries++) {
-      /* Scale up after every 3 failed attempts */
-      if (!(tries % 3)) {
-         /* Don't sleep longer than 500 ms at a time (it probably won't help) */
-         sleep_ms = min(sleep_ms + 100, 500U);
-
-         /* Increase the timeout, capping it to the original timeout duration */
-         timeout = min(timeout * 2, orig_timeout);
-         *P_SYM(p_freeze_timeout_msecs) = timeout;
-      }
-
-      p_print_log(P_LOG_ISSUE, "Freezing failed %u time(s), sleeping %u ms before next try with timeout of %u ms",
-                  tries, sleep_ms, timeout);
-
-      /* Sleep for a bit to give blocking tasks some time to become unblocked */
-      msleep(sleep_ms);
-   }
-
-   /*
-    * Restore the original freeze timeout. We may overwrite a userspace change
-    * to the freeze timeout via /sys/power/pm_freeze_timeout if the change
-    * occurred between when we cached the original timeout and now. This
-    * shouldn't be a big deal.
-    */
-   *P_SYM(p_freeze_timeout_msecs) = orig_timeout;
-}
-
 /*
  * Main entry point for the module - initialization.
  */
 static int __init p_lkrg_register(void) {
 
    int p_ret = P_LKRG_SUCCESS;
-   char p_cpu = 0;
-   char p_freeze = 0;
 
    lkrg_register_net();
 
@@ -543,9 +483,6 @@ static int __init p_lkrg_register(void) {
       return P_LKRG_GENERAL_ERROR;
    }
 
-   P_SYM_INIT(freeze_timeout_msecs)
-   P_SYM_INIT(freeze_processes)
-   P_SYM_INIT(thaw_processes)
 #if defined(CONFIG_X86) && LINUX_VERSION_CODE >= KERNEL_VERSION(5,8,0)
    P_SYM_INIT(native_write_cr4)
 #endif
@@ -556,11 +493,37 @@ static int __init p_lkrg_register(void) {
 #if defined(CONFIG_OPTPROBES)
    P_SYM_INIT(wait_for_kprobe_optimizer)
 #endif
+   P_SYM_INIT(task_work_add)
 
-   // Freeze all non-kernel processes
-   p_freeze_userspace();
+   /*
+    * task_work_cancel_func() is called task_work_cancel() in older kernels.
+    * Attempt to find task_work_cancel_func() first since newer kernels also
+    * have task_work_cancel() which does something different. If that fails,
+    * then try to find task_work_cancel().
+    */
+   if (!P_SYM_INIT_NO_ERROR(task_work_cancel_func))
+      P_SYM_INIT_VAR(task_work_cancel_func, task_work_cancel)
 
-   p_freeze = 1;
+   /*
+    * synchronize_rcu_tasks() only exists when CONFIG_TASKS_RCU=y, so it's
+    * optional. See the comment in p_ed_task_work_exit() for how it's used.
+    */
+   P_SYM_INIT_NO_ERROR(synchronize_rcu_tasks);
+
+#ifndef P_TWA_SIGNAL
+   /* The initial task dump wakes threads up with it (see p_dump_group()) */
+   P_SYM_INIT(signal_wake_up_state)
+#endif
+
+   /*
+    * Initialize kmod module. This comes before ED initialization since the
+    * OverlayFS hook, which ED installs, looks up the OverlayFS module.
+    */
+   if (p_kmod_init()) {
+      p_print_log(P_LOG_FATAL, "Can't initialize kernel module handling");
+      p_ret = P_LKRG_KMOD_ERROR;
+      goto p_main_error;
+   }
 
    /*
     * First, we need to plant *kprobes... Before DB is created!
@@ -577,40 +540,11 @@ static int __init p_lkrg_register(void) {
       goto p_main_error;
    }
 
-   /*
-    * Initialize kmod module
-    */
-   if (p_kmod_init()) {
-      p_print_log(P_LOG_FATAL, "Can't initialize kernel module handling");
-      p_ret = P_LKRG_KMOD_ERROR;
-      goto p_main_error;
-   }
-
    if (p_create_database() != P_LKRG_SUCCESS) {
       p_print_log(P_LOG_FATAL, "Can't create database");
       p_ret = P_LKRG_DATABASE_ERROR;
       goto p_main_error;
    }
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
-   register_hotcpu_notifier(&p_cpu_notifier);
-#else
-   cpu_notifier_register_begin();
-   __register_hotcpu_notifier(&p_cpu_notifier);
-   cpu_notifier_register_done();
-#endif
-#else
-   if ( (p_hot_cpus = cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
-                         "x86/lkrg:online",
-                         p_cpu_online_action,
-                         p_cpu_dead_action)) < 0) {
-      p_print_log(P_LOG_FATAL, "Can't register hot CPU plug[in/out] handler");
-      p_ret = P_LKRG_HPCPU_ERROR;
-      goto p_main_error;
-   }
-#endif
-   p_cpu = 1;
 
 #if !defined(CONFIG_ARM64)
    P_SYM_INIT(flush_tlb_all)
@@ -636,15 +570,21 @@ static int __init p_lkrg_register(void) {
  #endif
 #endif
 
+   p_integrity_timer();
+   p_register_notifiers();
+   p_init_page_attr();
+
+   /*
+    * Register the sysctls last, mirroring p_lkrg_deregister(). Userspace can
+    * write to them as soon as they're registered, and their handlers expect
+    * LKRG to be fully initialized. For example, they can register and
+    * deregister the notifiers.
+    */
    if (p_register_comm_channel()) {
       p_print_log(P_LOG_FATAL, "Can't initialize sysctl");
       p_ret = P_LKRG_GENERAL_ERROR;
       goto p_main_error;
    }
-
-   p_integrity_timer();
-   p_register_notifiers();
-   p_init_page_attr();
 
    p_print_log(P_LOG_ALIVE, "LKRG initialized successfully");
 
@@ -661,26 +601,19 @@ p_main_error:
       p_deregister_notifiers();
       if (p_timer.function)
          del_timer_sync(&p_timer);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
-      if (p_cpu)
-         unregister_hotcpu_notifier(&p_cpu_notifier);
-#else
-      if (p_cpu) {
-         cpu_notifier_register_begin();
-         __unregister_hotcpu_notifier(&p_cpu_notifier);
-         cpu_notifier_register_done();
-      }
-#endif
-#else
-      if (p_cpu)
-         cpuhp_remove_state_nocalls(p_hot_cpus);
-#endif
 
-      p_exploit_detection_exit();
-      p_unregister_arch_metadata();
+      /*
+       * Integrity workers must finish before the rest of the teardown, the
+       * module notifier must be deregistered before the CPU hotplug callbacks,
+       * and ED's probes must only be removed after the callbacks are
+       * deregistered, as explained in p_lkrg_deregister().
+       */
       p_offload_cache_delete();
+      p_unregister_arch_metadata();
       p_deregister_module_notifier();
+      p_deregister_cpu_hotplug();
+      p_free_module_arrays();
+      p_exploit_detection_exit();
       p_uninstall_lkrg_dummy_hook();
       if (p_db.p_CPU_metadata_array) {
          p_kzfree(p_db.p_CPU_metadata_array);
@@ -690,11 +623,6 @@ p_main_error:
       if (p_db.kernel_stext_copy)
          vfree(p_db.kernel_stext_copy);
 #endif
-   }
-
-   if (p_freeze) {
-      // Thaw all non-kernel processes
-      P_SYM_CALL(p_thaw_processes);
    }
 
    if (p_ret != P_LKRG_SUCCESS)
@@ -714,6 +642,13 @@ static void __exit p_lkrg_deregister(void) {
 
    p_print_log(P_LOG_DYING, "Unloading LKRG");
 
+   /*
+    * Remove the sysctls first, which also waits for their handlers to finish. A
+    * sysctl handler can register the notifiers, which would otherwise undo the
+    * deregistration below.
+    */
+   p_deregister_comm_channel();
+
    p_uninit_page_attr();
 
    P_CTRL(p_kint_validate) = 0;
@@ -721,29 +656,53 @@ static void __exit p_lkrg_deregister(void) {
    if (p_timer.function)
       del_timer_sync(&p_timer);
 
-
-   // Freeze all non-kernel processes
-   while (P_SYM_CALL(p_freeze_processes))
-      schedule();
-
-   p_deregister_comm_channel();
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
-   unregister_hotcpu_notifier(&p_cpu_notifier);
-#else
-   cpu_notifier_register_begin();
-   __unregister_hotcpu_notifier(&p_cpu_notifier);
-   cpu_notifier_register_done();
-#endif
-#else
-   cpuhp_remove_state_nocalls(p_hot_cpus);
-#endif
-
-   p_unregister_arch_metadata();
-   p_exploit_detection_exit();
+   /*
+    * The integrity workers validate every tracked task and queue ED validation
+    * works. Wait for them to finish before tearing down ED, since a worker that
+    * runs during teardown could kill a task over a stale shadow or allocate a
+    * validation work from a destroyed cache.
+    *
+    * The workers also compare the system's state against LKRG's database, so
+    * wait for them before removing anything that keeps the database up to date
+    * as well, such as the CPU hotplug callbacks. Otherwise, a CPU could go
+    * offline without the database getting updated, and a worker that's still
+    * running would then detect a mismatch.
+    *
+    * The timer, notifiers and sysctls must be stopped first because they queue
+    * integrity workers, and the flush doesn't wait for a worker that's queued
+    * after it starts.
+    */
    p_offload_cache_delete();
+   p_unregister_arch_metadata();
+
+   /*
+    * Deregister the module notifier before the CPU hotplug callbacks, since the
+    * notifier reads the CPUs' state from the database whenever a module is
+    * loaded or unloaded, and the callbacks are what keep that state up to date.
+    * Otherwise, a CPU could go offline without the database getting updated,
+    * and the notifier would then report that CPU as unexpectedly offline.
+    *
+    * The callbacks can also rebuild the database's module arrays, so those
+    * arrays are only freed once the callbacks are gone.
+    */
    p_deregister_module_notifier();
+   p_deregister_cpu_hotplug();
+   p_free_module_arrays();
+
+   /*
+    * Remove ED's probes only after the CPU hotplug callbacks are deregistered.
+    * The callbacks take module_mutex with the CPU hotplug lock held, and on
+    * kernels older than 4.13, unregistering a kprobe can make the kprobe
+    * optimizer take those two locks in the opposite order. Removing ED's probes
+    * with the callbacks still registered could therefore deadlock with a CPU
+    * going online or offline.
+    *
+    * The probes that p_unregister_arch_metadata() removes are still exposed to
+    * this deadlock. Their handlers use the module arrays and the CPUs' state in
+    * the database, which the module notifier and the callbacks keep up to date,
+    * so they must be removed while both are still registered.
+    */
+   p_exploit_detection_exit();
    p_uninstall_lkrg_dummy_hook();
 
    if (p_db.p_CPU_metadata_array)
@@ -753,9 +712,6 @@ static void __exit p_lkrg_deregister(void) {
    if (p_db.kernel_stext_copy)
       vfree(p_db.kernel_stext_copy);
 #endif
-
-   // Thaw all non-kernel processes
-   P_SYM_CALL(p_thaw_processes);
 
    p_print_log(P_LOG_DYING, "LKRG unloaded");
 

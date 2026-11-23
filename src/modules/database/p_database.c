@@ -215,6 +215,29 @@ int p_create_database(void) {
       return P_LKRG_GENERAL_ERROR;
    }
 
+   /* Some arch needs extra hooks */
+   if (p_register_arch_metadata() != P_LKRG_SUCCESS) {
+      p_print_log(P_LOG_FATAL, "Can't register CPU architecture specific metadata");
+      return P_LKRG_GENERAL_ERROR;
+   }
+
+   /*
+    * Register the CPU hotplug callbacks before recording the CPUs' state, so
+    * that no CPU can go online or offline unnoticed in between. The state is
+    * recorded with p_read_cpu_lock() held, which keeps CPUs from going online
+    * or offline meanwhile. As such, a CPU that changes state before that is
+    * recorded in its new state, and one that changes state afterwards runs the
+    * callbacks. The callbacks can also run before the state is recorded, which
+    * is harmless since everything they store is recorded again below.
+    *
+    * The callbacks take p_text_section_lock(), which uses locks that
+    * p_register_arch_metadata() sets up, so this must come after it.
+    */
+   if (p_register_cpu_hotplug() != P_LKRG_SUCCESS) {
+      p_print_log(P_LOG_FATAL, "Can't register hot CPU plug[in/out] handler");
+      return P_LKRG_GENERAL_ERROR;
+   }
+
    p_read_cpu_lock();
 
    /*
@@ -271,13 +294,6 @@ int p_create_database(void) {
    p_db.p_CPU_metadata_hashes = hash_from_CPU_data(p_db.p_CPU_metadata_array);
    p_read_cpu_unlock();
 
-   /* Some arch needs extra hooks */
-   if (p_register_arch_metadata() != P_LKRG_SUCCESS) {
-      p_print_log(P_LOG_FATAL, "Can't register CPU architecture specific metadata");
-      return P_LKRG_GENERAL_ERROR;
-   }
-
-
    if (hash_from_ex_table() != P_LKRG_SUCCESS) {
       p_print_log(P_LOG_FAULT, "Exception table can't be found (skipping)");
       p_db.kernel_ex_table.p_hash = p_db.kernel_ex_table.p_size = 0;
@@ -304,13 +320,28 @@ int p_create_database(void) {
 #endif
    smp_mb();
 
+   /*
+    * Register the module notifier before recording the loaded modules, so that
+    * no module can change state unnoticed in between. The kernel sets a
+    * module's state before it calls the notifiers, so if a change comes too
+    * early for our notifier to be called, then the module is recorded in its
+    * new state below.
+    *
+    * This must be done outside of p_text_section_lock(): registering waits for
+    * notifier calls in progress, and the notifier takes that lock.
+    */
+   p_register_module_notifier();
+
    p_text_section_lock();
 
    /*
     * Memory allocation may fail... let's loop here!
+    *
+    * The notifier may have run already and allocated the arrays, so reuse them
+    * like it does instead of leaking them.
     */
    while(p_kmod_hash(&p_db.p_module_list_nr,&p_db.p_module_list_array,
-                     &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 1) != P_LKRG_SUCCESS)
+                     &p_db.p_module_kobj_nr,&p_db.p_module_kobj_array, 2) != P_LKRG_SUCCESS)
       schedule();
 
    /* Hash */
@@ -324,16 +355,24 @@ int p_create_database(void) {
                                           (unsigned int)p_db.p_module_kobj_nr * sizeof(p_module_kobj_mem));
 */
 
-   p_text_section_unlock();
+   /*
+    * Set p_state_init before p_text_section_unlock(), which releases
+    * ftrace_lock. Our hook of ftrace_modify_all_code() doesn't update the
+    * module hashes recorded above while p_state_init is zero, and the kernel
+    * only calls ftrace_modify_all_code() with ftrace_lock held. This way, the
+    * hook cannot miss a code modification made after the hashes were recorded.
+    * p_state_init also cannot change in the middle of a hooked call, which
+    * would make the hook's return handler release p_db_lock without its entry
+    * handler having taken it.
+    */
+   P_SYM(p_state_init) = 1;
 
-   /* Register module notification routine - must be outside p_text_section_(un)lock */
-   p_register_module_notifier();
+   p_text_section_unlock();
 
    p_debug_log(P_LOG_DEBUG,
           "p_module_list_hash => [0x%llx] p_module_kobj_hash => [0x%llx]",
           p_db.p_module_list_hash,p_db.p_module_kobj_hash);
 
-   P_SYM(p_state_init) = 1;
 #if defined(CONFIG_OPTPROBES)
    P_SYM_CALL(p_wait_for_kprobe_optimizer);
 #endif

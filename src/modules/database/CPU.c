@@ -226,8 +226,53 @@ int p_cpu_dead_action(unsigned int p_cpu) {
 }
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
-struct notifier_block p_cpu_notifier =
+static struct notifier_block p_cpu_notifier =
 {
    .notifier_call = p_cpu_callback,
 };
+#else
+static enum cpuhp_state p_hot_cpus;
 #endif
+static bool p_cpu_hotplug_registered;
+
+int p_register_cpu_hotplug(void) {
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
+   register_hotcpu_notifier(&p_cpu_notifier);
+#else
+   cpu_notifier_register_begin();
+   __register_hotcpu_notifier(&p_cpu_notifier);
+   cpu_notifier_register_done();
+#endif
+#else
+   if ( (p_hot_cpus = cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
+                         "x86/lkrg:online",
+                         p_cpu_online_action,
+                         p_cpu_dead_action)) < 0)
+      return P_LKRG_GENERAL_ERROR;
+#endif
+   p_cpu_hotplug_registered = true;
+
+   return P_LKRG_SUCCESS;
+}
+
+void p_deregister_cpu_hotplug(void) {
+
+   /* Initialization can fail before it registers the callbacks */
+   if (!p_cpu_hotplug_registered)
+      return;
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,15,0)
+   unregister_hotcpu_notifier(&p_cpu_notifier);
+#else
+   cpu_notifier_register_begin();
+   __unregister_hotcpu_notifier(&p_cpu_notifier);
+   cpu_notifier_register_done();
+#endif
+#else
+   cpuhp_remove_state_nocalls(p_hot_cpus);
+#endif
+   p_cpu_hotplug_registered = false;
+}
