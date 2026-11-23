@@ -403,7 +403,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
        * 'safe' flag anymore, we are spinning until allocation succeeds.
        */
       if ( (*p_mlm_tmp = kzalloc(sizeof(p_module_list_mem) * (*p_module_list_cnt_arg+P_MODULE_BUFFER_RACE),
-                                 GFP_ATOMIC)) == NULL) {
+                                 GFP_NOFS)) == NULL) {
          /*
           * I should NEVER be here!
           */
@@ -432,7 +432,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
        * 'safe' flag anymore, we are spinning until allocation succeeds.
        */
       if ( (*p_mkm_tmp = kzalloc(sizeof(p_module_kobj_mem) * (*p_module_kobj_cnt_arg+P_MODULE_BUFFER_RACE),
-                                 GFP_ATOMIC)) == NULL) {
+                                 GFP_NOFS)) == NULL) {
          /*
           * I should NEVER be here!
           */
@@ -471,7 +471,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
           * 'safe' flag anymore, we are spinning until allocation succeeds.
           */
          if ( (*p_mlm_tmp = kzalloc(sizeof(p_module_list_mem) * (*p_module_list_cnt_arg+P_MODULE_BUFFER_RACE),
-                                    GFP_ATOMIC)) == NULL) {
+                                    GFP_NOFS)) == NULL) {
             /*
              * I should NEVER be here!
              */
@@ -511,7 +511,7 @@ int p_kmod_hash(unsigned int *p_module_list_cnt_arg, p_module_list_mem **p_mlm_t
           * 'safe' flag anymore, we are spinning until allocation succeeds.
           */
          if ( (*p_mkm_tmp = kzalloc(sizeof(p_module_kobj_mem) * (*p_module_kobj_cnt_arg+P_MODULE_BUFFER_RACE),
-                                    GFP_ATOMIC)) == NULL) {
+                                    GFP_NOFS)) == NULL) {
             /*
              * I should NEVER be here!
              */
