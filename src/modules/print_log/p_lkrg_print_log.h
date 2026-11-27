@@ -100,7 +100,7 @@
 #define P_LOG_DYING (0x20 | P_LOG_ALIVE)
 #define P_LOG_FATAL (0x30 | P_LOG_FAULT)
 
-#define p_print_log(p_level, p_fmt, p_args...)                                             \
+#define __p_print_log(p_level, p_fmt, p_args...)                                           \
 ({                                                                                         \
    int p_print_ret = 0;                                                                    \
                                                                                            \
@@ -139,9 +139,16 @@
       break;                                                                               \
    }                                                                                       \
                                                                                            \
+   p_print_ret;                                                                            \
+})
+
+#define p_print_log(p_level, p_fmt, p_args...)                                             \
+({                                                                                         \
+   int p_print_log_ret = __p_print_log(p_level, p_fmt, ## p_args);                         \
+                                                                                           \
    lkrg_queue_net();                                                                       \
                                                                                            \
-   p_print_ret;                                                                            \
+   p_print_log_ret;                                                                        \
 })
 
 #define p_panic(p_fmt, p_args...) \
